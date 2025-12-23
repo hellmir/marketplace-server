@@ -20,12 +20,12 @@ spring:
     init:
       mode: always
       schema-locations: classpath:org/springframework/batch/core/schema-mariadb.sql
-      continue-on-error: true      #?? CREATE ?? ???
+      continue-on-error: true
 
   jwt:
     secret: ${JWT_SECRET:dev-secret-change-me}
     access-token:
-      ttl: 1209600000000
+      ttl: 1800000
     refresh-token:
       ttl: 1209600000
 
