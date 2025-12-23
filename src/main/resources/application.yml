@@ -3,15 +3,15 @@ spring:
     name: shop-reward
 
   datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: ${DB_URL:jdbc:mariadb://localhost:3307/shop_reward?createDatabaseIfNotExist=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8}
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/shop_reward}
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:root}
 
   jpa:
     hibernate:
-      ddl-auto: update
-    database-platform: org.hibernate.dialect.MariaDBDialect
+      ddl-auto: create
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
   batch:
     jdbc:
@@ -19,7 +19,7 @@ spring:
   sql:
     init:
       mode: always
-      schema-locations: classpath:org/springframework/batch/core/schema-mariadb.sql
+      schema-locations: classpath:org/springframework/batch/core/schema-postgresql.sql
       continue-on-error: true
 
   jwt:
