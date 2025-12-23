@@ -90,14 +90,14 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher") // JUnit 테스트 런처
     testImplementation("org.awaitility:awaitility:4.2.0") // 비동기,스케줄링 테스트 지원
     // 🔹 추가 라이브러리
-    // dotenv 추가
+    // dotenv
     implementation("io.github.cdimascio:dotenv-java:$dotenvVersion")
-
-    // MariaDB 드라이버 추가
-    implementation("org.mariadb.jdbc:mariadb-java-client:$mariadbVersion")
 
     // H2 데이터베이스 (테스트용)
     runtimeOnly("com.h2database:h2:$h2Version")
+
+    // PostgreSQL 드라이버
+    runtimeOnly("org.postgresql:postgresql:42.7.4")
 
     // 빌드 정보를 위한 스프링 부트 액추에이터
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -105,13 +105,13 @@ dependencies {
     // 스웨거 API 문서 생성
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
 
-    // Spring Batch 추가
+    // Spring Batch
     implementation("org.springframework.boot:spring-boot-starter-batch")
 
-    // Spring Batch 테스트 의존성 추가
+    // Spring Batch 테스트 의존성
     testImplementation("org.springframework.batch:spring-batch-test")
 
-    // HNSW 라이브러리 추가
+    // HNSW 라이브러리
     implementation("com.github.jelmerk:hnswlib-core:1.2.1")
 
     // MIME 타입 체크를 위한 Apache Tika
