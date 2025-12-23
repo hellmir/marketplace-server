@@ -21,6 +21,8 @@ public class LoggingAspect {
             = "execution(* com.oponiti.shopreward..service.*.*(..))";
     private static final String CLIENT_LOGGING_EXECUTION_POINTCUT
             = "execution(* com.oponiti.shopreward..client.*.*(..))";
+    private static final String ADAPTER_LOGGING_EXECUTION_POINTCUT
+            = "execution(* com.oponiti.shopreward..adapter.*.*(..))";
 
     private static final String START
             = "Beginning to '{}.{}' task with parameters: {}";
@@ -34,6 +36,11 @@ public class LoggingAspect {
 
     @Around(CLIENT_LOGGING_EXECUTION_POINTCUT)
     public Object clientLogAroundForStringValue(ProceedingJoinPoint joinPoint) throws Throwable {
+        return performLogging(joinPoint);
+    }
+
+    @Around(ADAPTER_LOGGING_EXECUTION_POINTCUT)
+    public Object adapterLogAroundForStringValue(ProceedingJoinPoint joinPoint) throws Throwable {
         return performLogging(joinPoint);
     }
 
