@@ -52,10 +52,12 @@ public class LoggingAspect {
         Object[] parameterValues = joinPoint.getArgs();
 
         StringBuilder params = new StringBuilder();
+
         for (int i = 0; i < parameterNames.length; i++) {
             if (i > 0) {
                 params.append(", ");
             }
+            
             params.append(parameterNames[i]).append(": ").append(parameterValues[i]);
         }
 
