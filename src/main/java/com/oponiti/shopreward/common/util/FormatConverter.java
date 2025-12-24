@@ -7,7 +7,6 @@ import com.oponiti.shopreward.common.exception.illegalargument.numberformat.*;
 import static org.apache.commons.lang3.BooleanUtils.FALSE;
 import static org.apache.commons.lang3.BooleanUtils.TRUE;
 
-
 public class FormatConverter {
     public static Long parseId(String id) {
         try {

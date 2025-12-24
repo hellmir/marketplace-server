@@ -57,7 +57,7 @@ public class LoggingAspect {
             if (i > 0) {
                 params.append(", ");
             }
-            
+
             params.append(parameterNames[i]).append(": ").append(parameterValues[i]);
         }
 
