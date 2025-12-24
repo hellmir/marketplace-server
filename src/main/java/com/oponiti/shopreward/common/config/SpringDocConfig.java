@@ -1,8 +1,8 @@
 package com.oponiti.shopreward.common.config;
 
 import com.oponiti.shopreward.common.util.FormatValidator;
-import com.oponiti.shopreward.domain.user.authentication.accesspermission.AccessPermissionRegistry;
-import com.oponiti.shopreward.domain.user.authentication.accesspermission.HttpMethodAndRole;
+//import com.oponiti.shopreward.domain.user.authentication.accesspermission.AccessPermissionRegistry;
+//import com.oponiti.shopreward.domain.user.authentication.accesspermission.HttpMethodAndRole;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -50,8 +50,8 @@ public class SpringDocConfig {
     @Value("${server.origin}")
     private String serverOrigin;
 
-    @Autowired
-    private AccessPermissionRegistry accessPermissionRegistry;
+//    @Autowired
+//    private AccessPermissionRegistry accessPermissionRegistry;
 
     @Bean
     public OpenApiCustomizer tagOnlySorter() {
@@ -101,36 +101,36 @@ public class SpringDocConfig {
         };
     }
 
-    @Bean
-    public OpenApiCustomizer authorizationOpenApiCustomizer() {
-        return (OpenAPI openApi) -> {
-            for (Map.Entry<String, PathItem> pathItemEntry : openApi.getPaths().entrySet()) {
-                log.info("paths: {}", openApi.getPaths());
-                Optional<HttpMethodAndRole> authorizedApiOp = accessPermissionRegistry.getAuthorizedApi(pathItemEntry.getKey());
-
-                if (authorizedApiOp.isEmpty()) {
-                    continue;
-                }
-
-                HttpMethodAndRole httpMethodAndRole = authorizedApiOp.get();
-
-                PathItem pathItem = pathItemEntry.getValue();
-                httpMethodAndRole.runTraversal((method, roleId) -> {
-                    switch (method) {
-                        case GET -> addAuthorizationInfo(pathItem.getGet());
-                        case HEAD -> addAuthorizationInfo(pathItem.getHead());
-                        case POST -> addAuthorizationInfo(pathItem.getPost());
-                        case PUT -> addAuthorizationInfo(pathItem.getPut());
-                        case DELETE -> addAuthorizationInfo(pathItem.getDelete());
-                        case PATCH -> addAuthorizationInfo(pathItem.getPatch());
-                        case OPTIONS -> addAuthorizationInfo(pathItem.getOptions());
-                        case TRACE -> addAuthorizationInfo(pathItem.getTrace());
-                        default -> log.warn("unknown method: {}", method);
-                    }
-                });
-            }
-        };
-    }
+//    @Bean
+//    public OpenApiCustomizer authorizationOpenApiCustomizer() {
+//        return (OpenAPI openApi) -> {
+//            for (Map.Entry<String, PathItem> pathItemEntry : openApi.getPaths().entrySet()) {
+//                log.info("paths: {}", openApi.getPaths());
+//                Optional<HttpMethodAndRole> authorizedApiOp = accessPermissionRegistry.getAuthorizedApi(pathItemEntry.getKey());
+//
+//                if (authorizedApiOp.isEmpty()) {
+//                    continue;
+//                }
+//
+//                HttpMethodAndRole httpMethodAndRole = authorizedApiOp.get();
+//
+//                PathItem pathItem = pathItemEntry.getValue();
+//                httpMethodAndRole.runTraversal((method, roleId) -> {
+//                    switch (method) {
+//                        case GET -> addAuthorizationInfo(pathItem.getGet());
+//                        case HEAD -> addAuthorizationInfo(pathItem.getHead());
+//                        case POST -> addAuthorizationInfo(pathItem.getPost());
+//                        case PUT -> addAuthorizationInfo(pathItem.getPut());
+//                        case DELETE -> addAuthorizationInfo(pathItem.getDelete());
+//                        case PATCH -> addAuthorizationInfo(pathItem.getPatch());
+//                        case OPTIONS -> addAuthorizationInfo(pathItem.getOptions());
+//                        case TRACE -> addAuthorizationInfo(pathItem.getTrace());
+//                        default -> log.warn("unknown method: {}", method);
+//                    }
+//                });
+//            }
+//        };
+//    }
 
     @Bean
     public OpenAPI apiV1() {
