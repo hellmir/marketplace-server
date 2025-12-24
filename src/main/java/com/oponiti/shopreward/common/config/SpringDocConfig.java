@@ -1,0 +1,199 @@
+package com.oponiti.shopreward.common.config;
+
+import com.oponiti.shopreward.common.util.FormatValidator;
+import com.oponiti.shopreward.domain.user.authentication.accesspermission.AccessPermissionRegistry;
+import com.oponiti.shopreward.domain.user.authentication.accesspermission.HttpMethodAndRole;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.examples.Example;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.servers.Server;
+import io.swagger.v3.oas.models.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.customizers.OpenApiCustomizer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Configuration
+@Slf4j
+public class SpringDocConfig {
+    /* ❶ 원하는 9개 태그만 고정 순서로 선언 */
+    private static final List<String> TAGS_ORDER = List.of(
+            "인증 API",
+            "회원 API"
+    );
+
+    /* ❷ 태그 이름 → 우선순위 맵(캐시) */
+    private static final Map<String, Integer> ORDER_MAP = new ConcurrentHashMap<>();
+
+    static {
+        for (int i = 0; i < TAGS_ORDER.size(); i++) {
+            ORDER_MAP.put(TAGS_ORDER.get(i), i);
+        }
+    }
+
+    @Value("${server.origin}")
+    private String serverOrigin;
+
+    @Autowired
+    private AccessPermissionRegistry accessPermissionRegistry;
+
+    @Bean
+    public OpenApiCustomizer tagOnlySorter() {
+        return (OpenAPI openApi) -> {
+            if (!FormatValidator.hasValue(openApi.getTags())) {
+                return;
+            }
+
+            /* ❸ 기존 순서를 기억할 인덱스 맵 */
+            Map<String, Integer> originalIndex = new ConcurrentHashMap<>();
+            for (int i = 0; i < openApi.getTags().size(); i++) {
+                originalIndex.put(openApi.getTags().get(i).getName(), i);
+            }
+
+            /* ❹ Comparator 정의 */
+            Comparator<Tag> comparator = (t1, t2) -> {
+                Integer p1 = ORDER_MAP.get(t1.getName());
+                Integer p2 = ORDER_MAP.get(t2.getName());
+
+                // 두 태그 모두 지정 목록에 없으면 → 원래 순서 보존
+                if (!FormatValidator.hasValue(p1) && !FormatValidator.hasValue(p2)) {
+                    return Integer.compare(
+                            originalIndex.getOrDefault(t1.getName(), Integer.MAX_VALUE),
+                            originalIndex.getOrDefault(t2.getName(), Integer.MAX_VALUE)
+                    );
+                }
+
+                // 하나만 목록에 있으면 목록에 있는 쪽이 먼저
+                if (!FormatValidator.hasValue(p1)) {
+                    return 1;
+                }
+
+                if (!FormatValidator.hasValue(p2)) {
+                    return -1;
+                }
+
+                // 둘 다 목록에 있으면 지정 순서대로
+                return Integer.compare(p1, p2);
+            };
+
+            /* ❺ 태그 정렬 후 다시 설정 */
+            openApi.setTags(
+                    openApi.getTags().stream()
+                            .sorted(comparator)
+                            .toList()
+            );
+        };
+    }
+
+    @Bean
+    public OpenApiCustomizer authorizationOpenApiCustomizer() {
+        return (OpenAPI openApi) -> {
+            for (Map.Entry<String, PathItem> pathItemEntry : openApi.getPaths().entrySet()) {
+                log.info("paths: {}", openApi.getPaths());
+                Optional<HttpMethodAndRole> authorizedApiOp = accessPermissionRegistry.getAuthorizedApi(pathItemEntry.getKey());
+
+                if (authorizedApiOp.isEmpty()) {
+                    continue;
+                }
+
+                HttpMethodAndRole httpMethodAndRole = authorizedApiOp.get();
+
+                PathItem pathItem = pathItemEntry.getValue();
+                httpMethodAndRole.runTraversal((method, roleId) -> {
+                    switch (method) {
+                        case GET -> addAuthorizationInfo(pathItem.getGet());
+                        case HEAD -> addAuthorizationInfo(pathItem.getHead());
+                        case POST -> addAuthorizationInfo(pathItem.getPost());
+                        case PUT -> addAuthorizationInfo(pathItem.getPut());
+                        case DELETE -> addAuthorizationInfo(pathItem.getDelete());
+                        case PATCH -> addAuthorizationInfo(pathItem.getPatch());
+                        case OPTIONS -> addAuthorizationInfo(pathItem.getOptions());
+                        case TRACE -> addAuthorizationInfo(pathItem.getTrace());
+                        default -> log.warn("unknown method: {}", method);
+                    }
+                });
+            }
+        };
+    }
+
+    @Bean
+    public OpenAPI apiV1() {
+        OpenAPI openApi = new OpenAPI();
+
+        io.swagger.v3.oas.models.security.SecurityScheme securityScheme = new io.swagger.v3.oas.models.security.SecurityScheme()
+                .type(io.swagger.v3.oas.models.security.SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT")
+                .in(io.swagger.v3.oas.models.security.SecurityScheme.In.HEADER)
+                .name(HttpHeaders.AUTHORIZATION);
+
+        openApi.info(new Info()
+                        .title("건기식 리워드 API 서버")
+                        .description("건기식 리워드 서비스 API 서버입니다.")
+                        .version("1.0"))
+                .components(new Components()
+                        .addSecuritySchemes("bearer", securityScheme))
+                .addSecurityItem(new SecurityRequirement().addList("bearer"))
+                .servers(List.of(
+                        new Server().url(serverOrigin)
+                ));
+        return openApi;
+    }
+
+    private void addAuthorizationInfo(Operation operation) {
+        if (FormatValidator.hasValue(operation)) {
+            operation.getResponses().addApiResponse(
+                            "401",
+                            new ApiResponse().description("Bearer Token is invalid or no bearer token")
+                                    .content(
+                                            new Content().addMediaType("*/*",
+                                                    new MediaType().addExamples("Not authenticated",
+                                                            new Example().value("""
+                                                                    {
+                                                                        "statusCode": 401,
+                                                                        "timestamp": "2025-08-12T19:56:58.7278032",
+                                                                        "errorCode": "AUTH001",
+                                                                        "errorName": "AUTHENTICATION_FAILED",
+                                                                        "message": "Authentication Failed"
+                                                                    }
+                                                                    """))
+                                            )
+                                    )
+                    )
+                    .addApiResponse(
+                            "403",
+                            new ApiResponse().description("You are authenticated but not allowed authorization")
+                                    .content(
+                                            new Content().addMediaType("*/*",
+                                                    new MediaType().addExamples("Not authorized",
+                                                            new Example().value("""
+                                                                    {
+                                                                        "statusCode": 403,
+                                                                        "timestamp": "2025-08-12T19:56:58.7278032",
+                                                                        "errorCode": "AUTH002",
+                                                                        "errorName": "AUTHORIZATION_FAILED",
+                                                                        "message": "Authorization Failed"
+                                                                    }
+                                                                    """))
+                                            )
+                                    )
+                    );
+        }
+    }
+}
