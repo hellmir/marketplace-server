@@ -95,7 +95,7 @@ pipeline {
             }
         }
 
-        stage('Register ECS Task Definition') {
+        stage('Register Shop Reward Service Task Definition') {
             steps {
                 script {
                     withCredentials([
@@ -180,7 +180,7 @@ pipeline {
             }
         }
 
-        stage('Deploy ECS Service') {
+        stage('Deploy Shop Reward Service') {
             steps {
                 script {
                     withCredentials([
@@ -192,7 +192,7 @@ pipeline {
                         string(credentialsId: 'SHOP_ECS_SERVICE_NAME',      variable: 'ECS_SERVICE_NAME'),
                         string(credentialsId: 'SHOP_SUBNET_IDS',            variable: 'SUBNET_IDS'),
                         string(credentialsId: 'SHOP_SECURITY_GROUP_IDS',    variable: 'SECURITY_GROUP_IDS'),
-                        string(credentialsId: 'SHOP_TG_ARN',                variable: 'TARGET_GROUP_ARN')
+                        string(credentialsId: 'SHOP_TARGET_GROUP_ARN',       variable: 'TARGET_GROUP_ARN')
                     ]) {
                         def newTaskDefArn = sh(
                             script: "aws ecs list-task-definitions --family-prefix ${env.PROJECT_NAME} --sort DESC --region $AWS_DEFAULT_REGION --query 'taskDefinitionArns[0]' --output text",
@@ -241,11 +241,11 @@ pipeline {
                 script {
                     sh "test -f monitoring/prometheus/Dockerfile"
                     sh "test -f monitoring/prometheus/prometheus.yml"
-                    def promTag = "prometheus:${env.PROJECT_VERSION}"
-                    env.PROM_LOCAL_TAG = promTag
+                    def prometheusTag = "prometheus:${env.PROJECT_VERSION}"
+                    env.PROMETHEUS_LOCAL_TAG = prometheusTag
                     sh """
                     docker build \
-                      -t ${promTag} \
+                      -t ${prometheusTag} \
                       -f monitoring/prometheus/Dockerfile \
                       monitoring/prometheus
                     """
@@ -261,15 +261,15 @@ pipeline {
                         string(credentialsId: 'SHOP_AWS_ACCESS_KEY_ID',     variable: 'AWS_ACCESS_KEY_ID'),
                         string(credentialsId: 'SHOP_AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
                         string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',    variable: 'AWS_DEFAULT_REGION'),
-                        string(credentialsId: 'SHOP_PROM_ECR_REPOSITORY',   variable: 'PROM_ECR_REPOSITORY')
+                        string(credentialsId: 'SHOP_PROMETHEUS_ECR_REPOSITORY',   variable: 'PROMETHEUS_ECR_REPOSITORY')
                     ]) {
                         sh '''
-                        aws ecr describe-repositories --repository-names $PROM_ECR_REPOSITORY --region $AWS_DEFAULT_REGION || aws ecr create-repository --repository-name $PROM_ECR_REPOSITORY --region $AWS_DEFAULT_REGION
+                        aws ecr describe-repositories --repository-names $PROMETHEUS_ECR_REPOSITORY --region $AWS_DEFAULT_REGION || aws ecr create-repository --repository-name $PROMETHEUS_ECR_REPOSITORY --region $AWS_DEFAULT_REGION
                         aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-                        docker tag $PROM_LOCAL_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$PROM_ECR_REPOSITORY:$PROJECT_VERSION
-                        docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$PROM_ECR_REPOSITORY:$PROJECT_VERSION
+                        docker tag $PROMETHEUS_LOCAL_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$PROMETHEUS_ECR_REPOSITORY:$PROJECT_VERSION
+                        docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$PROMETHEUS_ECR_REPOSITORY:$PROJECT_VERSION
                         '''
-                        env.PROM_IMAGE_URI = "${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_DEFAULT_REGION}.amazonaws.com/${env.PROM_ECR_REPOSITORY}:${env.PROJECT_VERSION}"
+                        env.PROMETHEUS_IMAGE_URI = "${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_DEFAULT_REGION}.amazonaws.com/${env.PROMETHEUS_ECR_REPOSITORY}:${env.PROJECT_VERSION}"
                     }
                 }
             }
@@ -282,11 +282,11 @@ pipeline {
                         string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',         variable: 'AWS_DEFAULT_REGION'),
                         string(credentialsId: 'SHOP_ECS_TASK_EXECUTION_ROLE_ARN',variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
                         string(credentialsId: 'SHOP_ECS_TASK_ROLE_ARN',          variable: 'ECS_TASK_ROLE_ARN'),
-                        string(credentialsId: 'SHOP_CLOUDWATCH_LOG_GROUP_PROM',  variable: 'CLOUDWATCH_LOG_GROUP_PROM')
+                        string(credentialsId: 'SHOP_CLOUDWATCH_LOG_GROUP_PROMETHEUS',  variable: 'CLOUDWATCH_LOG_GROUP_PROMETHEUS')
                     ]) {
                         sh '''
-                        aws logs describe-log-groups --log-group-name-prefix "$CLOUDWATCH_LOG_GROUP_PROM" --region "$AWS_DEFAULT_REGION" \
-                          || aws logs create-log-group --log-group-name "$CLOUDWATCH_LOG_GROUP_PROM" --region "$AWS_DEFAULT_REGION" || true
+                        aws logs describe-log-groups --log-group-name-prefix "$CLOUDWATCH_LOG_GROUP_PROMETHEUS" --region "$AWS_DEFAULT_REGION" \
+                          || aws logs create-log-group --log-group-name "$CLOUDWATCH_LOG_GROUP_PROMETHEUS" --region "$AWS_DEFAULT_REGION" || true
                         '''
                         def promTask = [
                             family: "prometheus",
@@ -298,7 +298,7 @@ pipeline {
                             taskRoleArn: "${env.ECS_TASK_ROLE_ARN}",
                             containerDefinitions: [[
                                 name: "prometheus",
-                                image: "${env.PROM_IMAGE_URI}",
+                                image: "${env.PROMETHEUS_IMAGE_URI}",
                                 portMappings: [[containerPort: 9090, protocol: "tcp"]],
                                 essential: true,
                                 command: [
@@ -312,7 +312,7 @@ pipeline {
                                 logConfiguration: [
                                     logDriver: "awslogs",
                                     options: [
-                                        "awslogs-group": "${env.CLOUDWATCH_LOG_GROUP_PROM}",
+                                        "awslogs-group": "${env.CLOUDWATCH_LOG_GROUP_PROMETHEUS}",
                                         "awslogs-region": "${env.AWS_DEFAULT_REGION}",
                                         "awslogs-stream-prefix": "prometheus"
                                     ]
@@ -331,18 +331,18 @@ pipeline {
             steps {
                 script {
                     withCredentials([
-                        string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',   variable: 'AWS_DEFAULT_REGION'),
-                        string(credentialsId: 'SHOP_ECS_CLUSTER_NAME',     variable: 'ECS_CLUSTER_NAME'),
-                        string(credentialsId: 'SHOP_PROM_SERVICE_NAME',    variable: 'PROM_SERVICE_NAME'),
-                        string(credentialsId: 'SHOP_SUBNET_IDS',           variable: 'SUBNET_IDS'),
-                        string(credentialsId: 'SHOP_SECURITY_GROUP_IDS',   variable: 'SECURITY_GROUP_IDS')
+                        string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',      variable: 'AWS_DEFAULT_REGION'),
+                        string(credentialsId: 'SHOP_ECS_CLUSTER_NAME',        variable: 'ECS_CLUSTER_NAME'),
+                        string(credentialsId: 'SHOP_PROMETHEUS_SERVICE_NAME', variable: 'PROMETHEUS_SERVICE_NAME'),
+                        string(credentialsId: 'SHOP_SUBNET_IDS',              variable: 'SUBNET_IDS'),
+                        string(credentialsId: 'SHOP_SECURITY_GROUP_IDS',      variable: 'SECURITY_GROUP_IDS')
                     ]) {
                         def latestTask = sh(
                             script: "aws ecs list-task-definitions --family-prefix prometheus --sort DESC --region $AWS_DEFAULT_REGION --query 'taskDefinitionArns[0]' --output text",
                             returnStdout: true
                         ).trim()
                         def exists = sh(
-                            script: "aws ecs describe-services --cluster $ECS_CLUSTER_NAME --services $PROM_SERVICE_NAME --region $AWS_DEFAULT_REGION --query 'services[0].status' --output text || true",
+                            script: "aws ecs describe-services --cluster $ECS_CLUSTER_NAME --services $PROMETHEUS_SERVICE_NAME --region $AWS_DEFAULT_REGION --query 'services[0].status' --output text || true",
                             returnStdout: true
                         ).trim()
                         def subnets = SUBNET_IDS.split(',').collect{it.trim()}.join(",")
@@ -352,7 +352,7 @@ pipeline {
                             sh """
                             aws ecs update-service \
                               --cluster $ECS_CLUSTER_NAME \
-                              --service $PROM_SERVICE_NAME \
+                              --service $PROMETHEUS_SERVICE_NAME \
                               --task-definition ${latestTask} \
                               --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
                               --desired-count 1 \
@@ -362,7 +362,7 @@ pipeline {
                             sh """
                             aws ecs create-service \
                               --cluster $ECS_CLUSTER_NAME \
-                              --service-name $PROM_SERVICE_NAME \
+                              --service-name $PROMETHEUS_SERVICE_NAME \
                               --task-definition ${latestTask} \
                               --desired-count 1 \
                               --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
@@ -370,7 +370,7 @@ pipeline {
                               --region $AWS_DEFAULT_REGION
                             """
                         }
-                        sh "aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $PROM_SERVICE_NAME --region $AWS_DEFAULT_REGION"
+                        sh "aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $PROMETHEUS_SERVICE_NAME --region $AWS_DEFAULT_REGION"
                     }
                 }
             }
@@ -383,14 +383,14 @@ pipeline {
                         string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',         variable: 'AWS_DEFAULT_REGION'),
                         string(credentialsId: 'SHOP_ECS_TASK_EXECUTION_ROLE_ARN',variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
                         string(credentialsId: 'SHOP_ECS_TASK_ROLE_ARN',          variable: 'ECS_TASK_ROLE_ARN'),
-                        string(credentialsId: 'SHOP_CLOUDWATCH_LOG_GROUP_GRAF',  variable: 'CLOUDWATCH_LOG_GROUP_GRAF'),
+                        string(credentialsId: 'SHOP_CLOUDWATCH_LOG_GROUP_GRAFANA',  variable: 'CLOUDWATCH_LOG_GROUP_GRAFANA'),
                         string(credentialsId: 'SHOP_GRAFANA_ADMIN_PASSWORD',     variable: 'GRAFANA_ADMIN_PASSWORD')
                     ]) {
                         sh '''
-                        aws logs describe-log-groups --log-group-name-prefix "$CLOUDWATCH_LOG_GROUP_GRAF" --region "$AWS_DEFAULT_REGION" \
-                          || aws logs create-log-group --log-group-name "$CLOUDWATCH_LOG_GROUP_GRAF" --region "$AWS_DEFAULT_REGION" || true
+                        aws logs describe-log-groups --log-group-name-prefix "CLOUDWATCH_LOG_GROUP_GRAFANA" --region "$AWS_DEFAULT_REGION" \
+                          || aws logs create-log-group --log-group-name "CLOUDWATCH_LOG_GROUP_GRAFANA" --region "$AWS_DEFAULT_REGION" || true
                         '''
-                        def grafTask = [
+                        def grafanaTask = [
                             family: "grafana",
                             networkMode: "awsvpc",
                             requiresCompatibilities: ["FARGATE"],
@@ -409,16 +409,16 @@ pipeline {
                                 logConfiguration: [
                                     logDriver: "awslogs",
                                     options: [
-                                        "awslogs-group": "${env.CLOUDWATCH_LOG_GROUP_GRAF}",
+                                        "awslogs-group": "${env.CLOUDWATCH_LOG_GROUP_GRAFANA}",
                                         "awslogs-region": "${env.AWS_DEFAULT_REGION}",
                                         "awslogs-stream-prefix": "grafana"
                                     ]
                                 ]
                             ]]
                         ]
-                        def json = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(grafTask))
-                        writeFile file: 'graf-taskdef.json', text: json
-                        sh 'aws ecs register-task-definition --cli-input-json file://graf-taskdef.json'
+                        def json = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(grafanaTask))
+                        writeFile file: 'grafana-taskdef.json', text: json
+                        sh 'aws ecs register-task-definition --cli-input-json file://grafana-taskdef.json'
                     }
                 }
             }
