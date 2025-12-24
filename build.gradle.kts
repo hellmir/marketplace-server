@@ -156,3 +156,19 @@ sourceSets {
 springBoot {
     buildInfo()
 }
+
+tasks.register("printProjectName") {
+    doLast {
+        println(project.name)
+    }
+}
+
+tasks.register("printProjectVersion") {
+    doLast {
+        println(version)
+    }
+}
+
+tasks.named<org.gradle.jvm.tasks.Jar>("jar") {
+    enabled = false
+}

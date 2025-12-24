@@ -13,9 +13,6 @@ spring:
       ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
-  batch:
-    jdbc:
-      initialize-schema: never
   sql:
     init:
       mode: always
@@ -25,16 +22,10 @@ spring:
   jwt:
     secret: ${JWT_SECRET:dev-secret-change-me}
     access-token:
-      ttl: 1800000
+      ttl: ${ACCESS_TOKEN_EXPIRATION_TIME:18000001800000}
     refresh-token:
-      ttl: 1209600000
+      ttl: ${REFRESH_TOKEN_EXPIRATION_TIME:1209600000}
 
-info:
-  app:
-    name: ??????
-    description: ??? ???
-
-# Custom configuration - ?? ?? ???
 client:
   origin: ${CLIENT_ORIGIN:http://localhost:3000}
   cookie-domain: ${COOKIE_DOMAIN:localhost}
@@ -44,41 +35,15 @@ client:
 server:
   origin: ${SERVER_ORIGIN:http://localhost:8080}
   error:
-    # ?? ??? exception? ??? ???? ??
     include-exception: true
-
-    # ?? ??? stacktrace ??? ???? ?? (ALWAYS, NEVER, ON_TRACE_PARAM)
     include-stacktrace: ALWAYS
-
     whitelabel:
       enabled: false
 
-
-resources:
-  static-resource-path: ${STATIC_RESOURCE_PATH:none}
-
-# Logging Levels
 logging:
+  config: classpath:logback-spring.xml
   level:
-    org.springframework.security: error
-
-matching:
-  algorithm:
-    admin-id: 2
-  partner-selector:
-    study-field-similarity-weight: 0.5
-  job:
-    defaults:
-      # template-id: "1"
-      # k-value: "1"
-      # nearest-neighbors: "3"
-      # chunk-size: "1000"
-      save-results-chunk-size: "100"
-  manual:
-    max-members-for-manual-matching: 10000
-  scheduler:
-    cron: "0 0 12 * * SAT"
-    enabled: false
+    org.springframework.security: ERROR
 
 oauth2:
   google:

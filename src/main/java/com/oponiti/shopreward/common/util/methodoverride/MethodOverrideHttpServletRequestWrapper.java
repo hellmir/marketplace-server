@@ -8,7 +8,7 @@ public class MethodOverrideHttpServletRequestWrapper extends HttpServletRequestW
 
     public MethodOverrideHttpServletRequestWrapper(HttpServletRequest request, String wrappingMethod) {
         super(request);
-        wrappingMethod = wrappingMethod;
+        this.wrappingMethod = wrappingMethod;
     }
 
     @Override
