@@ -214,6 +214,7 @@ pipeline {
                               --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
                               --desired-count 1 \
                               --region $AWS_DEFAULT_REGION
+                              --force-new-deployment
                             """
                             sh "aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION --health-check-grace-period-seconds 180 || true"
                         } else {
@@ -227,6 +228,7 @@ pipeline {
                               --load-balancers targetGroupArn=$TARGET_GROUP_ARN,containerName=${env.PROJECT_NAME},containerPort=8080 \
                               --network-configuration "awsvpcConfiguration={subnets=[${subnets}],securityGroups=[${sgs}],assignPublicIp=ENABLED}" \
                               --region $AWS_DEFAULT_REGION
+                              --force-new-deployment
                             """
                             sh "aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION --health-check-grace-period-seconds 180 || true"
                         }
@@ -357,6 +359,7 @@ pipeline {
                               --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
                               --desired-count 1 \
                               --region $AWS_DEFAULT_REGION
+                              --force-new-deployment
                             """
                         } else {
                             sh """
@@ -368,6 +371,7 @@ pipeline {
                               --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
                               --network-configuration "awsvpcConfiguration={subnets=[${subnets}],securityGroups=[${sgs}],assignPublicIp=ENABLED}" \
                               --region $AWS_DEFAULT_REGION
+                              --force-new-deployment
                             """
                         }
                         sh "aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $PROMETHEUS_SERVICE_NAME --region $AWS_DEFAULT_REGION"
@@ -454,6 +458,7 @@ pipeline {
                               --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
                               --desired-count 1 \
                               --region $AWS_DEFAULT_REGION
+                              --force-new-deployment
                             """
                         } else {
                             sh """
@@ -465,6 +470,7 @@ pipeline {
                               --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
                               --network-configuration "awsvpcConfiguration={subnets=[${subnets}],securityGroups=[${sgs}],assignPublicIp=ENABLED}" \
                               --region $AWS_DEFAULT_REGION
+                              --force-new-deployment
                             """
                         }
                         sh "aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $GRAFANA_SERVICE_NAME --region $AWS_DEFAULT_REGION"
