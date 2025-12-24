@@ -1,7 +1,31 @@
 pipeline {
     agent any
 
+    environment {
+        SLACK_SUCCESS_COLOR = "#2C953C"
+        SLACK_FAIL_COLOR = "#E03131"
+        SLACK_GENERAL_COLOR = "#5C7CFA"
+    }
+
     stages {
+        stage('Notify Start') {
+             steps {
+                    withCredentials([
+                        string(credentialsId: 'SHOP_SLACK_NOTIFICATION_CHANNEL', variable: 'SLACK_NOTIFICATION_CHANNEL'),
+                    ]) {
+                        script {
+                            env.SLACK_NOTIFICATION_CHANNEL = SLACK_NOTIFICATION_CHANNEL
+                        }
+
+                        slackSend (
+                            channel: SLACK_NOTIFICATION_CHANNEL,
+                            color: SLACK_GENERAL_COLOR,
+                            message: "[QA] Start a build.\nJOB_NAME: ${env.JOB_NAME}\nBUILD_NUMBER: ${env.BUILD_NUMBER}\nBUILD_URL: ${env.BUILD_URL}\nCommit ID: ${env.GIT_COMMIT}"
+                        )
+                    }
+                }
+         }
+
         stage('Environment Setup') {
             steps {
                 script {
@@ -73,7 +97,7 @@ pipeline {
             }
         }
 
-        stage('Register Task Definition') {
+        stage('Register ECS Task Definition') {
             steps {
                 script {
                     withCredentials([
@@ -158,7 +182,7 @@ pipeline {
             }
         }
 
-        stage('Deploy Service') {
+        stage('Deploy ECS Service') {
             steps {
                 script {
                     withCredentials([
@@ -184,6 +208,32 @@ pipeline {
             steps {
                 archiveArtifacts artifacts: "build/libs/*.jar", fingerprint: true
             }
+        }
+    }
+
+    post {
+        always {
+            echo '====================================Clean workspace===================================='
+            cleanWs()
+            sh 'docker system prune -f'
+        }
+
+        success {
+            echo '====================================Build Success======================================'
+            slackSend (
+                channel: SLACK_NOTIFICATION_CHANNEL,
+                color: SLACK_SUCCESS_COLOR,
+                message: "Build Success!!\nBUILD_NUMBER: ${env.BUILD_NUMBER}"
+            )
+        }
+
+        failure {
+            echo '====================================Build Failed======================================='
+            slackSend (
+                channel: SLACK_NOTIFICATION_CHANNEL,
+                color: SLACK_FAIL_COLOR,
+                message: "Build Failed...\nBUILD_NUMBER: ${env.BUILD_NUMBER}"
+            )
         }
     }
 }
