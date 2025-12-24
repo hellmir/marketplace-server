@@ -52,3 +52,12 @@ oauth2:
   kakao:
     client-id: ${KAKAO_CLIENT_ID:abc}
     client-secret: ${KAKAO_CLIENT_SECRET:def}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
