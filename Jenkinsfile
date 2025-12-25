@@ -284,7 +284,9 @@ pipeline {
                         string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',         variable: 'AWS_DEFAULT_REGION'),
                         string(credentialsId: 'SHOP_ECS_TASK_EXECUTION_ROLE_ARN',variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
                         string(credentialsId: 'SHOP_ECS_TASK_ROLE_ARN',          variable: 'ECS_TASK_ROLE_ARN'),
-                        string(credentialsId: 'SHOP_CLOUDWATCH_LOG_GROUP_PROMETHEUS',  variable: 'CLOUDWATCH_LOG_GROUP_PROMETHEUS')
+                        string(credentialsId: 'SHOP_CLOUDWATCH_LOG_GROUP_PROMETHEUS',  variable: 'CLOUDWATCH_LOG_GROUP_PROMETHEUS'),
+                        string(credentialsId: 'SHOP_EFS_FILE_SYSTEM_ID_PROMETHEUS',       variable: 'EFS_FILE_SYSTEM_ID_PROMETHEUS'),
+                        string(credentialsId: 'SHOP_EFS_ACCESS_POINT_ID_PROMETHEUS',       variable: 'EFS_ACCESS_POINT_ID_PROMETHEUS')
                     ]) {
                         sh '''
                         aws logs describe-log-groups --log-group-name-prefix "$CLOUDWATCH_LOG_GROUP_PROMETHEUS" --region "$AWS_DEFAULT_REGION" \
@@ -318,6 +320,21 @@ pipeline {
                                         "awslogs-region": "${env.AWS_DEFAULT_REGION}",
                                         "awslogs-stream-prefix": "prometheus"
                                     ]
+                                ],
+                                mountPoints: [
+                                    [ sourceVolume: "prom-data", containerPath: "/prometheus", readOnly: false ]
+                                ]
+                            ]],
+                            volumes: [[
+                                name: "prom-data",
+                                efsVolumeConfiguration: [
+                                    fileSystemId: "${env.EFS_FILE_SYSTEM_ID_PROMETHEUS}",
+                                    transitEncryption: "ENABLED",
+                                    authorizationConfig: [
+                                        accessPointId: "${env.EFS_ACCESS_POINT_ID_PROMETHEUS}",
+                                        iam: "ENABLED"
+                                    ],
+                                    rootDirectory: "/"
                                 ]
                             ]]
                         ]
@@ -390,7 +407,9 @@ pipeline {
                         string(credentialsId: 'SHOP_GRAFANA_ADMIN_PASSWORD',         variable: 'GRAFANA_ADMIN_PASSWORD'),
                         string(credentialsId: 'SHOP_GRAFANA_DOMAIN',                 variable: 'GRAFANA_DOMAIN'),
                         string(credentialsId: 'SHOP_GRAFANA_ROOT_URL',               variable: 'GRAFANA_ROOT_URL'),
-                        string(credentialsId: 'SHOP_GRAFANA_SERVE_FROM_SUB_PATH',    variable: 'GRAFANA_SERVE_FROM_SUB_PATH')
+                        string(credentialsId: 'SHOP_GRAFANA_SERVE_FROM_SUB_PATH',    variable: 'GRAFANA_SERVE_FROM_SUB_PATH'),
+                        string(credentialsId: 'SHOP_EFS_FILE_SYSTEM_ID_GRAFANA',              variable: 'EFS_FILE_SYSTEM_ID_GRAFANA'),
+                        string(credentialsId: 'SHOP_EFS_ACCESS_POINT_ID_GRAFANA',              variable: 'EFS_ACCESS_POINT_ID_GRAFANA')
                     ]) {
                         sh '''
                         aws logs describe-log-groups --log-group-name-prefix "$CLOUDWATCH_LOG_GROUP_GRAFANA" --region "$AWS_DEFAULT_REGION" \
@@ -422,6 +441,21 @@ pipeline {
                                         "awslogs-region": "${env.AWS_DEFAULT_REGION}",
                                         "awslogs-stream-prefix": "grafana"
                                     ]
+                                ],
+                                mountPoints: [
+                                    [ sourceVolume: "grafana-data", containerPath: "/var/lib/grafana", readOnly: false ]
+                                ]
+                            ]],
+                            volumes: [[
+                                name: "grafana-data",
+                                efsVolumeConfiguration: [
+                                    fileSystemId: "${env.EFS_FILE_SYSTEM_ID_GRAFANA}",
+                                    transitEncryption: "ENABLED",
+                                    authorizationConfig: [
+                                        accessPointId: "${env.EFS_ACCESS_POINT_ID_GRAFANA}",
+                                        iam: "ENABLED"
+                                    ],
+                                    rootDirectory: "/"
                                 ]
                             ]]
                         ]
