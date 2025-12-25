@@ -228,7 +228,6 @@ pipeline {
                               --load-balancers targetGroupArn=$TARGET_GROUP_ARN,containerName=${env.PROJECT_NAME},containerPort=8080 \
                               --network-configuration "awsvpcConfiguration={subnets=[${subnets}],securityGroups=[${sgs}],assignPublicIp=ENABLED}" \
                               --region $AWS_DEFAULT_REGION \
-                              --force-new-deployment
                             """
                             sh "aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION --health-check-grace-period-seconds 180 || true"
                         }
@@ -371,7 +370,6 @@ pipeline {
                               --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
                               --network-configuration "awsvpcConfiguration={subnets=[${subnets}],securityGroups=[${sgs}],assignPublicIp=ENABLED}" \
                               --region $AWS_DEFAULT_REGION \
-                              --force-new-deployment
                             """
                         }
                         sh "aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $PROMETHEUS_SERVICE_NAME --region $AWS_DEFAULT_REGION"
@@ -391,8 +389,8 @@ pipeline {
                         string(credentialsId: 'SHOP_GRAFANA_ADMIN_PASSWORD',     variable: 'GRAFANA_ADMIN_PASSWORD')
                     ]) {
                         sh '''
-                        aws logs describe-log-groups --log-group-name-prefix "CLOUDWATCH_LOG_GROUP_GRAFANA" --region "$AWS_DEFAULT_REGION" \
-                          || aws logs create-log-group --log-group-name "CLOUDWATCH_LOG_GROUP_GRAFANA" --region "$AWS_DEFAULT_REGION" || true
+                        aws logs describe-log-groups --log-group-name-prefix "$CLOUDWATCH_LOG_GROUP_GRAFANA" --region "$AWS_DEFAULT_REGION" \
+                          || aws logs create-log-group --log-group-name "$CLOUDWATCH_LOG_GROUP_GRAFANA" --region "$AWS_DEFAULT_REGION" || true
                         '''
                         def grafanaTask = [
                             family: "grafana",
@@ -470,7 +468,6 @@ pipeline {
                               --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
                               --network-configuration "awsvpcConfiguration={subnets=[${subnets}],securityGroups=[${sgs}],assignPublicIp=ENABLED}" \
                               --region $AWS_DEFAULT_REGION \
-                              --force-new-deployment
                             """
                         }
                         sh "aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $GRAFANA_SERVICE_NAME --region $AWS_DEFAULT_REGION"
