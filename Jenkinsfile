@@ -213,6 +213,7 @@ pipeline {
                               --task-definition ${newTaskDefArn} \
                               --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
                               --desired-count 1 \
+                              --health-check-grace-period-seconds 180 \
                               --region $AWS_DEFAULT_REGION \
                               --force-new-deployment
                             """
