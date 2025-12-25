@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.oponiti.shop.common.configuration.InterceptorConfig,\
+com.oponiti.shop.common.configuration.AuditConfig
