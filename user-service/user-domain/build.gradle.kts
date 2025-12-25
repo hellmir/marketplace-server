@@ -1,62 +1,48 @@
-// ✅ 버전 및 설정 변수 정의
 val javaVersion = 21
 val lombokVersion = "1.18.34"
 val dotenvVersion = "3.0.0"
-val mariadbVersion = "3.5.2"
 val h2Version = "2.2.224"
 val projectEncoding = "UTF-8"
 val queryDslVersion = "5.1.0"
 val mapstructVersion = "1.5.5.Final"
-val mybatisVersion = "3.0.4"
 
-// ✅ Gradle 플러그인 설정
 plugins {
     java
-    application
     id("org.springframework.boot") version "3.5.6"
     id("io.spring.dependency-management") version "1.1.7"
+    id("org.jetbrains.kotlin.jvm") version "1.7.22" apply false
 }
 
-// ✅ 프로젝트 기본 정보
-group = "com.personal"
-version = "0.0.1-SNAPSHOT"
-description = "shop-reward"
+group = "com.personal.shop.user.domain"
+version = "1.0.0"
+description = "user service domain"
 
-// ✅ Java 버전 설정 (JDK 21 사용)
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(javaVersion))
-        vendor.set(JvmVendorSpec.AMAZON)
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
-application {
-    mainClass.set("com.personal.shopreward.ShopRewardApplication") // 올바른 메인 클래스 경로로 수정
-}
-// ✅ 의존성 확장 설정
+
 configurations {
     compileOnly {
-        extendsFrom(configurations.annotationProcessor.get()) // Lombok 같은 애너테이션 프로세서 사용 가능하도록 설정
+        extendsFrom(configurations.annotationProcessor.get())
     }
 }
 
-// ✅ 프로젝트에서 사용할 라이브러리 다운로드를 위한 저장소 설정
 repositories {
-    mavenCentral() // 라이브러리를 다운로드할 공식 저장소 (Maven Central Repository)
+    mavenCentral()
 }
 
-// ✅ 프로젝트에 필요한 의존성(라이브러리) 추가
 dependencies {
+    // module
+    implementation(project(":common"))
+
     // 🔹 Spring Boot 관련 의존성
     implementation("org.springframework.boot:spring-boot-starter-data-jpa") // JPA (데이터베이스 ORM)
     implementation("org.springframework.boot:spring-boot-starter-web") // Spring MVC (REST API 개발)
     implementation("org.springframework.boot:spring-boot-starter-validation") // Spring Validation
     implementation("org.springframework.boot:spring-boot-starter-security") // Spring Security
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server") // OAuth 2.0 Resource server
-
-    // 🔹 MyBatis 관련 의존성
-    implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:$mybatisVersion") // MyBatis Spring Boot Starter
 
     // Spring Data Redis 추가
     // implementation("org.springframework.boot:spring-boot-starter-data-redis")
@@ -129,30 +115,12 @@ dependencies {
 // ✅ 테스트 실행 시 JUnit 5 플랫폼 사용 설정
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
-    systemProperty("spring.profiles.active", "test") // 모든 테스트 JVM에 test 프로필 주입
+    systemProperty("spring.profiles.active", "test")
 }
 
 // ✅ UTF-8 인코딩 설정 (한글 깨짐 방지)
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = projectEncoding
-}
-
-// ✅ 소스 및 리소스 디렉토리 설정 (필요한 경우만 설정)
-sourceSets {
-    main {
-        java.setSrcDirs(
-            listOf(
-                "src/main/java",
-                // QueryDSL Q타입 생성 디렉토리 포함 (IDE 인식용)
-                "build/generated/sources/annotationProcessor/java/main"
-            )
-        )
-        resources.setSrcDirs(listOf("src/main/resources"))
-    }
-    test {
-        java.setSrcDirs(listOf("src/test/java"))
-        resources.setSrcDirs(listOf("src/test/resources"))
-    }
 }
 
 // ✅ 빌드 정보 생성 설정
@@ -172,6 +140,12 @@ tasks.register("printProjectVersion") {
     }
 }
 
-tasks.named<org.gradle.jvm.tasks.Jar>("jar") {
+tasks.named("bootJar") {
     enabled = false
+}
+
+tasks.register("prepareKotlinBuildScriptModel") {
+    doLast {
+        println("Dummy task for prepareKotlinBuildScriptModel executed")
+    }
 }

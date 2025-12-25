@@ -7,7 +7,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.7.22" apply false
 }
 
-group = "com.oponiti.shop.common"
+group = "com.personal.shop.common"
 version = "1.0.0"
 description = "common"
 
