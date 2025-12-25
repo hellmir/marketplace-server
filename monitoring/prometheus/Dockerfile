@@ -1,4 +1,5 @@
-FROM prom/prometheus:latest
+ARG BASE_IMAGE=ghcr.io/prometheus/prometheus:v3.7.1
+FROM ${BASE_IMAGE}
 COPY prometheus.yml /etc/prometheus/prometheus.yml
 EXPOSE 9090
 ENTRYPOINT [ "/bin/prometheus" ]
