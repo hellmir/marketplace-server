@@ -393,7 +393,7 @@ pipeline {
 
         stage('Register Grafana Task Definition') {
             when {
-                expression { sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/grafana || echo "changed"', returnStdout: true).trim() == 'changed' }
+                expression { sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed' }
             }
             steps {
                 script {
@@ -450,7 +450,7 @@ pipeline {
 
         stage('Deploy Grafana Service') {
             when {
-                expression { sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/grafana || echo "changed"', returnStdout: true).trim() == 'changed' }
+                expression { sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed' }
             }
             steps {
                 script {
