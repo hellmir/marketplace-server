@@ -192,7 +192,7 @@ pipeline {
                         string(credentialsId: 'SHOP_ECS_SERVICE_NAME',      variable: 'ECS_SERVICE_NAME'),
                         string(credentialsId: 'SHOP_SUBNET_IDS',            variable: 'SUBNET_IDS'),
                         string(credentialsId: 'SHOP_SECURITY_GROUP_IDS',    variable: 'SECURITY_GROUP_IDS'),
-                        string(credentialsId: 'SHOP_TARGET_GROUP_ARN',       variable: 'TARGET_GROUP_ARN')
+                        string(credentialsId: 'SHOP_TARGET_GROUP_ARN',      variable: 'TARGET_GROUP_ARN')
                     ]) {
                         def newTaskDefArn = sh(
                             script: "aws ecs list-task-definitions --family-prefix ${env.PROJECT_NAME} --sort DESC --region $AWS_DEFAULT_REGION --query 'taskDefinitionArns[0]' --output text",
@@ -383,11 +383,14 @@ pipeline {
             steps {
                 script {
                     withCredentials([
-                        string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',         variable: 'AWS_DEFAULT_REGION'),
-                        string(credentialsId: 'SHOP_ECS_TASK_EXECUTION_ROLE_ARN',variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
-                        string(credentialsId: 'SHOP_ECS_TASK_ROLE_ARN',          variable: 'ECS_TASK_ROLE_ARN'),
-                        string(credentialsId: 'SHOP_CLOUDWATCH_LOG_GROUP_GRAFANA',  variable: 'CLOUDWATCH_LOG_GROUP_GRAFANA'),
-                        string(credentialsId: 'SHOP_GRAFANA_ADMIN_PASSWORD',     variable: 'GRAFANA_ADMIN_PASSWORD')
+                        string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',             variable: 'AWS_DEFAULT_REGION'),
+                        string(credentialsId: 'SHOP_ECS_TASK_EXECUTION_ROLE_ARN',    variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
+                        string(credentialsId: 'SHOP_ECS_TASK_ROLE_ARN',              variable: 'ECS_TASK_ROLE_ARN'),
+                        string(credentialsId: 'SHOP_CLOUDWATCH_LOG_GROUP_GRAFANA',   variable: 'CLOUDWATCH_LOG_GROUP_GRAFANA'),
+                        string(credentialsId: 'SHOP_GRAFANA_ADMIN_PASSWORD',         variable: 'GRAFANA_ADMIN_PASSWORD'),
+                        string(credentialsId: 'SHOP_GRAFANA_DOMAIN',                 variable: 'GRAFANA_DOMAIN'),
+                        string(credentialsId: 'SHOP_GRAFANA_ROOT_URL',               variable: 'GRAFANA_ROOT_URL'),
+                        string(credentialsId: 'SHOP_GRAFANA_SERVE_FROM_SUB_PATH',    variable: 'GRAFANA_SERVE_FROM_SUB_PATH')
                     ]) {
                         sh '''
                         aws logs describe-log-groups --log-group-name-prefix "$CLOUDWATCH_LOG_GROUP_GRAFANA" --region "$AWS_DEFAULT_REGION" \
@@ -407,7 +410,10 @@ pipeline {
                                 portMappings: [[containerPort: 3000, protocol: "tcp"]],
                                 essential: true,
                                 environment: [
-                                    [name: "GF_SECURITY_ADMIN_PASSWORD", value: "${env.GRAFANA_ADMIN_PASSWORD}"]
+                                    [name: "GF_SECURITY_ADMIN_PASSWORD",      value: "${env.GRAFANA_ADMIN_PASSWORD}"],
+                                    [name: "GF_SERVER_DOMAIN",                value: "${env.GRAFANA_DOMAIN}"],
+                                    [name: "GF_SERVER_ROOT_URL",              value: "${env.GRAFANA_ROOT_URL}"],
+                                    [name: "GF_SERVER_SERVE_FROM_SUB_PATH",   value: "${env.GRAFANA_SERVE_FROM_SUB_PATH ?: 'false'}"]
                                 ],
                                 logConfiguration: [
                                     logDriver: "awslogs",
@@ -492,7 +498,7 @@ pipeline {
         }
 
         success {
-            echo '====================================Build Success======================================'
+            echo '====================================Build Success====================================='
             slackSend (
                 channel: "${env.SLACK_NOTIFICATION_CHANNEL}",
                 color:   "${env.SLACK_SUCCESS_COLOR}",
