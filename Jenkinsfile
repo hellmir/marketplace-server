@@ -56,7 +56,7 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Shop Reward Service Image') {
             steps {
                 script {
                     def dockerImageTag = "${env.PROJECT_NAME}:${env.PROJECT_VERSION}"
@@ -72,7 +72,7 @@ pipeline {
             }
         }
 
-        stage('Push to ECR') {
+        stage('Push Shop Reward Service Image') {
             steps {
                 script {
                     withCredentials([
