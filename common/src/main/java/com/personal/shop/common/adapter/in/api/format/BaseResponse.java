@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * <code>
  * {
  * "statusCode": 200,
- * "timestamp": "2025-10-22H17:06:00.222",
+ * "timestamp": "2025-12-26H17:06:00.222",
  * "content": {
  * "id": 200,
  * "name": "홍길동"
