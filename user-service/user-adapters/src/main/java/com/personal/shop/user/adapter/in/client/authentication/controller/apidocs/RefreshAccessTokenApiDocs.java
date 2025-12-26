@@ -19,7 +19,7 @@ import java.lang.annotation.*;
 @Operation(
         summary = "Refresh Token으로 새로운 Access Token 발급",
         description = """
-                작성일자: 2025-10-22
+                작성일자: 2025-12-26
                 
                 작성자: 성효빈
                 
@@ -75,7 +75,7 @@ import java.lang.annotation.*;
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 400,
-                                          "timestamp": "2025-10-22T20:46:00.451254",
+                                          "timestamp": "2025-12-26T20:46:00.451254",
                                           "errorCode": "AUTH004",
                                           "errorName": "INVALID_REFRESH_TOKEN",
                                           "message": "지원하지 않는 리프레시 토큰입니다."

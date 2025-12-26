@@ -18,7 +18,7 @@ import java.lang.annotation.*;
 @Operation(
         summary = "OAuth 2.0 콜백 URI",
         description = """
-                작성일자: 2025-10-22
+                작성일자: 2025-12-26
                 
                 작성자: 성효빈
                 
