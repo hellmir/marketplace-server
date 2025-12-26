@@ -27,6 +27,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @Configuration
 @Slf4j
 public class SpringDocConfig {
+    @Value("${server.origin}")
+    private String serverOrigin;
+
+    @Value("${server.port}")
+    private String serverPort;
+
     /* ❶ 원하는 9개 태그만 고정 순서로 선언 */
     private static final List<String> TAGS_ORDER = List.of(
             "인증 API",
@@ -41,9 +47,6 @@ public class SpringDocConfig {
             ORDER_MAP.put(TAGS_ORDER.get(i), i);
         }
     }
-
-    @Value("${server.origin}")
-    private String serverOrigin;
 
     @Bean
     public OpenApiCustomizer tagOnlySorter() {
@@ -112,7 +115,7 @@ public class SpringDocConfig {
                         .addSecuritySchemes("bearer", securityScheme))
                 .addSecurityItem(new SecurityRequirement().addList("bearer"))
                 .servers(List.of(
-                        new Server().url(serverOrigin)
+                        new Server().url(serverOrigin + ":" + serverPort)
                 ));
 
         return openApi;
