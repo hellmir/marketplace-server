@@ -33,7 +33,7 @@ client:
     allowed-origins: ${ACCESS_CONTROL_ALLOWED_ORIGINS:http://localhost:3000}
 
 server:
-  origin: ${SERVER_ORIGIN:http://localhost}
+  origin: ${SERVER_ORIGIN:http://localhost:8080}
   error:
     include-exception: true
     include-stacktrace: ALWAYS
