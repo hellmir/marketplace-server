@@ -150,25 +150,22 @@ pipeline {
 						string(credentialsId: 'PRODUCT_SERVICE_TARGET_GROUP_ARN', variable: 'PRODUCT_SERVICE_TARGET_GROUP_ARN'),
 						string(credentialsId: 'ORDER_SERVICE_TARGET_GROUP_ARN',   variable: 'ORDER_SERVICE_TARGET_GROUP_ARN')
 					]) {
-						def repoMap = [
-							'user-service'   : 'USER_SERVICE_ECR_REPOSITORY',
-							'product-service': 'PRODUCT_SERVICE_ECR_REPOSITORY',
-							'order-service'  : 'ORDER_SERVICE_ECR_REPOSITORY'
-						]
-						def ecsSvcMap = [
-							'user-service'   : 'USER_SERVICE_ECS_SERVICE_NAME',
-							'product-service': 'PRODUCT_SERVICE_ECS_SERVICE_NAME',
-							'order-service'  : 'ORDER_SERVICE_ECS_SERVICE_NAME'
-						]
-						def tgMap = [
-							'user-service'   : 'USER_SERVICE_TARGET_GROUP_ARN',
-							'product-service': 'PRODUCT_SERVICE_TARGET_GROUP_ARN',
-							'order-service'  : 'ORDER_SERVICE_TARGET_GROUP_ARN'
-						]
-
-						env.ECR_REPOSITORY = env[ repoMap[env.SERVICE_NAME] ] ?: ''
-						env.ECS_SERVICE_NAME = env[ ecsSvcMap[env.SERVICE_NAME] ] ?: ''
-						env.TARGET_GROUP_ARN = env[ tgMap[env.SERVICE_NAME] ] ?: ''
+						def svc = env.SERVICE_NAME
+						if (svc == 'user-service') {
+							env.ECR_REPOSITORY = USER_SERVICE_ECR_REPOSITORY
+							env.ECS_SERVICE_NAME = USER_SERVICE_ECS_SERVICE_NAME
+							env.TARGET_GROUP_ARN = USER_SERVICE_TARGET_GROUP_ARN
+						} else if (svc == 'product-service') {
+							env.ECR_REPOSITORY = PRODUCT_SERVICE_ECR_REPOSITORY
+							env.ECS_SERVICE_NAME = PRODUCT_SERVICE_ECS_SERVICE_NAME
+							env.TARGET_GROUP_ARN = PRODUCT_SERVICE_TARGET_GROUP_ARN
+						} else if (svc == 'order-service') {
+							env.ECR_REPOSITORY = ORDER_SERVICE_ECR_REPOSITORY
+							env.ECS_SERVICE_NAME = ORDER_SERVICE_ECS_SERVICE_NAME
+							env.TARGET_GROUP_ARN = ORDER_SERVICE_TARGET_GROUP_ARN
+						} else {
+							error "SERVICE_NAME not mapped: ${svc}"
+						}
 
 						if (!env.ECR_REPOSITORY?.trim())   error "ECR_REPOSITORY not resolved for ${env.SERVICE_NAME}"
 						if (!env.ECS_SERVICE_NAME?.trim()) error "ECS_SERVICE_NAME not resolved for ${env.SERVICE_NAME}"
