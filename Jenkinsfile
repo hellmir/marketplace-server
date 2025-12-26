@@ -102,19 +102,24 @@ pipeline {
 				]) {
 					script {
 						env.SLACK_NOTIFICATION_CHANNEL = SLACK_NOTIFICATION_CHANNEL
+						def commitAuthor  = sh(script: 'git log -1 --pretty=%an', returnStdout: true).trim()
+						def commitMessage = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
+
+						slackSend(
+							channel: "${env.SLACK_NOTIFICATION_CHANNEL}",
+							color:   "${env.SLACK_GENERAL_COLOR}",
+							message: "[QA] Start a build\n"
+							+ "SERVICE: ${env.SERVICE_NAME}\n"
+							+ "PROJECT_NAME: ${env.PROJECT_NAME}\n"
+							+ "VERSION: ${env.PROJECT_VERSION}\n"
+							+ "JOB_NAME: ${env.JOB_NAME}\n"
+							+ "BUILD_NUMBER: ${env.BUILD_NUMBER}\n"
+							+ "BUILD_URL: ${env.BUILD_URL}\n"
+							+ "Commit: ${env.GIT_COMMIT}\n"
+							+ "Author: ${commitAuthor}\n"
+							+ "Message: ${commitMessage}"
+						)
 					}
-					slackSend(
-						channel: "${env.SLACK_NOTIFICATION_CHANNEL}",
-						color:   "${env.SLACK_GENERAL_COLOR}",
-						message: "[QA] Start a build\n" +
-						"SERVICE: ${env.SERVICE_NAME}\n" +
-						"PROJECT_NAME: ${env.PROJECT_NAME}\n" +
-						"VERSION: ${env.PROJECT_VERSION}\n" +
-						"JOB_NAME: ${env.JOB_NAME}\n" +
-						"BUILD_NUMBER: ${env.BUILD_NUMBER}\n" +
-						"BUILD_URL: ${env.BUILD_URL}\n" +
-						"Commit: ${env.GIT_COMMIT}"
-					)
 				}
 			}
 		}
@@ -148,21 +153,28 @@ pipeline {
 
 						string(credentialsId: 'USER_SERVICE_TARGET_GROUP_ARN',    variable: 'USER_SERVICE_TARGET_GROUP_ARN'),
 						string(credentialsId: 'PRODUCT_SERVICE_TARGET_GROUP_ARN', variable: 'PRODUCT_SERVICE_TARGET_GROUP_ARN'),
-						string(credentialsId: 'ORDER_SERVICE_TARGET_GROUP_ARN',   variable: 'ORDER_SERVICE_TARGET_GROUP_ARN')
+						string(credentialsId: 'ORDER_SERVICE_TARGET_GROUP_ARN',   variable: 'ORDER_SERVICE_TARGET_GROUP_ARN'),
+
+						string(credentialsId: 'USER_SERVICE_SERVER_ORIGIN',    variable: 'USER_SERVICE_SERVER_ORIGIN'),
+						string(credentialsId: 'PRODUCT_SERVICE_SERVER_ORIGIN', variable: 'PRODUCT_SERVICE_SERVER_ORIGIN'),
+						string(credentialsId: 'ORDER_SERVICE_SERVER_ORIGIN',   variable: 'ORDER_SERVICE_SERVER_ORIGIN')
 					]) {
 						def svc = env.SERVICE_NAME
 						if (svc == 'user-service') {
 							env.ECR_REPOSITORY = USER_SERVICE_ECR_REPOSITORY
 							env.ECS_SERVICE_NAME = USER_SERVICE_ECS_SERVICE_NAME
 							env.TARGET_GROUP_ARN = USER_SERVICE_TARGET_GROUP_ARN
+							env.CRED_SERVER_ORIGIN = USER_SERVICE_SERVER_ORIGIN
 						} else if (svc == 'product-service') {
 							env.ECR_REPOSITORY = PRODUCT_SERVICE_ECR_REPOSITORY
 							env.ECS_SERVICE_NAME = PRODUCT_SERVICE_ECS_SERVICE_NAME
 							env.TARGET_GROUP_ARN = PRODUCT_SERVICE_TARGET_GROUP_ARN
+							env.CRED_SERVER_ORIGIN = PRODUCT_SERVICE_SERVER_ORIGIN
 						} else if (svc == 'order-service') {
 							env.ECR_REPOSITORY = ORDER_SERVICE_ECR_REPOSITORY
 							env.ECS_SERVICE_NAME = ORDER_SERVICE_ECS_SERVICE_NAME
 							env.TARGET_GROUP_ARN = ORDER_SERVICE_TARGET_GROUP_ARN
+							env.CRED_SERVER_ORIGIN = ORDER_SERVICE_SERVER_ORIGIN
 						} else {
 							error "SERVICE_NAME not mapped: ${svc}"
 						}
@@ -230,7 +242,6 @@ pipeline {
 						string(credentialsId: 'SHOP_CLIENT_ORIGIN',                 variable: 'CRED_CLIENT_ORIGIN'),
 						string(credentialsId: 'SHOP_COOKIE_DOMAIN',                 variable: 'CRED_COOKIE_DOMAIN'),
 						string(credentialsId: 'SHOP_ACCESS_CONTROL_ALLOWED_ORIGINS',variable: 'CRED_ACCESS_CONTROL_ALLOWED_ORIGINS'),
-						string(credentialsId: 'SHOP_SERVER_ORIGIN',                 variable: 'CRED_SERVER_ORIGIN'),
 						string(credentialsId: 'SHOP_GOOGLE_CLIENT_ID',              variable: 'CRED_GOOGLE_CLIENT_ID'),
 						string(credentialsId: 'SHOP_GOOGLE_CLIENT_SECRET',          variable: 'CRED_GOOGLE_CLIENT_SECRET'),
 						string(credentialsId: 'SHOP_KAKAO_CLIENT_ID',               variable: 'CRED_KAKAO_CLIENT_ID'),
@@ -362,13 +373,10 @@ pipeline {
 		}
 
 		stage('Build Prometheus Image') {
-			when {
-				expression {
-					sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
-				}
-			}
 			steps {
 				script {
+					def changed = sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
+					if (!changed) { sleep time: 1, unit: 'SECONDS'; return }
 					sh "test -f monitoring/prometheus/Dockerfile"
 					sh "test -f monitoring/prometheus/prometheus.yml"
 					def prometheusTag = "prometheus:${env.PROJECT_VERSION}"
@@ -384,13 +392,10 @@ pipeline {
 		}
 
 		stage('Push Prometheus Image') {
-			when {
-				expression {
-					sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
-				}
-			}
 			steps {
 				script {
+					def changed = sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
+					if (!changed) { sleep time: 1, unit: 'SECONDS'; return }
 					withCredentials([
 						string(credentialsId: 'SHOP_AWS_ACCOUNT_ID',        variable: 'AWS_ACCOUNT_ID'),
 						string(credentialsId: 'SHOP_AWS_ACCESS_KEY_ID',     variable: 'AWS_ACCESS_KEY_ID'),
@@ -411,13 +416,10 @@ pipeline {
 		}
 
 		stage('Register Prometheus Task Definition') {
-			when {
-				expression {
-					sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
-				}
-			}
 			steps {
 				script {
+					def changed = sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
+					if (!changed) { sleep time: 1, unit: 'SECONDS'; return }
 					withCredentials([
 						string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',         variable: 'AWS_DEFAULT_REGION'),
 						string(credentialsId: 'SHOP_ECS_TASK_EXECUTION_ROLE_ARN',variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
@@ -467,13 +469,10 @@ pipeline {
 		}
 
 		stage('Deploy Prometheus Service') {
-			when {
-				expression {
-					sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
-				}
-			}
 			steps {
 				script {
+					def changed = sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
+					if (!changed) { sleep time: 1, unit: 'SECONDS'; return }
 					withCredentials([
 						string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',      variable: 'AWS_DEFAULT_REGION'),
 						string(credentialsId: 'SHOP_ECS_CLUSTER_NAME',        variable: 'ECS_CLUSTER_NAME'),
@@ -526,13 +525,10 @@ pipeline {
 		}
 
 		stage('Register Grafana Task Definition') {
-			when {
-				expression {
-					sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
-				}
-			}
 			steps {
 				script {
+					def changed = sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
+					if (!changed) { sleep time: 1, unit: 'SECONDS'; return }
 					withCredentials([
 						string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',             variable: 'AWS_DEFAULT_REGION'),
 						string(credentialsId: 'SHOP_ECS_TASK_EXECUTION_ROLE_ARN',    variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
@@ -584,13 +580,10 @@ pipeline {
 		}
 
 		stage('Deploy Grafana Service') {
-			when {
-				expression {
-					sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
-				}
-			}
 			steps {
 				script {
+					def changed = sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
+					if (!changed) { sleep time: 1, unit: 'SECONDS'; return }
 					withCredentials([
 						string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',   variable: 'AWS_DEFAULT_REGION'),
 						string(credentialsId: 'SHOP_ECS_CLUSTER_NAME',     variable: 'ECS_CLUSTER_NAME'),

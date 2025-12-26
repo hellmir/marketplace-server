@@ -112,7 +112,7 @@ public class SpringDocConfig {
                         .addSecuritySchemes("bearer", securityScheme))
                 .addSecurityItem(new SecurityRequirement().addList("bearer"))
                 .servers(List.of(
-                        new Server().url(serverOrigin.substring(0, serverOrigin.length() - 1) + ":8080")
+                        new Server().url(serverOrigin)
                 ));
 
         return openApi;
