@@ -157,26 +157,26 @@ pipeline {
 						string(credentialsId: 'PRODUCT_SERVICE_TARGET_GROUP_ARN', variable: 'PRODUCT_SERVICE_TARGET_GROUP_ARN'),
 						string(credentialsId: 'ORDER_SERVICE_TARGET_GROUP_ARN',   variable: 'ORDER_SERVICE_TARGET_GROUP_ARN'),
 
-						string(credentialsId: 'USER_SERVICE_SERVER_ORIGIN',    variable: 'USER_SERVICE_SERVER_ORIGIN'),
-						string(credentialsId: 'PRODUCT_SERVICE_SERVER_ORIGIN', variable: 'PRODUCT_SERVICE_SERVER_ORIGIN'),
-						string(credentialsId: 'ORDER_SERVICE_SERVER_ORIGIN',   variable: 'ORDER_SERVICE_SERVER_ORIGIN')
+						string(credentialsId: 'USER_SERVICE_SERVER_PORT',         variable: 'USER_SERVICE_SERVER_PORT'),
+						string(credentialsId: 'PRODUCT_SERVICE_SERVER_PORT',      variable: 'PRODUCT_SERVICE_SERVER_PORT'),
+						string(credentialsId: 'ORDER_SERVICE_SERVER_PORT',        variable: 'ORDER_SERVICE_SERVER_PORT')
 					]) {
 						def svc = env.SERVICE_NAME
 						if (svc == 'user-service') {
 							env.ECR_REPOSITORY = USER_SERVICE_ECR_REPOSITORY
 							env.ECS_SERVICE_NAME = USER_SERVICE_ECS_SERVICE_NAME
 							env.TARGET_GROUP_ARN = USER_SERVICE_TARGET_GROUP_ARN
-							env.CRED_SERVER_ORIGIN = USER_SERVICE_SERVER_ORIGIN
+							env.CRED_SERVER_PORT = USER_SERVICE_SERVER_PORT
 						} else if (svc == 'product-service') {
 							env.ECR_REPOSITORY = PRODUCT_SERVICE_ECR_REPOSITORY
 							env.ECS_SERVICE_NAME = PRODUCT_SERVICE_ECS_SERVICE_NAME
 							env.TARGET_GROUP_ARN = PRODUCT_SERVICE_TARGET_GROUP_ARN
-							env.CRED_SERVER_ORIGIN = PRODUCT_SERVICE_SERVER_ORIGIN
+							env.CRED_SERVER_PORT = PRODUCT_SERVICE_SERVER_PORT
 						} else if (svc == 'order-service') {
 							env.ECR_REPOSITORY = ORDER_SERVICE_ECR_REPOSITORY
 							env.ECS_SERVICE_NAME = ORDER_SERVICE_ECS_SERVICE_NAME
 							env.TARGET_GROUP_ARN = ORDER_SERVICE_TARGET_GROUP_ARN
-							env.CRED_SERVER_ORIGIN = ORDER_SERVICE_SERVER_ORIGIN
+							env.CRED_SERVER_PORT = ORDER_SERVICE_SERVER_PORT
 						} else {
 							error "SERVICE_NAME not mapped: ${svc}"
 						}
@@ -244,6 +244,7 @@ pipeline {
 						string(credentialsId: 'MARKETNOTE_CLIENT_ORIGIN',                 variable: 'CRED_CLIENT_ORIGIN'),
 						string(credentialsId: 'MARKETNOTE_COOKIE_DOMAIN',                 variable: 'CRED_COOKIE_DOMAIN'),
 						string(credentialsId: 'MARKETNOTE_ACCESS_CONTROL_ALLOWED_ORIGINS',variable: 'CRED_ACCESS_CONTROL_ALLOWED_ORIGINS'),
+						string(credentialsId: 'MARKETNOTE_SERVER_ORIGIN',                 variable: 'CRED_SERVER_ORIGIN'),
 						string(credentialsId: 'MARKETNOTE_GOOGLE_CLIENT_ID',              variable: 'CRED_GOOGLE_CLIENT_ID'),
 						string(credentialsId: 'MARKETNOTE_GOOGLE_CLIENT_SECRET',          variable: 'CRED_GOOGLE_CLIENT_SECRET'),
 						string(credentialsId: 'MARKETNOTE_KAKAO_CLIENT_ID',               variable: 'CRED_KAKAO_CLIENT_ID'),
@@ -287,6 +288,7 @@ pipeline {
 									[name: "COOKIE_DOMAIN",                 value: "${env.CRED_COOKIE_DOMAIN}"],
 									[name: "ACCESS_CONTROL_ALLOWED_ORIGINS",value: "${env.CRED_ACCESS_CONTROL_ALLOWED_ORIGINS}"],
 									[name: "SERVER_ORIGIN",                 value: "${env.CRED_SERVER_ORIGIN}"],
+									[name: "SERVER_PORT",                   value: "${env.CRED_SERVER_PORT}"],
 									[name: "GOOGLE_CLIENT_ID",              value: "${env.CRED_GOOGLE_CLIENT_ID}"],
 									[name: "GOOGLE_CLIENT_SECRET",          value: "${env.CRED_GOOGLE_CLIENT_SECRET}"],
 									[name: "KAKAO_CLIENT_ID",               value: "${env.CRED_KAKAO_CLIENT_ID}"],
