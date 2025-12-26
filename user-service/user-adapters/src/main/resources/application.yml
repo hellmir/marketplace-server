@@ -1,6 +1,6 @@
 spring:
   application:
-    name: shop
+    name: ${env.SERVICE_NAME:user-service}
 
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -34,6 +34,7 @@ client:
 
 server:
   origin: ${SERVER_ORIGIN:http://localhost}
+  port: ${SERVER_PORT:8080}
   error:
     include-exception: true
     include-stacktrace: ALWAYS

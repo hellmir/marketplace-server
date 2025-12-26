@@ -33,6 +33,7 @@ public class WebBasedAuthenticationServiceAdapter {
     private final LoginUseCase loginUseCase;
     private final TokenSupport tokenSupport;
     private final String serverOrigin;
+    private final String serverPort;
     private final String clientOrigin;
     private final HttpCookieUtils httpCookieUtils;
 
@@ -40,27 +41,29 @@ public class WebBasedAuthenticationServiceAdapter {
             LoginUseCase loginUseCase,
             TokenSupport tokenSupport,
             @Value("${server.origin}") String serverOrigin,
+            @Value("${server.port}") String serverPort,
             @Value("${client.origin}") List<String> clientOrigins,
             HttpCookieUtils httpCookieUtils
     ) {
         this.loginUseCase = loginUseCase;
         this.tokenSupport = tokenSupport;
         this.serverOrigin = serverOrigin;
+        this.serverPort = serverPort;
         this.clientOrigin = clientOrigins.getFirst();
         this.httpCookieUtils = httpCookieUtils;
     }
 
-    public OAuth2LoginResponse loginByOAuth2(OAuth2LoginRequest dto) {
-        HttpServletRequest request = dto.request();
-        String redirectUri = serverOrigin + request.getRequestURI();
+    public OAuth2LoginResponse loginByOAuth2(OAuth2LoginRequest oAuth2LoginRequest) {
+        HttpServletRequest servletRequest = oAuth2LoginRequest.request();
+        String redirectUri = serverOrigin + ":" + serverPort + servletRequest.getRequestURI();
 
         LoginResult loginResult =
-                loginUseCase.loginByOAuth2(dto.code(), redirectUri, AuthVendor.valueOfIgnoreCase(dto.authVendor()));
+                loginUseCase.loginByOAuth2(oAuth2LoginRequest.code(), redirectUri, AuthVendor.valueOfIgnoreCase(oAuth2LoginRequest.authVendor()));
 
-        String redirectionDestination = getRedirectionDestination(dto.state());
+        String redirectionDestination = getRedirectionDestination(oAuth2LoginRequest.state());
         log.debug("redirectionDestination={}", redirectionDestination);
 
-        HttpCookieObject refreshTokenCookie = this.httpCookieUtils.generateHttpOnlyCookie(
+        HttpCookieObject refreshTokenCookie = httpCookieUtils.generateHttpOnlyCookie(
                 HttpCookieName.REFRESH_TOKEN,
                 loginResult.getRefreshToken(),
                 REFRESH_TOKEN_COOKIE_MAX_AGE
@@ -71,15 +74,15 @@ public class WebBasedAuthenticationServiceAdapter {
 
         headers.add(
                 HttpHeaders.LOCATION,
-                OAuth2WebUtils.buildAfterLoginRedirectionUrl(redirectionDestination, loginResult, dto.authVendor())
+                OAuth2WebUtils.buildAfterLoginRedirectionUrl(redirectionDestination, loginResult, oAuth2LoginRequest.authVendor())
         );
 
         log.info("Redirect URI: {}", redirectUri);
 
         if (log.isDebugEnabled()) {
-            log.debug("code: {}", dto.code());
-            log.debug("Auth vendor: {}", dto.authVendor());
-            log.debug("state: {}", dto.state());
+            log.debug("code: {}", oAuth2LoginRequest.code());
+            log.debug("Auth vendor: {}", oAuth2LoginRequest.authVendor());
+            log.debug("state: {}", oAuth2LoginRequest.state());
             log.debug("loginResult={}", loginResult);
             log.debug("refreshTokenCookie={}", refreshTokenCookie.asSetCookieHeaderValue());
         }

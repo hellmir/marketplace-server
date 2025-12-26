@@ -44,7 +44,15 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 201: 성공 / 400: 클라이언트 요청 오류 403: 잘못된 리프레시 토큰 값 전송 / 404: 리소스 조회 실패 / 500: 그 외 |
-                | content | object | 새 Access Token | { "accessToken": "<jwt-access-token>" } |
+                | content | object | 응답 본문 | { ... } |
+                
+                ---
+                
+                ### Response > content
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | accessToken | string | 신규 발급된 Access Token | "f8310f8asohvh80scvh0zio3hr31d" |
                 
                 """,
         parameters = @Parameter(

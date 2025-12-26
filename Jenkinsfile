@@ -98,23 +98,30 @@ pipeline {
 		stage('Notify Start') {
 			steps {
 				withCredentials([
-					string(credentialsId: 'SHOP_SLACK_NOTIFICATION_CHANNEL', variable: 'SLACK_NOTIFICATION_CHANNEL')
+					string(credentialsId: 'MARKETNOTE_SLACK_NOTIFICATION_CHANNEL', variable: 'SLACK_NOTIFICATION_CHANNEL')
 				]) {
 					script {
 						env.SLACK_NOTIFICATION_CHANNEL = SLACK_NOTIFICATION_CHANNEL
+						def branchName = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
+						def commitAuthor = sh(script: 'git log -1 --pretty=%an', returnStdout: true).trim()
+						def commitMessage = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
+
+						slackSend(
+							channel: "${env.SLACK_NOTIFICATION_CHANNEL}",
+							color:   "${env.SLACK_GENERAL_COLOR}",
+							message: "[QA] Start a build\n"
+							+ "SERVICE: ${env.SERVICE_NAME}\n"
+							+ "PROJECT_NAME: ${env.PROJECT_NAME}\n"
+							+ "VERSION: ${env.PROJECT_VERSION}\n"
+							+ "JOB_NAME: ${env.JOB_NAME}\n"
+							+ "BUILD_NUMBER: ${env.BUILD_NUMBER}\n"
+							+ "BUILD_URL: ${env.BUILD_URL}\n"
+							+ "BRANCH: ${branchName}\n"
+							+ "AUTHOR: ${commitAuthor}\n"
+							+ "COMMIT: ${env.GIT_COMMIT}\n"
+							+ "MESSAGE: ${commitMessage}"
+						)
 					}
-					slackSend(
-						channel: "${env.SLACK_NOTIFICATION_CHANNEL}",
-						color:   "${env.SLACK_GENERAL_COLOR}",
-						message: "[QA] Start a build\n" +
-						"SERVICE: ${env.SERVICE_NAME}\n" +
-						"PROJECT_NAME: ${env.PROJECT_NAME}\n" +
-						"VERSION: ${env.PROJECT_VERSION}\n" +
-						"JOB_NAME: ${env.JOB_NAME}\n" +
-						"BUILD_NUMBER: ${env.BUILD_NUMBER}\n" +
-						"BUILD_URL: ${env.BUILD_URL}\n" +
-						"Commit: ${env.GIT_COMMIT}"
-					)
 				}
 			}
 		}
@@ -148,21 +155,28 @@ pipeline {
 
 						string(credentialsId: 'USER_SERVICE_TARGET_GROUP_ARN',    variable: 'USER_SERVICE_TARGET_GROUP_ARN'),
 						string(credentialsId: 'PRODUCT_SERVICE_TARGET_GROUP_ARN', variable: 'PRODUCT_SERVICE_TARGET_GROUP_ARN'),
-						string(credentialsId: 'ORDER_SERVICE_TARGET_GROUP_ARN',   variable: 'ORDER_SERVICE_TARGET_GROUP_ARN')
+						string(credentialsId: 'ORDER_SERVICE_TARGET_GROUP_ARN',   variable: 'ORDER_SERVICE_TARGET_GROUP_ARN'),
+
+						string(credentialsId: 'USER_SERVICE_SERVER_PORT',         variable: 'USER_SERVICE_SERVER_PORT'),
+						string(credentialsId: 'PRODUCT_SERVICE_SERVER_PORT',      variable: 'PRODUCT_SERVICE_SERVER_PORT'),
+						string(credentialsId: 'ORDER_SERVICE_SERVER_PORT',        variable: 'ORDER_SERVICE_SERVER_PORT')
 					]) {
 						def svc = env.SERVICE_NAME
 						if (svc == 'user-service') {
 							env.ECR_REPOSITORY = USER_SERVICE_ECR_REPOSITORY
 							env.ECS_SERVICE_NAME = USER_SERVICE_ECS_SERVICE_NAME
 							env.TARGET_GROUP_ARN = USER_SERVICE_TARGET_GROUP_ARN
+							env.CRED_SERVER_PORT = USER_SERVICE_SERVER_PORT
 						} else if (svc == 'product-service') {
 							env.ECR_REPOSITORY = PRODUCT_SERVICE_ECR_REPOSITORY
 							env.ECS_SERVICE_NAME = PRODUCT_SERVICE_ECS_SERVICE_NAME
 							env.TARGET_GROUP_ARN = PRODUCT_SERVICE_TARGET_GROUP_ARN
+							env.CRED_SERVER_PORT = PRODUCT_SERVICE_SERVER_PORT
 						} else if (svc == 'order-service') {
 							env.ECR_REPOSITORY = ORDER_SERVICE_ECR_REPOSITORY
 							env.ECS_SERVICE_NAME = ORDER_SERVICE_ECS_SERVICE_NAME
 							env.TARGET_GROUP_ARN = ORDER_SERVICE_TARGET_GROUP_ARN
+							env.CRED_SERVER_PORT = ORDER_SERVICE_SERVER_PORT
 						} else {
 							error "SERVICE_NAME not mapped: ${svc}"
 						}
@@ -199,10 +213,10 @@ pipeline {
 			steps {
 				script {
 					withCredentials([
-						string(credentialsId: 'SHOP_AWS_ACCOUNT_ID',        variable: 'AWS_ACCOUNT_ID'),
-						string(credentialsId: 'SHOP_AWS_ACCESS_KEY_ID',     variable: 'AWS_ACCESS_KEY_ID'),
-						string(credentialsId: 'SHOP_AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
-						string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',    variable: 'AWS_DEFAULT_REGION'),
+						string(credentialsId: 'MARKETNOTE_AWS_ACCOUNT_ID',        variable: 'AWS_ACCOUNT_ID'),
+						string(credentialsId: 'MARKETNOTE_AWS_ACCESS_KEY_ID',     variable: 'AWS_ACCESS_KEY_ID'),
+						string(credentialsId: 'MARKETNOTE_AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+						string(credentialsId: 'MARKETNOTE_AWS_DEFAULT_REGION',    variable: 'AWS_DEFAULT_REGION'),
 					]) {
 						sh '''
                         aws --version
@@ -221,30 +235,30 @@ pipeline {
 			steps {
 				script {
 					withCredentials([
-						string(credentialsId: 'SHOP_DB_URL',                        variable: 'CRED_DB_URL'),
-						string(credentialsId: 'SHOP_DB_USERNAME',                   variable: 'CRED_DB_USERNAME'),
-						string(credentialsId: 'SHOP_DB_PASSWORD',                   variable: 'CRED_DB_PASSWORD'),
-						string(credentialsId: 'SHOP_JWT_SECRET_KEY',                variable: 'CRED_JWT_SECRET_KEY'),
-						string(credentialsId: 'SHOP_ACCESS_TOKEN_EXPIRATION_TIME',  variable: 'CRED_ACCESS_TOKEN_EXPIRATION_TIME'),
-						string(credentialsId: 'SHOP_REFRESH_TOKEN_EXPIRATION_TIME', variable: 'CRED_REFRESH_TOKEN_EXPIRATION_TIME'),
-						string(credentialsId: 'SHOP_CLIENT_ORIGIN',                 variable: 'CRED_CLIENT_ORIGIN'),
-						string(credentialsId: 'SHOP_COOKIE_DOMAIN',                 variable: 'CRED_COOKIE_DOMAIN'),
-						string(credentialsId: 'SHOP_ACCESS_CONTROL_ALLOWED_ORIGINS',variable: 'CRED_ACCESS_CONTROL_ALLOWED_ORIGINS'),
-						string(credentialsId: 'SHOP_SERVER_ORIGIN',                 variable: 'CRED_SERVER_ORIGIN'),
-						string(credentialsId: 'SHOP_GOOGLE_CLIENT_ID',              variable: 'CRED_GOOGLE_CLIENT_ID'),
-						string(credentialsId: 'SHOP_GOOGLE_CLIENT_SECRET',          variable: 'CRED_GOOGLE_CLIENT_SECRET'),
-						string(credentialsId: 'SHOP_KAKAO_CLIENT_ID',               variable: 'CRED_KAKAO_CLIENT_ID'),
-						string(credentialsId: 'SHOP_KAKAO_CLIENT_SECRET',           variable: 'CRED_KAKAO_CLIENT_SECRET'),
-						string(credentialsId: 'SHOP_S3_ACCESS_KEY',                 variable: 'CRED_S3_ACCESS_KEY'),
-						string(credentialsId: 'SHOP_S3_SECRET_KEY',                 variable: 'CRED_S3_SECRET_KEY'),
-						string(credentialsId: 'SHOP_S3_BUCKET_NAME',                variable: 'CRED_S3_BUCKET_NAME'),
-						string(credentialsId: 'SHOP_AWS_ACCOUNT_ID',                variable: 'AWS_ACCOUNT_ID'),
-						string(credentialsId: 'SHOP_AWS_ACCESS_KEY_ID',             variable: 'AWS_ACCESS_KEY_ID'),
-						string(credentialsId: 'SHOP_AWS_SECRET_ACCESS_KEY',         variable: 'AWS_SECRET_ACCESS_KEY'),
-						string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',            variable: 'AWS_DEFAULT_REGION'),
-						string(credentialsId: 'SHOP_ECS_TASK_EXECUTION_ROLE_ARN',   variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
-						string(credentialsId: 'SHOP_ECS_TASK_ROLE_ARN',             variable: 'ECS_TASK_ROLE_ARN'),
-						string(credentialsId: 'SHOP_CLOUDWATCH_LOG_GROUP',          variable: 'CLOUDWATCH_LOG_GROUP')
+						string(credentialsId: 'MARKETNOTE_DB_URL',                        variable: 'CRED_DB_URL'),
+						string(credentialsId: 'MARKETNOTE_DB_USERNAME',                   variable: 'CRED_DB_USERNAME'),
+						string(credentialsId: 'MARKETNOTE_DB_PASSWORD',                   variable: 'CRED_DB_PASSWORD'),
+						string(credentialsId: 'MARKETNOTE_JWT_SECRET_KEY',                variable: 'CRED_JWT_SECRET_KEY'),
+						string(credentialsId: 'MARKETNOTE_ACCESS_TOKEN_EXPIRATION_TIME',  variable: 'CRED_ACCESS_TOKEN_EXPIRATION_TIME'),
+						string(credentialsId: 'MARKETNOTE_REFRESH_TOKEN_EXPIRATION_TIME', variable: 'CRED_REFRESH_TOKEN_EXPIRATION_TIME'),
+						string(credentialsId: 'MARKETNOTE_CLIENT_ORIGIN',                 variable: 'CRED_CLIENT_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_COOKIE_DOMAIN',                 variable: 'CRED_COOKIE_DOMAIN'),
+						string(credentialsId: 'MARKETNOTE_ACCESS_CONTROL_ALLOWED_ORIGINS',variable: 'CRED_ACCESS_CONTROL_ALLOWED_ORIGINS'),
+						string(credentialsId: 'MARKETNOTE_SERVER_ORIGIN',                 variable: 'CRED_SERVER_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_GOOGLE_CLIENT_ID',              variable: 'CRED_GOOGLE_CLIENT_ID'),
+						string(credentialsId: 'MARKETNOTE_GOOGLE_CLIENT_SECRET',          variable: 'CRED_GOOGLE_CLIENT_SECRET'),
+						string(credentialsId: 'MARKETNOTE_KAKAO_CLIENT_ID',               variable: 'CRED_KAKAO_CLIENT_ID'),
+						string(credentialsId: 'MARKETNOTE_KAKAO_CLIENT_SECRET',           variable: 'CRED_KAKAO_CLIENT_SECRET'),
+						string(credentialsId: 'MARKETNOTE_S3_ACCESS_KEY',                 variable: 'CRED_S3_ACCESS_KEY'),
+						string(credentialsId: 'MARKETNOTE_S3_SECRET_KEY',                 variable: 'CRED_S3_SECRET_KEY'),
+						string(credentialsId: 'MARKETNOTE_S3_BUCKET_NAME',                variable: 'CRED_S3_BUCKET_NAME'),
+						string(credentialsId: 'MARKETNOTE_AWS_ACCOUNT_ID',                variable: 'AWS_ACCOUNT_ID'),
+						string(credentialsId: 'MARKETNOTE_AWS_ACCESS_KEY_ID',             variable: 'AWS_ACCESS_KEY_ID'),
+						string(credentialsId: 'MARKETNOTE_AWS_SECRET_ACCESS_KEY',         variable: 'AWS_SECRET_ACCESS_KEY'),
+						string(credentialsId: 'MARKETNOTE_AWS_DEFAULT_REGION',            variable: 'AWS_DEFAULT_REGION'),
+						string(credentialsId: 'MARKETNOTE_ECS_TASK_EXECUTION_ROLE_ARN',   variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
+						string(credentialsId: 'MARKETNOTE_ECS_TASK_ROLE_ARN',             variable: 'ECS_TASK_ROLE_ARN'),
+						string(credentialsId: 'MARKETNOTE_CLOUDWATCH_LOG_GROUP',          variable: 'CLOUDWATCH_LOG_GROUP')
 					]) {
 						sh '''
                         aws logs create-log-group --log-group-name "$CLOUDWATCH_LOG_GROUP" --region "$AWS_DEFAULT_REGION" || true
@@ -274,6 +288,7 @@ pipeline {
 									[name: "COOKIE_DOMAIN",                 value: "${env.CRED_COOKIE_DOMAIN}"],
 									[name: "ACCESS_CONTROL_ALLOWED_ORIGINS",value: "${env.CRED_ACCESS_CONTROL_ALLOWED_ORIGINS}"],
 									[name: "SERVER_ORIGIN",                 value: "${env.CRED_SERVER_ORIGIN}"],
+									[name: "SERVER_PORT",                   value: "${env.CRED_SERVER_PORT}"],
 									[name: "GOOGLE_CLIENT_ID",              value: "${env.CRED_GOOGLE_CLIENT_ID}"],
 									[name: "GOOGLE_CLIENT_SECRET",          value: "${env.CRED_GOOGLE_CLIENT_SECRET}"],
 									[name: "KAKAO_CLIENT_ID",               value: "${env.CRED_KAKAO_CLIENT_ID}"],
@@ -305,13 +320,13 @@ pipeline {
 			steps {
 				script {
 					withCredentials([
-						string(credentialsId: 'SHOP_AWS_ACCOUNT_ID',        variable: 'AWS_ACCOUNT_ID'),
-						string(credentialsId: 'SHOP_AWS_ACCESS_KEY_ID',     variable: 'AWS_ACCESS_KEY_ID'),
-						string(credentialsId: 'SHOP_AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
-						string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',    variable: 'AWS_DEFAULT_REGION'),
-						string(credentialsId: 'SHOP_ECS_CLUSTER_NAME',      variable: 'ECS_CLUSTER_NAME'),
-						string(credentialsId: 'SHOP_SUBNET_IDS',            variable: 'SUBNET_IDS'),
-						string(credentialsId: 'SHOP_SECURITY_GROUP_IDS',    variable: 'SECURITY_GROUP_IDS'),
+						string(credentialsId: 'MARKETNOTE_AWS_ACCOUNT_ID',        variable: 'AWS_ACCOUNT_ID'),
+						string(credentialsId: 'MARKETNOTE_AWS_ACCESS_KEY_ID',     variable: 'AWS_ACCESS_KEY_ID'),
+						string(credentialsId: 'MARKETNOTE_AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+						string(credentialsId: 'MARKETNOTE_AWS_DEFAULT_REGION',    variable: 'AWS_DEFAULT_REGION'),
+						string(credentialsId: 'MARKETNOTE_ECS_CLUSTER_NAME',      variable: 'ECS_CLUSTER_NAME'),
+						string(credentialsId: 'MARKETNOTE_SUBNET_IDS',            variable: 'SUBNET_IDS'),
+						string(credentialsId: 'MARKETNOTE_SECURITY_GROUP_IDS',    variable: 'SECURITY_GROUP_IDS'),
 					]) {
 						def newTaskDefArn = sh(
 							script: "aws ecs list-task-definitions --family-prefix ${env.PROJECT_NAME} --sort DESC --region $AWS_DEFAULT_REGION --query 'taskDefinitionArns[0]' --output text",
@@ -362,13 +377,12 @@ pipeline {
 		}
 
 		stage('Build Prometheus Image') {
-			when {
-				expression {
-					sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
-				}
-			}
 			steps {
 				script {
+					def changed = sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
+					if (!changed) {
+						sleep time: 1, unit: 'SECONDS'; return
+					}
 					sh "test -f monitoring/prometheus/Dockerfile"
 					sh "test -f monitoring/prometheus/prometheus.yml"
 					def prometheusTag = "prometheus:${env.PROJECT_VERSION}"
@@ -384,19 +398,18 @@ pipeline {
 		}
 
 		stage('Push Prometheus Image') {
-			when {
-				expression {
-					sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
-				}
-			}
 			steps {
 				script {
+					def changed = sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
+					if (!changed) {
+						sleep time: 1, unit: 'SECONDS'; return
+					}
 					withCredentials([
-						string(credentialsId: 'SHOP_AWS_ACCOUNT_ID',        variable: 'AWS_ACCOUNT_ID'),
-						string(credentialsId: 'SHOP_AWS_ACCESS_KEY_ID',     variable: 'AWS_ACCESS_KEY_ID'),
-						string(credentialsId: 'SHOP_AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
-						string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',    variable: 'AWS_DEFAULT_REGION'),
-						string(credentialsId: 'SHOP_PROMETHEUS_ECR_REPOSITORY',   variable: 'PROMETHEUS_ECR_REPOSITORY')
+						string(credentialsId: 'MARKETNOTE_AWS_ACCOUNT_ID',        variable: 'AWS_ACCOUNT_ID'),
+						string(credentialsId: 'MARKETNOTE_AWS_ACCESS_KEY_ID',     variable: 'AWS_ACCESS_KEY_ID'),
+						string(credentialsId: 'MARKETNOTE_AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+						string(credentialsId: 'MARKETNOTE_AWS_DEFAULT_REGION',    variable: 'AWS_DEFAULT_REGION'),
+						string(credentialsId: 'MARKETNOTE_PROMETHEUS_ECR_REPOSITORY',   variable: 'PROMETHEUS_ECR_REPOSITORY')
 					]) {
 						sh '''
                         aws ecr describe-repositories --repository-names $PROMETHEUS_ECR_REPOSITORY --region $AWS_DEFAULT_REGION || aws ecr create-repository --repository-name $PROMETHEUS_ECR_REPOSITORY --region $AWS_DEFAULT_REGION
@@ -411,18 +424,17 @@ pipeline {
 		}
 
 		stage('Register Prometheus Task Definition') {
-			when {
-				expression {
-					sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
-				}
-			}
 			steps {
 				script {
+					def changed = sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
+					if (!changed) {
+						sleep time: 1, unit: 'SECONDS'; return
+					}
 					withCredentials([
-						string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',         variable: 'AWS_DEFAULT_REGION'),
-						string(credentialsId: 'SHOP_ECS_TASK_EXECUTION_ROLE_ARN',variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
-						string(credentialsId: 'SHOP_ECS_TASK_ROLE_ARN',          variable: 'ECS_TASK_ROLE_ARN'),
-						string(credentialsId: 'SHOP_CLOUDWATCH_LOG_GROUP_PROMETHEUS',  variable: 'CLOUDWATCH_LOG_GROUP_PROMETHEUS')
+						string(credentialsId: 'MARKETNOTE_AWS_DEFAULT_REGION',         variable: 'AWS_DEFAULT_REGION'),
+						string(credentialsId: 'MARKETNOTE_ECS_TASK_EXECUTION_ROLE_ARN',variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
+						string(credentialsId: 'MARKETNOTE_ECS_TASK_ROLE_ARN',          variable: 'ECS_TASK_ROLE_ARN'),
+						string(credentialsId: 'MARKETNOTE_CLOUDWATCH_LOG_GROUP_PROMETHEUS',  variable: 'CLOUDWATCH_LOG_GROUP_PROMETHEUS')
 					]) {
 						sh '''
                         aws logs create-log-group --log-group-name "$CLOUDWATCH_LOG_GROUP_PROMETHEUS" --region "$AWS_DEFAULT_REGION" || true
@@ -467,19 +479,18 @@ pipeline {
 		}
 
 		stage('Deploy Prometheus Service') {
-			when {
-				expression {
-					sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
-				}
-			}
 			steps {
 				script {
+					def changed = sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
+					if (!changed) {
+						sleep time: 1, unit: 'SECONDS'; return
+					}
 					withCredentials([
-						string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',      variable: 'AWS_DEFAULT_REGION'),
-						string(credentialsId: 'SHOP_ECS_CLUSTER_NAME',        variable: 'ECS_CLUSTER_NAME'),
-						string(credentialsId: 'SHOP_PROMETHEUS_SERVICE_NAME', variable: 'PROMETHEUS_SERVICE_NAME'),
-						string(credentialsId: 'SHOP_SUBNET_IDS',              variable: 'SUBNET_IDS'),
-						string(credentialsId: 'SHOP_SECURITY_GROUP_IDS',      variable: 'SECURITY_GROUP_IDS')
+						string(credentialsId: 'MARKETNOTE_AWS_DEFAULT_REGION',      variable: 'AWS_DEFAULT_REGION'),
+						string(credentialsId: 'MARKETNOTE_ECS_CLUSTER_NAME',        variable: 'ECS_CLUSTER_NAME'),
+						string(credentialsId: 'MARKETNOTE_PROMETHEUS_SERVICE_NAME', variable: 'PROMETHEUS_SERVICE_NAME'),
+						string(credentialsId: 'MARKETNOTE_SUBNET_IDS',              variable: 'SUBNET_IDS'),
+						string(credentialsId: 'MARKETNOTE_SECURITY_GROUP_IDS',      variable: 'SECURITY_GROUP_IDS')
 					]) {
 						def latestTask = sh(
 							script: "aws ecs list-task-definitions --family-prefix prometheus --sort DESC --region $AWS_DEFAULT_REGION --query 'taskDefinitionArns[0]' --output text",
@@ -526,22 +537,21 @@ pipeline {
 		}
 
 		stage('Register Grafana Task Definition') {
-			when {
-				expression {
-					sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
-				}
-			}
 			steps {
 				script {
+					def changed = sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
+					if (!changed) {
+						sleep time: 1, unit: 'SECONDS'; return
+					}
 					withCredentials([
-						string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',             variable: 'AWS_DEFAULT_REGION'),
-						string(credentialsId: 'SHOP_ECS_TASK_EXECUTION_ROLE_ARN',    variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
-						string(credentialsId: 'SHOP_ECS_TASK_ROLE_ARN',              variable: 'ECS_TASK_ROLE_ARN'),
-						string(credentialsId: 'SHOP_CLOUDWATCH_LOG_GROUP_GRAFANA',   variable: 'CLOUDWATCH_LOG_GROUP_GRAFANA'),
-						string(credentialsId: 'SHOP_GRAFANA_ADMIN_PASSWORD',         variable: 'GRAFANA_ADMIN_PASSWORD'),
-						string(credentialsId: 'SHOP_GRAFANA_DOMAIN',                 variable: 'GRAFANA_DOMAIN'),
-						string(credentialsId: 'SHOP_GRAFANA_ROOT_URL',               variable: 'GRAFANA_ROOT_URL'),
-						string(credentialsId: 'SHOP_GRAFANA_SERVE_FROM_SUB_PATH',    variable: 'GRAFANA_SERVE_FROM_SUB_PATH')
+						string(credentialsId: 'MARKETNOTE_AWS_DEFAULT_REGION',             variable: 'AWS_DEFAULT_REGION'),
+						string(credentialsId: 'MARKETNOTE_ECS_TASK_EXECUTION_ROLE_ARN',    variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
+						string(credentialsId: 'MARKETNOTE_ECS_TASK_ROLE_ARN',              variable: 'ECS_TASK_ROLE_ARN'),
+						string(credentialsId: 'MARKETNOTE_CLOUDWATCH_LOG_GROUP_GRAFANA',   variable: 'CLOUDWATCH_LOG_GROUP_GRAFANA'),
+						string(credentialsId: 'MARKETNOTE_GRAFANA_ADMIN_PASSWORD',         variable: 'GRAFANA_ADMIN_PASSWORD'),
+						string(credentialsId: 'MARKETNOTE_GRAFANA_DOMAIN',                 variable: 'GRAFANA_DOMAIN'),
+						string(credentialsId: 'MARKETNOTE_GRAFANA_ROOT_URL',               variable: 'GRAFANA_ROOT_URL'),
+						string(credentialsId: 'MARKETNOTE_GRAFANA_SERVE_FROM_SUB_PATH',    variable: 'GRAFANA_SERVE_FROM_SUB_PATH')
 					]) {
 						sh '''
                         aws logs create-log-group --log-group-name "$CLOUDWATCH_LOG_GROUP_GRAFANA" --region "$AWS_DEFAULT_REGION" || true
@@ -584,19 +594,18 @@ pipeline {
 		}
 
 		stage('Deploy Grafana Service') {
-			when {
-				expression {
-					sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
-				}
-			}
 			steps {
 				script {
+					def changed = sh(script: 'git diff --quiet HEAD~1 HEAD monitoring/prometheus || echo "changed"', returnStdout: true).trim() == 'changed'
+					if (!changed) {
+						sleep time: 1, unit: 'SECONDS'; return
+					}
 					withCredentials([
-						string(credentialsId: 'SHOP_AWS_DEFAULT_REGION',   variable: 'AWS_DEFAULT_REGION'),
-						string(credentialsId: 'SHOP_ECS_CLUSTER_NAME',     variable: 'ECS_CLUSTER_NAME'),
-						string(credentialsId: 'SHOP_GRAFANA_SERVICE_NAME', variable: 'GRAFANA_SERVICE_NAME'),
-						string(credentialsId: 'SHOP_SUBNET_IDS',           variable: 'SUBNET_IDS'),
-						string(credentialsId: 'SHOP_SECURITY_GROUP_IDS',   variable: 'SECURITY_GROUP_IDS')
+						string(credentialsId: 'MARKETNOTE_AWS_DEFAULT_REGION',   variable: 'AWS_DEFAULT_REGION'),
+						string(credentialsId: 'MARKETNOTE_ECS_CLUSTER_NAME',     variable: 'ECS_CLUSTER_NAME'),
+						string(credentialsId: 'MARKETNOTE_GRAFANA_SERVICE_NAME', variable: 'GRAFANA_SERVICE_NAME'),
+						string(credentialsId: 'MARKETNOTE_SUBNET_IDS',           variable: 'SUBNET_IDS'),
+						string(credentialsId: 'MARKETNOTE_SECURITY_GROUP_IDS',   variable: 'SECURITY_GROUP_IDS')
 					]) {
 						def latestTask = sh(
 							script: "aws ecs list-task-definitions --family-prefix grafana --sort DESC --region $AWS_DEFAULT_REGION --query 'taskDefinitionArns[0]' --output text",

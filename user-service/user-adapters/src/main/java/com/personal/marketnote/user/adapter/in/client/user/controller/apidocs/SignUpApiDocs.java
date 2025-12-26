@@ -40,8 +40,18 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 201: 성공 / 400: 클라이언트 요청 오류 / 404: 리소스 조회 실패 / 409: 중복 회원 / 500: 그 외 |
                 | timestamp | string(datetime) | 응답 일시 | "2025-12-26T12:12:30.013" |
-                | content | object | 토큰 페이로드 | { "accessToken": "...", "refreshToken": "..." } |
+                | content | object | 응답 본문 | { ... } |
                 | message | string | 처리 결과 | "회원 가입 성공" |
+                
+                ---
+                
+                ### Response > content
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | accessToken | string | 신규 발급된 Access Token | "f8310f8asohvh80scvh0zio3hr31d" |
+                | refreshToken | string | 신규 발급된 Refresh Token | "f8310f8asohvh80scvh0zio3hr31d" |
+                
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -58,7 +68,7 @@ import java.lang.annotation.*;
         responses = {
                 @ApiResponse(
                         responseCode = "201",
-                        description = "회원 가입 성공. content에는 발급된 accessToken, refreshToken이 담긴다.",
+                        description = "회원 가입 성공",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
