@@ -139,8 +139,8 @@ public class SpringDocConfig {
                 .name(HttpHeaders.AUTHORIZATION);
 
         openApi.info(new Info()
-                        .title("건기식 리워드 회원 API 서버")
-                        .description("건기식 리워드 서비스 회원 API 서버입니다.")
+                        .title("마켓플레이스 회원 API 서버")
+                        .description("마켓플레이스 서비스 회원 API 서버입니다.")
                         .version("1.0"))
                 .components(new Components()
                         .addSecuritySchemes("bearer", securityScheme))

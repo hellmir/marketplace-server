@@ -2,7 +2,7 @@ pipeline {
 	agent any
 
 	parameters {
-		choice(name: 'SERVICE', choices: ['auto','userJpaEntity-service','product-service','order-service'], description: '배포 대상 서비스')
+		choice(name: 'SERVICE', choices: ['auto','user-service','product-service','order-service'], description: '배포 대상 서비스')
 	}
 
 	environment {
@@ -24,7 +24,7 @@ pipeline {
 					} as List
 
 					def targetAdapters = [
-						'userJpaEntity-service'   : 'userJpaEntity-adapters',
+						'user-service'   : 'user-adapters',
 						'order-service'  : 'order-adapters',
 						'product-service': 'product-adapters'
 					]
@@ -57,7 +57,7 @@ pipeline {
 
 					def targetService =
 					(params.SERVICE && params.SERVICE != 'auto') ? params.SERVICE :
-					(candidates ? candidates[0] : 'userJpaEntity-service')
+					(candidates ? candidates[0] : 'user-service')
 
 					if (!targetAdapters.containsKey(targetService)) {
 						error "Unknown SERVICE '${targetService}'. Allowed: ${targetAdapters.keySet()}"
@@ -151,17 +151,17 @@ pipeline {
 						string(credentialsId: 'ORDER_SERVICE_TARGET_GROUP_ARN',   variable: 'ORDER_SERVICE_TARGET_GROUP_ARN')
 					]) {
 						def repoMap = [
-							'userJpaEntity-service'   : 'USER_SERVICE_ECR_REPOSITORY',
+							'user-service'   : 'USER_SERVICE_ECR_REPOSITORY',
 							'product-service': 'PRODUCT_SERVICE_ECR_REPOSITORY',
 							'order-service'  : 'ORDER_SERVICE_ECR_REPOSITORY'
 						]
 						def ecsSvcMap = [
-							'userJpaEntity-service'   : 'USER_SERVICE_ECS_SERVICE_NAME',
+							'user-service'   : 'USER_SERVICE_ECS_SERVICE_NAME',
 							'product-service': 'PRODUCT_SERVICE_ECS_SERVICE_NAME',
 							'order-service'  : 'ORDER_SERVICE_ECS_SERVICE_NAME'
 						]
 						def tgMap = [
-							'userJpaEntity-service'   : 'USER_SERVICE_TARGET_GROUP_ARN',
+							'user-service'   : 'USER_SERVICE_TARGET_GROUP_ARN',
 							'product-service': 'PRODUCT_SERVICE_TARGET_GROUP_ARN',
 							'order-service'  : 'ORDER_SERVICE_TARGET_GROUP_ARN'
 						]
