@@ -13,7 +13,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.7.22" apply false
 }
 
-group = "com.personal.shop.user.application"
+group = "com.personal.marketnote.user.application"
 version = "1.0.0"
 description = "user service application"
 

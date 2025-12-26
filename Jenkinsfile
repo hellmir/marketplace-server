@@ -179,7 +179,7 @@ pipeline {
 			}
 		}
 
-		stage('Build Shop Reward Service Image') {
+		stage('Build Market Note Service Image') {
 			steps {
 				script {
 					def dockerImageTag = "${env.PROJECT_NAME}:${env.PROJECT_VERSION}"
@@ -195,7 +195,7 @@ pipeline {
 			}
 		}
 
-		stage('Push Shop Reward Service Image') {
+		stage('Push Market Note Service Image') {
 			steps {
 				script {
 					withCredentials([
@@ -217,7 +217,7 @@ pipeline {
 			}
 		}
 
-		stage('Register Shop Reward Service Task Definition') {
+		stage('Register Market Note Service Task Definition') {
 			steps {
 				script {
 					withCredentials([
@@ -301,7 +301,7 @@ pipeline {
 			}
 		}
 
-		stage('Deploy Shop Reward Service') {
+		stage('Deploy Market Note Service') {
 			steps {
 				script {
 					withCredentials([

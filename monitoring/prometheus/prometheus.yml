@@ -3,7 +3,7 @@ global:
   evaluation_interval: 30s
 
 scrape_configs:
-  - job_name: 'shop-reward'
+  - job_name: 'market-note'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'shop-reward-lb-1014721585.ap-northeast-2.elb.amazonaws.com:80' ]
+      - targets: [ 'market-note-lb-1014721585.ap-northeast-2.elb.amazonaws.com:80' ]
