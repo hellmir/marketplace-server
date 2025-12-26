@@ -13,7 +13,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.7.22" apply false
 }
 
-group = "com.personal.shop.user.domain"
+group = "com.personal.marketnote.user.domain"
 version = "1.0.0"
 description = "user service domain"
 

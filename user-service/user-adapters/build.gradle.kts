@@ -14,7 +14,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.7.22" apply false
 }
 
-group = "com.personal.shop.user.adapters"
+group = "com.personal.marketnote.user.adapters"
 version = "1.0.0"
 description = "user service adapters"
 
@@ -147,7 +147,7 @@ tasks.named<Jar>("jar") {
 }
 
 springBoot {
-    mainClass.set("com.personal.shop.user.UserApplication")
+    mainClass.set("com.personal.marketnote.user.UserApplication")
     buildInfo()
 }
 

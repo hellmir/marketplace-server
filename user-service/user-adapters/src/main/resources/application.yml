@@ -4,7 +4,7 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/shop_reward}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/market_note}
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:root}
 
@@ -33,7 +33,7 @@ client:
     allowed-origins: ${ACCESS_CONTROL_ALLOWED_ORIGINS:http://localhost:3000}
 
 server:
-  origin: ${SERVER_ORIGIN:http://localhost:8080}
+  origin: ${SERVER_ORIGIN:http://localhost}
   error:
     include-exception: true
     include-stacktrace: ALWAYS
