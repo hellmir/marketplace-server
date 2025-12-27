@@ -1,5 +1,7 @@
 package com.personal.marketnote.user.service.authentication.service;
 
+import com.personal.marketnote.common.domain.exception.illegalargument.novalue.OauthTokenNoValueException;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.port.in.result.LoginResult;
 import com.personal.marketnote.user.port.in.usecase.LoginUseCase;
@@ -39,6 +41,10 @@ public class LoginService implements LoginUseCase {
         }
 
         OAuth2UserInfo userInfo = grantedTokenInfo.userInfo();
+
+        if (!FormatValidator.hasValue(userInfo)) {
+            throw new OauthTokenNoValueException();
+        }
 
         return LoginResult.of(true, grantedTokenInfo.accessToken(), grantedTokenInfo.refreshToken(), userInfo.name());
     }

@@ -60,7 +60,7 @@ public class RestTemplateKakaoTokenProcessor implements TokenProcessor {
         RequestEntity<MultiValueMap<String, String>> requestEntity = buildTokenRequestEntity(code, redirectUri);
 
         ResponseEntity<OAuth2GrantedToken> responseEntity =
-                this.restTemplate.exchange(requestEntity, OAuth2GrantedToken.class);
+                restTemplate.exchange(requestEntity, OAuth2GrantedToken.class);
 
         if (responseEntity.getStatusCode().is4xxClientError()) {
             throw new UnsupportedCodeException("Code is not supported.");
