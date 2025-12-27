@@ -14,12 +14,15 @@ import lombok.*;
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
 public class TermsJpaEntity extends BaseGeneralEntity {
-    @Column(name = "content", nullable = false, length = 511)
+    @Column(nullable = false, length = 511)
     private String content;
+
+    private Boolean requiredYn;
 
     public static TermsJpaEntity from(Terms terms) {
         return TermsJpaEntity.builder()
                 .content(terms.getContent())
+                .requiredYn(terms.getRequiredYn())
                 .build();
     }
 }

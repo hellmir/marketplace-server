@@ -14,16 +14,23 @@ import java.time.LocalDateTime;
 public class Terms {
     private Long id;
     private String content;
+    private Boolean requiredYn;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private EntityStatus status;
 
     public static Terms of(
-            Long id, String content, LocalDateTime createdAt, LocalDateTime modifiedAt, EntityStatus status
+            Long id,
+            String content,
+            Boolean requiredYn,
+            LocalDateTime createdAt,
+            LocalDateTime modifiedAt,
+            EntityStatus status
     ) {
         return Terms.builder()
                 .id(id)
                 .content(content)
+                .requiredYn(requiredYn)
                 .createdAt(createdAt)
                 .modifiedAt(modifiedAt)
                 .status(status)

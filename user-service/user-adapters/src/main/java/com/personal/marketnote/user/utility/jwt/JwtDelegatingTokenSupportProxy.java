@@ -1,7 +1,7 @@
 package com.personal.marketnote.user.utility.jwt;
 
 import com.personal.marketnote.user.domain.user.User;
-import com.personal.marketnote.user.port.out.FindUserPort;
+import com.personal.marketnote.user.port.out.user.FindUserPort;
 import com.personal.marketnote.user.security.token.dto.GrantedTokenInfo;
 import com.personal.marketnote.user.security.token.dto.OAuth2AuthenticationInfo;
 import com.personal.marketnote.user.security.token.dto.OAuth2UserInfo;
@@ -40,7 +40,7 @@ public class JwtDelegatingTokenSupportProxy extends DelegatingTokenSupport {
     public GrantedTokenInfo grantToken(String code, String redirectUri, AuthVendor authVendor) throws UnsupportedCodeException {
         GrantedTokenInfo tokenFrom3rdParty = super.grantToken(code, redirectUri, authVendor);
         String oidcId = tokenFrom3rdParty.id();
-        User user = findUserPort.findByOidcId(oidcId)
+        User user = findUserPort.findByAuthVendorAndOidcId(authVendor, oidcId)
                 .orElse(User.of(authVendor, oidcId));
 
         OAuth2UserInfo userInfo = user.isGuest()

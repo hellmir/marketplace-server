@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
@@ -21,6 +23,7 @@ public class User {
     private String phoneNumber;
     private String referenceCode;
     private Role role;
+    private List<UserTerms> userTerms;
     private LocalDateTime lastLoggedInAt;
 
     public static User of(AuthVendor authVendor, String oidcId) {
@@ -31,8 +34,10 @@ public class User {
                 .build();
     }
 
-    public static User of(AuthVendor authVendor, String oidcId, String nickname, String fullName, String phoneNumber) {
-        return User.builder()
+    public static User of(
+            AuthVendor authVendor, String oidcId, String nickname, String fullName, String phoneNumber, List<Terms> terms
+    ) {
+        User user = User.builder()
                 .authVendor(authVendor)
                 .oidcId(oidcId)
                 .nickname(nickname)
@@ -41,6 +46,12 @@ public class User {
                 .role(Role.getBuyer())
                 .lastLoggedInAt(LocalDateTime.now())
                 .build();
+
+        user.userTerms = terms.stream()
+                .map(term -> UserTerms.of(user, term))
+                .collect(Collectors.toList());
+
+        return user;
     }
 
     public static User of(
@@ -52,6 +63,7 @@ public class User {
             String phoneNumber,
             String referenceCode,
             Role role,
+            List<UserTerms> userTerms,
             LocalDateTime lastLoggedInAt
     ) {
         return User.builder()
@@ -63,11 +75,18 @@ public class User {
                 .phoneNumber(phoneNumber)
                 .referenceCode(referenceCode)
                 .role(role)
+                .userTerms(userTerms)
                 .lastLoggedInAt(lastLoggedInAt)
                 .build();
     }
 
     public boolean isGuest() {
         return role.isGuest();
+    }
+
+    public void acceptTerms(List<Long> termsIds) {
+        userTerms.stream()
+                .filter(userTerms -> termsIds.contains(userTerms.getTerms().getId()))
+                .forEach(UserTerms::agree);
     }
 }
