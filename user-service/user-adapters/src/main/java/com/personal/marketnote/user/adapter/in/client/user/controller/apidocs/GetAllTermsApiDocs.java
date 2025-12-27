@@ -55,7 +55,7 @@ import java.lang.annotation.*;
                                 | id | number | 약관 ID | 1 |
                                 | content | string | 약관 내용 | "회원 약관 내용1" |
                                 | isRequired | boolean | 필수 동의 여부 | true / false |
-                I                """,
+                                """,
         security = {@SecurityRequirement(name = "bearer")},
         responses = {
                 @ApiResponse(
