@@ -1,8 +1,8 @@
 package com.personal.marketnote.user.port.in.usecase;
 
+import com.personal.marketnote.common.domain.exception.token.UnsupportedCodeException;
 import com.personal.marketnote.user.port.in.result.GetUserResult;
 import com.personal.marketnote.user.port.in.result.LoginResult;
-import com.personal.marketnote.user.security.token.exception.UnsupportedCodeException;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 
 import java.time.LocalDateTime;

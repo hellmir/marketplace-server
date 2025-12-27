@@ -1,4 +1,4 @@
-package com.personal.marketnote.user.security.token.exception;
+package com.personal.marketnote.common.domain.exception.token;
 
 public class InvalidAccessTokenException extends TokenException {
     public InvalidAccessTokenException(String message) {

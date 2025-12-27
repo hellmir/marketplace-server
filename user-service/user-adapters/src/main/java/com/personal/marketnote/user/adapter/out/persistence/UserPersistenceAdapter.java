@@ -42,13 +42,18 @@ public class UserPersistenceAdapter implements SaveUserPort, FindUserPort, FindT
     }
 
     @Override
-    public boolean existsByPhoneNumber(String phoneNumber) {
-        return userJpaRepository.existsByPhoneNumber(phoneNumber);
+    public boolean existsByNickname(String nickname) {
+        return userJpaRepository.existsByNickname(nickname);
     }
 
     @Override
-    public boolean existsByNickname(String nickname) {
-        return userJpaRepository.existsByNickname(nickname);
+    public boolean existsByEmail(String email) {
+        return userJpaRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existsByPhoneNumber(String phoneNumber) {
+        return userJpaRepository.existsByPhoneNumber(phoneNumber);
     }
 
     @Override

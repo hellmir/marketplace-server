@@ -8,9 +8,11 @@ import java.util.Optional;
 public interface FindUserPort {
     boolean existsByOidcId(String oidcId);
 
-    boolean existsByPhoneNumber(String phoneNumber);
-
     boolean existsByNickname(String nickname);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByPhoneNumber(String phoneNumber);
 
     Optional<User> findById(Long id);
 

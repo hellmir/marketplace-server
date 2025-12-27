@@ -22,9 +22,11 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                - 사용자 닉네임, 성명, 전화번호를 전송해 회원으로 가입합니다.
+                - 사용자 닉네임, 이메일 주소, 비밀번호, 성명, 전화번호를 전송해 회원으로 가입합니다.
                 
-                - OAuth2 콜백 URI를 통해 발급된 Access Token이 필요합니다.
+                - 소셜 로그인은 OAuth2 콜백 URI를 통해 발급된 Access Token이 필요합니다.
+                
+                - 일반 로그인은 이메일 주소와 비밀번호가 필요합니다.
                 
                 ---
                 
@@ -33,8 +35,10 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
                 | nickname | string | 닉네임(2~20자, 한글) | Y | "고길동" |
-                | fullName | string | 성명(2~10자, 한글) | Y | "홍길동" |
-                | phoneNumber | string | 전화번호(형식: 010-1234-5678) | Y | "010-1234-5678" |
+                | email | string | 이메일 주소(형식: example@example.com) | N | "example@example.com" |
+                | password | string | 비밀번호(8자 이상, 대문자, 소문자, 숫자, 특수문자 포함) | N | "Password123!" |
+                | fullName | string | 성명(2~10자, 한글) | N | "홍길동" |
+                | phoneNumber | string | 전화번호(형식: 010-1234-5678) | N | "010-1234-5678" |
                 
                 ## Response
                 
@@ -63,6 +67,8 @@ import java.lang.annotation.*;
                         examples = @ExampleObject("""
                                 {
                                     "nickname": "고길동",
+                                    "email": "example@example.com",
+                                    "password": "Password123!",
                                     "fullName": "홍길동",
                                     "phoneNumber": "010-1234-5678"
                                 }

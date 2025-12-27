@@ -1,6 +1,7 @@
 package com.personal.marketnote.user.adapter.in.client.authentication.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
+import com.personal.marketnote.common.domain.exception.token.UnsupportedCodeException;
 import com.personal.marketnote.user.adapter.in.client.authentication.controller.apidocs.Oauth2LoginApiDocs;
 import com.personal.marketnote.user.adapter.in.client.authentication.controller.apidocs.RefreshAccessTokenApiDocs;
 import com.personal.marketnote.user.adapter.in.client.authentication.request.OAuth2LoginRequest;
@@ -9,7 +10,6 @@ import com.personal.marketnote.user.adapter.in.client.authentication.response.Re
 import com.personal.marketnote.user.adapter.in.client.authentication.response.WebBasedTokenRefreshResponse;
 import com.personal.marketnote.user.adapter.out.vendor.authentication.WebBasedAuthenticationServiceAdapter;
 import com.personal.marketnote.user.security.token.dto.GrantedTokenInfo;
-import com.personal.marketnote.user.security.token.exception.UnsupportedCodeException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

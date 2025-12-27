@@ -1,4 +1,4 @@
-package com.personal.marketnote.user.security.token.exception;
+package com.personal.marketnote.common.domain.exception.token;
 
 /**
  * Authorization Server에서 인가코드를 처리할 수 없을 때 발생하는 예외.

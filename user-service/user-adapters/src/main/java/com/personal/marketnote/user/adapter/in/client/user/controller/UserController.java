@@ -1,7 +1,6 @@
 package com.personal.marketnote.user.adapter.in.client.user.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
-import com.personal.marketnote.common.domain.exception.illegalargument.novalue.OauthTokenNoValueException;
 import com.personal.marketnote.common.utility.FormatConverter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.SignInApiDocs;
@@ -53,13 +52,14 @@ public class UserController {
             @Valid @RequestBody SignUpRequest signUpRequest,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
-        if (!FormatValidator.hasValue(principal)) {
-            throw new OauthTokenNoValueException();
-        }
+        AuthVendor authVendor = AuthVendor.NATIVE;
+        String oidcId = null;
 
-        String oidcId = principal.getAttribute(SUB_CLAIM_KEY);
-        String issuer = principal.getAttribute(ISS_CLAIM_KEY);
-        AuthVendor authVendor = resolveVendorFromIssuer(FormatConverter.toUpperCase(issuer));
+        if (FormatValidator.hasValue(principal)) {
+            oidcId = principal.getAttribute(SUB_CLAIM_KEY);
+            String issuer = principal.getAttribute(ISS_CLAIM_KEY);
+            authVendor = resolveVendorFromIssuer(FormatConverter.toUpperCase(issuer));
+        }
 
         SignUpResponse signUpResponse = SignUpResponse.from(
                 signUpUseCase.signUp(UserRequestToCommandMapper.mapToCommand(signUpRequest), authVendor, oidcId)
