@@ -2,6 +2,7 @@ package com.personal.marketnote.user.security.token.introspector;
 
 import com.personal.marketnote.user.constant.PrimaryRole;
 import com.personal.marketnote.user.domain.user.User;
+import com.personal.marketnote.user.port.in.usecase.GetRoleInfoUseCase;
 import com.personal.marketnote.user.port.out.FindUserPort;
 import com.personal.marketnote.user.security.token.dto.OAuth2AuthenticationInfo;
 import com.personal.marketnote.user.security.token.exception.InvalidAccessTokenException;
@@ -19,9 +20,10 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Slf4j
-public class OpaqueTokenDefaultIntrospector implements OpaqueTokenIntrospector {
+public class DefaultOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
     private final TokenSupport tokenSupport;
     private final FindUserPort findUserPort;
+    private final GetRoleInfoUseCase roleService;
 
     @Override
     public OAuth2AuthenticatedPrincipal introspect(String token) {
