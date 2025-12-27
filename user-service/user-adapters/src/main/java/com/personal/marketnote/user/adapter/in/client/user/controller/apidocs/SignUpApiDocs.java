@@ -34,7 +34,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- | --- |
                 | nickname | string | 닉네임(2~20자, 한글) | Y | "고길동" |
                 | fullName | string | 성명(2~10자, 한글) | Y | "홍길동" |
-                | phoneNumber | string | 전화번호(10~11자, 010으로 시작) | Y | "01012345678" |
+                | phoneNumber | string | 전화번호(형식: 010-1234-5678) | Y | "010-1234-5678" |
                 
                 ## Response
                 
@@ -64,7 +64,7 @@ import java.lang.annotation.*;
                                 {
                                     "nickname": "고길동",
                                     "fullName": "홍길동",
-                                    "phoneNumber": "01012345678"
+                                    "phoneNumber": "010-1234-5678"
                                 }
                                 """)
                 )

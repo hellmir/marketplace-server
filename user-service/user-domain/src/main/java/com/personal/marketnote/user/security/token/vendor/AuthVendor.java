@@ -8,6 +8,7 @@ package com.personal.marketnote.user.security.token.vendor;
 public enum AuthVendor {
     KAKAO,
     GOOGLE,
+    APPLE,
     NATIVE;
 
     public static AuthVendor valueOfIgnoreCase(String value) throws IllegalArgumentException {

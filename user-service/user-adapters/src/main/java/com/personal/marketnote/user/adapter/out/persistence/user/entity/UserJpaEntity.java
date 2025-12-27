@@ -28,7 +28,7 @@ public class UserJpaEntity extends BaseGeneralEntity {
     @Column(name = "full_name", nullable = false, length = 15)
     private String fullName;
 
-    @Column(name = "phone_number", length = 15)
+    @Column(name = "phone_number", nullable = false, unique = true, length = 15)
     private String phoneNumber;
 
     @Column(name = "reference_code", length = 15)

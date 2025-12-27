@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.personal.marketnote.user.exception.ExceptionMessage.OIDC_ID_EXISTS_EXCEPTION_MESSAGE;
+import static com.personal.marketnote.user.exception.ExceptionMessage.PHONE_NUMBER_EXISTS_EXCEPTION_MESSAGE;
 import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
 
 @RequiredArgsConstructor
@@ -24,7 +26,12 @@ public class SignUpService implements SignUpUseCase {
     @Override
     public SignUpResult signUp(SignUpCommand signUpCommand, String oidcId) {
         if (findUserPort.isUserExists(oidcId)) {
-            throw new UserExistsException(oidcId);
+            throw new UserExistsException(String.format(OIDC_ID_EXISTS_EXCEPTION_MESSAGE, oidcId));
+        }
+
+        String phoneNumber = signUpCommand.getPhoneNumber();
+        if (findUserPort.isUserExists(phoneNumber)) {
+            throw new UserExistsException(String.format(PHONE_NUMBER_EXISTS_EXCEPTION_MESSAGE, phoneNumber));
         }
 
         return SignUpResult.from(
