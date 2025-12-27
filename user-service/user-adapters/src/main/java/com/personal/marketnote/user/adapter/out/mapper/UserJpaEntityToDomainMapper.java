@@ -1,8 +1,10 @@
 package com.personal.marketnote.user.adapter.out.mapper;
 
 import com.personal.marketnote.user.adapter.out.persistence.authentication.entity.RoleJpaEntity;
+import com.personal.marketnote.user.adapter.out.persistence.user.entity.TermsJpaEntity;
 import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserJpaEntity;
 import com.personal.marketnote.user.domain.authentication.Role;
+import com.personal.marketnote.user.domain.user.Terms;
 import com.personal.marketnote.user.domain.user.User;
 
 import java.util.Objects;
@@ -22,14 +24,25 @@ public class UserJpaEntityToDomainMapper {
                                 userJpaEntity.getPhoneNumber(),
                                 userJpaEntity.getReferenceCode(),
                                 mapToDomain(userJpaEntity.getRoleJpaEntity()).get(),
-                                userJpaEntity.getLastLoggedInAt()
-                        )
-                );
+                                userJpaEntity.getLastLoggedInAt()));
     }
 
     private static Optional<Role> mapToDomain(RoleJpaEntity roleJpaEntity) {
         return Optional.ofNullable(roleJpaEntity)
                 .filter(Objects::nonNull)
                 .map(entity -> Role.of(entity.getId(), entity.getName()));
+    }
+
+    public static Optional<Terms> mapToDomain(TermsJpaEntity termsJpaEntity) {
+        return Optional.ofNullable(termsJpaEntity)
+                .filter(Objects::nonNull)
+                .map(
+                        entity -> Terms.of(
+                                termsJpaEntity.getId(),
+                                termsJpaEntity.getContent(),
+                                termsJpaEntity.getCreatedAt(),
+                                termsJpaEntity.getModifiedAt(),
+                                termsJpaEntity.getStatus())
+                );
     }
 }
