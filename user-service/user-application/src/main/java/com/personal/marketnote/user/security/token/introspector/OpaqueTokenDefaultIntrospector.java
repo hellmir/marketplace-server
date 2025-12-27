@@ -6,6 +6,7 @@ import com.personal.marketnote.user.port.out.FindUserPort;
 import com.personal.marketnote.user.security.token.dto.OAuth2AuthenticationInfo;
 import com.personal.marketnote.user.security.token.exception.InvalidAccessTokenException;
 import com.personal.marketnote.user.security.token.support.TokenSupport;
+import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -35,20 +36,27 @@ public class OpaqueTokenDefaultIntrospector implements OpaqueTokenIntrospector {
 
                 return new DefaultOAuth2AuthenticatedPrincipal(
                         String.valueOf(signedUpUser.getId()),
-                        Map.of("sub", oidcId == null ? "" : oidcId),
+                        Map.of(
+                                "sub", oidcId == null ? "" : oidcId,
+                                "iss", userInfo.authVendor().name()
+                        ),
                         List.of(new SimpleGrantedAuthority(signedUpUser.getRole().getId()))
                 );
             }
 
             return new DefaultOAuth2AuthenticatedPrincipal(
                     "-1",
-                    Map.of("sub", oidcId == null ? "" : oidcId),
+                    Map.of(
+                            "sub", oidcId == null ? "" : oidcId,
+                            "iss", userInfo.authVendor().name()
+                    ),
                     List.of(new SimpleGrantedAuthority(PrimaryRole.ROLE_GUEST.name()))
             );
         } catch (InvalidAccessTokenException e) {
             return new DefaultOAuth2AuthenticatedPrincipal(
                     "-1",
-                    Map.of("sub", ""),
+                    Map.of("sub", "",
+                            "iss", AuthVendor.NATIVE.name()),
                     List.of(new SimpleGrantedAuthority(PrimaryRole.ROLE_ANONYMOUS.name()))
             );
         }

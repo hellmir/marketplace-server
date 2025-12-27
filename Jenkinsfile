@@ -686,11 +686,11 @@ pipeline {
 			slackSend(
 				channel: "${env.SLACK_NOTIFICATION_CHANNEL}",
 				color:   "${env.SLACK_SUCCESS_COLOR}",
-				message: "Build Success!!\n" +
-				"SERVICE: ${env.SERVICE_NAME}\n" +
-				"ECS_SERVICE: ${env.ECS_SERVICE_NAME}\n" +
-				"IMAGE: ${env.IMAGE_URI?:'N/A'}\n" +
-				"BUILD_NUMBER: ${env.BUILD_NUMBER}"
+				message: "Build Success!!\n"
+				+ "SERVICE: ${env.SERVICE_NAME}\n"
+				+ "ECS_SERVICE: ${env.ECS_SERVICE_NAME}\n"
+				+ "IMAGE: ${env.IMAGE_URI?:'N/A'}\n"
+				+ "BUILD_NUMBER: ${env.BUILD_NUMBER}"
 			)
 		}
 

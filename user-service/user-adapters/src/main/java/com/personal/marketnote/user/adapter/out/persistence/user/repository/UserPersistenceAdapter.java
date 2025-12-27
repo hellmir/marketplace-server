@@ -1,23 +1,25 @@
 package com.personal.marketnote.user.adapter.out.persistence.user.repository;
 
 import com.personal.marketnote.user.adapter.out.mapper.UserJpaEntityToDomainMapper;
-import com.personal.marketnote.user.adapter.out.persistence.user.entity.QUserJpaEntity;
 import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserJpaEntity;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.port.out.FindUserPort;
 import com.personal.marketnote.user.port.out.SignUpPort;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
+import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
+import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
+
 @Repository
 @RequiredArgsConstructor
+@Transactional(isolation = READ_COMMITTED, propagation = REQUIRES_NEW, timeout = 180)
 public class UserPersistenceAdapter implements SignUpPort, FindUserPort {
     private final UserJpaRepository userJpaRepository;
-    private final JPAQueryFactory jpaQueryFactory;
-    private final QUserJpaEntity user = QUserJpaEntity.userJpaEntity;
 
     @Override
     public User saveUser(User user) {
@@ -25,16 +27,23 @@ public class UserPersistenceAdapter implements SignUpPort, FindUserPort {
     }
 
     @Override
-    public boolean isUserExists(String oidcId) {
+    public boolean existsByOidcId(String oidcId) {
         return userJpaRepository.existsByOidcId(oidcId);
     }
 
     @Override
+    public boolean existsByPhoneNumber(String phoneNumber) {
+        return userJpaRepository.existsByPhoneNumber(phoneNumber);
+    }
+
+    @Override
+    @Transactional(isolation = READ_UNCOMMITTED, readOnly = true, timeout = 120)
     public Optional<User> findById(Long id) {
         return UserJpaEntityToDomainMapper.mapToDomain(userJpaRepository.findById(id).orElse(null));
     }
 
     @Override
+    @Transactional(isolation = READ_UNCOMMITTED, readOnly = true, timeout = 120)
     public Optional<User> findByOidcId(String oidcId) {
         return UserJpaEntityToDomainMapper.mapToDomain(userJpaRepository.findByOidcId(oidcId).orElse(null));
     }

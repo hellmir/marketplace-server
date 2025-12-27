@@ -8,6 +8,7 @@ import com.personal.marketnote.user.port.in.result.SignUpResult;
 import com.personal.marketnote.user.port.in.usecase.SignUpUseCase;
 import com.personal.marketnote.user.port.out.FindUserPort;
 import com.personal.marketnote.user.port.out.SignUpPort;
+import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,19 +25,20 @@ public class SignUpService implements SignUpUseCase {
     private final FindUserPort findUserPort;
 
     @Override
-    public SignUpResult signUp(SignUpCommand signUpCommand, String oidcId) {
-        if (findUserPort.isUserExists(oidcId)) {
+    public SignUpResult signUp(SignUpCommand signUpCommand, AuthVendor authVendor, String oidcId) {
+        if (!authVendor.isNative() && findUserPort.existsByOidcId(oidcId)) {
             throw new UserExistsException(String.format(OIDC_ID_EXISTS_EXCEPTION_MESSAGE, oidcId));
         }
 
         String phoneNumber = signUpCommand.getPhoneNumber();
-        if (findUserPort.isUserExists(phoneNumber)) {
+        if (findUserPort.existsByPhoneNumber(phoneNumber)) {
             throw new UserExistsException(String.format(PHONE_NUMBER_EXISTS_EXCEPTION_MESSAGE, phoneNumber));
         }
 
         return SignUpResult.from(
                 signUpPort.saveUser(
                         User.of(
+                                authVendor,
                                 oidcId,
                                 signUpCommand.getNickname(),
                                 signUpCommand.getFullName(),

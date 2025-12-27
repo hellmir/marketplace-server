@@ -37,8 +37,7 @@ public class RestTemplateGoogleTokenProcessor implements TokenProcessor {
     public RestTemplateGoogleTokenProcessor(
             RestTemplate restTemplate,
             @Value("${oauth2.google.client-id}") String clientId,
-            @Value("${oauth2.google.client-secret}") String clientSecret
-    ) {
+            @Value("${oauth2.google.client-secret}") String clientSecret) {
         this.restTemplate = restTemplate;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
@@ -57,8 +56,8 @@ public class RestTemplateGoogleTokenProcessor implements TokenProcessor {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(requestBody);
 
-        ResponseEntity<OAuth2GrantedToken> responseEntity
-                = restTemplate.exchange(requestEntity, OAuth2GrantedToken.class);
+        ResponseEntity<OAuth2GrantedToken> responseEntity = restTemplate.exchange(requestEntity,
+                OAuth2GrantedToken.class);
 
         if (responseEntity.getStatusCode().is4xxClientError()) {
             throw new UnsupportedCodeException("Code is invalid");
@@ -75,11 +74,11 @@ public class RestTemplateGoogleTokenProcessor implements TokenProcessor {
     }
 
     private String extractIdFromIdToken(String idToken) {
-        // 참고: https://developers.kakao.com/docs/latest/ko/kakaologin/utilize#oidc-id-token
         if (log.isDebugEnabled()) {
             log.debug("idToken={}", idToken);
         }
-        ResponseEntity<String> response = this.restTemplate.getForEntity("https://oauth2.googleapis.com/tokeninfo?id_token=" + idToken,
+        ResponseEntity<String> response = this.restTemplate.getForEntity(
+                "https://oauth2.googleapis.com/tokeninfo?id_token=" + idToken,
                 String.class);
         return new JSONObject(response.getBody()).getString("sub");
     }
@@ -143,8 +142,8 @@ public class RestTemplateGoogleTokenProcessor implements TokenProcessor {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(requestBody);
 
-        ResponseEntity<OAuth2GrantedToken> responseEntity =
-                this.restTemplate.exchange(requestEntity, OAuth2GrantedToken.class);
+        ResponseEntity<OAuth2GrantedToken> responseEntity = this.restTemplate.exchange(requestEntity,
+                OAuth2GrantedToken.class);
 
         if (responseEntity.getStatusCode().is4xxClientError()) {
             throw new InvalidRefreshTokenException("Refresh token is not valid");

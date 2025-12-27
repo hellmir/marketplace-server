@@ -17,6 +17,14 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
     boolean existsByOidcId(@Param("oidcId") String oidcId);
 
     @Query("""
+            SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
+            FROM UserJpaEntity u
+            WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+              AND u.phoneNumber = :phoneNumber
+            """)
+    boolean existsByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+
+    @Query("""
             SELECT u
             FROM UserJpaEntity u
             WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
@@ -24,11 +32,11 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             """)
     Optional<UserJpaEntity> findById(@Param("id") Long id);
 
-    @Query(value = """
+    @Query("""
             SELECT u
             FROM UserJpaEntity u
             WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
-                AND u.oidcId = :oidcId
+              AND u.oidcId = :oidcId
             """)
     Optional<UserJpaEntity> findByOidcId(@Param("oidcId") String oidcId);
 }

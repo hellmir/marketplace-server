@@ -41,7 +41,7 @@ public class JwtDelegatingTokenSupportProxy extends DelegatingTokenSupport {
         GrantedTokenInfo tokenFrom3rdParty = super.grantToken(code, redirectUri, authVendor);
         String oidcId = tokenFrom3rdParty.id();
         User user = findUserPort.findByOidcId(oidcId)
-                .orElse(User.of(oidcId));
+                .orElse(User.of(authVendor, oidcId));
 
         OAuth2UserInfo userInfo = user.isGuest()
                 ? retrieveUserInfo(tokenFrom3rdParty.accessToken())
@@ -66,6 +66,7 @@ public class JwtDelegatingTokenSupportProxy extends DelegatingTokenSupport {
 
             return OAuth2AuthenticationInfo.builder()
                     .id(claims.getId())
+                    .authVendor(claims.getAuthVendor())
                     .build();
         } catch (JwtException e) {
             throw new InvalidAccessTokenException(e.getMessage());
