@@ -1,6 +1,5 @@
 package com.personal.marketnote.user.adapter.in.configuration.security;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.personal.marketnote.common.utility.http.client.resttemplate.RestTemplateErrorHandler;
 import com.personal.marketnote.user.security.token.resolver.JsonBearerTokenResolver;
@@ -50,6 +49,7 @@ public class OpaqueTokenIntrospectorConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/authentication/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/authentication/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/users/sign-up").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/users/sign-in").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/authentication/access-token/refresh").permitAll()
@@ -66,7 +66,9 @@ public class OpaqueTokenIntrospectorConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource(@Value("${client.cors.allowed-origins}") String allowedOrigins) {
+    public CorsConfigurationSource corsConfigurationSource(
+            @Value("${client.cors.allowed-origins}") String allowedOrigins
+    ) {
         CorsConfiguration config = new CorsConfiguration();
         List<String> origins = Arrays.stream(allowedOrigins.split(","))
                 .map(String::trim)
