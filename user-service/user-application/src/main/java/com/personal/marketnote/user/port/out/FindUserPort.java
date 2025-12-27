@@ -1,7 +1,6 @@
 package com.personal.marketnote.user.port.out;
 
 import com.personal.marketnote.user.domain.user.User;
-import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 
 import java.util.Optional;
 
@@ -10,9 +9,7 @@ public interface FindUserPort {
 
     boolean existsByPhoneNumber(String phoneNumber);
 
-    Optional<User> findById(Long id);
+    Optional<User> findById(Long userId);
 
-    Optional<User> findByAuthVendorAndOidcId(AuthVendor authVendor, String oidcId);
-
-    Optional<User> findByPhoneNumber(String phoneNumber);
+    Optional<User> findByOidcId(String oidcId);
 }
