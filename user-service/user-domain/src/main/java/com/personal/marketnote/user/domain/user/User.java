@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -70,6 +71,8 @@ public class User {
             AuthVendor authVendor,
             String oidcId,
             String nickname,
+            String email,
+            String password,
             String fullName,
             String phoneNumber,
             String referenceCode,
@@ -82,6 +85,8 @@ public class User {
                 .authVendor(authVendor)
                 .oidcId(oidcId)
                 .nickname(nickname)
+                .email(email)
+                .password(password)
                 .fullName(fullName)
                 .phoneNumber(phoneNumber)
                 .referenceCode(referenceCode)
@@ -99,5 +104,9 @@ public class User {
         userTerms.stream()
                 .filter(userTerms -> termsIds.contains(userTerms.getTerms().getId()))
                 .forEach(UserTerms::acceptOrCancel);
+    }
+
+    public boolean isValidPassword(PasswordEncoder passwordEncoder, String targetPassword) {
+        return passwordEncoder.matches(targetPassword, password);
     }
 }

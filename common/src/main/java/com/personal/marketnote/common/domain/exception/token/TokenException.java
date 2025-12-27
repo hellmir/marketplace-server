@@ -6,7 +6,6 @@ import org.springframework.security.oauth2.server.resource.InvalidBearerTokenExc
  * 토큰과 관련된 예외 클래스의 base class.
  */
 public abstract class TokenException extends InvalidBearerTokenException {
-
     public TokenException(String message) {
         super(message);
     }

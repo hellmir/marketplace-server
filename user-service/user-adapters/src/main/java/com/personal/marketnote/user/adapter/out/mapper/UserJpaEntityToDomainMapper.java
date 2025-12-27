@@ -24,6 +24,8 @@ public class UserJpaEntityToDomainMapper {
                                 userJpaEntity.getAuthVendor(),
                                 userJpaEntity.getOidcId(),
                                 userJpaEntity.getNickname(),
+                                userJpaEntity.getEmail(),
+                                userJpaEntity.getPassword(),
                                 userJpaEntity.getFullName(),
                                 userJpaEntity.getPhoneNumber(),
                                 userJpaEntity.getReferenceCode(),

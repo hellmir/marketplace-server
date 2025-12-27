@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 
+import static com.personal.marketnote.common.domain.exception.ExceptionMessage.INVALID_EMAIL_EXCEPTION_MESSAGE;
+import static com.personal.marketnote.common.utility.RegularExpressionConstant.EMAIL_PATTERN;
+
 @Getter
 public class SignUpRequest {
     @Schema(
@@ -18,28 +21,32 @@ public class SignUpRequest {
 
     @Schema(
             name = "email",
-            description = "이메일 주소"
+            description = "이메일 주소",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
-    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "이메일 주소 형식이 올바르지 않습니다.")
+    @Pattern(regexp = EMAIL_PATTERN, message = INVALID_EMAIL_EXCEPTION_MESSAGE)
     private String email;
 
     @Schema(
             name = "password",
-            description = "비밀번호"
+            description = "비밀번호",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", message = "비밀번호는 8자 이상, 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.")
     private String password;
 
     @Schema(
             name = "fullName",
-            description = "성명"
+            description = "성명",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
     @Pattern(regexp = "^[가-힣]{2,10}$", message = "성명은 2글자 이상, 10글자 이하여야 합니다.")
     private String fullName;
 
     @Schema(
             name = "phoneNumber",
-            description = "전화번호"
+            description = "전화번호",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
     @Pattern(regexp = "^01[016789]-\\d{3,4}-\\d{4}$", message = "전화번호 형식이 올바르지 않습니다.")
     private String phoneNumber;
