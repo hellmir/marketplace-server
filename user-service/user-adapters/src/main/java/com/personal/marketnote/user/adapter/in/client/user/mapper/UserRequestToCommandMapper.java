@@ -17,6 +17,6 @@ public class UserRequestToCommandMapper {
     }
 
     public static SignInCommand mapToCommand(SignInRequest signInRequest) {
-        return SignInCommand.of(signInRequest.getPhoneNumber());
+        return SignInCommand.of(signInRequest.getEmail(), signInRequest.getPassword());
     }
 }

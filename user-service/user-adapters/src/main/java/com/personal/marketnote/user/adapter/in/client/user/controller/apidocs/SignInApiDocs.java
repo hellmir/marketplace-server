@@ -22,9 +22,9 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                - 회원 전화번호 또는 OAuth2 콜백 URI를 통해 발급된 Access Token을 전송해 로그인합니다.
+                - OAuth2 콜백 URI를 통해 발급된 Access Token 또는 회원 이메일 주소/비밀번호를 전송해 로그인합니다.
                 
-                - Access Token을 전송하는 경우 전화번호는 무시됩니다. (우선순위: Access Token > 전화번호)
+                - Access Token을 전송하는 경우 이메일 주소/비밀번호는 무시됩니다. (우선순위: Access Token > 이메일 주소/비밀번호)
                 
                 ---
                 
@@ -32,7 +32,8 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
-                | phoneNumber | string | 전화번호(형식: 010-1234-5678) | N | "010-1234-5678" |
+                | email | string | 이메일 주소(형식: example@example.com) | N | "example@example.com" |
+                | password | string | 비밀번호(8자 이상, 대문자, 소문자, 숫자, 특수문자 포함) | N | "Password123!" |
                 
                 ## Response
                 
@@ -60,7 +61,8 @@ import java.lang.annotation.*;
                         schema = @Schema(implementation = SignUpRequest.class),
                         examples = @ExampleObject("""
                                 {
-                                    "phoneNumber": "010-1234-5678"
+                                    "email": "example@example.com",
+                                    "password": "Password123!"
                                 }
                                 """)
                 )
@@ -92,7 +94,21 @@ import java.lang.annotation.*;
                                           "statusCode": 400,
                                           "timestamp": "2025-12-27T15:36:06.027533",
                                           "content": null,
-                                          "message": "회원 전화번호 또는 authVendor 및 oidcId 중 하나는 필수입니다."
+                                          "message": "회원 이메일 주소 또는 authVendor 및 oidcId 중 하나는 필수입니다."
+                                        }
+                                        """)
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "비밀번호 인증 실패",
+                        content = @Content(
+                                examples = @ExampleObject("""
+                                        {
+                                          "statusCode": 401,
+                                          "timestamp": "2025-12-27T15:50:09.419345",
+                                          "content": null,
+                                          "message": "회원 비밀번호가 일치하지 않습니다."
                                         }
                                         """)
                         )
@@ -106,7 +122,7 @@ import java.lang.annotation.*;
                                           "statusCode": 404,
                                           "timestamp": "2025-12-26T09:53:02.089234",
                                           "content": null,
-                                          "message": "존재하지 않는 회원입니다. 회원 전화번호: 010-1234-5678"
+                                          "message": "존재하지 않는 회원입니다. 회원 이메일 주소: example@example.com"
                                         }
                                         """)
                         )

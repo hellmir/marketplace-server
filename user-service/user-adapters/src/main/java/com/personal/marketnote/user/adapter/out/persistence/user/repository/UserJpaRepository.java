@@ -65,4 +65,12 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
                 AND u.phoneNumber = :phoneNumber
             """)
     Optional<UserJpaEntity> findByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+
+    @Query("""
+            SELECT u
+            FROM UserJpaEntity u
+            WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+                AND u.email = :email
+            """)
+    Optional<UserJpaEntity> findByEmail(@Param("email") String email);
 }

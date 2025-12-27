@@ -19,4 +19,6 @@ public interface FindUserPort {
     Optional<User> findByAuthVendorAndOidcId(AuthVendor authVendor, String oidcId);
 
     Optional<User> findByPhoneNumber(String phoneNumber);
+
+    Optional<User> findByEmail(String email);
 }

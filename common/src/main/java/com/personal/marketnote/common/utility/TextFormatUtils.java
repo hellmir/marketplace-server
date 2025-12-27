@@ -24,6 +24,6 @@ public final class TextFormatUtils {
         if (cleanedTel.length() == 10) {
             return String.format("%s-%s-%s", cleanedTel.substring(0, 3), cleanedTel.substring(3, 6), cleanedTel.substring(6));
         }
-        return tel; // 원본 반환
+        return tel;
     }
 } 

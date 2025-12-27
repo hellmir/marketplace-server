@@ -40,7 +40,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/users/sign-up").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/users/sign-in").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/authentication/access-token/refresh").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/users/terms").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/terms").permitAll()
                         .anyRequest().permitAll())
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable);

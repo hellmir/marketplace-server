@@ -121,6 +121,20 @@ import java.lang.annotation.*;
                                         }
                                         """)
                         )
+                ),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "토큰 인증 실패",
+                        content = @Content(
+                                examples = @ExampleObject("""
+                                        {
+                                          "statusCode": 401,
+                                          "timestamp": "2025-12-27T16:22:02.196732",
+                                          "content": null,
+                                          "message": "Invalid token"
+                                        }
+                                        """)
+                        )
                 )
         }
 )

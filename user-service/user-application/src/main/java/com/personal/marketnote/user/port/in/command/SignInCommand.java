@@ -4,13 +4,15 @@ import lombok.Getter;
 
 @Getter
 public class SignInCommand {
-    private final String phoneNumber;
+    private final String email;
+    private final String password;
 
-    private SignInCommand(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    private SignInCommand(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 
-    public static SignInCommand of(String phoneNumber) {
-        return new SignInCommand(phoneNumber);
+    public static SignInCommand of(String email, String password) {
+        return new SignInCommand(email, password);
     }
 }

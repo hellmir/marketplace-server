@@ -75,6 +75,11 @@ public class UserPersistenceAdapter implements SaveUserPort, FindUserPort, FindT
     }
 
     @Override
+    public Optional<User> findByEmail(String email) {
+        return UserJpaEntityToDomainMapper.mapToDomain(userJpaRepository.findByEmail(email).orElse(null));
+    }
+
+    @Override
     public List<Terms> findAll() {
         return termsJpaRepository.findAllByOrderByIdAsc().stream()
                 .map(UserJpaEntityToDomainMapper::mapToDomain)
