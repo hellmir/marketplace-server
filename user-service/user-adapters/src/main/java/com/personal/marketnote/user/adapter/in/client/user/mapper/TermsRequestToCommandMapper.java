@@ -1,10 +1,10 @@
 package com.personal.marketnote.user.adapter.in.client.user.mapper;
 
-import com.personal.marketnote.user.adapter.in.client.user.request.AcceptTermsRequest;
-import com.personal.marketnote.user.port.in.command.AcceptTermsCommand;
+import com.personal.marketnote.user.adapter.in.client.user.request.AcceptOrCancelTermsRequest;
+import com.personal.marketnote.user.port.in.command.AcceptOrCancelTermsCommand;
 
 public class TermsRequestToCommandMapper {
-    public static AcceptTermsCommand mapToCommand(AcceptTermsRequest acceptTermsRequest) {
-        return AcceptTermsCommand.of(acceptTermsRequest.getIds());
+    public static AcceptOrCancelTermsCommand mapToCommand(AcceptOrCancelTermsRequest acceptOrCancelTermsRequest) {
+        return AcceptOrCancelTermsCommand.of(acceptOrCancelTermsRequest.getIds());
     }
 }

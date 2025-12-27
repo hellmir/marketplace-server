@@ -84,9 +84,9 @@ public class User {
         return role.isGuest();
     }
 
-    public void acceptTerms(List<Long> termsIds) {
+    public void acceptOrCancelTerms(List<Long> termsIds) {
         userTerms.stream()
                 .filter(userTerms -> termsIds.contains(userTerms.getTerms().getId()))
-                .forEach(UserTerms::agree);
+                .forEach(UserTerms::acceptOrCancel);
     }
 }

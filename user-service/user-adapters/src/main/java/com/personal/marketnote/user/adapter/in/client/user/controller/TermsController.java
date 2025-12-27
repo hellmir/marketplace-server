@@ -2,14 +2,15 @@ package com.personal.marketnote.user.adapter.in.client.user.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.ElementExtractor;
-import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.AcceptTermsApiDocs;
+import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.AcceptOrCancelTermsApiDocs;
 import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.GetAllTermsApiDocs;
 import com.personal.marketnote.user.adapter.in.client.user.mapper.TermsRequestToCommandMapper;
-import com.personal.marketnote.user.adapter.in.client.user.request.AcceptTermsRequest;
+import com.personal.marketnote.user.adapter.in.client.user.request.AcceptOrCancelTermsRequest;
 import com.personal.marketnote.user.adapter.in.client.user.response.GetTermsResponse;
-import com.personal.marketnote.user.port.in.usecase.terms.AcceptTermsUseCase;
+import com.personal.marketnote.user.adapter.in.client.user.response.UpdateUserTermsResponse;
+import com.personal.marketnote.user.port.in.result.UpdateUserTermsResult;
 import com.personal.marketnote.user.port.in.usecase.terms.GetTermsUseCase;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import com.personal.marketnote.user.port.in.usecase.terms.UpdateTermsUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/users/terms")
@@ -33,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class TermsController {
     private final GetTermsUseCase getTermsUseCase;
-    private final AcceptTermsUseCase acceptTermsUseCase;
+    private final UpdateTermsUseCase updateTermsUseCase;
 
     @GetMapping()
     @GetAllTermsApiDocs
@@ -53,21 +51,21 @@ public class TermsController {
     }
 
     @PostMapping()
-    @AcceptTermsApiDocs
-    public ResponseEntity<BaseResponse<Void>> acceptTerms(
-            @Valid @RequestBody AcceptTermsRequest acceptTermsRequest,
+    @AcceptOrCancelTermsApiDocs
+    public ResponseEntity<BaseResponse<UpdateUserTermsResponse>> acceptOrCancelTerms(
+            @Valid @RequestBody AcceptOrCancelTermsRequest acceptOrCancelTermsRequest,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
-        acceptTermsUseCase.acceptTerms(
+        UpdateUserTermsResult updateUserTermsResult = updateTermsUseCase.acceptOrCancelTerms(
                 ElementExtractor.extractUserId(principal),
-                TermsRequestToCommandMapper.mapToCommand(acceptTermsRequest)
+                TermsRequestToCommandMapper.mapToCommand(acceptOrCancelTermsRequest)
         );
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        null,
+                        UpdateUserTermsResponse.from(updateUserTermsResult),
                         HttpStatus.OK,
-                        "약관 동의 성공"
+                        "약관 동의/철회 성공"
                 ),
                 HttpStatus.OK
         );

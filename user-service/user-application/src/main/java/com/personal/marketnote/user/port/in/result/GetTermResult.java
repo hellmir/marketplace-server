@@ -4,9 +4,10 @@ import com.personal.marketnote.user.domain.user.Terms;
 
 public record GetTermResult(
         Long id,
-        String content
+        String content,
+        Boolean isRequired
 ) {
     public static GetTermResult from(Terms terms) {
-        return new GetTermResult(terms.getId(), terms.getContent());
+        return new GetTermResult(terms.getId(), terms.getContent(), terms.getRequiredYn());
     }
 }

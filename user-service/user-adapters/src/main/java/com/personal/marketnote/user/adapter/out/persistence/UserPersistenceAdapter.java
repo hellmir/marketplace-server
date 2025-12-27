@@ -7,9 +7,11 @@ import com.personal.marketnote.user.adapter.out.persistence.user.repository.Term
 import com.personal.marketnote.user.adapter.out.persistence.user.repository.UserJpaRepository;
 import com.personal.marketnote.user.domain.user.Terms;
 import com.personal.marketnote.user.domain.user.User;
+import com.personal.marketnote.user.exception.UserNotFoundException;
 import com.personal.marketnote.user.port.out.user.FindTermsPort;
 import com.personal.marketnote.user.port.out.user.FindUserPort;
 import com.personal.marketnote.user.port.out.user.SaveUserPort;
+import com.personal.marketnote.user.port.out.user.UpdateUserPort;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.personal.marketnote.user.exception.ExceptionMessage.USER_ID_NOT_FOUND_EXCEPTION_MESSAGE;
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
 import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
@@ -25,7 +28,7 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRES_NE
 @PersistenceAdapter
 @RequiredArgsConstructor
 @Transactional(isolation = READ_COMMITTED, propagation = REQUIRES_NEW, timeout = 180)
-public class UserPersistenceAdapter implements SaveUserPort, FindUserPort, FindTermsPort {
+public class UserPersistenceAdapter implements SaveUserPort, FindUserPort, FindTermsPort, UpdateUserPort {
     private final UserJpaRepository userJpaRepository;
     private final TermsJpaRepository termsJpaRepository;
 
@@ -71,5 +74,17 @@ public class UserPersistenceAdapter implements SaveUserPort, FindUserPort, FindT
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void update(User user) {
+        UserJpaEntity userJpaEntity = findEntityById(user.getId());
+        userJpaEntity.updateFrom(user);
+    }
+
+    private UserJpaEntity findEntityById(Long id) {
+        return userJpaRepository.findById(id).orElseThrow(
+                () -> new UserNotFoundException(String.format(USER_ID_NOT_FOUND_EXCEPTION_MESSAGE, id))
+        );
     }
 }

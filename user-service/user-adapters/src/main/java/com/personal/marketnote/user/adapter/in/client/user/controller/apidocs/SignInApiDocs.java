@@ -22,7 +22,9 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                회원 전화번호 또는 OAuth2 콜백 URI를 통해 발급된 Access Token을 전송해 로그인합니다.
+                - 회원 전화번호 또는 OAuth2 콜백 URI를 통해 발급된 Access Token을 전송해 로그인합니다.
+                
+                - Access Token을 전송하는 경우 전화번호는 무시됩니다. (우선순위: Access Token > 전화번호)
                 
                 ---
                 
@@ -30,7 +32,7 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
-                | phoneNumber | string | 전화번호(형식: 010-1234-5678) | Y | "010-1234-5678" |
+                | phoneNumber | string | 전화번호(형식: 010-1234-5678) | N | "010-1234-5678" |
                 
                 ## Response
                 

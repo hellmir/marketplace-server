@@ -2,6 +2,7 @@ package com.personal.marketnote.user.adapter.out.persistence.user.entity;
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseGeneralEntity;
 import com.personal.marketnote.user.domain.user.Terms;
+import com.personal.marketnote.user.domain.user.UserTerms;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,5 +39,9 @@ public class UserTermsJpaEntity extends BaseGeneralEntity {
                 .userJpaEntity(userJpaEntity)
                 .termsJpaEntity(TermsJpaEntity.from(terms))
                 .build();
+    }
+
+    public void updateFrom(UserTerms userTerms) {
+        agreementYn = userTerms.getAgreementYn();
     }
 }
