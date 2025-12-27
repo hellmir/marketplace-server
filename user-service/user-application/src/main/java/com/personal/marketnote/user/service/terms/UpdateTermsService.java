@@ -4,7 +4,7 @@ import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.exception.UserNotFoundException;
 import com.personal.marketnote.user.port.in.command.AcceptOrCancelTermsCommand;
-import com.personal.marketnote.user.port.in.result.UpdateUserTermsResult;
+import com.personal.marketnote.user.port.in.result.GetUserTermsResult;
 import com.personal.marketnote.user.port.in.usecase.terms.UpdateTermsUseCase;
 import com.personal.marketnote.user.port.out.user.FindUserPort;
 import com.personal.marketnote.user.port.out.user.UpdateUserPort;
@@ -22,12 +22,12 @@ public class UpdateTermsService implements UpdateTermsUseCase {
     private final UpdateUserPort updateUserPort;
 
     @Override
-    public UpdateUserTermsResult acceptOrCancelTerms(Long userId, AcceptOrCancelTermsCommand acceptOrCancelTermsCommand) {
+    public GetUserTermsResult acceptOrCancelTerms(Long userId, AcceptOrCancelTermsCommand acceptOrCancelTermsCommand) {
         User user = findUserPort.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(String.format(USER_ID_NOT_FOUND_EXCEPTION_MESSAGE, userId)));
         user.acceptOrCancelTerms(acceptOrCancelTermsCommand.getIds());
         updateUserPort.update(user);
 
-        return UpdateUserTermsResult.from(user.getUserTerms());
+        return GetUserTermsResult.from(user.getUserTerms());
     }
 }

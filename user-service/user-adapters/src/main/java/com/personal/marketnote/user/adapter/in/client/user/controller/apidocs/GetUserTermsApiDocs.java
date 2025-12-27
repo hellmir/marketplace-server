@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "전체 약관 목록 조회",
+        summary = "회원 약관 동의 여부 목록 조회",
         description = """
                 작성일자: 2025-12-27
                 
@@ -20,7 +20,7 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                회원 약관 목록을 조회합니다.
+                - 회원 약관 동의 여부 목록을 조회합니다.
                 
                 ---
                 
@@ -36,7 +36,7 @@ import java.lang.annotation.*;
                 | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
                 | timestamp | string(datetime) | 응답 일시 | "2025-12-26T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
-                | message | string | 처리 결과 | "회원 약관 목록 조회 성공" |
+                | message | string | 처리 결과 | "회원 약관 동의 여부 목록 조회 성공" |
                 
                 ---
                 
@@ -44,63 +44,69 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
-                | terms | array | 회원 약관 목록 | [ ... ] |
+                | userTerms | array | 회원 약관 동의 여부 목록 | [ ... ] |
                 
                 ---
                 
-                #### Response > content > terms
+                #### Response > content > userTerms
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | id | number | 약관 ID | 1 |
-                | content | string | 약관 내용 | "회원 약관 내용1" |
+                | content | string | 약관 내용 | "서비스 이용 약관 동의" |
                 | isRequired | boolean | 필수 동의 여부 | true / false |
+                | isAgreed | boolean | 동의/미동의 여부 | true / false |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         responses = {
                 @ApiResponse(
                         responseCode = "200",
-                        description = "전체 약관 목록 조회 성공",
+                        description = "회원 약관 동의 여부 목록 조회 성공",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 200,
-                                          "timestamp": "2025-12-26T22:52:31.889943",
+                                          "timestamp": "2025-12-27T14:32:14.084538",
                                           "content": {
-                                            "terms": [
-                                             {
+                                            "userTerms": [
+                                              {
                                                 "id": 1,
-                                                "content": "회원 약관 내용1",
-                                                "isRequired": true
+                                                "content": "서비스 이용 약관 동의",
+                                                "isRequired": true,
+                                                "isAgreed": false
                                               },
                                               {
                                                 "id": 2,
-                                                "content": "회원 약관 내용2",
-                                                "isRequired": true
+                                                "content": "개인정보 수집 및 이용 동의",
+                                                "isRequired": true,
+                                                "isAgreed": false
                                               },
                                               {
                                                 "id": 3,
-                                                "content": "회원 약관 내용3",
-                                                "isRequired": true
+                                                "content": "만 14세 이상입니다.",
+                                                "isRequired": true,
+                                                "isAgreed": true
                                               },
                                               {
                                                 "id": 4,
-                                                "content": "회원 약관 내용4",
-                                                "isRequired": true
+                                                "content": "무슨무슨 동의",
+                                                "isRequired": true,
+                                                "isAgreed": true
                                               },
                                               {
                                                 "id": 5,
-                                                "content": "회원 약관 내용5",
-                                                "isRequired": false
+                                                "content": "마케팅 정보 수집 동의",
+                                                "isRequired": false,
+                                                "isAgreed": false
                                               }
                                             ]
                                           },
-                                          "message": "전체 약관 목록 조회 성공"
+                                          "message": "회원 약관 동의 여부 목록 조회 성공"
                                         }
                                         """)
                         )
                 )
         }
 )
-public @interface GetAllTermsApiDocs {
+public @interface GetUserTermsApiDocs {
 }
