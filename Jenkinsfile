@@ -278,6 +278,7 @@ pipeline {
 								portMappings: [[containerPort: 8080, protocol: "tcp"]],
 								essential: true,
 								environment: [
+									[name: "SERVICE_NAME",                  value: "${env.ECS_SERVICE_NAME}"],
 									[name: "DB_URL",                        value: "${env.CRED_DB_URL}"],
 									[name: "DB_USERNAME",                   value: "${env.CRED_DB_USERNAME}"],
 									[name: "DB_PASSWORD",                   value: "${env.CRED_DB_PASSWORD}"],
