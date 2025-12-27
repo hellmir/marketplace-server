@@ -371,7 +371,26 @@ pipeline {
                             """
 							sh "aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION --health-check-grace-period-seconds 180 || true"
 						}
-						sh "aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION"
+						sh '''
+						while true; do
+						  STATE=$(aws ecs describe-services \
+						    --cluster $ECS_CLUSTER_NAME \
+						    --services $ECS_SERVICE_NAME \
+						    --region $AWS_DEFAULT_REGION \
+						    --query 'services[0].deployments[?status==`PRIMARY`].rolloutState' \
+						    --output text)
+						  if echo "$STATE" | grep -q 'COMPLETED'; then
+						    echo 'ECS rolloutState=COMPLETED'
+						    break
+						  fi
+						  if echo "$STATE" | grep -q 'FAILED'; then
+						    echo 'ECS rolloutState=FAILED'
+						    exit 1
+						  fi
+						  echo "ECS waiting... rolloutState=$STATE"
+						  sleep 20
+						done
+						'''
 					}
 				}
 			}
