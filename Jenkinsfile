@@ -371,35 +371,22 @@ pipeline {
                             """
 							sh "aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION --health-check-grace-period-seconds 180 || true"
 						}
-						sh(script: '''
-						while true; do
-						  DATA=$(aws ecs describe-services \
-						    --cluster "$ECS_CLUSTER_NAME" \
-						    --services "$ECS_SERVICE_NAME" \
-						    --region "$AWS_DEFAULT_REGION" \
-						    --query "services[0].[deployments[?status==\\`PRIMARY\\`].rolloutState | [0], runningCount, desiredCount, pendingCount]" \
-						    --output text)
-
-						  STATE=$(echo "$DATA" | awk '{print $1}')
-						  RUNNING=$(echo "$DATA" | awk '{print $2}')
-						  DESIRED=$(echo "$DATA" | awk '{print $3}')
-						  PENDING=$(echo "$DATA" | awk '{print $4}')
-
-						  echo "ECS rolloutState=$STATE, running=$RUNNING, desired=$DESIRED, pending=$PENDING"
-
-						  if [ "$STATE" = "COMPLETED" ] && [ "$RUNNING" = "$DESIRED" ] && [ "$PENDING" = "0" ]; then
-						    echo "ECS services-stable equivalent condition met."
-						    break
-						  fi
-
-						  if [ "$STATE" = "FAILED" ]; then
-						    echo "ECS rolloutState=FAILED"
-						    exit 1
-						  fi
-
-						  sleep 15
-						done
-						''')
+						int maxWaitRetries = 3
+						for (int i = 1; i <= maxWaitRetries; i++) {
+							def rc = sh(
+								script: "aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION",
+								returnStatus: true
+							)
+							if (rc == 0) {
+								echo "ECS services-stable 성공 (attempt ${i})"
+								break
+							}
+							echo "ECS services-stable 타임아웃 (attempt ${i}) → 재시도"
+							sleep time: 20, unit: 'SECONDS'
+							if (i == maxWaitRetries) {
+								error "ECS 서비스가 안정화되지 않음 (총 ${maxWaitRetries}회 대기 실패)"
+							}
+						}
 					}
 				}
 			}
