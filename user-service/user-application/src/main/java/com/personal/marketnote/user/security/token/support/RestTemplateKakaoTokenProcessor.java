@@ -23,6 +23,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Base64;
 
+import static com.personal.marketnote.user.security.token.utility.TokenConstant.SUB_CLAIM_KEY;
+
 @Component
 @Profile("qa.test | prod")
 @Slf4j
@@ -112,7 +114,7 @@ public class RestTemplateKakaoTokenProcessor implements TokenProcessor {
             chars[i] = (char) decoded[i];
         }
 
-        return new JSONObject(String.valueOf(chars)).getString("sub");
+        return new JSONObject(String.valueOf(chars)).getString(SUB_CLAIM_KEY);
     }
 
     @Override
@@ -131,7 +133,7 @@ public class RestTemplateKakaoTokenProcessor implements TokenProcessor {
         JSONObject responseBody = new JSONObject(responseEntity.getBody());
 
         return OAuth2AuthenticationInfo.builder()
-                .id(responseBody.getString("sub"))
+                .id(responseBody.getString(SUB_CLAIM_KEY))
                 .build();
     }
 

@@ -1,4 +1,4 @@
-package com.personal.marketnote.user.utility.jwt;
+package com.personal.marketnote.user.security.token.utility;
 
 public class TokenConstant {
     public static final String SUB_CLAIM_KEY = "sub";

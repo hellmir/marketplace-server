@@ -67,6 +67,7 @@ public class JwtDelegatingTokenSupportProxy extends DelegatingTokenSupport {
             return OAuth2AuthenticationInfo.builder()
                     .id(claims.getId())
                     .authVendor(claims.getAuthVendor())
+                    .userId(claims.getUserId())
                     .build();
         } catch (JwtException e) {
             throw new InvalidAccessTokenException(e.getMessage());
