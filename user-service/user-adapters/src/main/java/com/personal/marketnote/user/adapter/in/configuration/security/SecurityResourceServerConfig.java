@@ -27,7 +27,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @Profile({"qa.test", "prod"})
-public class OpaqueTokenIntrospectorConfig {
+public class SecurityResourceServerConfig {
     @Bean
     public BearerTokenResolver bearerTokenResolver() {
         return new JsonBearerTokenResolver();
@@ -48,8 +48,6 @@ public class OpaqueTokenIntrospectorConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/authentication/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/authentication/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/authentication/access-token/refresh").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)

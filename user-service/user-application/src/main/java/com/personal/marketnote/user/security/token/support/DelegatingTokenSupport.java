@@ -1,6 +1,5 @@
 package com.personal.marketnote.user.security.token.support;
 
-import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.security.token.dto.GrantedTokenInfo;
 import com.personal.marketnote.user.security.token.dto.OAuth2AuthenticationInfo;
 import com.personal.marketnote.user.security.token.dto.OAuth2UserInfo;
@@ -31,8 +30,8 @@ public class DelegatingTokenSupport implements TokenSupport {
 
     @Override
     public GrantedTokenInfo grantToken(String code, String redirectUri, AuthVendor authVendor) throws UnsupportedCodeException {
-        TokenProcessor processor = processorByAuthVendor.get(authVendor);
-        if (!FormatValidator.hasValue(processor)) {
+        TokenProcessor processor = this.processorByAuthVendor.get(authVendor);
+        if (processor == null) {
             throw new UnsupportedCodeException("No Auth vendor for: " + authVendor);
         }
         return processor.grantToken(code, redirectUri);
