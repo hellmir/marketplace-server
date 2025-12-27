@@ -1,4 +1,4 @@
-rootProject.name = "shop"
+rootProject.name = "marketnote"
 
 include("common")
 

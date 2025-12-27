@@ -38,6 +38,23 @@ public class UserJpaEntityToDomainMapper {
                 .map(entity -> Role.of(entity.getId(), entity.getName()));
     }
 
+    private static Optional<List<UserTerms>> mapToDomain(List<UserTermsJpaEntity> userTermsJpaEntities) {
+        return Optional.ofNullable(userTermsJpaEntities)
+                .filter(Objects::nonNull)
+                .map(entities -> entities.stream()
+                        .map(entity -> UserTerms.of(
+                                Terms.of(
+                                        entity.getTermsJpaEntity().getId(),
+                                        entity.getTermsJpaEntity().getContent(),
+                                        entity.getTermsJpaEntity().getRequiredYn(),
+                                        entity.getCreatedAt(),
+                                        entity.getModifiedAt(),
+                                        entity.getStatus()
+                                ), entity.getAgreementYn(), entity.getCreatedAt(), entity.getModifiedAt())
+                        )
+                        .collect(Collectors.toList()));
+    }
+
     public static Optional<Terms> mapToDomain(TermsJpaEntity termsJpaEntity) {
         return Optional.ofNullable(termsJpaEntity)
                 .filter(Objects::nonNull)
@@ -50,15 +67,5 @@ public class UserJpaEntityToDomainMapper {
                                 termsJpaEntity.getModifiedAt(),
                                 termsJpaEntity.getStatus())
                 );
-    }
-
-    private static Optional<List<UserTerms>> mapToDomain(List<UserTermsJpaEntity> userTermsJpaEntities) {
-        return Optional.ofNullable(userTermsJpaEntities)
-                .filter(Objects::nonNull)
-                .map(entities -> entities.stream()
-                        .map(entity -> UserTerms.of(
-                                entity.getAgreementYn(), entity.getCreatedAt(), entity.getModifiedAt())
-                        )
-                        .collect(Collectors.toList()));
     }
 }

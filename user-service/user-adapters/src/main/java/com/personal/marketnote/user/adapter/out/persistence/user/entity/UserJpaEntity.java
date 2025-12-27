@@ -8,6 +8,7 @@ import com.personal.marketnote.common.adapter.out.persistence.audit.BaseGeneralE
 import com.personal.marketnote.user.adapter.out.persistence.authentication.entity.RoleJpaEntity;
 import com.personal.marketnote.user.adapter.out.persistence.user.repository.TermsJpaRepository;
 import com.personal.marketnote.user.domain.user.User;
+import com.personal.marketnote.user.domain.user.UserTerms;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import jakarta.persistence.*;
 import lombok.*;
@@ -48,6 +49,7 @@ public class UserJpaEntity extends BaseGeneralEntity {
     private RoleJpaEntity roleJpaEntity;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "userJpaEntity", cascade = {PERSIST, MERGE})
+    @OrderBy("termsJpaEntity.id ASC")
     private List<UserTermsJpaEntity> userTermsJpaEntities;
 
     @Column(name = "last_logged_in_at", nullable = false)
@@ -73,10 +75,27 @@ public class UserJpaEntity extends BaseGeneralEntity {
                     TermsJpaEntity termsRef = termsJpaRepository.getReferenceById(termsId);
                     return UserTermsJpaEntity.of(
                             userJpaEntity, termsRef,
-                            Boolean.TRUE.equals(ut.getAgreement()));
+                            Boolean.TRUE.equals(ut.getAgreementYn()));
                 })
                 .collect(java.util.stream.Collectors.toList());
 
         return userJpaEntity;
+    }
+
+    public void updateFrom(User user) {
+        this.authVendor = user.getAuthVendor();
+        this.oidcId = user.getOidcId();
+        this.nickname = user.getNickname();
+        this.fullName = user.getFullName();
+        this.phoneNumber = user.getPhoneNumber();
+        this.referenceCode = user.getReferenceCode();
+        this.roleJpaEntity = RoleJpaEntity.from(user.getRole());
+        this.lastLoggedInAt = user.getLastLoggedInAt();
+
+        for (int i = 0; i < userTermsJpaEntities.size(); i++) {
+            UserTermsJpaEntity userTermsJpaEntity = userTermsJpaEntities.get(i);
+            UserTerms userTerms = user.getUserTerms().get(i);
+            userTermsJpaEntity.updateFrom(userTerms);
+        }
     }
 }

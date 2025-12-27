@@ -129,15 +129,15 @@ public class WebBasedAuthenticationServiceAdapter {
         HttpHeaders headers = new HttpHeaders();
         headers.add(
                 HttpHeaders.SET_COOKIE,
-                this.httpCookieUtils.invalidateCookie(HttpCookieName.USER_ID, false).asSetCookieHeaderValue()
+                httpCookieUtils.invalidateCookie(HttpCookieName.USER_ID, false).asSetCookieHeaderValue()
         );
         headers.add(
                 HttpHeaders.SET_COOKIE,
-                this.httpCookieUtils.invalidateCookie(HttpCookieName.ACCESS_TOKEN, false).asSetCookieHeaderValue()
+                httpCookieUtils.invalidateCookie(HttpCookieName.ACCESS_TOKEN, false).asSetCookieHeaderValue()
         );
         headers.add(
                 HttpHeaders.SET_COOKIE,
-                this.httpCookieUtils.invalidateCookie(HttpCookieName.REFRESH_TOKEN, false).asSetCookieHeaderValue()
+                httpCookieUtils.invalidateCookie(HttpCookieName.REFRESH_TOKEN, false).asSetCookieHeaderValue()
         );
         return headers;
     }

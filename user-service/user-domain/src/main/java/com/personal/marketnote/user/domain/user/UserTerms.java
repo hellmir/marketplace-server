@@ -13,13 +13,14 @@ import java.time.LocalDateTime;
 public class UserTerms {
     private User user;
     private Terms terms;
-    private Boolean agreement;
+    private Boolean agreementYn;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public static UserTerms of(Boolean agreement, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    public static UserTerms of(Terms terms, Boolean agreementYn, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         return UserTerms.builder()
-                .agreement(agreement)
+                .terms(terms)
+                .agreementYn(agreementYn)
                 .createdAt(createdAt)
                 .modifiedAt(modifiedAt)
                 .build();
@@ -32,7 +33,7 @@ public class UserTerms {
                 .build();
     }
 
-    public void agree() {
-        agreement = true;
+    public void acceptOrCancel() {
+        agreementYn = !agreementYn;
     }
 }
