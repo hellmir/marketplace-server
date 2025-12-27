@@ -1,10 +1,12 @@
-package com.personal.marketnote.user.adapter.out.persistence.user.repository;
+package com.personal.marketnote.user.adapter.out.persistence;
 
 import com.personal.marketnote.user.adapter.out.mapper.UserJpaEntityToDomainMapper;
 import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserJpaEntity;
+import com.personal.marketnote.user.adapter.out.persistence.user.repository.UserJpaRepository;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.port.out.FindUserPort;
 import com.personal.marketnote.user.port.out.SignUpPort;
+import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +46,14 @@ public class UserPersistenceAdapter implements SignUpPort, FindUserPort {
 
     @Override
     @Transactional(isolation = READ_UNCOMMITTED, readOnly = true, timeout = 120)
-    public Optional<User> findByOidcId(String oidcId) {
-        return UserJpaEntityToDomainMapper.mapToDomain(userJpaRepository.findByOidcId(oidcId).orElse(null));
+    public Optional<User> findByAuthVendorAndOidcId(AuthVendor authVendor, String oidcId) {
+        return UserJpaEntityToDomainMapper.mapToDomain(
+                userJpaRepository.findByAuthVendorAndOidcId(authVendor, oidcId).orElse(null)
+        );
+    }
+
+    @Override
+    public Optional<User> findByPhoneNumber(String phoneNumber) {
+        return UserJpaEntityToDomainMapper.mapToDomain(userJpaRepository.findByPhoneNumber(phoneNumber).orElse(null));
     }
 }

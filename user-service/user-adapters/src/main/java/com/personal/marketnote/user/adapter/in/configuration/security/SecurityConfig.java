@@ -37,7 +37,8 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/sign-up").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/sign-in").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/authentication/access-token/refresh").permitAll()
                         .anyRequest().permitAll())
                 .httpBasic(AbstractHttpConfigurer::disable)

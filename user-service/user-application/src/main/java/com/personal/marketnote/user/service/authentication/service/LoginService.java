@@ -30,7 +30,7 @@ public class LoginService implements LoginUseCase {
     public LoginResult loginByOAuth2(String code, String redirectUri, AuthVendor authVendor)
             throws UnsupportedCodeException {
         GrantedTokenInfo grantedTokenInfo = tokenSupport.grantToken(code, redirectUri, authVendor);
-        Optional<User> user = findUserPort.findByOidcId(grantedTokenInfo.id());
+        Optional<User> user = findUserPort.findByAuthVendorAndOidcId(grantedTokenInfo.authVendor(), grantedTokenInfo.id());
 
         if (user.isPresent()) {
             User signedUpUser = user.get();

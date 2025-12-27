@@ -1,6 +1,7 @@
 package com.personal.marketnote.user.adapter.out.persistence.user.repository;
 
 import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserJpaEntity;
+import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -36,7 +37,16 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             SELECT u
             FROM UserJpaEntity u
             WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+              AND u.authVendor = :authVendor
               AND u.oidcId = :oidcId
             """)
-    Optional<UserJpaEntity> findByOidcId(@Param("oidcId") String oidcId);
+    Optional<UserJpaEntity> findByAuthVendorAndOidcId(@Param("authVendor") AuthVendor authVendor, @Param("oidcId") String oidcId);
+
+    @Query("""
+            SELECT u
+            FROM UserJpaEntity u
+            WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+                AND u.phoneNumber = :phoneNumber
+            """)
+    Optional<UserJpaEntity> findByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 }
