@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 @Profile("!qa.test & !prod")
 @RequiredArgsConstructor
 public class JsonBearerTokenResolver implements BearerTokenResolver {
-
     @Override
     public String resolve(HttpServletRequest request) {
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);

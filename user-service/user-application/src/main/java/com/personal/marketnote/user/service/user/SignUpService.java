@@ -28,7 +28,14 @@ public class SignUpService implements SignUpUseCase {
         }
 
         return SignUpResult.from(
-                signUpPort.saveUser(User.of(oidcId, signUpCommand.getNickname()))
+                signUpPort.saveUser(
+                        User.of(
+                                oidcId,
+                                signUpCommand.getNickname(),
+                                signUpCommand.getFullName(),
+                                signUpCommand.getPhoneNumber()
+                        )
+                )
         );
     }
 }

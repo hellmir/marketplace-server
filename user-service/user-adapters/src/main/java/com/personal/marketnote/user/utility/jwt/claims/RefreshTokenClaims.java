@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 @Getter
 @ToString
 public class RefreshTokenClaims {

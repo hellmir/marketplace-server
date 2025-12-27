@@ -52,7 +52,7 @@ public class AuthenticationController {
         WebBasedTokenRefreshResponse response = authServiceAdapter.issueNewAccessToken(refreshToken);
 
         return new ResponseEntity<>(
-                BaseResponse.of(response.accessToken(), HttpStatus.CREATED),
+                BaseResponse.of(response.accessToken(), HttpStatus.CREATED, "Access Token 재발급 성공"),
                 response.headers(),
                 HttpStatus.CREATED
         );
