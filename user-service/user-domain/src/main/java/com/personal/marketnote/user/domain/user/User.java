@@ -1,6 +1,7 @@
 package com.personal.marketnote.user.domain.user;
 
 import com.personal.marketnote.user.domain.authentication.Role;
+import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 public class User {
     private Long id;
+    private AuthVendor authVendor;
     private String oidcId;
     private String nickname;
     private String fullName;
@@ -21,15 +23,17 @@ public class User {
     private Role role;
     private LocalDateTime lastLoggedInAt;
 
-    public static User of(String oidcId) {
+    public static User of(AuthVendor authVendor, String oidcId) {
         return User.builder()
+                .authVendor(authVendor)
                 .oidcId(oidcId)
                 .role(Role.getGuest())
                 .build();
     }
 
-    public static User of(String oidcId, String nickname, String fullName, String phoneNumber) {
+    public static User of(AuthVendor authVendor, String oidcId, String nickname, String fullName, String phoneNumber) {
         return User.builder()
+                .authVendor(authVendor)
                 .oidcId(oidcId)
                 .nickname(nickname)
                 .fullName(fullName)
@@ -41,6 +45,7 @@ public class User {
 
     public static User of(
             Long id,
+            AuthVendor authVendor,
             String oidcId,
             String nickname,
             String fullName,
@@ -51,6 +56,7 @@ public class User {
     ) {
         return User.builder()
                 .id(id)
+                .authVendor(authVendor)
                 .oidcId(oidcId)
                 .nickname(nickname)
                 .fullName(fullName)

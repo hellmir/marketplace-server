@@ -2,6 +2,7 @@ package com.personal.marketnote.user.adapter.in.client.user.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.domain.exception.illegalargument.novalue.OauthTokenNoValueException;
+import com.personal.marketnote.common.utility.FormatConverter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.SignUpApiDocs;
 import com.personal.marketnote.user.adapter.in.client.user.mapper.UserRequestToCommandMapper;
@@ -49,18 +50,18 @@ public class UserController {
         }
 
         String oidcId = principal.getAttribute("sub");
-        SignUpResponse signUpResponse = SignUpResponse.from(
-                signUpService.signUp(UserRequestToCommandMapper.mapToCommand(signUpRequest), oidcId)
-        );
-
         String issuer = principal.getAttribute("iss");
-        AuthVendor vendor = resolveVendorFromIssuer(issuer);
+        AuthVendor authVendor = resolveVendorFromIssuer(FormatConverter.toUpperCase(issuer));
+
+        SignUpResponse signUpResponse = SignUpResponse.from(
+                signUpService.signUp(UserRequestToCommandMapper.mapToCommand(signUpRequest), authVendor, oidcId)
+        );
 
         List<String> roleIds = List.of(signUpResponse.roleId());
         Long id = signUpResponse.id();
         String subject = String.valueOf(signUpResponse.id());
-        String accessToken = jwtUtil.generateAccessToken(subject, id, roleIds, vendor);
-        String refreshToken = jwtUtil.generateRefreshToken(subject, id, roleIds, vendor);
+        String accessToken = jwtUtil.generateAccessToken(subject, id, roleIds, authVendor);
+        String refreshToken = jwtUtil.generateRefreshToken(subject, id, roleIds, authVendor);
 
         return new ResponseEntity<>(
                 BaseResponse.of(
@@ -73,18 +74,16 @@ public class UserController {
     }
 
     private AuthVendor resolveVendorFromIssuer(String issuer) {
-        if (issuer == null) {
-            return AuthVendor.NATIVE;
+        if (issuer.contains(AuthVendor.KAKAO.name())) {
+            return AuthVendor.KAKAO;
         }
 
-        String iss = issuer.toLowerCase();
-
-        if (iss.contains("google")) {
+        if (issuer.contains(AuthVendor.GOOGLE.name())) {
             return AuthVendor.GOOGLE;
         }
 
-        if (iss.contains("kakao")) {
-            return AuthVendor.KAKAO;
+        if (issuer.contains(AuthVendor.APPLE.name())) {
+            return AuthVendor.APPLE;
         }
 
         return AuthVendor.NATIVE;

@@ -71,4 +71,12 @@ public class FormatConverter {
 
         return Boolean.parseBoolean(value);
     }
+
+    public static String toUpperCase(String value) {
+        if (!FormatValidator.hasValue(value)) {
+            return "";
+        }
+
+        return value.toUpperCase();
+    }
 }

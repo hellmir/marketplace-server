@@ -7,6 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseGeneralEntity;
 import com.personal.marketnote.user.adapter.out.persistence.authentication.entity.RoleJpaEntity;
 import com.personal.marketnote.user.domain.user.User;
+import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,7 +20,10 @@ import java.time.LocalDateTime;
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
 public class UserJpaEntity extends BaseGeneralEntity {
-    @Column(name = "oidc_id", unique = true, length = 255)
+    @Column(name = "auth_vendor", nullable = false, columnDefinition = "SMALLINT DEFAULT 0")
+    private AuthVendor authVendor;
+
+    @Column(name = "oidc_id", length = 255)
     private String oidcId;
 
     @Column(name = "nickname", nullable = false, length = 31)
@@ -45,6 +49,7 @@ public class UserJpaEntity extends BaseGeneralEntity {
 
     public static UserJpaEntity from(User user) {
         return UserJpaEntity.builder()
+                .authVendor(user.getAuthVendor())
                 .oidcId(user.getOidcId())
                 .nickname(user.getNickname())
                 .fullName(user.getFullName())

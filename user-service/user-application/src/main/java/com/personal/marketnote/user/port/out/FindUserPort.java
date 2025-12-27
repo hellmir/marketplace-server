@@ -5,7 +5,9 @@ import com.personal.marketnote.user.domain.user.User;
 import java.util.Optional;
 
 public interface FindUserPort {
-    boolean isUserExists(String oidcId);
+    boolean existsByOidcId(String oidcId);
+
+    boolean existsByPhoneNumber(String phoneNumber);
 
     Optional<User> findById(Long userId);
 
