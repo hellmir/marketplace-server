@@ -22,6 +22,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import static com.personal.marketnote.user.security.token.utility.TokenConstant.SUB_CLAIM_KEY;
+
 @Component
 @Profile("qa.test | prod")
 @Slf4j
@@ -80,7 +82,7 @@ public class RestTemplateGoogleTokenProcessor implements TokenProcessor {
         ResponseEntity<String> response = this.restTemplate.getForEntity(
                 "https://oauth2.googleapis.com/tokeninfo?id_token=" + idToken,
                 String.class);
-        return new JSONObject(response.getBody()).getString("sub");
+        return new JSONObject(response.getBody()).getString(SUB_CLAIM_KEY);
     }
 
     @Override

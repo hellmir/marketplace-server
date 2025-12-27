@@ -5,7 +5,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 
 public class ElementExtractor {
     public static Long extractUserId(OAuth2AuthenticatedPrincipal principal) {
-        if (!FormatValidator.hasValue(principal)) {
+        if (!FormatValidator.hasValue(principal) || FormatValidator.equals(principal.getName(), "-1")) {
             throw new InvalidIdException(String.valueOf(principal));
         }
 

@@ -20,7 +20,7 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                - 회원 약관 동의 여부 목록을 조회합니다.
+                회원 약관 동의 여부 목록을 조회합니다.
                 
                 ---
                 

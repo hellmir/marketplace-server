@@ -5,6 +5,6 @@ import lombok.Builder;
 
 @Builder
 public record OAuth2AuthenticationInfo(
-        String id, AuthVendor authVendor
+        String id, AuthVendor authVendor, Long userId
 ) {
 }

@@ -32,7 +32,7 @@ public class UserJpaEntity extends BaseGeneralEntity {
     @Column(name = "oidc_id", length = 255)
     private String oidcId;
 
-    @Column(name = "nickname", nullable = false, length = 31)
+    @Column(name = "nickname", nullable = false, unique = true, length = 31)
     private String nickname;
 
     @Column(name = "full_name", nullable = false, length = 15)

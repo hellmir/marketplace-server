@@ -16,8 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.personal.marketnote.user.exception.ExceptionMessage.OIDC_ID_EXISTS_EXCEPTION_MESSAGE;
-import static com.personal.marketnote.user.exception.ExceptionMessage.PHONE_NUMBER_EXISTS_EXCEPTION_MESSAGE;
+import static com.personal.marketnote.user.exception.ExceptionMessage.*;
 import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
 
 @RequiredArgsConstructor
@@ -37,6 +36,11 @@ public class SignUpService implements SignUpUseCase {
         String phoneNumber = signUpCommand.getPhoneNumber();
         if (findUserPort.existsByPhoneNumber(phoneNumber)) {
             throw new UserExistsException(String.format(PHONE_NUMBER_EXISTS_EXCEPTION_MESSAGE, phoneNumber));
+        }
+
+        String nickname = signUpCommand.getNickname();
+        if (findUserPort.existsByNickname(nickname)) {
+            throw new UserExistsException(String.format(NICKNAME_EXISTS_EXCEPTION_MESSAGE, nickname));
         }
 
         List<Terms> terms = findTermsPort.findAll();

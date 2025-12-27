@@ -21,13 +21,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.personal.marketnote.user.exception.ExceptionMessage.USER_ID_NOT_FOUND_EXCEPTION_MESSAGE;
-import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
-import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-@Transactional(isolation = READ_COMMITTED, propagation = REQUIRES_NEW, timeout = 180)
 public class UserPersistenceAdapter implements SaveUserPort, FindUserPort, FindTermsPort, UpdateUserPort {
     private final UserJpaRepository userJpaRepository;
     private final TermsJpaRepository termsJpaRepository;
@@ -47,6 +44,11 @@ public class UserPersistenceAdapter implements SaveUserPort, FindUserPort, FindT
     @Override
     public boolean existsByPhoneNumber(String phoneNumber) {
         return userJpaRepository.existsByPhoneNumber(phoneNumber);
+    }
+
+    @Override
+    public boolean existsByNickname(String nickname) {
+        return userJpaRepository.existsByNickname(nickname);
     }
 
     @Override

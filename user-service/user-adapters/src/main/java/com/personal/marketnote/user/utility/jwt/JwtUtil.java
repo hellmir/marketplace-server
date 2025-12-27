@@ -19,7 +19,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static com.personal.marketnote.user.utility.jwt.TokenConstant.ISS_CLAIM_KEY;
+import static com.personal.marketnote.common.utility.ApiConstant.USER_ID_KEY;
+import static com.personal.marketnote.user.security.token.utility.TokenConstant.ISS_CLAIM_KEY;
 
 @Component
 @Profile("qa.test | prod")
@@ -27,7 +28,6 @@ public class JwtUtil {
     private static final String ROLE_IDS_CLAIM_KEY = "roleIds";
     private static final String TOKEN_TYPE_CLAIM_KEY = "tokenType";
     private static final String AUTH_VENDOR_CLAIM_KEY = "authVendor";
-    private static final String USER_ID_CLAIM_KEY = "userId";
 
     private final SecretKey secretKey;
     private final JwtParser parser;
@@ -59,21 +59,20 @@ public class JwtUtil {
 
     private TokenClaims parse(String token, JwtTokenType tokenType) {
         Claims claims = parser.parseSignedClaims(token).getPayload();
-        Object userIdObj = claims.get(USER_ID_CLAIM_KEY);
-        Long userId = userIdObj == null ? null : ((Number) userIdObj).longValue();
+        Object userIdObj = claims.get(USER_ID_KEY);
+
+        Long userId = null;
+
+        if (FormatValidator.hasValue(userIdObj)) {
+            userId = ((Number) userIdObj).longValue();
+        }
 
         String authVendorKey = claims.get(AUTH_VENDOR_CLAIM_KEY, String.class);
 
         if (!FormatValidator.hasValue(authVendorKey)) {
             String iss = claims.get(ISS_CLAIM_KEY, String.class);
 
-            if (iss.contains("google")) {
-                authVendorKey = "GOOGLE";
-            } else if (iss.contains("apple")) {
-                authVendorKey = "APPLE";
-            } else {
-                throw new IllegalArgumentException("존재하지 않는 OAuth2 공급 업체입니다. issuer: " + iss);
-            }
+            authVendorKey = chooseVendor(iss);
         }
 
         AuthVendor authVendor = AuthVendor.valueOfIgnoreCase(authVendorKey);
@@ -93,6 +92,26 @@ public class JwtUtil {
                 .roleIds((List<String>) claims.get("roleIds"))
                 .authVendor(authVendor)
                 .build();
+    }
+
+    private String chooseVendor(String iss) {
+        String kakao = "kakao";
+        String google = "google";
+        String apple = "apple";
+
+        if (iss.contains(kakao)) {
+            return kakao.toUpperCase();
+        }
+
+        if (iss.contains(google)) {
+            return google.toUpperCase();
+        }
+
+        if (iss.contains(apple)) {
+            return apple.toUpperCase();
+        }
+
+        throw new IllegalArgumentException("존재하지 않는 OAuth2 공급 업체입니다. issuer: " + iss);
     }
 
     private JwtTokenType extractTokenType(Claims claims, JwtTokenType expectedTokenType) {
@@ -155,7 +174,7 @@ public class JwtUtil {
                 .expiration(new Date(System.currentTimeMillis() + ttlOfTokenType.get(tokenType)))
                 .subject(id)
                 .claim(ROLE_IDS_CLAIM_KEY, roleIds)
-                .claim(USER_ID_CLAIM_KEY, userId)
+                .claim(USER_ID_KEY, userId)
                 .claim(AUTH_VENDOR_CLAIM_KEY, authVendor.name())
                 .signWith(secretKey);
     }

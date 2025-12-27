@@ -31,8 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static com.personal.marketnote.user.utility.jwt.TokenConstant.ISS_CLAIM_KEY;
-import static com.personal.marketnote.user.utility.jwt.TokenConstant.SUB_CLAIM_KEY;
+import static com.personal.marketnote.user.security.token.utility.TokenConstant.ISS_CLAIM_KEY;
+import static com.personal.marketnote.user.security.token.utility.TokenConstant.SUB_CLAIM_KEY;
 
 @RestController
 @RequestMapping("/api/v1/users")
