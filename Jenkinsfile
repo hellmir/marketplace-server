@@ -371,26 +371,35 @@ pipeline {
                             """
 							sh "aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION --health-check-grace-period-seconds 180 || true"
 						}
-						sh '''
+						sh(script: '''
 						while true; do
-						  STATE=$(aws ecs describe-services \
-						    --cluster $ECS_CLUSTER_NAME \
-						    --services $ECS_SERVICE_NAME \
-						    --region $AWS_DEFAULT_REGION \
-						    --query 'services[0].deployments[?status==`PRIMARY`].rolloutState' \
+						  DATA=$(aws ecs describe-services \
+						    --cluster "$ECS_CLUSTER_NAME" \
+						    --services "$ECS_SERVICE_NAME" \
+						    --region "$AWS_DEFAULT_REGION" \
+						    --query "services[0].[deployments[?status==\\`PRIMARY\\`].rolloutState | [0], runningCount, desiredCount, pendingCount]" \
 						    --output text)
-						  if echo "$STATE" | grep -q 'COMPLETED'; then
-						    echo 'ECS rolloutState=COMPLETED'
+
+						  STATE=$(echo "$DATA" | awk '{print $1}')
+						  RUNNING=$(echo "$DATA" | awk '{print $2}')
+						  DESIRED=$(echo "$DATA" | awk '{print $3}')
+						  PENDING=$(echo "$DATA" | awk '{print $4}')
+
+						  echo "ECS rolloutState=$STATE, running=$RUNNING, desired=$DESIRED, pending=$PENDING"
+
+						  if [ "$STATE" = "COMPLETED" ] && [ "$RUNNING" = "$DESIRED" ] && [ "$PENDING" = "0" ]; then
+						    echo "ECS services-stable equivalent condition met."
 						    break
 						  fi
-						  if echo "$STATE" | grep -q 'FAILED'; then
-						    echo 'ECS rolloutState=FAILED'
+
+						  if [ "$STATE" = "FAILED" ]; then
+						    echo "ECS rolloutState=FAILED"
 						    exit 1
 						  fi
-						  echo "ECS waiting... rolloutState=$STATE"
-						  sleep 20
+
+						  sleep 15
 						done
-						'''
+						''')
 					}
 				}
 			}
