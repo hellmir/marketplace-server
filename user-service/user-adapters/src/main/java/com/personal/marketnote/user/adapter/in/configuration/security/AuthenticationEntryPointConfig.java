@@ -1,6 +1,6 @@
 package com.personal.marketnote.user.adapter.in.configuration.security;
 
-import com.personal.marketnote.user.port.out.FindUserPort;
+import com.personal.marketnote.user.port.out.user.FindUserPort;
 import com.personal.marketnote.user.security.token.introspector.OpaqueTokenDefaultIntrospector;
 import com.personal.marketnote.user.security.token.support.TokenSupport;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

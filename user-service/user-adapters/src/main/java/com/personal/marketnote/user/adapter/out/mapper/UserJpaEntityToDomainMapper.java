@@ -3,12 +3,16 @@ package com.personal.marketnote.user.adapter.out.mapper;
 import com.personal.marketnote.user.adapter.out.persistence.authentication.entity.RoleJpaEntity;
 import com.personal.marketnote.user.adapter.out.persistence.user.entity.TermsJpaEntity;
 import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserJpaEntity;
+import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserTermsJpaEntity;
 import com.personal.marketnote.user.domain.authentication.Role;
 import com.personal.marketnote.user.domain.user.Terms;
 import com.personal.marketnote.user.domain.user.User;
+import com.personal.marketnote.user.domain.user.UserTerms;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class UserJpaEntityToDomainMapper {
     public static Optional<User> mapToDomain(UserJpaEntity userJpaEntity) {
@@ -24,6 +28,7 @@ public class UserJpaEntityToDomainMapper {
                                 userJpaEntity.getPhoneNumber(),
                                 userJpaEntity.getReferenceCode(),
                                 mapToDomain(userJpaEntity.getRoleJpaEntity()).get(),
+                                mapToDomain(userJpaEntity.getUserTermsJpaEntities()).get(),
                                 userJpaEntity.getLastLoggedInAt()));
     }
 
@@ -40,9 +45,20 @@ public class UserJpaEntityToDomainMapper {
                         entity -> Terms.of(
                                 termsJpaEntity.getId(),
                                 termsJpaEntity.getContent(),
+                                termsJpaEntity.getRequiredYn(),
                                 termsJpaEntity.getCreatedAt(),
                                 termsJpaEntity.getModifiedAt(),
                                 termsJpaEntity.getStatus())
                 );
+    }
+
+    private static Optional<List<UserTerms>> mapToDomain(List<UserTermsJpaEntity> userTermsJpaEntities) {
+        return Optional.ofNullable(userTermsJpaEntities)
+                .filter(Objects::nonNull)
+                .map(entities -> entities.stream()
+                        .map(entity -> UserTerms.of(
+                                entity.getAgreementYn(), entity.getCreatedAt(), entity.getModifiedAt())
+                        )
+                        .collect(Collectors.toList()));
     }
 }

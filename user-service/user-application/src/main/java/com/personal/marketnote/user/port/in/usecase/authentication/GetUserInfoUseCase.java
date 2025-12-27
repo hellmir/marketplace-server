@@ -1,4 +1,4 @@
-package com.personal.marketnote.user.port.in.usecase;
+package com.personal.marketnote.user.port.in.usecase.authentication;
 
 import com.personal.marketnote.user.port.in.result.GetUserResult;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;

@@ -8,12 +8,12 @@ import com.personal.marketnote.user.adapter.in.client.authentication.response.OA
 import com.personal.marketnote.user.adapter.in.client.authentication.response.RefreshedAccessTokenResponse;
 import com.personal.marketnote.user.adapter.in.client.authentication.response.WebBasedTokenRefreshResponse;
 import com.personal.marketnote.user.port.in.result.LoginResult;
-import com.personal.marketnote.user.port.in.usecase.LoginUseCase;
+import com.personal.marketnote.user.port.in.usecase.authentication.LoginUseCase;
 import com.personal.marketnote.user.security.token.dto.GrantedTokenInfo;
 import com.personal.marketnote.user.security.token.exception.InvalidRefreshTokenException;
 import com.personal.marketnote.user.security.token.support.TokenSupport;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
-import com.personal.marketnote.user.service.authentication.utility.OAuth2WebUtils;
+import com.personal.marketnote.user.utility.OAuth2WebUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
