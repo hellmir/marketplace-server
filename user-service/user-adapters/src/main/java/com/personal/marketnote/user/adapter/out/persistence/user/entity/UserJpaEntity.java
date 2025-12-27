@@ -16,14 +16,20 @@ import java.time.LocalDateTime;
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 @Getter
 public class UserJpaEntity extends BaseGeneralEntity {
     @Column(name = "oidc_id", unique = true, length = 255)
     private String oidcId;
 
-    @Column(name = "nickname", length = 63)
+    @Column(name = "nickname", nullable = false, length = 31)
     private String nickname;
+
+    @Column(name = "full_name", nullable = false, length = 15)
+    private String fullName;
+
+    @Column(name = "phone_number", length = 15)
+    private String phoneNumber;
 
     @Column(name = "reference_code", length = 15)
     private String referenceCode;
@@ -41,6 +47,8 @@ public class UserJpaEntity extends BaseGeneralEntity {
         return UserJpaEntity.builder()
                 .oidcId(user.getOidcId())
                 .nickname(user.getNickname())
+                .fullName(user.getFullName())
+                .phoneNumber(user.getPhoneNumber())
                 .referenceCode(user.getReferenceCode())
                 .roleJpaEntity(RoleJpaEntity.from(user.getRole()))
                 .lastLoggedInAt(user.getLastLoggedInAt())

@@ -70,8 +70,9 @@ public class WebBasedAuthenticationServiceAdapter {
         headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.asSetCookieHeaderValue());
 
         headers.add(
-                HttpHeaders.LOCATION,
-                OAuth2WebUtils.buildAfterLoginRedirectionUrl(redirectionDestination, loginResult, oAuth2LoginRequest.authVendor())
+                HttpHeaders.LOCATION, OAuth2WebUtils.buildAfterLoginRedirectionUrl(
+                        redirectionDestination, loginResult, oAuth2LoginRequest.authVendor()
+                )
         );
 
         log.info("Redirect URI: {}", redirectUri);
@@ -95,7 +96,8 @@ public class WebBasedAuthenticationServiceAdapter {
         }
 
         log.debug("Redirect to default origin");
-        return this.clientOrigin;
+
+        return clientOrigin;
     }
 
     public WebBasedTokenRefreshResponse issueNewAccessToken(String refreshToken) {

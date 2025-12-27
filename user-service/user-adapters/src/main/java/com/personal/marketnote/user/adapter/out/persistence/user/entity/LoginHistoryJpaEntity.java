@@ -28,10 +28,4 @@ public class LoginHistoryJpaEntity {
 
     @Enumerated(EnumType.STRING)
     private AuthVendor type;
-
-    public LoginHistoryJpaEntity(UserJpaEntity userJpaEntity, AuthVendor type, LocalDateTime createdAt) {
-        this.userJpaEntity = userJpaEntity;
-        this.type = type;
-        this.createdAt = createdAt;
-    }
 }

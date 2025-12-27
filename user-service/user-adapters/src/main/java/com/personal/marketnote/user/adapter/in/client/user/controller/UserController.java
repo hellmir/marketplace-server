@@ -65,7 +65,8 @@ public class UserController {
         return new ResponseEntity<>(
                 BaseResponse.of(
                         new AuthenticationTokenResponse(accessToken, refreshToken),
-                        HttpStatus.CREATED, "회원 가입 성공"
+                        HttpStatus.CREATED,
+                        "회원 가입 성공"
                 ),
                 HttpStatus.CREATED
         );
@@ -75,9 +76,16 @@ public class UserController {
         if (issuer == null) {
             return AuthVendor.NATIVE;
         }
+
         String iss = issuer.toLowerCase();
-        if (iss.contains("google")) return AuthVendor.GOOGLE;
-        if (iss.contains("kakao")) return AuthVendor.KAKAO;
+
+        if (iss.contains("google")) {
+            return AuthVendor.GOOGLE;
+        }
+
+        if (iss.contains("kakao")) {
+            return AuthVendor.KAKAO;
+        }
 
         return AuthVendor.NATIVE;
     }

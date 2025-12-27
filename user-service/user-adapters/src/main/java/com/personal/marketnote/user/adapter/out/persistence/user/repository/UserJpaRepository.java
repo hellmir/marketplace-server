@@ -8,16 +8,12 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
-    @Query(
-            value = """
-                    SELECT COUNT(*) > 0
-                    FROM userJpaEntity u
-                    WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
-                         AND u.oidcId = :oidcId
-                    LIMIT 1
-                    """,
-            nativeQuery = true
-    )
+    @Query("""
+            SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
+            FROM UserJpaEntity u
+            WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+              AND u.oidcId = :oidcId
+            """)
     boolean existsByOidcId(@Param("oidcId") String oidcId);
 
     @Query("""

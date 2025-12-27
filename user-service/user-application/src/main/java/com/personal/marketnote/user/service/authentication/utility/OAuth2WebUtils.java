@@ -16,7 +16,9 @@ public class OAuth2WebUtils {
     private static final Pattern REDIRECTION_DESTINATION_PATTERN =
             Pattern.compile("^(http|https)://[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)*(:\\d{1,5})?$");
 
-    public static String buildAfterLoginRedirectionUrl(String redirectionDestination, LoginResult loginResult, String authVendor) {
+    public static String buildAfterLoginRedirectionUrl(
+            String redirectionDestination, LoginResult loginResult, String authVendor
+    ) {
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(redirectionDestination)
                 .path(FRONTEND_REDIRECTION_PATH)
                 .queryParam("type", "oauth2")
@@ -31,6 +33,7 @@ public class OAuth2WebUtils {
         } else {
             uriComponentsBuilder = uriComponentsBuilder.queryParam("user-id");
         }
+
         return uriComponentsBuilder.encode().toUriString();
     }
 

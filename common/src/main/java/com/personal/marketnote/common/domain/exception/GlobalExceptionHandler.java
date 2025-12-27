@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -33,6 +34,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .timestamp(LocalDateTime.now())
                 .message(e.getMessage())
                 .build();
 
@@ -46,6 +48,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .timestamp(LocalDateTime.now())
                 .message(e.getMessage())
                 .build();
 
@@ -59,6 +62,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode(HttpStatus.NOT_FOUND.value())
+                .timestamp(LocalDateTime.now())
                 .message(e.getMessage())
                 .build();
 
@@ -72,6 +76,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode(HttpStatus.METHOD_NOT_ALLOWED.value())
+                .timestamp(LocalDateTime.now())
                 .message(e.getMessage())
                 .build();
 
@@ -85,6 +90,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode(HttpStatus.FORBIDDEN.value())
+                .timestamp(LocalDateTime.now())
                 .message(e.getMessage())
                 .build();
 
@@ -98,6 +104,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
+                .timestamp(LocalDateTime.now())
                 .message(e.getMessage())
                 .build();
 
@@ -111,6 +118,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
+                .timestamp(LocalDateTime.now())
                 .message(e.getMessage())
                 .build();
 
@@ -124,6 +132,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
+                .timestamp(LocalDateTime.now())
                 .message(e.getMessage())
                 .build();
 
@@ -137,6 +146,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value())
+                .timestamp(LocalDateTime.now())
                 .message(e.getMessage())
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
@@ -148,6 +158,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
+                .timestamp(LocalDateTime.now())
                 .message(e.getMessage())
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
@@ -159,6 +170,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
+                .timestamp(LocalDateTime.now())
                 .message(e.getMessage())
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
@@ -170,6 +182,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode(HttpStatus.CONFLICT.value())
+                .timestamp(LocalDateTime.now())
                 .message(e.getMessage())
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));

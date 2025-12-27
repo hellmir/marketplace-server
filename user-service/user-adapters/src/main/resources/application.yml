@@ -22,7 +22,7 @@ spring:
   jwt:
     secret: ${JWT_SECRET_KEY:dev-secret-change-me}
     access-token:
-      ttl: ${ACCESS_TOKEN_EXPIRATION_TIME:18000001800000}
+      ttl: ${ACCESS_TOKEN_EXPIRATION_TIME:1800000}
     refresh-token:
       ttl: ${REFRESH_TOKEN_EXPIRATION_TIME:1209600000}
 
