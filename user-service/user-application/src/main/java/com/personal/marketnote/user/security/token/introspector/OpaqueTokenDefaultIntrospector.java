@@ -1,11 +1,11 @@
 package com.personal.marketnote.user.security.token.introspector;
 
+import com.personal.marketnote.common.domain.exception.token.InvalidAccessTokenException;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.constant.PrimaryRole;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.port.out.user.FindUserPort;
 import com.personal.marketnote.user.security.token.dto.OAuth2AuthenticationInfo;
-import com.personal.marketnote.user.security.token.exception.InvalidAccessTokenException;
 import com.personal.marketnote.user.security.token.support.TokenSupport;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,6 @@ import org.springframework.security.oauth2.server.resource.introspection.OpaqueT
 import java.util.List;
 import java.util.Map;
 
-import static com.personal.marketnote.common.utility.ApiConstant.USER_ID_KEY;
 import static com.personal.marketnote.user.security.token.utility.TokenConstant.ISS_CLAIM_KEY;
 import static com.personal.marketnote.user.security.token.utility.TokenConstant.SUB_CLAIM_KEY;
 
@@ -50,8 +49,6 @@ public class OpaqueTokenDefaultIntrospector implements OpaqueTokenIntrospector {
                 );
             }
 
-            if (!FormatValidator.hasValue(user)) {}
-
             return new DefaultOAuth2AuthenticatedPrincipal(
                     "-1",
                     Map.of(
@@ -63,8 +60,10 @@ public class OpaqueTokenDefaultIntrospector implements OpaqueTokenIntrospector {
         } catch (InvalidAccessTokenException e) {
             return new DefaultOAuth2AuthenticatedPrincipal(
                     "-1",
-                    Map.of(SUB_CLAIM_KEY, "",
-                            ISS_CLAIM_KEY, AuthVendor.NATIVE.name()),
+                    Map.of(
+                            SUB_CLAIM_KEY, "",
+                            ISS_CLAIM_KEY, AuthVendor.NATIVE.name()
+                    ),
                     List.of(new SimpleGrantedAuthority(PrimaryRole.ROLE_ANONYMOUS.name()))
             );
         }

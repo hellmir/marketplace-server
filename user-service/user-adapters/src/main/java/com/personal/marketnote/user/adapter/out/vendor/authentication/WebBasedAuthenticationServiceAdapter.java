@@ -1,5 +1,6 @@
 package com.personal.marketnote.user.adapter.out.vendor.authentication;
 
+import com.personal.marketnote.common.domain.exception.token.InvalidRefreshTokenException;
 import com.personal.marketnote.common.utility.http.cookie.HttpCookieName;
 import com.personal.marketnote.common.utility.http.cookie.HttpCookieObject;
 import com.personal.marketnote.common.utility.http.cookie.HttpCookieUtils;
@@ -10,7 +11,6 @@ import com.personal.marketnote.user.adapter.in.client.authentication.response.We
 import com.personal.marketnote.user.port.in.result.LoginResult;
 import com.personal.marketnote.user.port.in.usecase.authentication.LoginUseCase;
 import com.personal.marketnote.user.security.token.dto.GrantedTokenInfo;
-import com.personal.marketnote.user.security.token.exception.InvalidRefreshTokenException;
 import com.personal.marketnote.user.security.token.support.TokenSupport;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import com.personal.marketnote.user.utility.OAuth2WebUtils;

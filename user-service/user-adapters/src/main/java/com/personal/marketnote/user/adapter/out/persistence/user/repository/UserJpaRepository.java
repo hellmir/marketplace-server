@@ -21,17 +21,25 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
             FROM UserJpaEntity u
             WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
-              AND u.phoneNumber = :phoneNumber
+                AND u.nickname = :nickname
             """)
-    boolean existsByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+    boolean existsByNickname(@Param("nickname") String nickname);
 
     @Query("""
             SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
             FROM UserJpaEntity u
             WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
-                AND u.nickname = :nickname
+                AND u.email = :email
             """)
-    boolean existsByNickname(@Param("nickname") String nickname);
+    boolean existsByEmail(@Param("email") String email);
+
+    @Query("""
+            SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
+            FROM UserJpaEntity u
+            WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+              AND u.phoneNumber = :phoneNumber
+            """)
+    boolean existsByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 
     @Query("""
             SELECT u

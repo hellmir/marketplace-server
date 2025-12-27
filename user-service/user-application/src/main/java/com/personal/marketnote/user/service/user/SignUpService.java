@@ -1,6 +1,7 @@
 package com.personal.marketnote.user.service.user;
 
 import com.personal.marketnote.common.application.UseCase;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.domain.user.Terms;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.exception.UserExistsException;
@@ -12,6 +13,7 @@ import com.personal.marketnote.user.port.out.user.FindUserPort;
 import com.personal.marketnote.user.port.out.user.SaveUserPort;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -26,21 +28,27 @@ public class SignUpService implements SignUpUseCase {
     private final SaveUserPort saveUserPort;
     private final FindUserPort findUserPort;
     private final FindTermsPort findTermsPort;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public SignUpResult signUp(SignUpCommand signUpCommand, AuthVendor authVendor, String oidcId) {
         if (!authVendor.isNative() && findUserPort.existsByOidcId(oidcId)) {
-            throw new UserExistsException(String.format(OIDC_ID_EXISTS_EXCEPTION_MESSAGE, oidcId));
-        }
-
-        String phoneNumber = signUpCommand.getPhoneNumber();
-        if (findUserPort.existsByPhoneNumber(phoneNumber)) {
-            throw new UserExistsException(String.format(PHONE_NUMBER_EXISTS_EXCEPTION_MESSAGE, phoneNumber));
+            throw new UserExistsException(String.format(OIDC_ID_ALREADY_EXISTS_EXCEPTION_MESSAGE, oidcId));
         }
 
         String nickname = signUpCommand.getNickname();
         if (findUserPort.existsByNickname(nickname)) {
-            throw new UserExistsException(String.format(NICKNAME_EXISTS_EXCEPTION_MESSAGE, nickname));
+            throw new UserExistsException(String.format(NICKNAME_ALREADY_EXISTS_EXCEPTION_MESSAGE, nickname));
+        }
+
+        String email = signUpCommand.getEmail();
+        if (findUserPort.existsByEmail(email)) {
+            throw new UserExistsException(String.format(EMAIL_ALREADY_EXISTS_EXCEPTION_MESSAGE, email));
+        }
+
+        String phoneNumber = signUpCommand.getPhoneNumber();
+        if (FormatValidator.hasValue(phoneNumber) && findUserPort.existsByPhoneNumber(phoneNumber)) {
+            throw new UserExistsException(String.format(PHONE_NUMBER_ALREADY_EXISTS_EXCEPTION_MESSAGE, phoneNumber));
         }
 
         List<Terms> terms = findTermsPort.findAll();
@@ -51,6 +59,8 @@ public class SignUpService implements SignUpUseCase {
                                 authVendor,
                                 oidcId,
                                 signUpCommand.getNickname(),
+                                signUpCommand.getEmail(),
+                                passwordEncoder.encode(signUpCommand.getPassword()),
                                 signUpCommand.getFullName(),
                                 signUpCommand.getPhoneNumber(),
                                 terms

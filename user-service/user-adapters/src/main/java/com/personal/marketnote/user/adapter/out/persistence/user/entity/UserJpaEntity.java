@@ -35,10 +35,16 @@ public class UserJpaEntity extends BaseGeneralEntity {
     @Column(name = "nickname", nullable = false, unique = true, length = 31)
     private String nickname;
 
-    @Column(name = "full_name", nullable = false, length = 15)
+    @Column(name = "email", unique = true, length = 255)
+    private String email;
+
+    @Column(name = "password", length = 511)
+    private String password;
+
+    @Column(name = "full_name", length = 15)
     private String fullName;
 
-    @Column(name = "phone_number", nullable = false, unique = true, length = 15)
+    @Column(name = "phone_number", unique = true, length = 15)
     private String phoneNumber;
 
     @Column(name = "reference_code", length = 15)
@@ -62,6 +68,8 @@ public class UserJpaEntity extends BaseGeneralEntity {
                 .authVendor(user.getAuthVendor())
                 .oidcId(user.getOidcId())
                 .nickname(user.getNickname())
+                .email(user.getEmail())
+                .password(user.getPassword())
                 .fullName(user.getFullName())
                 .phoneNumber(user.getPhoneNumber())
                 .referenceCode(user.getReferenceCode())
@@ -86,6 +94,8 @@ public class UserJpaEntity extends BaseGeneralEntity {
         this.authVendor = user.getAuthVendor();
         this.oidcId = user.getOidcId();
         this.nickname = user.getNickname();
+        this.email = user.getEmail();
+        this.password = user.getPassword();
         this.fullName = user.getFullName();
         this.phoneNumber = user.getPhoneNumber();
         this.referenceCode = user.getReferenceCode();

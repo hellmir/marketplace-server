@@ -19,6 +19,8 @@ public class User {
     private AuthVendor authVendor;
     private String oidcId;
     private String nickname;
+    private String email;
+    private String password;
     private String fullName;
     private String phoneNumber;
     private String referenceCode;
@@ -35,12 +37,21 @@ public class User {
     }
 
     public static User of(
-            AuthVendor authVendor, String oidcId, String nickname, String fullName, String phoneNumber, List<Terms> terms
+            AuthVendor authVendor,
+            String oidcId,
+            String nickname,
+            String email,
+            String password,
+            String fullName,
+            String phoneNumber,
+            List<Terms> terms
     ) {
         User user = User.builder()
                 .authVendor(authVendor)
                 .oidcId(oidcId)
                 .nickname(nickname)
+                .email(email)
+                .password(password)
                 .fullName(fullName)
                 .phoneNumber(phoneNumber)
                 .role(Role.getBuyer())

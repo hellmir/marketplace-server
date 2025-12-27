@@ -1,13 +1,13 @@
 package com.personal.marketnote.user.utility.jwt;
 
+import com.personal.marketnote.common.domain.exception.token.InvalidAccessTokenException;
+import com.personal.marketnote.common.domain.exception.token.InvalidRefreshTokenException;
+import com.personal.marketnote.common.domain.exception.token.UnsupportedCodeException;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.port.out.user.FindUserPort;
 import com.personal.marketnote.user.security.token.dto.GrantedTokenInfo;
 import com.personal.marketnote.user.security.token.dto.OAuth2AuthenticationInfo;
 import com.personal.marketnote.user.security.token.dto.OAuth2UserInfo;
-import com.personal.marketnote.user.security.token.exception.InvalidAccessTokenException;
-import com.personal.marketnote.user.security.token.exception.InvalidRefreshTokenException;
-import com.personal.marketnote.user.security.token.exception.UnsupportedCodeException;
 import com.personal.marketnote.user.security.token.support.DelegatingTokenSupport;
 import com.personal.marketnote.user.security.token.support.TokenProcessor;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;

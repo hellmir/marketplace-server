@@ -2,6 +2,7 @@ package com.personal.marketnote.user.service.authentication;
 
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.domain.exception.illegalargument.novalue.OauthTokenNoValueException;
+import com.personal.marketnote.common.domain.exception.token.UnsupportedCodeException;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.port.in.result.LoginResult;
@@ -9,7 +10,6 @@ import com.personal.marketnote.user.port.in.usecase.authentication.LoginUseCase;
 import com.personal.marketnote.user.port.out.user.FindUserPort;
 import com.personal.marketnote.user.security.token.dto.GrantedTokenInfo;
 import com.personal.marketnote.user.security.token.dto.OAuth2UserInfo;
-import com.personal.marketnote.user.security.token.exception.UnsupportedCodeException;
 import com.personal.marketnote.user.security.token.support.TokenSupport;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.RequiredArgsConstructor;

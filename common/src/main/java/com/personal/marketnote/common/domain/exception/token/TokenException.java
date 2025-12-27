@@ -1,4 +1,4 @@
-package com.personal.marketnote.user.security.token.exception;
+package com.personal.marketnote.common.domain.exception.token;
 
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 
