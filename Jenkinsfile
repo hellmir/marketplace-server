@@ -145,38 +145,38 @@ pipeline {
 			steps {
 				script {
 					withCredentials([
-						string(credentialsId: 'USER_SERVICE_ECR_REPOSITORY',      variable: 'USER_SERVICE_ECR_REPOSITORY'),
-						string(credentialsId: 'PRODUCT_SERVICE_ECR_REPOSITORY',   variable: 'PRODUCT_SERVICE_ECR_REPOSITORY'),
-						string(credentialsId: 'ORDER_SERVICE_ECR_REPOSITORY',     variable: 'ORDER_SERVICE_ECR_REPOSITORY'),
+						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_ECR_REPOSITORY',      variable: 'USER_SERVICE_ECR_REPOSITORY'),
+						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_ECR_REPOSITORY',   variable: 'PRODUCT_SERVICE_ECR_REPOSITORY'),
+						string(credentialsId: 'MARKETNOTE_QA_ORDER_SERVICE_ECR_REPOSITORY',     variable: 'ORDER_SERVICE_ECR_REPOSITORY'),
 
-						string(credentialsId: 'USER_SERVICE_ECS_SERVICE_NAME',    variable: 'USER_SERVICE_ECS_SERVICE_NAME'),
-						string(credentialsId: 'PRODUCT_SERVICE_ECS_SERVICE_NAME', variable: 'PRODUCT_SERVICE_ECS_SERVICE_NAME'),
-						string(credentialsId: 'ORDER_SERVICE_ECS_SERVICE_NAME',   variable: 'ORDER_SERVICE_ECS_SERVICE_NAME'),
+						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_ECS_SERVICE_NAME',    variable: 'USER_SERVICE_ECS_SERVICE_NAME'),
+						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_ECS_SERVICE_NAME', variable: 'PRODUCT_SERVICE_ECS_SERVICE_NAME'),
+						string(credentialsId: 'MARKETNOTE_QA_ORDER_SERVICE_ECS_SERVICE_NAME',   variable: 'ORDER_SERVICE_ECS_SERVICE_NAME'),
 
-						string(credentialsId: 'USER_SERVICE_TARGET_GROUP_ARN',    variable: 'USER_SERVICE_TARGET_GROUP_ARN'),
-						string(credentialsId: 'PRODUCT_SERVICE_TARGET_GROUP_ARN', variable: 'PRODUCT_SERVICE_TARGET_GROUP_ARN'),
-						string(credentialsId: 'ORDER_SERVICE_TARGET_GROUP_ARN',   variable: 'ORDER_SERVICE_TARGET_GROUP_ARN'),
+						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_TARGET_GROUP_ARN',    variable: 'USER_SERVICE_TARGET_GROUP_ARN'),
+						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_TARGET_GROUP_ARN', variable: 'PRODUCT_SERVICE_TARGET_GROUP_ARN'),
+						string(credentialsId: 'MARKETNOTE_QA_ORDER_SERVICE_TARGET_GROUP_ARN',   variable: 'ORDER_SERVICE_TARGET_GROUP_ARN'),
 
-						string(credentialsId: 'USER_SERVICE_SERVER_PORT',         variable: 'USER_SERVICE_SERVER_PORT'),
-						string(credentialsId: 'PRODUCT_SERVICE_SERVER_PORT',      variable: 'PRODUCT_SERVICE_SERVER_PORT'),
-						string(credentialsId: 'ORDER_SERVICE_SERVER_PORT',        variable: 'ORDER_SERVICE_SERVER_PORT')
+						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_SERVER_ORIGIN',       variable: 'USER_SERVICE_SERVER_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_SERVER_ORIGIN',    variable: 'PRODUCT_SERVICE_SERVER_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_SERVER_ORIGIN',       variable: 'ORDER_SERVICE_SERVER_ORIGIN')
 					]) {
 						def svc = env.SERVICE_NAME
 						if (svc == 'user-service') {
 							env.ECR_REPOSITORY = USER_SERVICE_ECR_REPOSITORY
 							env.ECS_SERVICE_NAME = USER_SERVICE_ECS_SERVICE_NAME
 							env.TARGET_GROUP_ARN = USER_SERVICE_TARGET_GROUP_ARN
-							env.CRED_SERVER_PORT = USER_SERVICE_SERVER_PORT
+							env.CRED_SERVER_ORIGIN = USER_SERVICE_SERVER_ORIGIN
 						} else if (svc == 'product-service') {
 							env.ECR_REPOSITORY = PRODUCT_SERVICE_ECR_REPOSITORY
 							env.ECS_SERVICE_NAME = PRODUCT_SERVICE_ECS_SERVICE_NAME
 							env.TARGET_GROUP_ARN = PRODUCT_SERVICE_TARGET_GROUP_ARN
-							env.CRED_SERVER_PORT = PRODUCT_SERVICE_SERVER_PORT
+							env.CRED_SERVER_ORIGIN = PRODUCT_SERVICE_SERVER_ORIGIN
 						} else if (svc == 'order-service') {
 							env.ECR_REPOSITORY = ORDER_SERVICE_ECR_REPOSITORY
 							env.ECS_SERVICE_NAME = ORDER_SERVICE_ECS_SERVICE_NAME
 							env.TARGET_GROUP_ARN = ORDER_SERVICE_TARGET_GROUP_ARN
-							env.CRED_SERVER_PORT = ORDER_SERVICE_SERVER_PORT
+							env.CRED_SERVER_ORIGIN = ORDER_SERVICE_SERVER_ORIGIN
 						} else {
 							error "SERVICE_NAME not mapped: ${svc}"
 						}
@@ -244,7 +244,7 @@ pipeline {
 						string(credentialsId: 'MARKETNOTE_CLIENT_ORIGIN',                 variable: 'CRED_CLIENT_ORIGIN'),
 						string(credentialsId: 'MARKETNOTE_COOKIE_DOMAIN',                 variable: 'CRED_COOKIE_DOMAIN'),
 						string(credentialsId: 'MARKETNOTE_ACCESS_CONTROL_ALLOWED_ORIGINS',variable: 'CRED_ACCESS_CONTROL_ALLOWED_ORIGINS'),
-						string(credentialsId: 'MARKETNOTE_SERVER_ORIGIN',                 variable: 'CRED_SERVER_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_QA_SPRING_PROFILE',             variable: 'CRED_SPRING_PROFILE'),
 						string(credentialsId: 'MARKETNOTE_GOOGLE_CLIENT_ID',              variable: 'CRED_GOOGLE_CLIENT_ID'),
 						string(credentialsId: 'MARKETNOTE_GOOGLE_CLIENT_SECRET',          variable: 'CRED_GOOGLE_CLIENT_SECRET'),
 						string(credentialsId: 'MARKETNOTE_KAKAO_CLIENT_ID',               variable: 'CRED_KAKAO_CLIENT_ID'),
@@ -278,6 +278,7 @@ pipeline {
 								portMappings: [[containerPort: 8080, protocol: "tcp"]],
 								essential: true,
 								environment: [
+									[name: "SERVICE_NAME",                  value: "${env.ECS_SERVICE_NAME}"],
 									[name: "DB_URL",                        value: "${env.CRED_DB_URL}"],
 									[name: "DB_USERNAME",                   value: "${env.CRED_DB_USERNAME}"],
 									[name: "DB_PASSWORD",                   value: "${env.CRED_DB_PASSWORD}"],
@@ -288,7 +289,7 @@ pipeline {
 									[name: "COOKIE_DOMAIN",                 value: "${env.CRED_COOKIE_DOMAIN}"],
 									[name: "ACCESS_CONTROL_ALLOWED_ORIGINS",value: "${env.CRED_ACCESS_CONTROL_ALLOWED_ORIGINS}"],
 									[name: "SERVER_ORIGIN",                 value: "${env.CRED_SERVER_ORIGIN}"],
-									[name: "SERVER_PORT",                   value: "${env.CRED_SERVER_PORT}"],
+									[name: "SPRING_PROFILES_ACTIVE",        value: "${env.CRED_SPRING_PROFILE}"],
 									[name: "GOOGLE_CLIENT_ID",              value: "${env.CRED_GOOGLE_CLIENT_ID}"],
 									[name: "GOOGLE_CLIENT_SECRET",          value: "${env.CRED_GOOGLE_CLIENT_SECRET}"],
 									[name: "KAKAO_CLIENT_ID",               value: "${env.CRED_KAKAO_CLIENT_ID}"],

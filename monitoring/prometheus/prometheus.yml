@@ -6,4 +6,6 @@ scrape_configs:
   - job_name: 'market-note'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'market-note-lb-1014721585.ap-northeast-2.elb.amazonaws.com:80' ]
+      - targets:
+          - 'users.market-note.store:443'
+    scheme: https
