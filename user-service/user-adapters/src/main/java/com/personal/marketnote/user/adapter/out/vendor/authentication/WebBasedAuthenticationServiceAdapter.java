@@ -33,7 +33,6 @@ public class WebBasedAuthenticationServiceAdapter {
     private final LoginUseCase loginUseCase;
     private final TokenSupport tokenSupport;
     private final String serverOrigin;
-    private final String serverPort;
     private final String clientOrigin;
     private final HttpCookieUtils httpCookieUtils;
 
@@ -41,21 +40,19 @@ public class WebBasedAuthenticationServiceAdapter {
             LoginUseCase loginUseCase,
             TokenSupport tokenSupport,
             @Value("${server.origin}") String serverOrigin,
-            @Value("${server.port}") String serverPort,
             @Value("${client.origin}") List<String> clientOrigins,
             HttpCookieUtils httpCookieUtils
     ) {
         this.loginUseCase = loginUseCase;
         this.tokenSupport = tokenSupport;
         this.serverOrigin = serverOrigin;
-        this.serverPort = serverPort;
         this.clientOrigin = clientOrigins.getFirst();
         this.httpCookieUtils = httpCookieUtils;
     }
 
     public OAuth2LoginResponse loginByOAuth2(OAuth2LoginRequest oAuth2LoginRequest) {
         HttpServletRequest servletRequest = oAuth2LoginRequest.request();
-        String redirectUri = serverOrigin + ":" + serverPort + servletRequest.getRequestURI();
+        String redirectUri = serverOrigin + servletRequest.getRequestURI();
 
         LoginResult loginResult =
                 loginUseCase.loginByOAuth2(oAuth2LoginRequest.code(), redirectUri, AuthVendor.valueOfIgnoreCase(oAuth2LoginRequest.authVendor()));
