@@ -40,7 +40,7 @@ public class JwtDelegatingTokenSupportProxy extends DelegatingTokenSupport {
     public GrantedTokenInfo grantToken(String code, String redirectUri, AuthVendor authVendor) throws UnsupportedCodeException {
         GrantedTokenInfo tokenFrom3rdParty = super.grantToken(code, redirectUri, authVendor);
         String oidcId = tokenFrom3rdParty.id();
-        User user = findUserPort.findByOidcId(oidcId)
+        User user = findUserPort.findByAuthVendorAndOidcId(authVendor, oidcId)
                 .orElse(User.of(authVendor, oidcId));
 
         OAuth2UserInfo userInfo = user.isGuest()

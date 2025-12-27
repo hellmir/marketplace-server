@@ -29,7 +29,8 @@ public class OpaqueTokenDefaultIntrospector implements OpaqueTokenIntrospector {
         try {
             OAuth2AuthenticationInfo userInfo = tokenSupport.authenticate(token);
             String oidcId = userInfo.id();
-            Optional<User> user = findUserPort.findByOidcId(oidcId);
+            AuthVendor authVendor = userInfo.authVendor();
+            Optional<User> user = findUserPort.findByAuthVendorAndOidcId(authVendor, oidcId);
 
             if (user.isPresent()) {
                 User signedUpUser = user.get();
