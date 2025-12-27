@@ -4,11 +4,12 @@ import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.AcceptOrCancelTermsApiDocs;
 import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.GetAllTermsApiDocs;
+import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.GetUserTermsApiDocs;
 import com.personal.marketnote.user.adapter.in.client.user.mapper.TermsRequestToCommandMapper;
 import com.personal.marketnote.user.adapter.in.client.user.request.AcceptOrCancelTermsRequest;
 import com.personal.marketnote.user.adapter.in.client.user.response.GetTermsResponse;
-import com.personal.marketnote.user.adapter.in.client.user.response.UpdateUserTermsResponse;
-import com.personal.marketnote.user.port.in.result.UpdateUserTermsResult;
+import com.personal.marketnote.user.adapter.in.client.user.response.GetUserTermsResponse;
+import com.personal.marketnote.user.port.in.result.GetUserTermsResult;
 import com.personal.marketnote.user.port.in.usecase.terms.GetTermsUseCase;
 import com.personal.marketnote.user.port.in.usecase.terms.UpdateTermsUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,7 +23,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/users/terms")
+@RequestMapping("/api/v1/terms")
 @Tag(
         name = "회원 약관 API",
         description = "회원 약관 관련 API"
@@ -50,20 +51,39 @@ public class TermsController {
         );
     }
 
-    @PostMapping()
+    @GetMapping("/user")
+    @GetUserTermsApiDocs
+    public ResponseEntity<BaseResponse<GetUserTermsResponse>> getUserTerms(
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        GetUserTermsResult getUserTermsResult = getTermsUseCase.getUserTerms(
+                ElementExtractor.extractUserId(principal)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        GetUserTermsResponse.from(getUserTermsResult),
+                        HttpStatus.OK,
+                        "약관 동의/철회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    @PatchMapping("/user")
     @AcceptOrCancelTermsApiDocs
-    public ResponseEntity<BaseResponse<UpdateUserTermsResponse>> acceptOrCancelTerms(
+    public ResponseEntity<BaseResponse<GetUserTermsResponse>> acceptOrCancelTerms(
             @Valid @RequestBody AcceptOrCancelTermsRequest acceptOrCancelTermsRequest,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
-        UpdateUserTermsResult updateUserTermsResult = updateTermsUseCase.acceptOrCancelTerms(
+        GetUserTermsResult getUserTermsResult = updateTermsUseCase.acceptOrCancelTerms(
                 ElementExtractor.extractUserId(principal),
                 TermsRequestToCommandMapper.mapToCommand(acceptOrCancelTermsRequest)
         );
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        UpdateUserTermsResponse.from(updateUserTermsResult),
+                        GetUserTermsResponse.from(getUserTermsResult),
                         HttpStatus.OK,
                         "약관 동의/철회 성공"
                 ),

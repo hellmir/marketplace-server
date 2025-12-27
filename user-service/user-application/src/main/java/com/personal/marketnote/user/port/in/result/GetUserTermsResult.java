@@ -5,11 +5,11 @@ import com.personal.marketnote.user.domain.user.UserTerms;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public record UpdateUserTermsResult(
+public record GetUserTermsResult(
         List<UpdateUserTermResult> userTerms
 ) {
-    public static UpdateUserTermsResult from(List<UserTerms> userTerms) {
-        return new UpdateUserTermsResult(
+    public static GetUserTermsResult from(List<UserTerms> userTerms) {
+        return new GetUserTermsResult(
                 userTerms.stream().map(UpdateUserTermResult::from)
                         .collect(Collectors.toList())
         );
