@@ -89,3 +89,7 @@ mail:
   sender-name: ${MAIL_SENDER_NAME:shop}
   verification:
     ttl-minutes: ${MAIL_VERIFICATION_TTL_MINUTES:5}
+
+verification:
+  redis:
+    prefix: ${REDIS_EMAIL_VERIFICATION_PREFIX:email:verification:}

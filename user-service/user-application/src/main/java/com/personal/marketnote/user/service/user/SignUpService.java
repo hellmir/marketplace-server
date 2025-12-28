@@ -5,11 +5,13 @@ import com.personal.marketnote.common.domain.exception.illegalargument.novalue.P
 import com.personal.marketnote.common.utility.RandomCodeGenerator;
 import com.personal.marketnote.user.domain.user.Terms;
 import com.personal.marketnote.user.domain.user.User;
+import com.personal.marketnote.user.exception.InvalidVerificationCodeException;
 import com.personal.marketnote.user.exception.UserExistsException;
 import com.personal.marketnote.user.port.in.command.SignUpCommand;
 import com.personal.marketnote.user.port.in.result.SignUpResult;
 import com.personal.marketnote.user.port.in.usecase.user.GetUserUseCase;
 import com.personal.marketnote.user.port.in.usecase.user.SignUpUseCase;
+import com.personal.marketnote.user.port.out.authentication.VerifyEmailVerificationCodePort;
 import com.personal.marketnote.user.port.out.user.FindTermsPort;
 import com.personal.marketnote.user.port.out.user.FindUserPort;
 import com.personal.marketnote.user.port.out.user.SaveUserPort;
@@ -35,6 +37,7 @@ public class SignUpService implements SignUpUseCase {
     private final FindTermsPort findTermsPort;
     private final PasswordEncoder passwordEncoder;
     private final UpdateUserPort updateUserPort;
+    private final VerifyEmailVerificationCodePort verifyEmailVerificationCodePort;
 
     @Override
     public SignUpResult signUp(SignUpCommand signUpCommand, AuthVendor authVendor, String oidcId) {
@@ -43,20 +46,28 @@ public class SignUpService implements SignUpUseCase {
         }
 
         if (!authVendor.isNative() && findUserPort.existsByAuthVendorAndOidcId(authVendor, oidcId)) {
-            throw new UserExistsException(String.format(OIDC_ID_ALREADY_EXISTS_EXCEPTION_MESSAGE, SECOND_ERROR_CODE, oidcId));
+            throw new UserExistsException(
+                    String.format(OIDC_ID_ALREADY_EXISTS_EXCEPTION_MESSAGE, SECOND_ERROR_CODE, oidcId));
         }
 
         String nickname = signUpCommand.getNickname();
         if (findUserPort.existsByNickname(nickname)) {
-            throw new UserExistsException(String.format(NICKNAME_ALREADY_EXISTS_EXCEPTION_MESSAGE, THIRD_ERROR_CODE, nickname));
+            throw new UserExistsException(
+                    String.format(NICKNAME_ALREADY_EXISTS_EXCEPTION_MESSAGE, THIRD_ERROR_CODE, nickname));
         }
 
         String phoneNumber = signUpCommand.getPhoneNumber();
         if (signUpCommand.hasPhoneNumber() && findUserPort.existsByPhoneNumber(phoneNumber)) {
-            throw new UserExistsException(String.format(PHONE_NUMBER_ALREADY_EXISTS_EXCEPTION_MESSAGE, FOURTH_ERROR_CODE, phoneNumber));
+            throw new UserExistsException(
+                    String.format(PHONE_NUMBER_ALREADY_EXISTS_EXCEPTION_MESSAGE, FOURTH_ERROR_CODE, phoneNumber));
         }
 
         String email = signUpCommand.getEmail();
+
+        // 이메일 인증 코드 검증
+        if (!verifyEmailVerificationCodePort.verifyAndConsume(email, signUpCommand.getVerificationCode())) {
+            throw new InvalidVerificationCodeException(FIFTH_ERROR_CODE, email);
+        }
 
         // 이메일 가입 정보가 있는 경우 기존 회원 엔티티에 통합
         if (findUserPort.existsByEmail(email)) {
@@ -64,7 +75,7 @@ public class SignUpService implements SignUpUseCase {
             signedUpUser.addLoginAccountInfo(authVendor, oidcId, signUpCommand.getPassword(), passwordEncoder);
             updateUserPort.update(signedUpUser);
 
-            return SignUpResult.from(signedUpUser);
+            return SignUpResult.from(signedUpUser, false);
         }
 
         List<Terms> terms = findTermsPort.findAll();
@@ -82,9 +93,7 @@ public class SignUpService implements SignUpUseCase {
                                 signUpCommand.getFullName(),
                                 signUpCommand.getPhoneNumber(),
                                 terms,
-                                referenceCode
-                        )
-                )
-        );
+                                referenceCode)),
+                true);
     }
 }

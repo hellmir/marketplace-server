@@ -412,9 +412,8 @@ pipeline {
 						string(credentialsId: 'MARKETNOTE_MAIL_FROM',                       variable: 'MAIL_FROM'),
 						string(credentialsId: 'MARKETNOTE_MAIL_SENDER_NAME',                variable: 'MAIL_SENDER_NAME'),
 						string(credentialsId: 'MARKETNOTE_MAIL_VERIFICATION_TTL_MINUTES',   variable: 'MAIL_VERIFICATION_TTL_MINUTES'),
-						string(credentialsId: 'MARKETNOTE_REDIS_SERVICE_NAME',              variable: 'REDIS_SERVICE_NAME'),
 						string(credentialsId: 'MARKETNOTE_REDIS_PASSWORD',                  variable: 'REDIS_PASSWORD'),
-						string(credentialsId: 'MARKETNOTE_REDIS_SERVICE_NAME',              variable: 'REDIS_SERVICE_NAME'),
+						string(credentialsId: 'MARKETNOTE_REDIS_HOST_NAME',                 variable: 'REDIS_HOST_NAME'),
 						string(credentialsId: 'MARKETNOTE_REDIS_EMAIL_VERIFICATION_PREFIX', variable: 'REDIS_EMAIL_VERIFICATION_PREFIX'),
 					]) {
 						sh '''
@@ -463,9 +462,8 @@ pipeline {
 							  { "name": "MAIL_FROM",                      "value": "'"$MAIL_FROM"'" },
 							  { "name": "MAIL_SENDER_NAME",               "value": "'"$MAIL_SENDER_NAME"'" },
 							  { "name": "MAIL_VERIFICATION_TTL_MINUTES",  "value": "'"$MAIL_VERIFICATION_TTL_MINUTES"'" },
-							  { "name": "REDIS_SERVICE_NAME",             "value": "'"$REDIS_SERVICE_NAME"'" },
+							  { "name": "REDIS_HOST_NAME",                "value": "'"$REDIS_HOST_NAME"'" },
 							  { "name": "REDIS_PASSWORD",                 "value": "'"$REDIS_PASSWORD"'" },
-							  { "name": "REDIS_HOST_NAME",                "value": "'"$REDIS_SERVICE_NAME"'" },
 							  { "name": "REDIS_EMAIL_VERIFICATION_PREFIX","value": "'"$REDIS_EMAIL_VERIFICATION_PREFIX"'" }
 							],
                             "logConfiguration": {
