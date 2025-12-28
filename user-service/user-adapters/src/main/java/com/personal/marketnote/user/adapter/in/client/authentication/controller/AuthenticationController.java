@@ -5,6 +5,7 @@ import com.personal.marketnote.common.domain.exception.token.UnsupportedCodeExce
 import com.personal.marketnote.user.adapter.in.client.authentication.controller.apidocs.Oauth2LoginApiDocs;
 import com.personal.marketnote.user.adapter.in.client.authentication.controller.apidocs.RefreshAccessTokenApiDocs;
 import com.personal.marketnote.user.adapter.in.client.authentication.request.OAuth2LoginRequest;
+import com.personal.marketnote.user.adapter.in.client.authentication.request.RefreshAccessTokenRequest;
 import com.personal.marketnote.user.adapter.in.client.authentication.response.OAuth2LoginResponse;
 import com.personal.marketnote.user.adapter.in.client.authentication.response.RefreshedAccessTokenResponse;
 import com.personal.marketnote.user.adapter.in.client.authentication.response.WebBasedTokenRefreshResponse;
@@ -47,9 +48,10 @@ public class AuthenticationController {
     @RefreshAccessTokenApiDocs
     @PostMapping("/access-token/refresh")
     public ResponseEntity<BaseResponse<RefreshedAccessTokenResponse>> accessToken(
-            @CookieValue(value = "refresh_token", required = false) String refreshToken
+            @RequestBody RefreshAccessTokenRequest refreshAccessTokenRequest
     ) {
-        WebBasedTokenRefreshResponse response = authServiceAdapter.issueNewAccessToken(refreshToken);
+        WebBasedTokenRefreshResponse response
+                = authServiceAdapter.issueNewAccessToken(refreshAccessTokenRequest.getRefreshToken());
 
         return new ResponseEntity<>(
                 BaseResponse.of(response.accessToken(), HttpStatus.CREATED, "Access Token 재발급 성공"),

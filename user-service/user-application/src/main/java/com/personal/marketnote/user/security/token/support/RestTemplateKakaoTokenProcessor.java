@@ -155,12 +155,6 @@ public class RestTemplateKakaoTokenProcessor implements TokenProcessor {
         return OAuth2UserInfo.builder()
                 .id(String.valueOf(responseBody.getLong("id")))
                 .name(kakaoAccount.isNull("name") ? null : kakaoAccount.getString("name"))
-                .profileImageUrl(
-                        kakaoAccount.isNull("profile")
-                                || kakaoAccount.getJSONObject("profile").isNull("profile_image_url")
-                                ? null
-                                : kakaoAccount.getJSONObject("profile").getString("profile_image_url")
-                )
                 .build();
     }
 
