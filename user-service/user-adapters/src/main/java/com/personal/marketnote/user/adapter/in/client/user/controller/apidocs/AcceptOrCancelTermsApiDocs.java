@@ -20,6 +20,8 @@ import java.lang.annotation.*;
                 
                 작성자: 성효빈
                 
+                ---
+                
                 ## Description
                 
                 - 회원이 약관에 동의하거나 철회합니다.

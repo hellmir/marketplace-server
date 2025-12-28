@@ -47,7 +47,7 @@ public class UserJpaEntity extends BaseGeneralEntity {
     @Column(name = "phone_number", unique = true, length = 15)
     private String phoneNumber;
 
-    @Column(name = "reference_code", length = 15)
+    @Column(name = "reference_code", unique = true, length = 15)
     private String referenceCode;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -23,6 +23,8 @@ import java.lang.annotation.*;
                 
                 작성자: 성효빈
                 
+                ---
+                
                 ## Description
                 
                 - Refresh Token을 전송해 새로운 Access Token을 발급합니다.

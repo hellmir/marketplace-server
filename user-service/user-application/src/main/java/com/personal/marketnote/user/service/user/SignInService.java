@@ -7,7 +7,7 @@ import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.exception.InvalidPasswordException;
 import com.personal.marketnote.user.port.in.command.SignInCommand;
 import com.personal.marketnote.user.port.in.result.SignInResult;
-import com.personal.marketnote.user.port.in.usecase.authentication.GetUserInfoUseCase;
+import com.personal.marketnote.user.port.in.usecase.user.GetUserInfoUseCase;
 import com.personal.marketnote.user.port.in.usecase.user.SignInUseCase;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.RequiredArgsConstructor;

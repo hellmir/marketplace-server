@@ -18,6 +18,8 @@ import java.lang.annotation.*;
                 
                 작성자: 성효빈
                 
+                ---
+                
                 ## Description
                 
                 회원 약관 동의 여부 목록을 조회합니다.

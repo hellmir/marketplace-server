@@ -20,6 +20,8 @@ import java.lang.annotation.*;
                 
                 작성자: 성효빈
                 
+                ---
+                
                 ## Description
                 
                 - 사용자 닉네임, 이메일 주소, 비밀번호, 성명, 전화번호를 전송해 회원으로 가입합니다.

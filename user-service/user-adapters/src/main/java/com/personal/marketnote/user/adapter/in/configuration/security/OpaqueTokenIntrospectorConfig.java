@@ -67,8 +67,7 @@ public class OpaqueTokenIntrospectorConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource(
-            @Value("${client.cors.allowed-origins}") String allowedOrigins
-    ) {
+            @Value("${client.cors.allowed-origins}") String allowedOrigins) {
         CorsConfiguration config = new CorsConfiguration();
         List<String> origins = Arrays.stream(allowedOrigins.split(","))
                 .map(String::trim)

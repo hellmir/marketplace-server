@@ -1,8 +1,11 @@
 package com.personal.marketnote.user.adapter.in.client.user.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
+import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.common.utility.FormatConverter;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.user.adapter.in.client.authentication.response.GetUserResponse;
+import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.GetUserInfoApiDocs;
 import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.SignInApiDocs;
 import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.SignUpApiDocs;
 import com.personal.marketnote.user.adapter.in.client.user.mapper.UserRequestToCommandMapper;
@@ -11,6 +14,7 @@ import com.personal.marketnote.user.adapter.in.client.user.request.SignUpRequest
 import com.personal.marketnote.user.adapter.in.client.user.response.AuthenticationTokenResponse;
 import com.personal.marketnote.user.adapter.in.client.user.response.SignInResponse;
 import com.personal.marketnote.user.adapter.in.client.user.response.SignUpResponse;
+import com.personal.marketnote.user.port.in.usecase.user.GetUserInfoUseCase;
 import com.personal.marketnote.user.port.in.usecase.user.SignInUseCase;
 import com.personal.marketnote.user.port.in.usecase.user.SignUpUseCase;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
@@ -23,10 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -44,6 +45,7 @@ import static com.personal.marketnote.user.security.token.utility.TokenConstant.
 public class UserController {
     private final SignUpUseCase signUpUseCase;
     private final SignInUseCase signInUseCase;
+    private final GetUserInfoUseCase getUserInfoUseCase;
     private final JwtUtil jwtUtil;
 
     @PostMapping("/sign-up")
@@ -111,6 +113,25 @@ public class UserController {
                         new AuthenticationTokenResponse(accessToken, refreshToken),
                         HttpStatus.OK,
                         "회원 로그인 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping
+    @GetUserInfoApiDocs
+    public ResponseEntity<BaseResponse<GetUserResponse>> getUserInfo(
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        GetUserResponse getUserResponse = GetUserResponse.from(
+                getUserInfoUseCase.getUserInfo(ElementExtractor.extractUserId(principal))
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        getUserResponse,
+                        HttpStatus.OK,
+                        "회원 정보 조회 성공"
                 ),
                 HttpStatus.OK
         );
