@@ -4,9 +4,10 @@ import com.personal.marketnote.user.port.in.result.SignUpResult;
 
 public record SignUpResponse(
         Long id,
-        String roleId
+        String roleId,
+        boolean isNewUser
 ) {
     public static SignUpResponse from(SignUpResult signUpResult) {
-        return new SignUpResponse(signUpResult.id(), signUpResult.roleId());
+        return new SignUpResponse(signUpResult.id(), signUpResult.roleId(), signUpResult.isNewUser());
     }
 }

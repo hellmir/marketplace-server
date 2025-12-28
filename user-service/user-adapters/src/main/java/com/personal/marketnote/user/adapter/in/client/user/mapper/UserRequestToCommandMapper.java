@@ -10,9 +10,10 @@ import com.personal.marketnote.user.port.in.command.UpdateUserInfoCommand;
 public class UserRequestToCommandMapper {
     public static SignUpCommand mapToCommand(SignUpRequest signUpRequest) {
         return SignUpCommand.of(
-                signUpRequest.getNickname(),
                 signUpRequest.getEmail(),
                 signUpRequest.getPassword(),
+                signUpRequest.getVerificationCode(),
+                signUpRequest.getNickname(),
                 signUpRequest.getFullName(),
                 signUpRequest.getPhoneNumber()
         );

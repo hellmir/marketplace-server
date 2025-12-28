@@ -11,10 +11,7 @@ import com.personal.marketnote.user.adapter.in.client.user.request.SignInRequest
 import com.personal.marketnote.user.adapter.in.client.user.request.SignOutRequest;
 import com.personal.marketnote.user.adapter.in.client.user.request.SignUpRequest;
 import com.personal.marketnote.user.adapter.in.client.user.request.UpdateUserInfoRequest;
-import com.personal.marketnote.user.adapter.in.client.user.response.AuthenticationTokenResponse;
-import com.personal.marketnote.user.adapter.in.client.user.response.SignInResponse;
-import com.personal.marketnote.user.adapter.in.client.user.response.SignOutResponse;
-import com.personal.marketnote.user.adapter.in.client.user.response.SignUpResponse;
+import com.personal.marketnote.user.adapter.in.client.user.response.*;
 import com.personal.marketnote.user.port.in.usecase.user.*;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import com.personal.marketnote.user.utility.jwt.JwtUtil;
@@ -72,7 +69,7 @@ public class UserController {
      */
     @PostMapping("/sign-up")
     @SignUpApiDocs
-    public ResponseEntity<BaseResponse<AuthenticationTokenResponse>> signUpUser(
+    public ResponseEntity<BaseResponse<SignUpTokenResponse>> signUpUser(
             @Valid @RequestBody SignUpRequest signUpRequest,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
@@ -97,7 +94,7 @@ public class UserController {
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        new AuthenticationTokenResponse(accessToken, refreshToken),
+                        SignUpTokenResponse.of(accessToken, refreshToken, signUpResponse.isNewUser()),
                         HttpStatus.CREATED,
                         DEFAULT_SUCCESS_CODE,
                         "회원 가입 성공"
@@ -173,7 +170,7 @@ public class UserController {
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        new AuthenticationTokenResponse(accessToken, refreshToken),
+                        AuthenticationTokenResponse.of(accessToken, refreshToken),
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "회원 로그인 성공"
