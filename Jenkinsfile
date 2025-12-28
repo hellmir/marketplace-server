@@ -137,7 +137,7 @@ pipeline {
 		stage('Build') {
 			steps {
 				sh "chmod u+x ${WORKSPACE}/gradlew"
-				sh "./gradlew -p ${env.SERVICE_DIRECTORY} clean build -x test"
+				sh "./gradlew -p ${env.SERVICE_DIRECTORY} build -x test"
 			}
 		}
 
@@ -159,24 +159,24 @@ pipeline {
 
 						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_SERVER_ORIGIN',       variable: 'USER_SERVICE_SERVER_ORIGIN'),
 						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_SERVER_ORIGIN',    variable: 'PRODUCT_SERVICE_SERVER_ORIGIN'),
-						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_SERVER_ORIGIN',       variable: 'ORDER_SERVICE_SERVER_ORIGIN')
+						string(credentialsId: 'MARKETNOTE_QA_ORDER_SERVICE_SERVER_ORIGIN',      variable: 'ORDER_SERVICE_SERVER_ORIGIN')
 					]) {
 						def svc = env.SERVICE_NAME
 						if (svc == 'user-service') {
 							env.ECR_REPOSITORY = USER_SERVICE_ECR_REPOSITORY
 							env.ECS_SERVICE_NAME = USER_SERVICE_ECS_SERVICE_NAME
 							env.TARGET_GROUP_ARN = USER_SERVICE_TARGET_GROUP_ARN
-							env.CRED_SERVER_ORIGIN = USER_SERVICE_SERVER_ORIGIN
+							env.SERVER_ORIGIN = USER_SERVICE_SERVER_ORIGIN
 						} else if (svc == 'product-service') {
 							env.ECR_REPOSITORY = PRODUCT_SERVICE_ECR_REPOSITORY
 							env.ECS_SERVICE_NAME = PRODUCT_SERVICE_ECS_SERVICE_NAME
 							env.TARGET_GROUP_ARN = PRODUCT_SERVICE_TARGET_GROUP_ARN
-							env.CRED_SERVER_ORIGIN = PRODUCT_SERVICE_SERVER_ORIGIN
+							env.SERVER_ORIGIN = PRODUCT_SERVICE_SERVER_ORIGIN
 						} else if (svc == 'order-service') {
 							env.ECR_REPOSITORY = ORDER_SERVICE_ECR_REPOSITORY
 							env.ECS_SERVICE_NAME = ORDER_SERVICE_ECS_SERVICE_NAME
 							env.TARGET_GROUP_ARN = ORDER_SERVICE_TARGET_GROUP_ARN
-							env.CRED_SERVER_ORIGIN = ORDER_SERVICE_SERVER_ORIGIN
+							env.SERVER_ORIGIN = ORDER_SERVICE_SERVER_ORIGIN
 						} else {
 							error "SERVICE_NAME not mapped: ${svc}"
 						}
@@ -193,18 +193,166 @@ pipeline {
 			}
 		}
 
+		stage('Detect Redis Changes') {
+			steps {
+				script {
+					def base = sh(script: 'git rev-parse HEAD~1 || git rev-parse HEAD', returnStdout: true).trim()
+					def changed = sh(script: "git diff --name-only ${base} HEAD || true", returnStdout: true)
+					.trim()
+					.split('\n')
+					.findAll {
+						it?.trim()
+					} as List
+					def redisChanged = changed.any {
+						p ->
+						p ==~ /.*user-service\/.*\/src\/.*\/com\/personal\/marketnote\/user\/configuration\/CacheConfig\.java/ ||
+						p ==~ /.*user-service\/.*\/src\/.*\/com\/personal\/marketnote\/user\/configuration\/SessionConfig\.java/
+					}
+					env.REDIS_CHANGED = redisChanged ? "true" : "false"
+					echo "REDIS_CHANGED              = ${env.REDIS_CHANGED}"
+				}
+			}
+		}
+
+		stage('Register Redis Task Definition') {
+			steps {
+				script {
+					if (env.REDIS_CHANGED != "true") {
+						sleep time: 1, unit: 'SECONDS'; return
+					}
+					withCredentials([
+						string(credentialsId: 'MARKETNOTE_AWS_DEFAULT_REGION',          variable: 'AWS_DEFAULT_REGION'),
+						string(credentialsId: 'MARKETNOTE_ECS_TASK_EXECUTION_ROLE_ARN', variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
+						string(credentialsId: 'MARKETNOTE_ECS_TASK_ROLE_ARN',           variable: 'ECS_TASK_ROLE_ARN'),
+						string(credentialsId: 'MARKETNOTE_CLOUDWATCH_LOG_GROUP_REDIS',  variable: 'CLOUDWATCH_LOG_GROUP_REDIS'),
+						string(credentialsId: 'MARKETNOTE_REDIS_SERVICE_NAME',          variable: 'REDIS_SERVICE_NAME'),
+						string(credentialsId: 'MARKETNOTE_REDIS_PASSWORD',              variable: 'REDIS_PASSWORD')
+					]) {
+						sh '''
+				          LG="$CLOUDWATCH_LOG_GROUP_REDIS"
+				          EXISTS=$(aws logs describe-log-groups --log-group-name-prefix "$LG" --region "$AWS_DEFAULT_REGION" --query "length(logGroups[?logGroupName=='$LG'])" --output text || echo 0)
+				          if [ "$EXISTS" = "0" ]; then
+				            aws logs create-log-group --log-group-name "$LG" --region "$AWS_DEFAULT_REGION"
+				          fi
+				        '''
+
+						def redisTask = [
+							family: "redis",
+							networkMode: "awsvpc",
+							requiresCompatibilities: ["FARGATE"],
+							cpu: "256",
+							memory: "512",
+							executionRoleArn: "${env.ECS_TASK_EXECUTION_ROLE_ARN}",
+							taskRoleArn: "${env.ECS_TASK_ROLE_ARN}",
+							containerDefinitions: [[
+								name: "redis",
+								image: "redis:7.2",
+								portMappings: [[containerPort: 6379, protocol: "tcp"]],
+								essential: true,
+								command: [
+									"sh",
+									"-c",
+									"exec redis-server --appendonly yes --requirepass \\\"\$REDIS_PASSWORD\\\""
+								],
+								environment: [
+									[name: "REDIS_SERVICE_NAME", value: "${env.REDIS_SERVICE_NAME}"],
+									[name: "REDIS_PASSWORD",     value: "${env.REDIS_PASSWORD}"]
+								],
+								logConfiguration: [
+									logDriver: "awslogs",
+									options: [
+										"awslogs-group": "${env.CLOUDWATCH_LOG_GROUP_REDIS}",
+										"awslogs-region": "${env.AWS_DEFAULT_REGION}",
+										"awslogs-stream-prefix": "redis"
+									]
+								]
+							]]
+						]
+
+						def json = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(redisTask))
+						writeFile file: 'redis-taskdef.json', text: json
+
+						def out = sh(
+							script: 'aws ecs register-task-definition --cli-input-json file://redis-taskdef.json --region $AWS_DEFAULT_REGION --query \'taskDefinition.taskDefinitionArn\' --output text',
+							returnStdout: true
+						).trim()
+
+						if (!out || out == 'None') {
+							error 'Failed to register Redis task definition'
+						}
+						env.REDIS_TASK_DEF_ARN = out
+						echo "Registered Redis TaskDef ARN = ${env.REDIS_TASK_DEF_ARN}"
+					}
+				}
+			}
+		}
+
+		stage('Deploy Redis Service') {
+			steps {
+				script {
+					if (env.REDIS_CHANGED != "true") {
+						sleep time: 1, unit: 'SECONDS'; return
+					}
+					withCredentials([
+						string(credentialsId: 'MARKETNOTE_AWS_DEFAULT_REGION',      variable: 'AWS_DEFAULT_REGION'),
+						string(credentialsId: 'MARKETNOTE_ECS_CLUSTER_NAME',        variable: 'ECS_CLUSTER_NAME'),
+						string(credentialsId: 'MARKETNOTE_REDIS_SERVICE_NAME',      variable: 'REDIS_SERVICE_NAME'),
+						string(credentialsId: 'MARKETNOTE_SUBNET_IDS',              variable: 'SUBNET_IDS'),
+						string(credentialsId: 'MARKETNOTE_SECURITY_GROUP_IDS',      variable: 'SECURITY_GROUP_IDS')
+					]) {
+						def latestTask = env.REDIS_TASK_DEF_ARN?.trim()
+						if (!latestTask) {
+							latestTask = sh(script: 'aws ecs list-task-definitions --family-prefix redis --sort DESC --region $AWS_DEFAULT_REGION --query \'taskDefinitionArns[0]\' --output text', returnStdout: true).trim()
+						}
+						if (!latestTask || latestTask == 'None') {
+							error 'No Redis TaskDefinition found to deploy'
+						}
+
+						def exists = sh(script: 'aws ecs describe-services --cluster $ECS_CLUSTER_NAME --services $REDIS_SERVICE_NAME --region $AWS_DEFAULT_REGION --query \'services[0].status\' --output text || true', returnStdout: true).trim()
+						def subnets = sh(script: 'printf "%s" "$SUBNET_IDS" | awk -F, \'{for(i=1;i<=NF;i++){gsub(/^ +| +$/,"",$i);printf "%s%s",$i,(i<NF?",":"")}}\'', returnStdout: true).trim()
+						def sgs = sh(script: 'printf "%s" "$SECURITY_GROUP_IDS" | awk -F, \'{for(i=1;i<=NF;i++){gsub(/^ +| +$/,"",$i);printf "%s%s",$i,(i<NF?",":"")}}\'', returnStdout: true).trim()
+
+						if (exists == "ACTIVE" || exists == "DRAINING") {
+							sh """
+          					  aws ecs update-service \
+          					    --cluster \$ECS_CLUSTER_NAME \
+          					    --service \$REDIS_SERVICE_NAME \
+          					    --task-definition ${latestTask} \
+          					    --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
+          					    --desired-count 1 \
+          					    --region \$AWS_DEFAULT_REGION \
+          					    --force-new-deployment
+          					"""
+						} else {
+							sh """
+          					  aws ecs create-service \
+          					    --cluster \$ECS_CLUSTER_NAME \
+          					    --service-name \$REDIS_SERVICE_NAME \
+          					    --task-definition ${latestTask} \
+          					    --desired-count 1 \
+          					    --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
+          					    --network-configuration "awsvpcConfiguration={subnets=[${subnets}],securityGroups=[${sgs}],assignPublicIp=ENABLED}" \
+          					    --region \$AWS_DEFAULT_REGION
+          					"""
+						}
+						sh 'aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $REDIS_SERVICE_NAME --region $AWS_DEFAULT_REGION'
+					}
+				}
+			}
+		}
+
 		stage('Build Market Note Service Image') {
 			steps {
 				script {
 					def dockerImageTag = "${env.PROJECT_NAME}:${env.PROJECT_VERSION}"
 					env.DOCKER_IMAGE_TAG = dockerImageTag
-					sh """
-                    docker build \
-                      --build-arg JAR_FILE=build/libs/${env.PROJECT_NAME}-${env.PROJECT_VERSION}.jar \
-                      -t ${dockerImageTag} \
-                      -f ${env.DOCKERFILE_PATH} \
-                      ${env.BUILD_CONTEXT}
-                    """
+					sh '''
+			          docker build \
+			            --build-arg JAR_FILE=build/libs/$PROJECT_NAME-$PROJECT_VERSION.jar \
+			            -t $DOCKER_IMAGE_TAG \
+			            -f "$DOCKERFILE_PATH" \
+			            "$BUILD_CONTEXT"
+			        '''
 				}
 			}
 		}
@@ -235,83 +383,105 @@ pipeline {
 			steps {
 				script {
 					withCredentials([
-						string(credentialsId: 'MARKETNOTE_DB_URL',                        variable: 'CRED_DB_URL'),
-						string(credentialsId: 'MARKETNOTE_DB_USERNAME',                   variable: 'CRED_DB_USERNAME'),
-						string(credentialsId: 'MARKETNOTE_DB_PASSWORD',                   variable: 'CRED_DB_PASSWORD'),
-						string(credentialsId: 'MARKETNOTE_JWT_SECRET_KEY',                variable: 'CRED_JWT_SECRET_KEY'),
-						string(credentialsId: 'MARKETNOTE_ACCESS_TOKEN_EXPIRATION_TIME',  variable: 'CRED_ACCESS_TOKEN_EXPIRATION_TIME'),
-						string(credentialsId: 'MARKETNOTE_REFRESH_TOKEN_EXPIRATION_TIME', variable: 'CRED_REFRESH_TOKEN_EXPIRATION_TIME'),
-						string(credentialsId: 'MARKETNOTE_CLIENT_ORIGIN',                 variable: 'CRED_CLIENT_ORIGIN'),
-						string(credentialsId: 'MARKETNOTE_COOKIE_DOMAIN',                 variable: 'CRED_COOKIE_DOMAIN'),
-						string(credentialsId: 'MARKETNOTE_ACCESS_CONTROL_ALLOWED_ORIGINS',variable: 'CRED_ACCESS_CONTROL_ALLOWED_ORIGINS'),
-						string(credentialsId: 'MARKETNOTE_QA_SPRING_PROFILE',             variable: 'CRED_SPRING_PROFILE'),
-						string(credentialsId: 'MARKETNOTE_GOOGLE_CLIENT_ID',              variable: 'CRED_GOOGLE_CLIENT_ID'),
-						string(credentialsId: 'MARKETNOTE_GOOGLE_CLIENT_SECRET',          variable: 'CRED_GOOGLE_CLIENT_SECRET'),
-						string(credentialsId: 'MARKETNOTE_KAKAO_CLIENT_ID',               variable: 'CRED_KAKAO_CLIENT_ID'),
-						string(credentialsId: 'MARKETNOTE_KAKAO_CLIENT_SECRET',           variable: 'CRED_KAKAO_CLIENT_SECRET'),
-						string(credentialsId: 'MARKETNOTE_S3_ACCESS_KEY',                 variable: 'CRED_S3_ACCESS_KEY'),
-						string(credentialsId: 'MARKETNOTE_S3_SECRET_KEY',                 variable: 'CRED_S3_SECRET_KEY'),
-						string(credentialsId: 'MARKETNOTE_S3_BUCKET_NAME',                variable: 'CRED_S3_BUCKET_NAME'),
-						string(credentialsId: 'MARKETNOTE_AWS_ACCOUNT_ID',                variable: 'AWS_ACCOUNT_ID'),
-						string(credentialsId: 'MARKETNOTE_AWS_ACCESS_KEY_ID',             variable: 'AWS_ACCESS_KEY_ID'),
-						string(credentialsId: 'MARKETNOTE_AWS_SECRET_ACCESS_KEY',         variable: 'AWS_SECRET_ACCESS_KEY'),
-						string(credentialsId: 'MARKETNOTE_AWS_DEFAULT_REGION',            variable: 'AWS_DEFAULT_REGION'),
-						string(credentialsId: 'MARKETNOTE_ECS_TASK_EXECUTION_ROLE_ARN',   variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
-						string(credentialsId: 'MARKETNOTE_ECS_TASK_ROLE_ARN',             variable: 'ECS_TASK_ROLE_ARN'),
-						string(credentialsId: 'MARKETNOTE_CLOUDWATCH_LOG_GROUP',          variable: 'CLOUDWATCH_LOG_GROUP')
+						string(credentialsId: 'MARKETNOTE_DB_URL',                          variable: 'DB_URL'),
+						string(credentialsId: 'MARKETNOTE_DB_USERNAME',                     variable: 'DB_USERNAME'),
+						string(credentialsId: 'MARKETNOTE_DB_PASSWORD',                     variable: 'DB_PASSWORD'),
+						string(credentialsId: 'MARKETNOTE_JWT_SECRET_KEY',                  variable: 'JWT_SECRET_KEY'),
+						string(credentialsId: 'MARKETNOTE_ACCESS_TOKEN_EXPIRATION_TIME',    variable: 'ACCESS_TOKEN_EXPIRATION_TIME'),
+						string(credentialsId: 'MARKETNOTE_REFRESH_TOKEN_EXPIRATION_TIME',   variable: 'REFRESH_TOKEN_EXPIRATION_TIME'),
+						string(credentialsId: 'MARKETNOTE_CLIENT_ORIGIN',                   variable: 'CLIENT_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_COOKIE_DOMAIN',                   variable: 'COOKIE_DOMAIN'),
+						string(credentialsId: 'MARKETNOTE_ACCESS_CONTROL_ALLOWED_ORIGINS',  variable: 'ACCESS_CONTROL_ALLOWED_ORIGINS'),
+						string(credentialsId: 'MARKETNOTE_QA_SPRING_PROFILE',               variable: 'SPRING_PROFILE'),
+						string(credentialsId: 'MARKETNOTE_GOOGLE_CLIENT_ID',                variable: 'GOOGLE_CLIENT_ID'),
+						string(credentialsId: 'MARKETNOTE_GOOGLE_CLIENT_SECRET',            variable: 'GOOGLE_CLIENT_SECRET'),
+						string(credentialsId: 'MARKETNOTE_KAKAO_CLIENT_ID',                 variable: 'KAKAO_CLIENT_ID'),
+						string(credentialsId: 'MARKETNOTE_KAKAO_CLIENT_SECRET',             variable: 'KAKAO_CLIENT_SECRET'),
+						string(credentialsId: 'MARKETNOTE_S3_ACCESS_KEY',                   variable: 'S3_ACCESS_KEY'),
+						string(credentialsId: 'MARKETNOTE_S3_SECRET_KEY',                   variable: 'S3_SECRET_KEY'),
+						string(credentialsId: 'MARKETNOTE_S3_BUCKET_NAME',                  variable: 'S3_BUCKET_NAME'),
+						string(credentialsId: 'MARKETNOTE_AWS_ACCOUNT_ID',                  variable: 'AWS_ACCOUNT_ID'),
+						string(credentialsId: 'MARKETNOTE_AWS_ACCESS_KEY_ID',               variable: 'AWS_ACCESS_KEY_ID'),
+						string(credentialsId: 'MARKETNOTE_AWS_SECRET_ACCESS_KEY',           variable: 'AWS_SECRET_ACCESS_KEY'),
+						string(credentialsId: 'MARKETNOTE_AWS_DEFAULT_REGION',              variable: 'AWS_DEFAULT_REGION'),
+						string(credentialsId: 'MARKETNOTE_ECS_TASK_EXECUTION_ROLE_ARN',     variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
+						string(credentialsId: 'MARKETNOTE_ECS_TASK_ROLE_ARN',               variable: 'ECS_TASK_ROLE_ARN'),
+						string(credentialsId: 'MARKETNOTE_CLOUDWATCH_LOG_GROUP',            variable: 'CLOUDWATCH_LOG_GROUP'),
+						string(credentialsId: 'MARKETNOTE_SES_SMTP_USERNAME',               variable: 'SES_SMTP_USERNAME'),
+						string(credentialsId: 'MARKETNOTE_SES_SMTP_PASSWORD',               variable: 'SES_SMTP_PASSWORD'),
+						string(credentialsId: 'MARKETNOTE_MAIL_FROM',                       variable: 'MAIL_FROM'),
+						string(credentialsId: 'MARKETNOTE_MAIL_SENDER_NAME',                variable: 'MAIL_SENDER_NAME'),
+						string(credentialsId: 'MARKETNOTE_MAIL_VERIFICATION_TTL_MINUTES',   variable: 'MAIL_VERIFICATION_TTL_MINUTES'),
+						string(credentialsId: 'MARKETNOTE_REDIS_SERVICE_NAME',              variable: 'REDIS_SERVICE_NAME'),
+						string(credentialsId: 'MARKETNOTE_REDIS_PASSWORD',                  variable: 'REDIS_PASSWORD'),
+						string(credentialsId: 'MARKETNOTE_REDIS_SERVICE_NAME',              variable: 'REDIS_SERVICE_NAME'),
+						string(credentialsId: 'MARKETNOTE_REDIS_EMAIL_VERIFICATION_PREFIX', variable: 'REDIS_EMAIL_VERIFICATION_PREFIX'),
 					]) {
 						sh '''
-                        aws logs create-log-group --log-group-name "$CLOUDWATCH_LOG_GROUP" --region "$AWS_DEFAULT_REGION" || true
+						  LG="$CLOUDWATCH_LOG_GROUP"
+						  EXISTS=$(aws logs describe-log-groups --log-group-name-prefix "$LG" --region "$AWS_DEFAULT_REGION" --query "length(logGroups[?logGroupName=='$LG'])" --output text || echo 0)
+						  if [ "$EXISTS" = "0" ]; then
+						    aws logs create-log-group --log-group-name "$LG" --region "$AWS_DEFAULT_REGION"
+						  fi
+
+                        cat > taskdef.json <<EOF
+                        {
+                          "family": "'"$PROJECT_NAME"'",
+                          "networkMode": "awsvpc",
+                          "requiresCompatibilities": ["FARGATE"],
+                          "cpu": "512",
+                          "memory": "1024",
+                          "executionRoleArn": "'"$ECS_TASK_EXECUTION_ROLE_ARN"'",
+                          "taskRoleArn": "'"$ECS_TASK_ROLE_ARN"'",
+                          "containerDefinitions": [{
+                            "name": "'"$PROJECT_NAME"'",
+                            "image": "'"$IMAGE_URI"'",
+                            "portMappings": [{"containerPort": 8080, "protocol": "tcp"}],
+                            "essential": true,
+							"environment": [
+							  { "name": "SERVICE_NAME",                   "value": "'"$ECS_SERVICE_NAME"'" },
+							  { "name": "DB_URL",                         "value": "'"$DB_URL"'" },
+							  { "name": "DB_USERNAME",                    "value": "'"$DB_USERNAME"'" },
+							  { "name": "DB_PASSWORD",                    "value": "'"$DB_PASSWORD"'" },
+							  { "name": "JWT_SECRET_KEY",                 "value": "'"$JWT_SECRET_KEY"'" },
+							  { "name": "ACCESS_TOKEN_EXPIRATION_TIME",   "value": "'"$ACCESS_TOKEN_EXPIRATION_TIME"'" },
+							  { "name": "REFRESH_TOKEN_EXPIRATION_TIME",  "value": "'"$REFRESH_TOKEN_EXPIRATION_TIME"'" },
+							  { "name": "CLIENT_ORIGIN",                  "value": "'"$CLIENT_ORIGIN"'" },
+							  { "name": "COOKIE_DOMAIN",                  "value": "'"$COOKIE_DOMAIN"'" },
+							  { "name": "ACCESS_CONTROL_ALLOWED_ORIGINS", "value": "'"$ACCESS_CONTROL_ALLOWED_ORIGINS"'" },
+							  { "name": "SERVER_ORIGIN",                  "value": "'"$SERVER_ORIGIN"'" },
+							  { "name": "SPRING_PROFILES_ACTIVE",         "value": "'"$SPRING_PROFILE"'" },
+							  { "name": "GOOGLE_CLIENT_ID",               "value": "'"$GOOGLE_CLIENT_ID"'" },
+							  { "name": "GOOGLE_CLIENT_SECRET",           "value": "'"$GOOGLE_CLIENT_SECRET"'" },
+							  { "name": "KAKAO_CLIENT_ID",                "value": "'"$KAKAO_CLIENT_ID"'" },
+							  { "name": "KAKAO_CLIENT_SECRET",            "value": "'"$KAKAO_CLIENT_SECRET"'" },
+							  { "name": "S3_ACCESS_KEY",                  "value": "'"$S3_ACCESS_KEY"'" },
+							  { "name": "S3_SECRET_KEY",                  "value": "'"$S3_SECRET_KEY"'" },
+							  { "name": "S3_BUCKET_NAME",                 "value": "'"$S3_BUCKET_NAME"'" },
+							  { "name": "SES_SMTP_USERNAME",              "value": "'"$SES_SMTP_USERNAME"'" },
+							  { "name": "SES_SMTP_PASSWORD",              "value": "'"$SES_SMTP_PASSWORD"'" },
+							  { "name": "MAIL_FROM",                      "value": "'"$MAIL_FROM"'" },
+							  { "name": "MAIL_SENDER_NAME",               "value": "'"$MAIL_SENDER_NAME"'" },
+							  { "name": "MAIL_VERIFICATION_TTL_MINUTES",  "value": "'"$MAIL_VERIFICATION_TTL_MINUTES"'" },
+							  { "name": "REDIS_SERVICE_NAME",             "value": "'"$REDIS_SERVICE_NAME"'" },
+							  { "name": "REDIS_PASSWORD",                 "value": "'"$REDIS_PASSWORD"'" },
+							  { "name": "REDIS_HOST_NAME",                "value": "'"$REDIS_SERVICE_NAME"'" },
+							  { "name": "REDIS_EMAIL_VERIFICATION_PREFIX","value": "'"$REDIS_EMAIL_VERIFICATION_PREFIX"'" }
+							],
+                            "logConfiguration": {
+                              "logDriver": "awslogs",
+                              "options": {
+                                "awslogs-group": "'"$CLOUDWATCH_LOG_GROUP"'",
+                                "awslogs-region": "'"$AWS_DEFAULT_REGION"'",
+                                "awslogs-stream-prefix": "'"$PROJECT_NAME"'"
+                              }
+                            }
+                          }]
+                        }
+                        EOF
+
+                        aws ecs register-task-definition --cli-input-json file://taskdef.json
                         '''
-
-						def taskdef = [
-							family: "${env.PROJECT_NAME}",
-							networkMode: "awsvpc",
-							requiresCompatibilities: ["FARGATE"],
-							cpu: "512",
-							memory: "1024",
-							executionRoleArn: "${env.ECS_TASK_EXECUTION_ROLE_ARN}",
-							taskRoleArn: "${env.ECS_TASK_ROLE_ARN}",
-							containerDefinitions: [[
-								name: "${env.PROJECT_NAME}",
-								image: "${env.IMAGE_URI}",
-								portMappings: [[containerPort: 8080, protocol: "tcp"]],
-								essential: true,
-								environment: [
-									[name: "SERVICE_NAME",                  value: "${env.ECS_SERVICE_NAME}"],
-									[name: "DB_URL",                        value: "${env.CRED_DB_URL}"],
-									[name: "DB_USERNAME",                   value: "${env.CRED_DB_USERNAME}"],
-									[name: "DB_PASSWORD",                   value: "${env.CRED_DB_PASSWORD}"],
-									[name: "JWT_SECRET_KEY",                value: "${env.CRED_JWT_SECRET_KEY}"],
-									[name: "ACCESS_TOKEN_EXPIRATION_TIME",  value: "${env.CRED_ACCESS_TOKEN_EXPIRATION_TIME}"],
-									[name: "REFRESH_TOKEN_EXPIRATION_TIME", value: "${env.CRED_REFRESH_TOKEN_EXPIRATION_TIME}"],
-									[name: "CLIENT_ORIGIN",                 value: "${env.CRED_CLIENT_ORIGIN}"],
-									[name: "COOKIE_DOMAIN",                 value: "${env.CRED_COOKIE_DOMAIN}"],
-									[name: "ACCESS_CONTROL_ALLOWED_ORIGINS",value: "${env.CRED_ACCESS_CONTROL_ALLOWED_ORIGINS}"],
-									[name: "SERVER_ORIGIN",                 value: "${env.CRED_SERVER_ORIGIN}"],
-									[name: "SPRING_PROFILES_ACTIVE",        value: "${env.CRED_SPRING_PROFILE}"],
-									[name: "GOOGLE_CLIENT_ID",              value: "${env.CRED_GOOGLE_CLIENT_ID}"],
-									[name: "GOOGLE_CLIENT_SECRET",          value: "${env.CRED_GOOGLE_CLIENT_SECRET}"],
-									[name: "KAKAO_CLIENT_ID",               value: "${env.CRED_KAKAO_CLIENT_ID}"],
-									[name: "KAKAO_CLIENT_SECRET",           value: "${env.CRED_KAKAO_CLIENT_SECRET}"],
-									[name: "S3_ACCESS_KEY",                 value: "${env.CRED_S3_ACCESS_KEY}"],
-									[name: "S3_SECRET_KEY",                 value: "${env.CRED_S3_SECRET_KEY}"],
-									[name: "S3_BUCKET_NAME",                value: "${env.CRED_S3_BUCKET_NAME}"]
-								],
-								logConfiguration: [
-									logDriver: "awslogs",
-									options: [
-										"awslogs-group":         "${env.CLOUDWATCH_LOG_GROUP}",
-										"awslogs-region":        "${env.AWS_DEFAULT_REGION}",
-										"awslogs-stream-prefix": "${env.PROJECT_NAME}"
-									]
-								]
-							]]
-						]
-
-						def json = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(taskdef))
-						writeFile file: 'taskdef.json', text: json
-						sh 'aws ecs register-task-definition --cli-input-json file://taskdef.json'
 					}
 				}
 			}
@@ -329,52 +499,45 @@ pipeline {
 						string(credentialsId: 'MARKETNOTE_SUBNET_IDS',            variable: 'SUBNET_IDS'),
 						string(credentialsId: 'MARKETNOTE_SECURITY_GROUP_IDS',    variable: 'SECURITY_GROUP_IDS'),
 					]) {
-						def newTaskDefArn = sh(
-							script: "aws ecs list-task-definitions --family-prefix ${env.PROJECT_NAME} --sort DESC --region $AWS_DEFAULT_REGION --query 'taskDefinitionArns[0]' --output text",
-							returnStdout: true
-						).trim()
-						def exists = sh(
-							script: "aws ecs describe-services --cluster $ECS_CLUSTER_NAME --services $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION --query 'services[0].status' --output text || true",
-							returnStdout: true
-						).trim()
-						def subnets = SUBNET_IDS.split(',').collect{
-							it.trim()
-						}.join(",")
-						def sgs = SECURITY_GROUP_IDS.split(',').collect{
-							it.trim()
-						}.join(",")
+						def newTaskDefArn = sh(script: 'aws ecs list-task-definitions --family-prefix $PROJECT_NAME --sort DESC --region $AWS_DEFAULT_REGION --query \'taskDefinitionArns[0]\' --output text', returnStdout: true).trim()
+						if (!newTaskDefArn || newTaskDefArn == 'None') {
+							error 'No application TaskDefinition found to deploy'
+						}
+						def exists = sh(script: 'aws ecs describe-services --cluster $ECS_CLUSTER_NAME --services $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION --query \'services[0].status\' --output text || true', returnStdout: true).trim()
+						def subnets = sh(script: 'printf "%s" "$SUBNET_IDS" | awk -F, \'{for(i=1;i<=NF;i++){gsub(/^ +| +$/,"",$i);printf "%s%s",$i,(i<NF?",":"")}}\'', returnStdout: true).trim()
+						def sgs = sh(script: 'printf "%s" "$SECURITY_GROUP_IDS" | awk -F, \'{for(i=1;i<=NF;i++){gsub(/^ +| +$/,"",$i);printf "%s%s",$i,(i<NF?",":"")}}\'', returnStdout: true).trim()
 
 						if (exists == "ACTIVE" || exists == "DRAINING") {
 							sh """
                             aws ecs update-service \
-                              --cluster $ECS_CLUSTER_NAME \
-                              --service $ECS_SERVICE_NAME \
+                              --cluster \$ECS_CLUSTER_NAME \
+                              --service \$ECS_SERVICE_NAME \
                               --task-definition ${newTaskDefArn} \
                               --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
                               --desired-count 1 \
                               --health-check-grace-period-seconds 180 \
-                              --region $AWS_DEFAULT_REGION \
+                              --region \$AWS_DEFAULT_REGION \
                               --force-new-deployment
                             """
-							sh "aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION --health-check-grace-period-seconds 180 || true"
+							sh 'aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION --health-check-grace-period-seconds 180 || true'
 						} else {
 							sh """
                             aws ecs create-service \
-                              --cluster $ECS_CLUSTER_NAME \
-                              --service-name $ECS_SERVICE_NAME \
+                              --cluster \$ECS_CLUSTER_NAME \
+                              --service-name \$ECS_SERVICE_NAME \
                               --task-definition ${newTaskDefArn} \
                               --desired-count 1 \
                               --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
-                              --load-balancers targetGroupArn=$TARGET_GROUP_ARN,containerName=${env.PROJECT_NAME},containerPort=8080 \
+                              --load-balancers targetGroupArn=\$TARGET_GROUP_ARN,containerName=${env.PROJECT_NAME},containerPort=8080 \
                               --network-configuration "awsvpcConfiguration={subnets=[${subnets}],securityGroups=[${sgs}],assignPublicIp=ENABLED}" \
-                              --region $AWS_DEFAULT_REGION \
+                              --region \$AWS_DEFAULT_REGION
                             """
-							sh "aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION --health-check-grace-period-seconds 180 || true"
+							sh 'aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION --health-check-grace-period-seconds 180 || true'
 						}
 						int maxWaitRetries = 3
 						for (int i = 1; i <= maxWaitRetries; i++) {
 							def rc = sh(
-								script: "aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION",
+								script: 'aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION',
 								returnStatus: true
 							)
 							if (rc == 0) {
@@ -399,8 +562,8 @@ pipeline {
 					if (!changed) {
 						sleep time: 1, unit: 'SECONDS'; return
 					}
-					sh "test -f monitoring/prometheus/Dockerfile"
-					sh "test -f monitoring/prometheus/prometheus.yml"
+					sh 'test -f monitoring/prometheus/Dockerfile'
+					sh 'test -f monitoring/prometheus/prometheus.yml'
 					def prometheusTag = "prometheus:${env.PROJECT_VERSION}"
 					env.PROMETHEUS_LOCAL_TAG = prometheusTag
 					sh """
@@ -508,45 +671,38 @@ pipeline {
 						string(credentialsId: 'MARKETNOTE_SUBNET_IDS',              variable: 'SUBNET_IDS'),
 						string(credentialsId: 'MARKETNOTE_SECURITY_GROUP_IDS',      variable: 'SECURITY_GROUP_IDS')
 					]) {
-						def latestTask = sh(
-							script: "aws ecs list-task-definitions --family-prefix prometheus --sort DESC --region $AWS_DEFAULT_REGION --query 'taskDefinitionArns[0]' --output text",
-							returnStdout: true
-						).trim()
-						def exists = sh(
-							script: "aws ecs describe-services --cluster $ECS_CLUSTER_NAME --services $PROMETHEUS_SERVICE_NAME --region $AWS_DEFAULT_REGION --query 'services[0].status' --output text || true",
-							returnStdout: true
-						).trim()
-						def subnets = SUBNET_IDS.split(',').collect{
-							it.trim()
-						}.join(",")
-						def sgs = SECURITY_GROUP_IDS.split(',').collect{
-							it.trim()
-						}.join(",")
+						def latestTask = sh(script: 'aws ecs list-task-definitions --family-prefix prometheus --sort DESC --region $AWS_DEFAULT_REGION --query \'taskDefinitionArns[0]\' --output text', returnStdout: true).trim()
+						if (!latestTask || latestTask == 'None') {
+							error 'No Prometheus TaskDefinition found to deploy'
+						}
+						def exists = sh(script: 'aws ecs describe-services --cluster $ECS_CLUSTER_NAME --services $PROMETHEUS_SERVICE_NAME --region $AWS_DEFAULT_REGION --query \'services[0].status\' --output text || true', returnStdout: true).trim()
+						def subnets = sh(script: 'printf "%s" "$SUBNET_IDS" | awk -F, \'{for(i=1;i<=NF;i++){gsub(/^ +| +$/,"",$i);printf "%s%s",$i,(i<NF?",":"")}}\'', returnStdout: true).trim()
+						def sgs = sh(script: 'printf "%s" "$SECURITY_GROUP_IDS" | awk -F, \'{for(i=1;i<=NF;i++){gsub(/^ +| +$/,"",$i);printf "%s%s",$i,(i<NF?",":"")}}\'', returnStdout: true).trim()
 
 						if (exists == "ACTIVE" || exists == "DRAINING") {
 							sh """
                             aws ecs update-service \
-                              --cluster $ECS_CLUSTER_NAME \
-                              --service $PROMETHEUS_SERVICE_NAME \
+                              --cluster \$ECS_CLUSTER_NAME \
+                              --service \$PROMETHEUS_SERVICE_NAME \
                               --task-definition ${latestTask} \
                               --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
                               --desired-count 1 \
-                              --region $AWS_DEFAULT_REGION \
+                              --region \$AWS_DEFAULT_REGION \
                               --force-new-deployment
                             """
 						} else {
 							sh """
                             aws ecs create-service \
-                              --cluster $ECS_CLUSTER_NAME \
-                              --service-name $PROMETHEUS_SERVICE_NAME \
+                              --cluster \$ECS_CLUSTER_NAME \
+                              --service-name \$PROMETHEUS_SERVICE_NAME \
                               --task-definition ${latestTask} \
                               --desired-count 1 \
                               --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
                               --network-configuration "awsvpcConfiguration={subnets=[${subnets}],securityGroups=[${sgs}],assignPublicIp=ENABLED}" \
-                              --region $AWS_DEFAULT_REGION \
+                              --region \$AWS_DEFAULT_REGION
                             """
 						}
-						sh "aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $PROMETHEUS_SERVICE_NAME --region $AWS_DEFAULT_REGION"
+						sh 'aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $PROMETHEUS_SERVICE_NAME --region $AWS_DEFAULT_REGION'
 					}
 				}
 			}
@@ -623,45 +779,38 @@ pipeline {
 						string(credentialsId: 'MARKETNOTE_SUBNET_IDS',           variable: 'SUBNET_IDS'),
 						string(credentialsId: 'MARKETNOTE_SECURITY_GROUP_IDS',   variable: 'SECURITY_GROUP_IDS')
 					]) {
-						def latestTask = sh(
-							script: "aws ecs list-task-definitions --family-prefix grafana --sort DESC --region $AWS_DEFAULT_REGION --query 'taskDefinitionArns[0]' --output text",
-							returnStdout: true
-						).trim()
-						def exists = sh(
-							script: "aws ecs describe-services --cluster $ECS_CLUSTER_NAME --services $GRAFANA_SERVICE_NAME --region $AWS_DEFAULT_REGION --query 'services[0].status' --output text || true",
-							returnStdout: true
-						).trim()
-						def subnets = SUBNET_IDS.split(',').collect{
-							it.trim()
-						}.join(",")
-						def sgs = SECURITY_GROUP_IDS.split(',').collect{
-							it.trim()
-						}.join(",")
+						def latestTask = sh(script: 'aws ecs list-task-definitions --family-prefix grafana --sort DESC --region $AWS_DEFAULT_REGION --query \'taskDefinitionArns[0]\' --output text', returnStdout: true).trim()
+						if (!latestTask || latestTask == 'None') {
+							error 'No Grafana TaskDefinition found to deploy'
+						}
+						def exists = sh(script: 'aws ecs describe-services --cluster $ECS_CLUSTER_NAME --services $GRAFANA_SERVICE_NAME --region $AWS_DEFAULT_REGION --query \'services[0].status\' --output text || true', returnStdout: true).trim()
+						def subnets = sh(script: 'printf "%s" "$SUBNET_IDS" | awk -F, \'{for(i=1;i<=NF;i++){gsub(/^ +| +$/,"",$i);printf "%s%s",$i,(i<NF?",":"")}}\'', returnStdout: true).trim()
+						def sgs = sh(script: 'printf "%s" "$SECURITY_GROUP_IDS" | awk -F, \'{for(i=1;i<=NF;i++){gsub(/^ +| +$/,"",$i);printf "%s%s",$i,(i<NF?",":"")}}\'', returnStdout: true).trim()
 
 						if (exists == "ACTIVE" || exists == "DRAINING") {
 							sh """
                             aws ecs update-service \
-                              --cluster $ECS_CLUSTER_NAME \
-                              --service $GRAFANA_SERVICE_NAME \
+                              --cluster \$ECS_CLUSTER_NAME \
+                              --service \$GRAFANA_SERVICE_NAME \
                               --task-definition ${latestTask} \
                               --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
                               --desired-count 1 \
-                              --region $AWS_DEFAULT_REGION \
+                              --region \$AWS_DEFAULT_REGION \
                               --force-new-deployment
                             """
 						} else {
 							sh """
                             aws ecs create-service \
-                              --cluster $ECS_CLUSTER_NAME \
-                              --service-name $GRAFANA_SERVICE_NAME \
+                              --cluster \$ECS_CLUSTER_NAME \
+                              --service-name \$GRAFANA_SERVICE_NAME \
                               --task-definition ${latestTask} \
                               --desired-count 1 \
                               --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
                               --network-configuration "awsvpcConfiguration={subnets=[${subnets}],securityGroups=[${sgs}],assignPublicIp=ENABLED}" \
-                              --region $AWS_DEFAULT_REGION \
+                              --region \$AWS_DEFAULT_REGION
                             """
 						}
-						sh "aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $GRAFANA_SERVICE_NAME --region $AWS_DEFAULT_REGION"
+						sh 'aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $GRAFANA_SERVICE_NAME --region $AWS_DEFAULT_REGION'
 					}
 				}
 			}
