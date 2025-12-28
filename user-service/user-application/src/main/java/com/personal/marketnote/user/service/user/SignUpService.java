@@ -68,7 +68,7 @@ public class SignUpService implements SignUpUseCase {
         }
 
         List<Terms> terms = findTermsPort.findAll();
-        String referenceCode = RandomCodeGenerator.generateSignupCode();
+        String referenceCode = RandomCodeGenerator.generateReferenceCode();
 
         return SignUpResult.from(
                 saveUserPort.save(

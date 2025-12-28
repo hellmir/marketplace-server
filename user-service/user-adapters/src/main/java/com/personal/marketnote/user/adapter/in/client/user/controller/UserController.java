@@ -1,15 +1,16 @@
 package com.personal.marketnote.user.adapter.in.client.user.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
-import com.personal.marketnote.common.domain.exception.token.InvalidAccessTokenException;
-import com.personal.marketnote.common.exception.NotOAuth2UserException;
 import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.common.utility.FormatConverter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.adapter.in.client.authentication.response.GetUserResponse;
 import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.*;
 import com.personal.marketnote.user.adapter.in.client.user.mapper.UserRequestToCommandMapper;
-import com.personal.marketnote.user.adapter.in.client.user.request.*;
+import com.personal.marketnote.user.adapter.in.client.user.request.SignInRequest;
+import com.personal.marketnote.user.adapter.in.client.user.request.SignOutRequest;
+import com.personal.marketnote.user.adapter.in.client.user.request.SignUpRequest;
+import com.personal.marketnote.user.adapter.in.client.user.request.UpdateUserInfoRequest;
 import com.personal.marketnote.user.adapter.in.client.user.response.AuthenticationTokenResponse;
 import com.personal.marketnote.user.adapter.in.client.user.response.SignInResponse;
 import com.personal.marketnote.user.adapter.in.client.user.response.SignOutResponse;
@@ -30,7 +31,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
-import static com.personal.marketnote.common.domain.exception.ExceptionMessage.INVALID_ACCESS_TOKEN_EXCEPTION_MESSAGE;
 import static com.personal.marketnote.user.security.token.utility.TokenConstant.ISS_CLAIM_KEY;
 import static com.personal.marketnote.user.security.token.utility.TokenConstant.SUB_CLAIM_KEY;
 
@@ -107,45 +107,6 @@ public class UserController {
     }
 
     /**
-     * OAuth2 가입자 이메일 주소 등록
-     *
-     * @param registerEmailRequest 이메일 주소 등록 요청
-     * @param principal            사용자 인증 정보
-     * @Author 성효빈
-     * @Date 2025-12-28
-     * @Description OAuth2 가입자의 이메일 주소를 등록합니다.
-     */
-    @PatchMapping("/email")
-    public ResponseEntity<BaseResponse<Void>> registerEmail(
-            @Valid @RequestBody RegisterEmailRequest registerEmailRequest,
-            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
-    ) {
-        if (!FormatValidator.hasValue(principal)) {
-            throw new InvalidAccessTokenException(INVALID_ACCESS_TOKEN_EXCEPTION_MESSAGE);
-        }
-
-        String issuer = principal.getAttribute(ISS_CLAIM_KEY);
-        AuthVendor authVendor = resolveVendorFromIssuer(FormatConverter.toUpperCase(issuer));
-        if (authVendor.isNative()) {
-            throw new NotOAuth2UserException();
-        }
-
-        registerEmailUseCase.registerEmail(
-                ElementExtractor.extractUserId(principal), authVendor, registerEmailRequest.getEmail()
-        );
-
-        return new ResponseEntity<>(
-                BaseResponse.of(
-                        null,
-                        HttpStatus.CREATED,
-                        DEFAULT_SUCCESS_CODE,
-                        "이메일 주소 등록 성공"
-                ),
-                HttpStatus.CREATED
-        );
-    }
-
-    /**
      * 추천 회원 초대 코드 등록
      *
      * @param referredUserCode 추천 회원의 초대 코드
@@ -154,7 +115,7 @@ public class UserController {
      * @Date 2025-12-28
      * @Description 자신을 추천한 회원의 초대 코드를 등록합니다.
      */
-    @PostMapping("/referred-user-code")
+    @PatchMapping("/referred-user-code")
     @RegisterReferredUserCodeApiDocs
     public ResponseEntity<BaseResponse<Void>> registerReferredUserCode(
             @Valid @RequestParam String referredUserCode,

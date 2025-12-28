@@ -44,6 +44,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation") // Spring Validation
     implementation("org.springframework.boot:spring-boot-starter-security") // Spring Security
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server") // OAuth 2.0 Resource server
+    implementation("org.springframework.boot:spring-boot-starter-mail") // JavaMailSender
 
     // Spring Data Redis 추가
     // implementation("org.springframework.boot:spring-boot-starter-data-redis")
