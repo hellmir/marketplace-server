@@ -1,5 +1,6 @@
 package com.personal.marketnote.common.domain.exception;
 
+import com.personal.marketnote.common.utility.FormatValidator;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.persistence.EntityExistsException;
@@ -28,15 +29,39 @@ public class GlobalExceptionHandler {
     private static final String LOG_WARN_MESSAGE = "Warning exception occurred: {}";
     private static final String LOG_INFO_MESSAGE = "Exception occurred: {}";
 
+    private HttpStatus httpStatus;
+    private String code;
+    private String message;
+
+    private void initializeMessage(String errorMessage) {
+        if (!FormatValidator.hasValue(errorMessage)) {
+            return;
+        }
+
+        String[] messages = errorMessage.split("::");
+        if (messages.length > 1) {
+            code = messages[0].trim();
+            message = messages[1].trim();
+            return;
+        }
+
+        code = httpStatus.name();
+        message = messages[0];
+    }
+
     @ExceptionHandler(IOException.class)
     private ResponseEntity<ErrorResponse> handleIOException
             (IOException e) {
+        httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        initializeMessage(e.getMessage());
+
         log.error(LOG_ERROR_MESSAGE, e.getMessage(), e);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .statusCode(httpStatus.value())
                 .timestamp(LocalDateTime.now())
-                .message(e.getMessage())
+                .code(code)
+                .message(message)
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
@@ -45,12 +70,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NullPointerException.class)
     private ResponseEntity<ErrorResponse> handleNullPointerException
             (NullPointerException e) {
+        httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        initializeMessage(e.getMessage());
+
         log.error(LOG_ERROR_MESSAGE, e.getMessage(), e);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .statusCode(httpStatus.value())
                 .timestamp(LocalDateTime.now())
-                .message(e.getMessage())
+                .code(code)
+                .message(message)
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
@@ -59,12 +88,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     private ResponseEntity<ErrorResponse> handleEntityNotFoundException
             (EntityNotFoundException e) {
+        httpStatus = HttpStatus.NOT_FOUND;
+        initializeMessage(e.getMessage());
+
         log.warn(LOG_WARN_MESSAGE, e.getMessage(), e);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.NOT_FOUND.value())
+                .statusCode(httpStatus.value())
                 .timestamp(LocalDateTime.now())
-                .message(e.getMessage())
+                .code(code)
+                .message(message)
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
@@ -73,12 +106,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     private ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException
             (HttpRequestMethodNotSupportedException e) {
+        httpStatus = HttpStatus.METHOD_NOT_ALLOWED;
+        initializeMessage(e.getMessage());
+
         log.warn(LOG_WARN_MESSAGE, e.getMessage(), e);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.METHOD_NOT_ALLOWED.value())
+                .statusCode(httpStatus.value())
                 .timestamp(LocalDateTime.now())
-                .message(e.getMessage())
+                .code(code)
+                .message(message)
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
@@ -87,12 +124,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     private ResponseEntity<ErrorResponse> handleAuthenticationException
             (AuthenticationException e) {
+        httpStatus = HttpStatus.UNAUTHORIZED;
+        initializeMessage(e.getMessage());
+
         log.warn(LOG_WARN_MESSAGE, e.getMessage(), e);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .statusCode(httpStatus.value())
                 .timestamp(LocalDateTime.now())
-                .message(e.getMessage())
+                .code(code)
+                .message(message)
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
@@ -101,12 +142,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     private ResponseEntity<ErrorResponse> handleAccessDeniedException
             (AccessDeniedException e) {
+        httpStatus = HttpStatus.FORBIDDEN;
+        initializeMessage(e.getMessage());
+
         log.warn(LOG_WARN_MESSAGE, e.getMessage(), e);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.FORBIDDEN.value())
+                .statusCode(httpStatus.value())
                 .timestamp(LocalDateTime.now())
-                .message(e.getMessage())
+                .code(code)
+                .message(message)
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
@@ -115,12 +160,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     private ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException
             (MethodArgumentNotValidException e) {
+        httpStatus = HttpStatus.BAD_REQUEST;
+        initializeMessage(e.getMessage());
+
         log.info(LOG_INFO_MESSAGE, e.getMessage(), e);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .statusCode(httpStatus.value())
                 .timestamp(LocalDateTime.now())
-                .message(e.getMessage())
+                .code(code)
+                .message(message)
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
@@ -129,12 +178,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     private ResponseEntity<ErrorResponse> handleIllegalArgumentException
             (IllegalArgumentException e) {
+        httpStatus = HttpStatus.BAD_REQUEST;
+        initializeMessage(e.getMessage());
+
         log.info(LOG_INFO_MESSAGE, e.getMessage(), e);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .statusCode(httpStatus.value())
                 .timestamp(LocalDateTime.now())
-                .message(e.getMessage())
+                .code(code)
+                .message(message)
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
@@ -143,12 +196,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     private ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException
             (HttpMessageNotReadableException e) {
+        httpStatus = HttpStatus.BAD_REQUEST;
+        initializeMessage(e.getMessage());
+
         log.info(LOG_INFO_MESSAGE, e.getMessage(), e);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .statusCode(httpStatus.value())
                 .timestamp(LocalDateTime.now())
-                .message(e.getMessage())
+                .code(code)
+                .message(message)
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
@@ -157,60 +214,80 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     private ResponseEntity<ErrorResponse> handleHttpMediaTypeNotSupportedException
             (HttpMediaTypeNotSupportedException e) {
+        httpStatus = HttpStatus.UNSUPPORTED_MEDIA_TYPE;
+        initializeMessage(e.getMessage());
+
         log.info(LOG_INFO_MESSAGE, e.getMessage(), e);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value())
+                .statusCode(httpStatus.value())
                 .timestamp(LocalDateTime.now())
-                .message(e.getMessage())
+                .code(code)
+                .message(message)
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
     }
 
     @ExceptionHandler(MalformedJwtException.class)
     private ResponseEntity<ErrorResponse> handleMalformedJwtException(MalformedJwtException e) {
+        httpStatus = HttpStatus.BAD_REQUEST;
+        initializeMessage(e.getMessage());
+
         log.info(LOG_INFO_MESSAGE, e.getMessage(), e);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .statusCode(httpStatus.value())
                 .timestamp(LocalDateTime.now())
-                .message(e.getMessage())
+                .code(code)
+                .message(message)
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
     }
 
     @ExceptionHandler(UnsupportedJwtException.class)
     private ResponseEntity<ErrorResponse> handleUnsupportedJwtException(UnsupportedJwtException e) {
+        httpStatus = HttpStatus.BAD_REQUEST;
+        initializeMessage(e.getMessage());
+
         log.info(LOG_INFO_MESSAGE, e.getMessage(), e);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .statusCode(httpStatus.value())
                 .timestamp(LocalDateTime.now())
-                .message(e.getMessage())
+                .code(code)
+                .message(message)
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
     }
 
     @ExceptionHandler(EntityExistsException.class)
     private ResponseEntity<ErrorResponse> handleEntityExistsException(EntityExistsException e) {
+        httpStatus = HttpStatus.CONFLICT;
+        initializeMessage(e.getMessage());
+
         log.info(LOG_INFO_MESSAGE, e.getMessage(), e);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.CONFLICT.value())
+                .statusCode(httpStatus.value())
                 .timestamp(LocalDateTime.now())
-                .message(e.getMessage())
+                .code(code)
+                .message(message)
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
     }
 
     @ExceptionHandler(IllegalStateException.class)
     private ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException e) {
+        httpStatus = HttpStatus.CONFLICT;
+        initializeMessage(e.getMessage());
+
         log.info(LOG_INFO_MESSAGE, e.getMessage(), e);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.CONFLICT.value())
+                .statusCode(httpStatus.value())
                 .timestamp(LocalDateTime.now())
-                .message(e.getMessage())
+                .code(code)
+                .message(message)
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
     }

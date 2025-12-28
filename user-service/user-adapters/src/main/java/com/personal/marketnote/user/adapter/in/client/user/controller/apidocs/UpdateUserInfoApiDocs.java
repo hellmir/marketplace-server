@@ -54,6 +54,7 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
+                | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "NOT_FOUND" |
                 | timestamp | string(datetime) | 응답 일시 | "2025-12-26T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
                 | message | string | 처리 결과 | "회원 정보 수정 성공" |
@@ -78,6 +79,7 @@ import java.lang.annotation.*;
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 200,
+                                          "code": "SUC01",
                                           "timestamp": "2025-12-28T10:41:37.842294",
                                           "content": null,
                                           "message": "회원 정보 수정 성공"
@@ -92,6 +94,7 @@ import java.lang.annotation.*;
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 400,
+                                          "code": "BAD_REQUEST",
                                           "timestamp": "2025-12-28T11:54:12.809362",
                                           "content": null,
                                           "message": "업데이트할 대상과 값을 전송해야 합니다."
@@ -106,6 +109,7 @@ import java.lang.annotation.*;
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 401,
+                                          "code": "UNAUTHORIZED",
                                           "timestamp": "2025-12-27T16:22:02.196732",
                                           "content": null,
                                           "message": "Invalid token"
@@ -120,6 +124,7 @@ import java.lang.annotation.*;
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 404,
+                                          "code": "NOT_FOUND",
                                           "timestamp": "2025-12-26T09:53:02.089234",
                                           "content": null,
                                           "message": "존재하지 않는 회원입니다. 회원 ID: 1"

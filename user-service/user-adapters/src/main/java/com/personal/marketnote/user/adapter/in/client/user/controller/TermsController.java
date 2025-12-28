@@ -22,6 +22,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
 
 /**
  * 회원 약관 컨트롤러
@@ -61,6 +62,7 @@ public class TermsController {
                 BaseResponse.of(
                         getTermsResponse,
                         HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
                         "전체 약관 목록 조회 성공"
                 ),
                 HttpStatus.OK
@@ -89,6 +91,7 @@ public class TermsController {
                 BaseResponse.of(
                         GetUserTermsResponse.from(getUserTermsResult),
                         HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
                         "약관 동의/철회 성공"
                 ),
                 HttpStatus.OK
@@ -120,6 +123,7 @@ public class TermsController {
                 BaseResponse.of(
                         GetUserTermsResponse.from(getUserTermsResult),
                         HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
                         "약관 동의/철회 성공"
                 ),
                 HttpStatus.OK

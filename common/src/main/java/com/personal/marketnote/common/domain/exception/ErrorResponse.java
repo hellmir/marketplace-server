@@ -14,6 +14,11 @@ public class ErrorResponse {
     private int statusCode;
 
     /**
+     * 응답 코드.
+     */
+    private String code;
+
+    /**
      * 응답이 전송되는 시간을 나타내는 타임스탬프.
      */
     private LocalDateTime timestamp;

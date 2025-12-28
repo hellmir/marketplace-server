@@ -14,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.personal.marketnote.common.domain.exception.ExceptionCode.FIRST_ERROR_CODE;
+import static com.personal.marketnote.common.domain.exception.ExceptionCode.SECOND_ERROR_CODE;
+import static com.personal.marketnote.user.exception.ExceptionMessage.LOGIN_INFO_NO_VALUE_EXCEPTION_MESSAGE;
 import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
 
 @RequiredArgsConstructor
@@ -41,12 +44,12 @@ public class SignInService implements SignInUseCase {
             return signedUpUser;
         }
 
-        throw new LoginInfoNoValueException("회원 전화번호 또는 authVendor 및 oidcId 중 하나는 필수입니다.");
+        throw new LoginInfoNoValueException(String.format(LOGIN_INFO_NO_VALUE_EXCEPTION_MESSAGE, FIRST_ERROR_CODE));
     }
 
     private void validatePassword(User user, String password) {
         if (!user.isValidPassword(passwordEncoder, password)) {
-            throw new InvalidPasswordException();
+            throw new InvalidPasswordException(SECOND_ERROR_CODE);
         }
     }
 }

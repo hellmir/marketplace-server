@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
 
 /**
  * 인증 컨트롤러
@@ -83,7 +84,12 @@ public class AuthenticationController {
                 = authServiceAdapter.issueNewAccessToken(refreshAccessTokenRequest.getRefreshToken());
 
         return new ResponseEntity<>(
-                BaseResponse.of(response.accessToken(), HttpStatus.CREATED, "Access Token 재발급 성공"),
+                BaseResponse.of(
+                        response.accessToken(),
+                        HttpStatus.CREATED,
+                        DEFAULT_SUCCESS_CODE,
+                        "Access Token 재발급 성공"
+                ),
                 response.headers(),
                 HttpStatus.CREATED
         );

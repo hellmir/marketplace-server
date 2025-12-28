@@ -37,6 +37,8 @@ import java.lang.annotation.*;
                 
                  | **키** | **타입** | **설명** | **예시** |
                  | --- | --- | --- | --- |
+                 | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
+                 | code | string | 응답 코드 | "SUC01" |
                  | accessToken | string | 만료된 액세스 토큰 | "f8310f8asohvh80scvh0zio3hr31d" |
                  | refreshToken | string | 만료된 리프레시 토큰 | "f8310f8asohvh80scvh0zio3hr31d" |
                 """,
@@ -61,6 +63,7 @@ import java.lang.annotation.*;
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 200,
+                                          "code": "SUC01",
                                           "timestamp": "2025-12-26T22:52:31.889943",
                                           "content": {
                                             "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJ0b2tlblR5cGUiOiJBQ0NFU1NfVE9LRU4iLCJpYXQiOjE3NjE1MjgzMTYsImV4cCI6MTc2MTUzMDExNiwic3ViIjoiOCIsInJvbGVJZHMiOlsiUk9MRV9CVVlFUiJdLCJ1c2VySWQiOjgsImF1dGhWZW5kb3IiOiJOQVRJVkUifQ.3nhlFNz9NBfcJKIteTICcUyN7F1w068CJKu5uy5kB0I",
