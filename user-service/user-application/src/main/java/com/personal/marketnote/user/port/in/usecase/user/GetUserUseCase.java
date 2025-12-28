@@ -29,9 +29,9 @@ public interface GetUserUseCase {
      * @return 회원 도메인 {@link User}
      * @Date 2025-12-28
      * @Author 성효빈
-     * @Description 회원을 조회합니다.
+     * @Description 활성화/비활성화/비노출 회원을 조회합니다.
      */
-    User getUser(String email);
+    User getAllStatusUser(String email);
 
     /**
      * @param id 회원 ID

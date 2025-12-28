@@ -10,7 +10,8 @@ public interface TermsJpaRepository extends JpaRepository<TermsJpaEntity, Long> 
     @Query("""
             SELECT t
             FROM TermsJpaEntity t
-            WHERE t.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+            WHERE 1 = 1
+                AND t.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
             ORDER BY t.id ASC
             """)
     List<TermsJpaEntity> findAllByOrderByIdAsc();

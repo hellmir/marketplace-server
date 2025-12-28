@@ -23,4 +23,6 @@ public interface FindUserPort {
     Optional<User> findByPhoneNumber(String phoneNumber);
 
     Optional<User> findByEmail(String email);
+
+    Optional<User> findAllStatusUserByEmail(String email);
 }
