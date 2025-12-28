@@ -202,4 +202,16 @@ public class GlobalExceptionHandler {
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
     }
+
+    @ExceptionHandler(IllegalStateException.class)
+    private ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException e) {
+        log.info(LOG_INFO_MESSAGE, e.getMessage(), e);
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .statusCode(HttpStatus.CONFLICT.value())
+                .timestamp(LocalDateTime.now())
+                .message(e.getMessage())
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
+    }
 }

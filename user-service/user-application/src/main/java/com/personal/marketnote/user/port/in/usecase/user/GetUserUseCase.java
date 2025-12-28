@@ -8,7 +8,7 @@ public interface GetUserUseCase {
     /**
      * @param id 회원 ID
      * @return 회원 도메인 {@link User}
-     * @Date 2025-12-27
+     * @Date 2025-12-28
      * @Author 성효빈
      * @Description 회원을 조회합니다.
      */
@@ -18,7 +18,7 @@ public interface GetUserUseCase {
      * @param authVendor 인증 제공자
      * @param oidcId     외부 인증 ID
      * @return 회원 도메인 {@link User}
-     * @Date 2025-12-27
+     * @Date 2025-12-28
      * @Author 성효빈
      * @Description 회원을 조회합니다.
      */
@@ -27,7 +27,7 @@ public interface GetUserUseCase {
     /**
      * @param email 회원 이메일 주소
      * @return 회원 도메인 {@link User}
-     * @Date 2025-12-27
+     * @Date 2025-12-28
      * @Author 성효빈
      * @Description 회원을 조회합니다.
      */

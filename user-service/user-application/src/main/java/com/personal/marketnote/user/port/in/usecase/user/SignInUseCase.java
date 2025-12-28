@@ -11,7 +11,7 @@ public interface SignInUseCase {
      * @param oidcId        외부 인증 ID
      * @return 로그인 결과 {@link SignInResult}
      * @Author 성효빈
-     * @Date 2025-12-27
+     * @Date 2025-12-28
      * @Description 네이티브 로그인 또는 소셜 로그인을 수행합니다.
      */
     SignInResult signIn(SignInCommand signInCommand, AuthVendor authVendor, String oidcId);

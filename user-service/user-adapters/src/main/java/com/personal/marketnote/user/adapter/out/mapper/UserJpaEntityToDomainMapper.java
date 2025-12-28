@@ -29,6 +29,7 @@ public class UserJpaEntityToDomainMapper {
                                 userJpaEntity.getFullName(),
                                 userJpaEntity.getPhoneNumber(),
                                 userJpaEntity.getReferenceCode(),
+                                userJpaEntity.getReferredUserCode(),
                                 mapToDomain(userJpaEntity.getRoleJpaEntity()).get(),
                                 mapToDomain(userJpaEntity.getUserTermsJpaEntities()).get(),
                                 userJpaEntity.getLastLoggedInAt()));

@@ -11,7 +11,7 @@ public interface SignUpUseCase {
      * @param oidcId        외부 인증 ID
      * @return 회원 가입 결과 {@link SignUpResult}
      * @Author 성효입
-     * @Date 2025-12-27
+     * @Date 2025-12-28
      * @Description 회원으로 가입합니다.
      */
     SignUpResult signUp(SignUpCommand signUpCommand, AuthVendor authVendor, String oidcId);

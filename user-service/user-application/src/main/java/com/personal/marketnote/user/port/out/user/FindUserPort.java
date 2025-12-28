@@ -14,6 +14,8 @@ public interface FindUserPort {
 
     boolean existsByPhoneNumber(String phoneNumber);
 
+    boolean existsByReferenceCode(String referenceCode);
+
     Optional<User> findById(Long id);
 
     Optional<User> findByAuthVendorAndOidcId(AuthVendor authVendor, String oidcId);
