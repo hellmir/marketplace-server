@@ -2,6 +2,7 @@ package com.personal.marketnote.user.service.user;
 
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.common.utility.RandomCodeGenerator;
 import com.personal.marketnote.user.domain.user.Terms;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.exception.UserExistsException;
@@ -52,6 +53,7 @@ public class SignUpService implements SignUpUseCase {
         }
 
         List<Terms> terms = findTermsPort.findAll();
+        String referenceCode = RandomCodeGenerator.generateSignupCode();
 
         return SignUpResult.from(
                 saveUserPort.save(
@@ -63,7 +65,8 @@ public class SignUpService implements SignUpUseCase {
                                 passwordEncoder.encode(signUpCommand.getPassword()),
                                 signUpCommand.getFullName(),
                                 signUpCommand.getPhoneNumber(),
-                                terms
+                                terms,
+                                referenceCode
                         )
                 )
         );

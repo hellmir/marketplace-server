@@ -91,14 +91,10 @@ public class UserJpaEntity extends BaseGeneralEntity {
     }
 
     public void updateFrom(User user) {
-        authVendor = user.getAuthVendor();
-        oidcId = user.getOidcId();
         nickname = user.getNickname();
         email = user.getEmail();
         password = user.getPassword();
-        fullName = user.getFullName();
         phoneNumber = user.getPhoneNumber();
-        referenceCode = user.getReferenceCode();
         roleJpaEntity = RoleJpaEntity.from(user.getRole());
         lastLoggedInAt = user.getLastLoggedInAt();
 
