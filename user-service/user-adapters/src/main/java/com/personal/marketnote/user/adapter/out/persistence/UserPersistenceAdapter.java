@@ -37,8 +37,8 @@ public class UserPersistenceAdapter implements SaveUserPort, FindUserPort, FindT
     }
 
     @Override
-    public boolean existsByOidcId(String oidcId) {
-        return userJpaRepository.existsByOidcId(oidcId);
+    public boolean existsByAuthVendorAndOidcId(AuthVendor authVendor, String oidcId) {
+        return userJpaRepository.existsByAuthVendorAndOidcId(authVendor, oidcId);
     }
 
     @Override

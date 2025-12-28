@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
 @Getter
 public class LoginHistory {
     private Long id;
-    private User user;
-    private AuthVendor type;
-    private LocalDateTime createdAt;
+    private final User user;
+    private final AuthVendor type;
+    private final LocalDateTime createdAt;
 
     private LoginHistory(User user, AuthVendor type, LocalDateTime createdAt) {
         this.user = user;

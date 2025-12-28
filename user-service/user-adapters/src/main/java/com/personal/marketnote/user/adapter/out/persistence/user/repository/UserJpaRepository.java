@@ -13,9 +13,15 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
             FROM UserJpaEntity u
             WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
-              AND u.oidcId = :oidcId
+                AND EXISTS (
+                SELECT 1
+                FROM UserOauth2VendorJpaEntity uov
+                WHERE uov.userJpaEntity = u
+                AND uov.authVendor = :authVendor
+                AND uov.oidcId = :oidcId
+                )
             """)
-    boolean existsByOidcId(@Param("oidcId") String oidcId);
+    boolean existsByAuthVendorAndOidcId(@Param("authVendor") AuthVendor authVendor, @Param("oidcId") String oidcId);
 
     @Query("""
             SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
@@ -28,8 +34,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
     @Query("""
             SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
             FROM UserJpaEntity u
-            WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
-                AND u.email = :email
+            WHERE u.email = :email
             """)
     boolean existsByEmail(@Param("email") String email);
 
@@ -61,8 +66,13 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             SELECT u
             FROM UserJpaEntity u
             WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
-              AND u.authVendor = :authVendor
-              AND u.oidcId = :oidcId
+              AND EXISTS (
+              SELECT 1
+              FROM UserOauth2VendorJpaEntity uov
+              WHERE uov.userJpaEntity = u
+              AND uov.authVendor = :authVendor
+              AND uov.oidcId = :oidcId
+              )
             """)
     Optional<UserJpaEntity> findByAuthVendorAndOidcId(@Param("authVendor") AuthVendor authVendor, @Param("oidcId") String oidcId);
 

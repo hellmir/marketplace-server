@@ -1,19 +1,18 @@
 package com.personal.marketnote.user.adapter.in.client.user.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
+import com.personal.marketnote.common.domain.exception.token.InvalidAccessTokenException;
+import com.personal.marketnote.common.exception.NotOAuth2UserException;
 import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.common.utility.FormatConverter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.adapter.in.client.authentication.response.GetUserResponse;
 import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.*;
 import com.personal.marketnote.user.adapter.in.client.user.mapper.UserRequestToCommandMapper;
-import com.personal.marketnote.user.adapter.in.client.user.request.LogoutRequest;
-import com.personal.marketnote.user.adapter.in.client.user.request.SignInRequest;
-import com.personal.marketnote.user.adapter.in.client.user.request.SignUpRequest;
-import com.personal.marketnote.user.adapter.in.client.user.request.UpdateUserInfoRequest;
+import com.personal.marketnote.user.adapter.in.client.user.request.*;
 import com.personal.marketnote.user.adapter.in.client.user.response.AuthenticationTokenResponse;
-import com.personal.marketnote.user.adapter.in.client.user.response.LogoutResponse;
 import com.personal.marketnote.user.adapter.in.client.user.response.SignInResponse;
+import com.personal.marketnote.user.adapter.in.client.user.response.SignOutResponse;
 import com.personal.marketnote.user.adapter.in.client.user.response.SignUpResponse;
 import com.personal.marketnote.user.port.in.usecase.user.*;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
@@ -31,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
+import static com.personal.marketnote.common.domain.exception.ExceptionMessage.INVALID_ACCESS_TOKEN_EXCEPTION_MESSAGE;
 import static com.personal.marketnote.user.security.token.utility.TokenConstant.ISS_CLAIM_KEY;
 import static com.personal.marketnote.user.security.token.utility.TokenConstant.SUB_CLAIM_KEY;
 
@@ -53,6 +53,7 @@ import static com.personal.marketnote.user.security.token.utility.TokenConstant.
 @Slf4j
 public class UserController {
     private final SignUpUseCase signUpUseCase;
+    private final RegisterEmailUseCase registerEmailUseCase;
     private final SignInUseCase signInUseCase;
     private final GetUserUseCase getUserUseCase;
     private final UpdateUserUseCase updateUserUseCase;
@@ -106,10 +107,49 @@ public class UserController {
     }
 
     /**
+     * OAuth2 가입자 이메일 주소 등록
+     *
+     * @param registerEmailRequest 이메일 주소 등록 요청
+     * @param principal            사용자 인증 정보
+     * @Author 성효빈
+     * @Date 2025-12-28
+     * @Description OAuth2 가입자의 이메일 주소를 등록합니다.
+     */
+    @PatchMapping("/email")
+    public ResponseEntity<BaseResponse<Void>> registerEmail(
+            @Valid @RequestBody RegisterEmailRequest registerEmailRequest,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        if (!FormatValidator.hasValue(principal)) {
+            throw new InvalidAccessTokenException(INVALID_ACCESS_TOKEN_EXCEPTION_MESSAGE);
+        }
+
+        String issuer = principal.getAttribute(ISS_CLAIM_KEY);
+        AuthVendor authVendor = resolveVendorFromIssuer(FormatConverter.toUpperCase(issuer));
+        if (authVendor.isNative()) {
+            throw new NotOAuth2UserException();
+        }
+
+        registerEmailUseCase.registerEmail(
+                ElementExtractor.extractUserId(principal), authVendor, registerEmailRequest.getEmail()
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        null,
+                        HttpStatus.CREATED,
+                        DEFAULT_SUCCESS_CODE,
+                        "이메일 주소 등록 성공"
+                ),
+                HttpStatus.CREATED
+        );
+    }
+
+    /**
      * 추천 회원 초대 코드 등록
      *
      * @param referredUserCode 추천 회원의 초대 코드
-     * @param principal        OAuth2 인증 정보
+     * @param principal        사용자 인증 정보
      * @Author 성효빈
      * @Date 2025-12-28
      * @Description 자신을 추천한 회원의 초대 코드를 등록합니다.
@@ -139,7 +179,7 @@ public class UserController {
      * 회원 로그인
      *
      * @param signInRequest 로그인 요청 요청
-     * @param principal     OAuth2 인증 정보
+     * @param principal     사용자 인증 정보
      * @return 인증 토큰 응답 {@link AuthenticationTokenResponse}
      * @Author 성효빈
      * @Date 2025-12-28
@@ -200,7 +240,7 @@ public class UserController {
     /**
      * 회원 정보 조회
      *
-     * @param principal OAuth2 인증 정보
+     * @param principal 사용자 인증 정보
      * @return 회원 정보 조회 응답 {@link GetUserResponse}
      * @Author 성효빈
      * @Date 2025-12-28
@@ -230,7 +270,7 @@ public class UserController {
      * 회원 정보 수정
      *
      * @param updateUserInfoRequest 회원 정보 수정 요청
-     * @param principal             OAuth2 인증 정보
+     * @param principal             사용자 인증 정보
      * @return 회원 정보 수정 응답 {@link Void}
      * @Author 성효빈
      * @Date 2025-12-27
@@ -261,25 +301,25 @@ public class UserController {
     /**
      * 회원 로그아웃
      *
-     * @param logoutRequest 로그아웃 요청
-     * @param principal     OAuth2 인증 정보
-     * @return 로그아웃 응답 {@link LogoutResponse}
+     * @param signOutRequest 로그아웃 요청
+     * @param principal      사용자 인증 정보
+     * @return 로그아웃 응답 {@link SignOutResponse}
      * @Author 성효빈
      * @Date 2025-12-28
      * @Description 로그아웃합니다.
      */
-    @DeleteMapping
-    @LogoutApiDocs
-    public ResponseEntity<BaseResponse<LogoutResponse>> logout(
-            @Valid @RequestBody LogoutRequest logoutRequest,
+    @DeleteMapping("/sign-out")
+    @SignOutApiDocs
+    public ResponseEntity<BaseResponse<SignOutResponse>> signOutUser(
+            @Valid @RequestBody SignOutRequest signOutRequest,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
-        String accessToken = jwtUtil.revokeToken(logoutRequest.getAccessToken());
-        String refreshToken = jwtUtil.revokeToken(logoutRequest.getRefreshToken());
+        String accessToken = jwtUtil.revokeToken(signOutRequest.getAccessToken());
+        String refreshToken = jwtUtil.revokeToken(signOutRequest.getRefreshToken());
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        LogoutResponse.of(accessToken, refreshToken),
+                        SignOutResponse.of(accessToken, refreshToken),
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "회원 로그아웃 성공"

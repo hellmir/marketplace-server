@@ -6,7 +6,7 @@ import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import java.util.Optional;
 
 public interface FindUserPort {
-    boolean existsByOidcId(String oidcId);
+    boolean existsByAuthVendorAndOidcId(AuthVendor authVendor, String oidcId);
 
     boolean existsByNickname(String nickname);
 

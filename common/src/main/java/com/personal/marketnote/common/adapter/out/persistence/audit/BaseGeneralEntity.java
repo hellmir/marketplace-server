@@ -19,14 +19,11 @@ public abstract class BaseGeneralEntity extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private EntityStatus status;
 
     protected void hideEntity() {
         status = EntityStatus.UNEXPOSED;
-    }
-
-    protected void deleteEntity() {
-        status = EntityStatus.DELETED;
     }
 
     protected void activateEntity() {

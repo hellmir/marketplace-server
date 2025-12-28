@@ -1,13 +1,15 @@
 package com.personal.marketnote.user.port.in.result;
 
 import com.personal.marketnote.user.domain.user.User;
+import lombok.AccessLevel;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
+@Builder(access = AccessLevel.PRIVATE)
 public record GetUserResult(
         Long id,
-        String authVendor,
-        String oidcId,
+        AccountInfoResult accountInfo,
         String nickname,
         String email,
         String fullName,
@@ -17,17 +19,16 @@ public record GetUserResult(
         LocalDateTime lastLoggedInAt
 ) {
     public static GetUserResult from(User user) {
-        return new GetUserResult(
-                user.getId(),
-                user.getAuthVendor().name(),
-                user.getOidcId(),
-                user.getNickname(),
-                user.getEmail(),
-                user.getFullName(),
-                user.getPhoneNumber(),
-                user.getReferenceCode(),
-                user.getRole().getId(),
-                user.getLastLoggedInAt()
-        );
+        return GetUserResult.builder()
+                .id(user.getId())
+                .accountInfo(AccountInfoResult.from(user.getUserOauth2Vendors()))
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .fullName(user.getFullName())
+                .phoneNumber(user.getPhoneNumber())
+                .referenceCode(user.getReferenceCode())
+                .roleId(user.getRole().getId())
+                .lastLoggedInAt(user.getLastLoggedInAt())
+                .build();
     }
 }

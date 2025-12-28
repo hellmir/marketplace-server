@@ -108,44 +108,15 @@ import java.lang.annotation.*;
                         responseCode = "409",
                         description = "중복된 회원 등록",
                         content = @Content(
-                                examples = {
-                                        @ExampleObject("""
-                                                {
-                                                  "statusCode": 409,
-                                                  "code": "ERR01",
-                                                  "timestamp": "2025-12-28T11:50:53.656526",
-                                                  "content": null,
-                                                  "message": "이미 가입된 회원입니다. 가입된 OIDC ID: 1234"
-                                                }
-                                                """),
-                                        @ExampleObject("""
-                                                {
-                                                  "statusCode": 409,
-                                                  "code": "ERR02",
-                                                  "timestamp": "2025-12-28T11:50:53.656526",
-                                                  "content": null,
-                                                  "message": "이미 가입된 회원입니다. 가입된 닉네임: 고길동"
-                                                }
-                                                """),
-                                        @ExampleObject("""
-                                                {
-                                                  "statusCode": 409,
-                                                  "code": "ERR03",
-                                                  "timestamp": "2025-12-28T11:50:53.656526",
-                                                  "content": null,
-                                                  "message": "이미 가입된 회원입니다. 가입된 이메일 주소: 고길동"
-                                                }
-                                                """),
-                                        @ExampleObject("""
-                                                {
-                                                  "statusCode": 409,
-                                                  "code": "ERR04",
-                                                  "timestamp": "2025-12-28T11:50:53.656526",
-                                                  "content": null,
-                                                  "message": "이미 가입된 회원입니다. 가입된 전화번호: 010-1234-5678"
-                                                }
-                                                """)
-                                }
+                                examples = @ExampleObject("""
+                                        {
+                                          "statusCode": 409,
+                                          "code": "ERR01",
+                                          "timestamp": "2025-12-28T11:50:53.656526",
+                                          "content": null,
+                                          "message": "이미 가입된 회원입니다. 가입된 OIDC ID: 1234"
+                                        }
+                                        """)
                         )
                 )
         }
