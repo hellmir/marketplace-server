@@ -37,6 +37,8 @@ import java.lang.annotation.*;
                 
                 - 이미 **다른 방법으로 가입된 회원**인 경우 **isNewUser**: **false**를 반환합니다. 이 경우 계정이 새로 생성되지 않고, 기존 계정에 통합됩니다.
                 
+                - 비활성화된 계정인 경우 ERR06(403 FORBIDDEN)을 반환합니다.
+                
                 ---
                 
                 ## Request
@@ -118,6 +120,21 @@ import java.lang.annotation.*;
                                           "timestamp": "2025-12-28T11:50:53.656526",
                                           "content": null,
                                           "message": "이미 가입된 회원입니다. 가입된 OIDC ID: 1234"
+                                        }
+                                        """)
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "403",
+                        description = "비활성화된 계정",
+                        content = @Content(
+                                examples = @ExampleObject("""
+                                        {
+                                          "statusCode": 403,
+                                          "code": "ERR06",
+                                          "timestamp": "2025-12-28T16:13:25.045291",
+                                          "content": null,
+                                          "message": "비활성화된 계정입니다. 전송된 이메일 주소: example@example.com"
                                         }
                                         """)
                         )

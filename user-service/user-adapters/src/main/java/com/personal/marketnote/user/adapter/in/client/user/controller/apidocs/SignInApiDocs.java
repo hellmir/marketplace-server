@@ -28,6 +28,8 @@ import java.lang.annotation.*;
                 
                 - Access Token을 전송하는 경우 이메일 주소/비밀번호는 무시됩니다. (우선순위: Access Token > 이메일 주소/비밀번호)
                 
+                - 비활성화된 계정인 경우 ERR02(403 FORBIDDEN)를 반환합니다.
+                
                 ---
                 
                 ## Request
@@ -97,25 +99,10 @@ import java.lang.annotation.*;
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 400,
-                                          "code": "ERR01",
+                                          "code": "BAD_REQUEST",
                                           "timestamp": "2025-12-27T15:36:06.027533",
                                           "content": null,
-                                          "message": "회원 이메일 주소 또는 authVendor 및 oidcId 중 하나는 필수입니다."
-                                        }
-                                        """)
-                        )
-                ),
-                @ApiResponse(
-                        responseCode = "401",
-                        description = "비밀번호 인증 실패",
-                        content = @Content(
-                                examples = @ExampleObject("""
-                                        {
-                                          "statusCode": 401,
-                                          "code": "ERR02",
-                                          "timestamp": "2025-12-27T15:50:09.419345",
-                                          "content": null,
-                                          "message": "회원 비밀번호가 일치하지 않습니다."
+                                          "message": "이메일 주소는 필수값입니다."
                                         }
                                         """)
                         )
@@ -131,6 +118,36 @@ import java.lang.annotation.*;
                                           "timestamp": "2025-12-26T09:53:02.089234",
                                           "content": null,
                                           "message": "존재하지 않는 회원입니다. 회원 이메일 주소: example@example.com"
+                                        }
+                                        """)
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "로그인 실패",
+                        content = @Content(
+                                examples = @ExampleObject("""
+                                        {
+                                          "statusCode": 401,
+                                          "code": "ERR01",
+                                          "timestamp": "2025-12-28T16:22:53.799201",
+                                          "content": null,
+                                          "message": "아이디(이메일) 혹은 비밀번호가 올바르지 않습니다. 입력한 내용을 다시 확인해주세요."
+                                        }
+                                        """)
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "403",
+                        description = "비활성화된 계정",
+                        content = @Content(
+                                examples = @ExampleObject("""
+                                        {
+                                          "statusCode": 403,
+                                          "code": "ERR02",
+                                          "timestamp": "2025-12-28T16:13:25.045291",
+                                          "content": null,
+                                          "message": "비활성화된 계정입니다. 전송된 이메일 주소: example@example.com"
                                         }
                                         """)
                         )

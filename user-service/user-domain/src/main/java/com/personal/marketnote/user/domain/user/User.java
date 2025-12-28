@@ -1,5 +1,6 @@
 package com.personal.marketnote.user.domain.user;
 
+import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
 import com.personal.marketnote.common.domain.exception.illegalstate.SameUpdateTargetException;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.domain.authentication.Role;
@@ -34,6 +35,7 @@ public class User {
     private List<UserOauth2Vendor> userOauth2Vendors;
     private List<UserTerms> userTerms;
     private final LocalDateTime lastLoggedInAt;
+    private EntityStatus status;
 
     public static User from(AuthVendor authVendor, String oidcId) {
         return User.builder()
@@ -95,7 +97,8 @@ public class User {
             Role role,
             List<UserOauth2Vendor> userOauth2Vendors,
             List<UserTerms> userTerms,
-            LocalDateTime lastLoggedInAt
+            LocalDateTime lastLoggedInAt,
+            EntityStatus status
     ) {
         return User.builder()
                 .id(id)
@@ -110,6 +113,7 @@ public class User {
                 .userOauth2Vendors(userOauth2Vendors)
                 .userTerms(userTerms)
                 .lastLoggedInAt(lastLoggedInAt)
+                .status(status)
                 .build();
     }
 
@@ -182,5 +186,9 @@ public class User {
         if (FormatValidator.equals(this.phoneNumber, phoneNumber)) {
             throw new SameUpdateTargetException(THIRD_ERROR_CODE, phoneNumber);
         }
+    }
+
+    public boolean isActive() {
+        return status.isActive();
     }
 }

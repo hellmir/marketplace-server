@@ -37,7 +37,8 @@ public class UserJpaEntityToDomainMapper {
                             role,
                             vendors,
                             userTerms,
-                            entity.getLastLoggedInAt());
+                            entity.getLastLoggedInAt(),
+                            entity.getStatus());
 
                     vendors.forEach(v -> v.addUser(user));
 

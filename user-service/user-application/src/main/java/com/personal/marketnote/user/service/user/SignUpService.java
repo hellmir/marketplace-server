@@ -7,6 +7,7 @@ import com.personal.marketnote.user.domain.user.Terms;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.exception.InvalidVerificationCodeException;
 import com.personal.marketnote.user.exception.UserExistsException;
+import com.personal.marketnote.user.exception.UserNotActiveException;
 import com.personal.marketnote.user.port.in.command.SignUpCommand;
 import com.personal.marketnote.user.port.in.result.SignUpResult;
 import com.personal.marketnote.user.port.in.usecase.user.GetUserUseCase;
@@ -71,7 +72,13 @@ public class SignUpService implements SignUpUseCase {
 
         // 이메일 가입 정보가 있는 경우 기존 회원 엔티티에 통합
         if (findUserPort.existsByEmail(email)) {
-            User signedUpUser = getUserUseCase.getUser(email);
+            User signedUpUser = getUserUseCase.getAllStatusUser(email);
+
+            // 계정 활성화 여부 검증
+            if (!signedUpUser.isActive()) {
+                throw new UserNotActiveException(SIXTH_ERROR_CODE, email);
+            }
+
             signedUpUser.addLoginAccountInfo(authVendor, oidcId, signUpCommand.getPassword(), passwordEncoder);
             updateUserPort.update(signedUpUser);
 

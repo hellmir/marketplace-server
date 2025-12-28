@@ -10,4 +10,8 @@ public enum EntityStatus {
     EntityStatus(String description) {
         this.description = description;
     }
+
+    public boolean isActive() {
+        return this == ACTIVE;
+    }
 }

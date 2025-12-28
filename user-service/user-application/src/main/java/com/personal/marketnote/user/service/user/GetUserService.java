@@ -32,8 +32,8 @@ public class GetUserService implements GetUserUseCase {
     }
 
     @Override
-    public User getUser(String email) {
-        return findUserPort.findByEmail(email)
+    public User getAllStatusUser(String email) throws UserNotFoundException {
+        return findUserPort.findAllStatusUserByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(
                         String.format(USER_EMAIL_NOT_FOUND_EXCEPTION_MESSAGE, email))
                 );

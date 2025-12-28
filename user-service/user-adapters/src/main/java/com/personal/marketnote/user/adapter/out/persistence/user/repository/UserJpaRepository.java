@@ -12,11 +12,13 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
     @Query("""
             SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
             FROM UserJpaEntity u
-            WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+            WHERE 1 = 1
+                AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
                 AND EXISTS (
                 SELECT 1
                 FROM UserOauth2VendorJpaEntity uov
-                WHERE uov.userJpaEntity = u
+                WHERE 1 = 1
+                AND uov.userJpaEntity = u
                 AND uov.authVendor = :authVendor
                 AND uov.oidcId = :oidcId
                 )
@@ -26,7 +28,8 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
     @Query("""
             SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
             FROM UserJpaEntity u
-            WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+            WHERE 1 = 1
+                AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
                 AND u.nickname = :nickname
             """)
     boolean existsByNickname(@Param("nickname") String nickname);
@@ -34,14 +37,16 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
     @Query("""
             SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
             FROM UserJpaEntity u
-            WHERE u.email = :email
+            WHERE 1 = 1
+                AND u.email = :email
             """)
     boolean existsByEmail(@Param("email") String email);
 
     @Query("""
             SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
             FROM UserJpaEntity u
-            WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+            WHERE 1 = 1
+                AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
               AND u.phoneNumber = :phoneNumber
             """)
     boolean existsByPhoneNumber(@Param("phoneNumber") String phoneNumber);
@@ -65,7 +70,8 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
     @Query("""
             SELECT u
             FROM UserJpaEntity u
-            WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+            WHERE 1 = 1
+                AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
               AND EXISTS (
               SELECT 1
               FROM UserOauth2VendorJpaEntity uov
@@ -79,7 +85,8 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
     @Query("""
             SELECT u
             FROM UserJpaEntity u
-            WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+            WHERE 1 = 1
+                AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
                 AND u.phoneNumber = :phoneNumber
             """)
     Optional<UserJpaEntity> findByPhoneNumber(@Param("phoneNumber") String phoneNumber);
@@ -87,8 +94,17 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
     @Query("""
             SELECT u
             FROM UserJpaEntity u
-            WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+            WHERE 1 = 1
+                AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
                 AND u.email = :email
             """)
     Optional<UserJpaEntity> findByEmail(@Param("email") String email);
+
+    @Query("""
+            SELECT u
+            FROM UserJpaEntity u
+            WHERE 1 = 1
+                AND u.email = :email
+            """)
+    Optional<UserJpaEntity> findAllStatusUserByEmail(@Param("email") String email);
 }
