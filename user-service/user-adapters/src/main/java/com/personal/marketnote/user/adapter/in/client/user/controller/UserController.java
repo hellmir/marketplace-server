@@ -36,7 +36,6 @@ import java.util.List;
 import static com.personal.marketnote.user.security.token.utility.TokenConstant.ISS_CLAIM_KEY;
 import static com.personal.marketnote.user.security.token.utility.TokenConstant.SUB_CLAIM_KEY;
 
-// TODO: 로그인 내역 기능 추가
 @RestController
 @RequestMapping("/api/v1/users")
 @Tag(
