@@ -47,8 +47,7 @@ public class User {
             String password,
             String fullName,
             String phoneNumber,
-            List<Terms> terms,
-            String referenceCode
+            List<Terms> terms
     ) {
         User user = User.builder()
                 .authVendor(authVendor)
@@ -58,7 +57,6 @@ public class User {
                 .password(password)
                 .fullName(fullName)
                 .phoneNumber(phoneNumber)
-                .referenceCode(referenceCode)
                 .role(Role.getBuyer())
                 .lastLoggedInAt(LocalDateTime.now())
                 .build();
