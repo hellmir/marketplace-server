@@ -5,15 +5,14 @@ import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.common.utility.FormatConverter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.adapter.in.client.authentication.response.GetUserResponse;
-import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.GetUserInfoApiDocs;
-import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.SignInApiDocs;
-import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.SignUpApiDocs;
-import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.UpdateUserInfoApiDocs;
+import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.*;
 import com.personal.marketnote.user.adapter.in.client.user.mapper.UserRequestToCommandMapper;
+import com.personal.marketnote.user.adapter.in.client.user.request.LogoutRequest;
 import com.personal.marketnote.user.adapter.in.client.user.request.SignInRequest;
 import com.personal.marketnote.user.adapter.in.client.user.request.SignUpRequest;
 import com.personal.marketnote.user.adapter.in.client.user.request.UpdateUserInfoRequest;
 import com.personal.marketnote.user.adapter.in.client.user.response.AuthenticationTokenResponse;
+import com.personal.marketnote.user.adapter.in.client.user.response.LogoutResponse;
 import com.personal.marketnote.user.adapter.in.client.user.response.SignInResponse;
 import com.personal.marketnote.user.adapter.in.client.user.response.SignUpResponse;
 import com.personal.marketnote.user.port.in.usecase.user.GetUserUseCase;
@@ -122,6 +121,22 @@ public class UserController {
         );
     }
 
+    private AuthVendor resolveVendorFromIssuer(String issuer) {
+        if (issuer.contains(AuthVendor.KAKAO.name())) {
+            return AuthVendor.KAKAO;
+        }
+
+        if (issuer.contains(AuthVendor.GOOGLE.name())) {
+            return AuthVendor.GOOGLE;
+        }
+
+        if (issuer.contains(AuthVendor.APPLE.name())) {
+            return AuthVendor.APPLE;
+        }
+
+        return AuthVendor.NATIVE;
+    }
+
     @GetMapping
     @GetUserInfoApiDocs
     public ResponseEntity<BaseResponse<GetUserResponse>> getUserInfo(
@@ -162,19 +177,22 @@ public class UserController {
         );
     }
 
-    private AuthVendor resolveVendorFromIssuer(String issuer) {
-        if (issuer.contains(AuthVendor.KAKAO.name())) {
-            return AuthVendor.KAKAO;
-        }
+    @DeleteMapping
+    @LogoutApiDocs
+    public ResponseEntity<BaseResponse<LogoutResponse>> logout(
+            @Valid @RequestBody LogoutRequest logoutRequest,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        String accessToken = jwtUtil.revokeToken(logoutRequest.getAccessToken());
+        String refreshToken = jwtUtil.revokeToken(logoutRequest.getRefreshToken());
 
-        if (issuer.contains(AuthVendor.GOOGLE.name())) {
-            return AuthVendor.GOOGLE;
-        }
-
-        if (issuer.contains(AuthVendor.APPLE.name())) {
-            return AuthVendor.APPLE;
-        }
-
-        return AuthVendor.NATIVE;
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        LogoutResponse.of(accessToken, refreshToken),
+                        HttpStatus.OK,
+                        "회원 로그아웃 성공"
+                ),
+                HttpStatus.OK
+        );
     }
 }

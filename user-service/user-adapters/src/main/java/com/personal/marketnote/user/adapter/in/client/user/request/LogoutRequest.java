@@ -4,18 +4,18 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 @Getter
-public class SignInRequest {
+public class LogoutRequest {
     @Schema(
-            name = "email",
-            description = "이메일 주소",
+            name = "accessToken",
+            description = "액세스 토큰",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
-    private String email;
+    private String accessToken;
 
     @Schema(
-            name = "password",
-            description = "비밀번호",
+            name = "refreshToken",
+            description = "리프레시 토큰",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
-    private String password;
+    private String refreshToken;
 }
