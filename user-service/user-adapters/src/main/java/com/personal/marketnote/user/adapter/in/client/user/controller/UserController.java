@@ -15,10 +15,7 @@ import com.personal.marketnote.user.adapter.in.client.user.response.Authenticati
 import com.personal.marketnote.user.adapter.in.client.user.response.LogoutResponse;
 import com.personal.marketnote.user.adapter.in.client.user.response.SignInResponse;
 import com.personal.marketnote.user.adapter.in.client.user.response.SignUpResponse;
-import com.personal.marketnote.user.port.in.usecase.user.GetUserUseCase;
-import com.personal.marketnote.user.port.in.usecase.user.SignInUseCase;
-import com.personal.marketnote.user.port.in.usecase.user.SignUpUseCase;
-import com.personal.marketnote.user.port.in.usecase.user.UpdateUserUseCase;
+import com.personal.marketnote.user.port.in.usecase.user.*;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import com.personal.marketnote.user.utility.jwt.JwtUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,6 +34,14 @@ import static com.personal.marketnote.user.security.token.utility.TokenConstant.
 import static com.personal.marketnote.user.security.token.utility.TokenConstant.SUB_CLAIM_KEY;
 
 // TODO: 로그인 내역 기능 추가
+
+/**
+ * 회원 컨트롤러
+ *
+ * @Author 성효빈
+ * @Date 2025-12-28
+ * @Description 회원 관련 API를 제공합니다.
+ */
 @RestController
 @RequestMapping("/api/v1/users")
 @Tag(
@@ -50,8 +55,19 @@ public class UserController {
     private final SignInUseCase signInUseCase;
     private final GetUserUseCase getUserUseCase;
     private final UpdateUserUseCase updateUserUseCase;
+    private final RegisterReferredUserCodeUseCase registerReferredUserCodeUseCase;
     private final JwtUtil jwtUtil;
 
+    /**
+     * 회원 가입
+     *
+     * @param signUpRequest 회원 가입 요청
+     * @param principal     OAuth2 인증 정보
+     * @return 인증 토큰 응답 {@link AuthenticationTokenResponse}
+     * @Author 성효빈
+     * @Date 2025-12-28
+     * @Description 회원으로 가입합니다.
+     */
     @PostMapping("/sign-up")
     @SignUpApiDocs
     public ResponseEntity<BaseResponse<AuthenticationTokenResponse>> signUpUser(
@@ -87,8 +103,17 @@ public class UserController {
         );
     }
 
+    /**
+     * 추천 회원 초대 코드 등록
+     *
+     * @param referredUserCode 추천 회원의 초대 코드
+     * @param principal        OAuth2 인증 정보
+     * @Author 성효빈
+     * @Date 2025-12-28
+     * @Description 자신을 추천한 회원의 초대 코드를 등록합니다.
+     */
     @PostMapping("/referred-user-code")
-    @RegisterReferenceCodeApiDocs
+    @RegisterReferredUserCodeApiDocs
     public ResponseEntity<BaseResponse<Void>> registerReferredUserCode(
             @Valid @RequestParam String referredUserCode,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
@@ -107,6 +132,16 @@ public class UserController {
         );
     }
 
+    /**
+     * 회원 로그인
+     *
+     * @param signInRequest 로그인 요청 요청
+     * @param principal     OAuth2 인증 정보
+     * @return 인증 토큰 응답 {@link AuthenticationTokenResponse}
+     * @Author 성효빈
+     * @Date 2025-12-28
+     * @Description 회원 로그인을 수행합니다.
+     */
     @PostMapping("/sign-in")
     @SignInApiDocs
     public ResponseEntity<BaseResponse<AuthenticationTokenResponse>> signInUser(
@@ -158,6 +193,15 @@ public class UserController {
         return AuthVendor.NATIVE;
     }
 
+    /**
+     * 회원 정보 조회
+     *
+     * @param principal OAuth2 인증 정보
+     * @return 회원 정보 조회 응답 {@link GetUserResponse}
+     * @Author 성효빈
+     * @Date 2025-12-28
+     * @Description 회원 정보를 조회합니다.
+     */
     @GetMapping
     @GetUserInfoApiDocs
     public ResponseEntity<BaseResponse<GetUserResponse>> getUserInfo(
@@ -177,6 +221,16 @@ public class UserController {
         );
     }
 
+    /**
+     * 회원 정보 수정
+     *
+     * @param updateUserInfoRequest 회원 정보 수정 요청
+     * @param principal             OAuth2 인증 정보
+     * @return 회원 정보 수정 응답 {@link Void}
+     * @Author 성효빈
+     * @Date 2025-12-27
+     * @Description 회원 정보를 수정합니다.
+     */
     @PatchMapping
     @UpdateUserInfoApiDocs
     public ResponseEntity<BaseResponse<Void>> updateUserInfo(
@@ -198,6 +252,16 @@ public class UserController {
         );
     }
 
+    /**
+     * 회원 로그아웃
+     *
+     * @param logoutRequest 로그아웃 요청
+     * @param principal     OAuth2 인증 정보
+     * @return 로그아웃 응답 {@link LogoutResponse}
+     * @Author 성효빈
+     * @Date 2025-12-28
+     * @Description 로그아웃합니다.
+     */
     @DeleteMapping
     @LogoutApiDocs
     public ResponseEntity<BaseResponse<LogoutResponse>> logout(

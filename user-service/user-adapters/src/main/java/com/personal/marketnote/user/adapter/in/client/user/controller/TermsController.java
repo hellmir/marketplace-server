@@ -22,6 +22,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+
+/**
+ * 회원 약관 컨트롤러
+ *
+ * @Author 성효빈
+ * @Date 2025-12-28
+ * @Description 회원 약관 관련 API를 제공합니다.
+ */
 @RestController
 @RequestMapping("/api/v1/terms")
 @Tag(
@@ -34,6 +42,14 @@ public class TermsController {
     private final GetTermsUseCase getTermsUseCase;
     private final UpdateTermsUseCase updateTermsUseCase;
 
+    /**
+     * 전체 약관 목록 조회
+     *
+     * @return 전체 약관 목록 응답 {@link GetTermsResponse}
+     * @Author 성효빈
+     * @Date 2025-12-28
+     * @Description 전체 약관 목록을 조회합니다.
+     */
     @GetMapping()
     @GetAllTermsApiDocs
     public ResponseEntity<BaseResponse<GetTermsResponse>> getAllTerms() {
@@ -51,6 +67,15 @@ public class TermsController {
         );
     }
 
+    /**
+     * 회원 약관 동의 여부 목록 조회
+     *
+     * @param principal OAuth2 인증 정보
+     * @return 회원 약관 동의 여부 목록 응답 {@link GetUserTermsResponse}
+     * @Author 성효빈
+     * @Date 2025-12-28
+     * @Description 회원 약관 동의 여부 목록을 조회합니다.
+     */
     @GetMapping("/user")
     @GetUserTermsApiDocs
     public ResponseEntity<BaseResponse<GetUserTermsResponse>> getUserTerms(
@@ -70,6 +95,16 @@ public class TermsController {
         );
     }
 
+    /**
+     * 약관 동의 또는 철회
+     *
+     * @param acceptOrCancelTermsRequest 약관 동의 또는 철회 요청
+     * @param principal                  OAuth2 인증 정보
+     * @return 약관 동의 또는 철회 응답 {@link GetUserTermsResponse}
+     * @Author 성효빈
+     * @Date 2025-12-28
+     * @Description 약관 동의 또는 철회를 수행합니다.
+     */
     @PatchMapping("/user")
     @AcceptOrCancelTermsApiDocs
     public ResponseEntity<BaseResponse<GetUserTermsResponse>> acceptOrCancelTerms(
