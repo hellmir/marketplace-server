@@ -57,6 +57,11 @@ public class UserPersistenceAdapter implements SaveUserPort, FindUserPort, FindT
     }
 
     @Override
+    public boolean existsByReferenceCode(String referenceCode) {
+        return userJpaRepository.existsByReferenceCode(referenceCode);
+    }
+
+    @Override
     @Transactional(isolation = READ_UNCOMMITTED, readOnly = true, timeout = 120)
     public Optional<User> findById(Long id) {
         return UserJpaEntityToDomainMapper.mapToDomain(userJpaRepository.findById(id).orElse(null));

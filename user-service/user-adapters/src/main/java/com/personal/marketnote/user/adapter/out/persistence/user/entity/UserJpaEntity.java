@@ -50,6 +50,9 @@ public class UserJpaEntity extends BaseGeneralEntity {
     @Column(name = "reference_code", unique = true, length = 15)
     private String referenceCode;
 
+    @Column(name = "referred_user_code", unique = true, length = 15)
+    private String referredUserCode;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
     private RoleJpaEntity roleJpaEntity;
@@ -73,6 +76,7 @@ public class UserJpaEntity extends BaseGeneralEntity {
                 .fullName(user.getFullName())
                 .phoneNumber(user.getPhoneNumber())
                 .referenceCode(user.getReferenceCode())
+                .referredUserCode(user.getReferredUserCode())
                 .roleJpaEntity(RoleJpaEntity.from(user.getRole()))
                 .lastLoggedInAt(user.getLastLoggedInAt())
                 .build();
@@ -91,14 +95,11 @@ public class UserJpaEntity extends BaseGeneralEntity {
     }
 
     public void updateFrom(User user) {
-        authVendor = user.getAuthVendor();
-        oidcId = user.getOidcId();
         nickname = user.getNickname();
         email = user.getEmail();
         password = user.getPassword();
-        fullName = user.getFullName();
         phoneNumber = user.getPhoneNumber();
-        referenceCode = user.getReferenceCode();
+        referredUserCode = user.getReferredUserCode();
         roleJpaEntity = RoleJpaEntity.from(user.getRole());
         lastLoggedInAt = user.getLastLoggedInAt();
 

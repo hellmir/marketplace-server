@@ -36,6 +36,7 @@ import java.util.List;
 import static com.personal.marketnote.user.security.token.utility.TokenConstant.ISS_CLAIM_KEY;
 import static com.personal.marketnote.user.security.token.utility.TokenConstant.SUB_CLAIM_KEY;
 
+// TODO: 로그인 내역 기능 추가
 @RestController
 @RequestMapping("/api/v1/users")
 @Tag(
@@ -83,6 +84,26 @@ public class UserController {
                         "회원 가입 성공"
                 ),
                 HttpStatus.CREATED
+        );
+    }
+
+    @PostMapping("/referred-user-code")
+    @RegisterReferenceCodeApiDocs
+    public ResponseEntity<BaseResponse<Void>> registerReferredUserCode(
+            @Valid @RequestParam String referredUserCode,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        registerReferredUserCodeUseCase.registerReferredUserCode(
+                ElementExtractor.extractUserId(principal), referredUserCode
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        null,
+                        HttpStatus.OK,
+                        "초대 코드 등록 성공"
+                ),
+                HttpStatus.OK
         );
     }
 

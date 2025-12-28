@@ -3,6 +3,7 @@ package com.personal.marketnote.user.domain.user;
 import com.personal.marketnote.common.domain.exception.illegalargument.novalue.UpdateTargetNoValueException;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.domain.authentication.Role;
+import com.personal.marketnote.user.exception.ReferredUserCodeAlreadyExistsException;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,7 @@ public class User {
     private String fullName;
     private String phoneNumber;
     private String referenceCode;
+    private String referredUserCode;
     private Role role;
     private List<UserTerms> userTerms;
     private LocalDateTime lastLoggedInAt;
@@ -47,7 +49,8 @@ public class User {
             String password,
             String fullName,
             String phoneNumber,
-            List<Terms> terms
+            List<Terms> terms,
+            String referenceCode
     ) {
         User user = User.builder()
                 .authVendor(authVendor)
@@ -57,6 +60,7 @@ public class User {
                 .password(password)
                 .fullName(fullName)
                 .phoneNumber(phoneNumber)
+                .referenceCode(referenceCode)
                 .role(Role.getBuyer())
                 .lastLoggedInAt(LocalDateTime.now())
                 .build();
@@ -78,6 +82,7 @@ public class User {
             String fullName,
             String phoneNumber,
             String referenceCode,
+            String referredUserCode,
             Role role,
             List<UserTerms> userTerms,
             LocalDateTime lastLoggedInAt
@@ -92,6 +97,7 @@ public class User {
                 .fullName(fullName)
                 .phoneNumber(phoneNumber)
                 .referenceCode(referenceCode)
+                .referredUserCode(referredUserCode)
                 .role(role)
                 .userTerms(userTerms)
                 .lastLoggedInAt(lastLoggedInAt)
@@ -136,5 +142,13 @@ public class User {
         }
 
         throw new UpdateTargetNoValueException();
+    }
+
+    public void registerReferredUserCode(String referredUserCode) throws ReferredUserCodeAlreadyExistsException {
+        if (FormatValidator.hasValue(this.referredUserCode)) {
+            throw new ReferredUserCodeAlreadyExistsException();
+        }
+
+        this.referredUserCode = referredUserCode;
     }
 }

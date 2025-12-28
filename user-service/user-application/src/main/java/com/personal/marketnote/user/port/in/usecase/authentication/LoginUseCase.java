@@ -12,7 +12,7 @@ public interface LoginUseCase {
      * @return 로그인 결과 {@link LoginResult}
      * @throws UnsupportedCodeException 지원하지 않는 인증 코드 예외
      * @Author 성효빈
-     * @Date 2025-12-27
+     * @Date 2025-12-28
      * @Description OAuth2 소셜 로그인을 수행합니다.
      */
     LoginResult loginByOAuth2(String code, String redirectUri, AuthVendor authVendor) throws UnsupportedCodeException;

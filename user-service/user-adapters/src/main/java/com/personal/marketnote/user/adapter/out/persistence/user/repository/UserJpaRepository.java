@@ -42,6 +42,14 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
     boolean existsByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 
     @Query("""
+            SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
+            FROM UserJpaEntity u
+            WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+                AND u.referenceCode = :referenceCode
+            """)
+    boolean existsByReferenceCode(@Param("referenceCode") String referenceCode);
+
+    @Query("""
             SELECT u
             FROM UserJpaEntity u
             WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
