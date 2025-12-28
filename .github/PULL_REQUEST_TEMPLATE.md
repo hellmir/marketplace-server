@@ -1,5 +1,4 @@
 ## partially resolve
-
 ## resolve
 
 ## Task

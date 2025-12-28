@@ -20,6 +20,8 @@ import java.lang.annotation.*;
                 
                 작성자: 성효빈
                 
+                ---
+                
                 ## Description
                 
                 - OAuth2 콜백 URI를 통해 발급된 Access Token 또는 회원 이메일 주소/비밀번호를 전송해 로그인합니다.

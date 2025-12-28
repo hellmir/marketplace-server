@@ -22,6 +22,8 @@ import java.lang.annotation.*;
                 
                 작성자: 성효빈
                 
+                ---
+                
                 ## Description
                 
                 - 권한 서버에서 리다이렉트되는 콜백 엔드포인트입니다.

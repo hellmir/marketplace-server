@@ -3,7 +3,8 @@ package com.personal.marketnote.user.service.authentication;
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.exception.UserNotFoundException;
-import com.personal.marketnote.user.port.in.usecase.authentication.GetUserInfoUseCase;
+import com.personal.marketnote.user.port.in.result.GetUserResult;
+import com.personal.marketnote.user.port.in.usecase.user.GetUserInfoUseCase;
 import com.personal.marketnote.user.port.out.user.FindUserPort;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMIT
 
 @UseCase
 @RequiredArgsConstructor
-@Transactional(isolation = READ_UNCOMMITTED, readOnly = true, timeout = 180)
+@Transactional(isolation = READ_UNCOMMITTED, readOnly = true)
 public class GetUserInfoService implements GetUserInfoUseCase {
     private final FindUserPort findUserPort;
 
@@ -36,5 +37,10 @@ public class GetUserInfoService implements GetUserInfoUseCase {
                 .orElseThrow(() -> new UserNotFoundException(
                         String.format(USER_EMAIL_NOT_FOUND_EXCEPTION_MESSAGE, email))
                 );
+    }
+
+    @Override
+    public GetUserResult getUserInfo(Long id) {
+        return GetUserResult.from(getUser(id));
     }
 }
