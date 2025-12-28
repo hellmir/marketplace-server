@@ -178,4 +178,18 @@ public class JwtUtil {
                 .claim(AUTH_VENDOR_CLAIM_KEY, authVendor.name())
                 .signWith(secretKey);
     }
+
+    public String revokeToken(String token) {
+        JwtParser parser = Jwts.parser().verifyWith(secretKey)
+                .json(new JacksonDeserializer<>())
+                .build();
+
+        Claims tokenClaims = parser.parseSignedClaims(token).getPayload();
+
+        return Jwts.builder()
+                .claims(tokenClaims)
+                .expiration(new Date(System.currentTimeMillis() - 1))
+                .signWith(secretKey)
+                .compact();
+    }
 }
