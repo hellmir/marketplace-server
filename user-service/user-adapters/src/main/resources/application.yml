@@ -19,6 +19,12 @@ spring:
       schema-locations: classpath:org/springframework/batch/core/schema-postgresql.sql
       continue-on-error: true
 
+  data:
+    redis:
+      host: ${REDIS_HOST_NAME:localhost}
+      port: 6379
+      password: ${REDIS_PASSWORD:password}
+
   jwt:
     secret: ${JWT_SECRET_KEY:dev-secret-change-me}
     access-token:

@@ -30,6 +30,9 @@ configurations {
     }
 }
 
+// 별도 소스 JAR 다운로드용 구성 (IDE가 소스 첨부 못할 때 수동 다운로드)
+val redisSources by configurations.creating
+
 repositories {
     mavenCentral()
 }
@@ -47,8 +50,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security") // Spring Security
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server") // OAuth 2.0 Resource server
 
-    // Spring Data Redis 추가
-    // implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    // Spring Data Redis
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
+    // session
+    implementation("org.springframework.session:spring-session-data-redis")
 
     //querydsl 설정
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
@@ -65,6 +71,9 @@ dependencies {
 
     // JSON parser
     implementation("org.json:json:20240303")
+
+    // Jackson Hibernate Module (Jakarta, Boot 3.x/Hibernate 6 호환)
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate5-jakarta")
 
     // MapStruct
     implementation("org.mapstruct:mapstruct:$mapstructVersion")
@@ -113,6 +122,9 @@ dependencies {
 
     // Prometheus
     implementation("io.micrometer:micrometer-registry-prometheus")
+
+    // spring-data-redis sources (IDE에서 소스 자동 첨부가 안 될 때 CLI로 받기 위함)
+    redisSources("org.springframework.data:spring-data-redis:3.5.4:sources")
 }
 
 // ✅ 테스트 실행 시 JUnit 5 플랫폼 사용 설정
@@ -149,6 +161,13 @@ tasks.named<Jar>("jar") {
 springBoot {
     mainClass.set("com.personal.marketnote.user.UserApplication")
     buildInfo()
+}
+
+// `./gradlew :user-service:user-adapters:downloadRedisSources` 실행 시 소스 JAR를 로컬 캐시에 받음
+tasks.register("downloadRedisSources") {
+    doLast {
+        redisSources.resolve()
+    }
 }
 
 tasks.register("prepareKotlinBuildScriptModel") {

@@ -46,9 +46,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server") // OAuth 2.0 Resource server
     implementation("org.springframework.boot:spring-boot-starter-mail") // JavaMailSender
 
-    // Spring Data Redis 추가
-    // implementation("org.springframework.boot:spring-boot-starter-data-redis")
-
     //querydsl 설정
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
     annotationProcessor("jakarta.persistence:jakarta.persistence-api:3.1.0")
@@ -89,9 +86,6 @@ dependencies {
 
     // 빌드 정보를 위한 스프링 부트 액추에이터
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-
-    // 스웨거 API 문서 생성
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
 
     // Spring Batch
     implementation("org.springframework.boot:spring-boot-starter-batch")
