@@ -22,10 +22,10 @@ public class SendEmailVerificationService implements SendEmailVerificationUseCas
     @Value("${mail.from:no-reply@example.com}")
     private String fromAddress;
 
-    @Value("${mail.sender-name:Shop}")
+    @Value("${mail.sender-name:shop}")
     private String senderName;
 
-    @Value("${mail.verification.ttl-minutes:10}")
+    @Value("${mail.verification.ttl-minutes:5}")
     private int ttlMinutes;
 
     @Override

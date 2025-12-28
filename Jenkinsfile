@@ -258,7 +258,12 @@ pipeline {
 						string(credentialsId: 'MARKETNOTE_AWS_DEFAULT_REGION',            variable: 'AWS_DEFAULT_REGION'),
 						string(credentialsId: 'MARKETNOTE_ECS_TASK_EXECUTION_ROLE_ARN',   variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
 						string(credentialsId: 'MARKETNOTE_ECS_TASK_ROLE_ARN',             variable: 'ECS_TASK_ROLE_ARN'),
-						string(credentialsId: 'MARKETNOTE_CLOUDWATCH_LOG_GROUP',          variable: 'CLOUDWATCH_LOG_GROUP')
+						string(credentialsId: 'MARKETNOTE_CLOUDWATCH_LOG_GROUP',          variable: 'CLOUDWATCH_LOG_GROUP'),
+						string(credentialsId: 'MARKETNOTE_SES_SMTP_USERNAME',             variable: 'CRED_SES_SMTP_USERNAME'),
+						string(credentialsId: 'MARKETNOTE_SES_SMTP_PASSWORD',             variable: 'CRED_SES_SMTP_PASSWORD'),
+						string(credentialsId: 'MARKETNOTE_MAIL_FROM',                     variable: 'CRED_MAIL_FROM'),
+						string(credentialsId: 'MARKETNOTE_MAIL_SENDER_NAME',              variable: 'CRED_MAIL_SENDER_NAME'),
+						string(credentialsId: 'MARKETNOTE_MAIL_VERIFICATION_TTL_MINUTES', variable: 'CRED_MAIL_VERIFICATION_TTL_MINUTES')
 					]) {
 						sh '''
                         aws logs create-log-group --log-group-name "$CLOUDWATCH_LOG_GROUP" --region "$AWS_DEFAULT_REGION" || true
@@ -296,7 +301,12 @@ pipeline {
 									[name: "KAKAO_CLIENT_SECRET",           value: "${env.CRED_KAKAO_CLIENT_SECRET}"],
 									[name: "S3_ACCESS_KEY",                 value: "${env.CRED_S3_ACCESS_KEY}"],
 									[name: "S3_SECRET_KEY",                 value: "${env.CRED_S3_SECRET_KEY}"],
-									[name: "S3_BUCKET_NAME",                value: "${env.CRED_S3_BUCKET_NAME}"]
+									[name: "S3_BUCKET_NAME",                value: "${env.CRED_S3_BUCKET_NAME}"],
+									[name: "SES_SMTP_USERNAME",             value: "${env.CRED_SES_SMTP_USERNAME}"],
+									[name: "SES_SMTP_PASSWORD",             value: "${env.CRED_SES_SMTP_PASSWORD}"],
+									[name: "MAIL_FROM",                     value: "${env.CRED_MAIL_FROM}"],
+									[name: "MAIL_SENDER_NAME",              value: "${env.CRED_MAIL_SENDER_NAME}"],
+									[name: "MAIL_VERIFICATION_TTL_MINUTES", value: "${env.CRED_MAIL_VERIFICATION_TTL_MINUTES}"]
 								],
 								logConfiguration: [
 									logDriver: "awslogs",
