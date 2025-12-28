@@ -4,15 +4,19 @@ import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.domain.exception.token.UnsupportedCodeException;
 import com.personal.marketnote.user.adapter.in.client.authentication.controller.apidocs.Oauth2LoginApiDocs;
 import com.personal.marketnote.user.adapter.in.client.authentication.controller.apidocs.RefreshAccessTokenApiDocs;
+import com.personal.marketnote.user.adapter.in.client.authentication.controller.apidocs.SendEmailVerificationApiDocs;
 import com.personal.marketnote.user.adapter.in.client.authentication.request.OAuth2LoginRequest;
 import com.personal.marketnote.user.adapter.in.client.authentication.request.RefreshAccessTokenRequest;
 import com.personal.marketnote.user.adapter.in.client.authentication.response.OAuth2LoginResponse;
 import com.personal.marketnote.user.adapter.in.client.authentication.response.RefreshedAccessTokenResponse;
 import com.personal.marketnote.user.adapter.in.client.authentication.response.WebBasedTokenRefreshResponse;
 import com.personal.marketnote.user.adapter.out.vendor.authentication.WebBasedAuthenticationServiceAdapter;
+import com.personal.marketnote.user.port.in.usecase.authentication.SendEmailVerificationUseCase;
 import com.personal.marketnote.user.security.token.dto.GrantedTokenInfo;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,6 +24,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
+import static com.personal.marketnote.common.domain.exception.ExceptionMessage.INVALID_EMAIL_EXCEPTION_MESSAGE;
+import static com.personal.marketnote.common.utility.RegularExpressionConstant.EMAIL_PATTERN;
 
 /**
  * 인증 컨트롤러
@@ -38,6 +44,7 @@ import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFA
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final WebBasedAuthenticationServiceAdapter authServiceAdapter;
+    private final SendEmailVerificationUseCase sendEmailVerificationUseCase;
 
     /**
      * OAuth2 로그인
@@ -92,6 +99,35 @@ public class AuthenticationController {
                 ),
                 response.headers(),
                 HttpStatus.CREATED
+        );
+    }
+
+    /**
+     * 이메일 인증 요청 전송
+     *
+     * @param email 이메일 주소
+     * @Author 성효빈
+     * @Date 2025-12-28
+     * @Description Access Token을 재발급합니다.
+     */
+    @SendEmailVerificationApiDocs
+    @PostMapping("/email/verification")
+    public ResponseEntity<BaseResponse<Void>> sendEmailVerification(
+            @RequestParam("email")
+            @NotEmpty(message = "이메일 주소는 필수값입니다.")
+            @Pattern(regexp = EMAIL_PATTERN, message = INVALID_EMAIL_EXCEPTION_MESSAGE)
+            String email
+    ) {
+        sendEmailVerificationUseCase.sendEmailVerification(email);
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        null,
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "이메일 인증 요청 전송 성공"
+                ),
+                HttpStatus.OK
         );
     }
 }

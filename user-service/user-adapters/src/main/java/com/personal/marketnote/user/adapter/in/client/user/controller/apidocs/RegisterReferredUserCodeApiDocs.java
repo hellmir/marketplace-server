@@ -30,7 +30,7 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
-                | referenceCode | string | 자신을 추천한 회원의 초대 코드 | Y | "1234567890" |
+                | referredUserCode | string | 자신을 추천한 회원의 초대 코드 | Y | "1234567890" |
                 
                 ---
                 

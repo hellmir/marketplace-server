@@ -26,6 +26,22 @@ spring:
     refresh-token:
       ttl: ${REFRESH_TOKEN_EXPIRATION_TIME:1209600000}
 
+  mail:
+    host: ${SES_SMTP_HOST:email-smtp.${SES_REGION:ap-northeast-2}.amazonaws.com}
+    port: ${SES_SMTP_PORT:587}
+    username: ${SES_SMTP_USERNAME:change-me}
+    password: ${SES_SMTP_PASSWORD:change-me}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
 client:
   origin: ${CLIENT_ORIGIN:http://localhost:3000}
   cookie-domain: ${COOKIE_DOMAIN:localhost}
@@ -61,3 +77,9 @@ management:
   endpoint:
     health:
       show-details: always
+
+mail:
+  from: ${MAIL_FROM:no-reply@yourdomain.com}
+  sender-name: ${MAIL_SENDER_NAME:shop}
+  verification:
+    ttl-minutes: ${MAIL_VERIFICATION_TTL_MINUTES:5}
