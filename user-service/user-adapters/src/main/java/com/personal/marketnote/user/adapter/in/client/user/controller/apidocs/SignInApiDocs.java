@@ -34,8 +34,10 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
-                | email | string | 이메일 주소(형식: example@example.com) | N | "example@example.com" |
-                | password | string | 비밀번호(8자 이상, 대문자, 소문자, 숫자, 특수문자 포함) | N | "Password123!" |
+                | email | string | 이메일 주소 | N | "example@example.com" |
+                | password | string | 비밀번호 | N | "Password123!" |
+                
+                ---
                 
                 ## Response
                 
@@ -54,7 +56,6 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | accessToken | string | 신규 발급된 Access Token | "f8310f8asohvh80scvh0zio3hr31d" |
                 | refreshToken | string | 신규 발급된 Refresh Token | "f8310f8asohvh80scvh0zio3hr31d" |
-                
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(

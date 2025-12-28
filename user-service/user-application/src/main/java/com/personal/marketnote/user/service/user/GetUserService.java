@@ -1,10 +1,10 @@
-package com.personal.marketnote.user.service.authentication;
+package com.personal.marketnote.user.service.user;
 
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.exception.UserNotFoundException;
 import com.personal.marketnote.user.port.in.result.GetUserResult;
-import com.personal.marketnote.user.port.in.usecase.user.GetUserInfoUseCase;
+import com.personal.marketnote.user.port.in.usecase.user.GetUserUseCase;
 import com.personal.marketnote.user.port.out.user.FindUserPort;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMIT
 @UseCase
 @RequiredArgsConstructor
 @Transactional(isolation = READ_UNCOMMITTED, readOnly = true)
-public class GetUserInfoService implements GetUserInfoUseCase {
+public class GetUserService implements GetUserUseCase {
     private final FindUserPort findUserPort;
 
     @Override

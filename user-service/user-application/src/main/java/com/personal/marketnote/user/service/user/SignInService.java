@@ -7,7 +7,7 @@ import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.exception.InvalidPasswordException;
 import com.personal.marketnote.user.port.in.command.SignInCommand;
 import com.personal.marketnote.user.port.in.result.SignInResult;
-import com.personal.marketnote.user.port.in.usecase.user.GetUserInfoUseCase;
+import com.personal.marketnote.user.port.in.usecase.user.GetUserUseCase;
 import com.personal.marketnote.user.port.in.usecase.user.SignInUseCase;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMIT
 @UseCase
 @Transactional(isolation = READ_UNCOMMITTED)
 public class SignInService implements SignInUseCase {
-    private final GetUserInfoUseCase getUserInfoUseCase;
+    private final GetUserUseCase getUserUseCase;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -30,12 +30,12 @@ public class SignInService implements SignInUseCase {
 
     private User getSignedUpUser(SignInCommand signInCommand, AuthVendor authVendor, String oidcId) {
         if (FormatValidator.hasValue(authVendor) && FormatValidator.hasValue(oidcId)) {
-            return getUserInfoUseCase.getUser(authVendor, oidcId);
+            return getUserUseCase.getUser(authVendor, oidcId);
         }
 
         String email = signInCommand.getEmail();
         if (FormatValidator.hasValue(email)) {
-            User signedUpUser = getUserInfoUseCase.getUser(email);
+            User signedUpUser = getUserUseCase.getUser(email);
             validatePassword(signedUpUser, signInCommand.getPassword());
 
             return signedUpUser;
