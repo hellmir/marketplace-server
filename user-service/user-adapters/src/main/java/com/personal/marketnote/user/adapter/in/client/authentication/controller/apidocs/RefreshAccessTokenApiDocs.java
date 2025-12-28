@@ -55,7 +55,6 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | accessToken | string | 신규 발급된 Access Token | "f8310f8asohvh80scvh0zio3hr31d" |
-                
                 """,
         parameters = @Parameter(
                 name = "refresh_token",

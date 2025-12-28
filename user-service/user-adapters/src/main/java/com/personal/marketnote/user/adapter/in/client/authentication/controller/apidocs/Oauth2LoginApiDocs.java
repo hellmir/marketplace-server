@@ -56,7 +56,6 @@ import java.lang.annotation.*;
                 | Set-Cookie | refresh_token(HttpOnly, Secure, SameSite=None) | "refresh_token=...; Path=/; Domain=localhost; Max-Age=2592000000; Secure; HttpOnly; SameSite=None" |
                 | Location | 클라이언트 리다이렉션 URL | 성공: "http://localhost:3000/redirection?type=oauth2&is-success=true&access-token=...&is-guest=true&auth-vendor=google&userJpaEntity-name=홍길동"
                 | | | 실패: "http://localhost:3000/redirection?type=oauth2&is-success=false" |
-                
                 """,
         parameters = {
                 @Parameter(

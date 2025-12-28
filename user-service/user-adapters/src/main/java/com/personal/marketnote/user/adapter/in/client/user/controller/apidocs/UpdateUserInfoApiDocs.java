@@ -1,8 +1,10 @@
 package com.personal.marketnote.user.adapter.in.client.user.controller.apidocs;
 
+import com.personal.marketnote.user.adapter.in.client.user.request.UpdateUserInfoRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
@@ -12,7 +14,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "회원 정보 조회",
+        summary = "회원 정보 수정",
         description = """
                 작성일자: 2025-12-28
                 
@@ -22,14 +24,28 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                회원 정보를 조회합니다.
+                - 회원 정보를 수정합니다.
+                
+                - 이메일 주소, 닉네임, 전화번호, 비밀번호 중 **하나**를 전송해 수정합니다.
+                
+                    - 이메일 주소: example@example.com과 같은 형식이어야 합니다.
+                
+                    - 닉네임: 한글만 가능하며, 6글자 이하여야 합니다.
+                
+                    - 전화번호: dash를 포함하여 010-1234-5678과 같은 형식이어야 합니다.
+                
+                    - 비밀번호: 8자 이상, 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.
                 
                 ---
                 
                 ## Request
                 
-                | **키** | **타입** | **설명** | **필수 여부** | **예시** |
-                | --- | --- | --- | --- | --- |
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | email | string | 이메일 주소 | "example@example.com" |
+                | nickname | string | 닉네임 | "고길동" |
+                | phoneNumber | string | 전화번호 | "010-1234-5678" |
+                | password | string | 비밀번호 | "password123" |
                 
                 ---
                 
@@ -40,57 +56,45 @@ import java.lang.annotation.*;
                 | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
                 | timestamp | string(datetime) | 응답 일시 | "2025-12-26T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
-                | message | string | 처리 결과 | "회원 정보 조회 성공" |
-                
-                ---
-                
-                ### Response > content
-                
-                | **키** | **타입** | **설명** | **예시** |
-                | --- | --- | --- | --- |
-                | userInfo | object | 회원 정보 | { ... } |
-                
-                ---
-                
-                ### Response > content > userInfo
-                
-                | **키** | **타입** | **설명** | **예시** |
-                | --- | --- | --- | --- |
-                | id | number | 회원 ID | 1 |
-                | authVendor | string | 인증 제공자 | "NATIVE" / "KAKAO" / "GOOGLE" / "APPLE" |
-                | oidcId | string | OIDC ID | "1234567890" |
-                | nickname | string | 닉네임 | "고길동" |
-                | email | string | 이메일 주소 | "example@example.com" |
-                | fullName | string | 성명 | "홍길동" |
-                | phoneNumber | string | 전화번호 | "010-1234-5678" |
-                | referenceCode | string | 참조 코드 | "1234567890" |
-                | roleId | string | 역할 ID | "ROLE_BUYER" |
+                | message | string | 처리 결과 | "회원 정보 수정 성공" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
+        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                required = true,
+                content = @Content(
+                        schema = @Schema(implementation = UpdateUserInfoRequest.class),
+                        examples = @ExampleObject("""
+                                {
+                                    "email": "example2@example.com"
+                                }
+                                """)
+                )
+        ),
         responses = {
                 @ApiResponse(
                         responseCode = "200",
-                        description = "회원 정보 조회 성공",
+                        description = "회원 정보 수정 성공",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 200,
                                           "timestamp": "2025-12-28T10:41:37.842294",
-                                          "content": {
-                                            "userInfo": {
-                                              "id": 61,
-                                              "authVendor": "NATIVE",
-                                              "oidcId": null,
-                                              "nickname": "고길동",
-                                              "email": "example@example.com",
-                                              "fullName": "홍길동",
-                                              "phoneNumber": "010-1234-5678",
-                                              "referenceCode": "a12bc3",
-                                              "roleId": "ROLE_BUYER",
-                                              "lastLoggedInAt": "2025-12-27T14:39:25.881029"
-                                            }
-                                          },
-                                          "message": "회원 정보 조회 성공"
+                                          "content": null,
+                                          "message": "회원 정보 수정 성공"
+                                        }
+                                        """)
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "400",
+                        description = "업데이트 요청 파라미터 없음",
+                        content = @Content(
+                                examples = @ExampleObject("""
+                                        {
+                                          "statusCode": 400,
+                                          "timestamp": "2025-12-28T11:54:12.809362",
+                                          "content": null,
+                                          "message": "업데이트할 대상과 값을 전송해야 합니다."
                                         }
                                         """)
                         )
@@ -125,5 +129,5 @@ import java.lang.annotation.*;
                 )
         }
 )
-public @interface GetUserInfoApiDocs {
+public @interface UpdateUserInfoApiDocs {
 }

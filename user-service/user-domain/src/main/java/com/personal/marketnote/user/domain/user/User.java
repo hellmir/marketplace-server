@@ -1,5 +1,7 @@
 package com.personal.marketnote.user.domain.user;
 
+import com.personal.marketnote.common.domain.exception.illegalargument.novalue.UpdateTargetNoValueException;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.domain.authentication.Role;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.AccessLevel;
@@ -108,5 +110,31 @@ public class User {
 
     public boolean isValidPassword(PasswordEncoder passwordEncoder, String targetPassword) {
         return passwordEncoder.matches(targetPassword, password);
+    }
+
+    public void update(
+            String email, String nickname, String phoneNumber, String password, PasswordEncoder passwordEncoder
+    ) throws UpdateTargetNoValueException {
+        if (FormatValidator.hasValue(email)) {
+            this.email = email;
+            return;
+        }
+
+        if (FormatValidator.hasValue(nickname)) {
+            this.nickname = nickname;
+            return;
+        }
+
+        if (FormatValidator.hasValue(phoneNumber)) {
+            this.phoneNumber = phoneNumber;
+            return;
+        }
+
+        if (FormatValidator.hasValue(password)) {
+            this.password = passwordEncoder.encode(password);
+            return;
+        }
+
+        throw new UpdateTargetNoValueException();
     }
 }

@@ -91,16 +91,16 @@ public class UserJpaEntity extends BaseGeneralEntity {
     }
 
     public void updateFrom(User user) {
-        this.authVendor = user.getAuthVendor();
-        this.oidcId = user.getOidcId();
-        this.nickname = user.getNickname();
-        this.email = user.getEmail();
-        this.password = user.getPassword();
-        this.fullName = user.getFullName();
-        this.phoneNumber = user.getPhoneNumber();
-        this.referenceCode = user.getReferenceCode();
-        this.roleJpaEntity = RoleJpaEntity.from(user.getRole());
-        this.lastLoggedInAt = user.getLastLoggedInAt();
+        authVendor = user.getAuthVendor();
+        oidcId = user.getOidcId();
+        nickname = user.getNickname();
+        email = user.getEmail();
+        password = user.getPassword();
+        fullName = user.getFullName();
+        phoneNumber = user.getPhoneNumber();
+        referenceCode = user.getReferenceCode();
+        roleJpaEntity = RoleJpaEntity.from(user.getRole());
+        lastLoggedInAt = user.getLastLoggedInAt();
 
         for (int i = 0; i < userTermsJpaEntities.size(); i++) {
             UserTermsJpaEntity userTermsJpaEntity = userTermsJpaEntities.get(i);

@@ -8,15 +8,18 @@ import com.personal.marketnote.user.adapter.in.client.authentication.response.Ge
 import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.GetUserInfoApiDocs;
 import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.SignInApiDocs;
 import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.SignUpApiDocs;
+import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.UpdateUserInfoApiDocs;
 import com.personal.marketnote.user.adapter.in.client.user.mapper.UserRequestToCommandMapper;
 import com.personal.marketnote.user.adapter.in.client.user.request.SignInRequest;
 import com.personal.marketnote.user.adapter.in.client.user.request.SignUpRequest;
+import com.personal.marketnote.user.adapter.in.client.user.request.UpdateUserInfoRequest;
 import com.personal.marketnote.user.adapter.in.client.user.response.AuthenticationTokenResponse;
 import com.personal.marketnote.user.adapter.in.client.user.response.SignInResponse;
 import com.personal.marketnote.user.adapter.in.client.user.response.SignUpResponse;
-import com.personal.marketnote.user.port.in.usecase.user.GetUserInfoUseCase;
+import com.personal.marketnote.user.port.in.usecase.user.GetUserUseCase;
 import com.personal.marketnote.user.port.in.usecase.user.SignInUseCase;
 import com.personal.marketnote.user.port.in.usecase.user.SignUpUseCase;
+import com.personal.marketnote.user.port.in.usecase.user.UpdateUserUseCase;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import com.personal.marketnote.user.utility.jwt.JwtUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,7 +48,8 @@ import static com.personal.marketnote.user.security.token.utility.TokenConstant.
 public class UserController {
     private final SignUpUseCase signUpUseCase;
     private final SignInUseCase signInUseCase;
-    private final GetUserInfoUseCase getUserInfoUseCase;
+    private final GetUserUseCase getUserUseCase;
+    private final UpdateUserUseCase updateUserUseCase;
     private final JwtUtil jwtUtil;
 
     @PostMapping("/sign-up")
@@ -124,7 +128,7 @@ public class UserController {
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
         GetUserResponse getUserResponse = GetUserResponse.from(
-                getUserInfoUseCase.getUserInfo(ElementExtractor.extractUserId(principal))
+                getUserUseCase.getUserInfo(ElementExtractor.extractUserId(principal))
         );
 
         return new ResponseEntity<>(
@@ -132,6 +136,27 @@ public class UserController {
                         getUserResponse,
                         HttpStatus.OK,
                         "회원 정보 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    @PatchMapping
+    @UpdateUserInfoApiDocs
+    public ResponseEntity<BaseResponse<Void>> updateUserInfo(
+            @Valid @RequestBody UpdateUserInfoRequest updateUserInfoRequest,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        updateUserUseCase.updateUserInfo(
+                ElementExtractor.extractUserId(principal),
+                UserRequestToCommandMapper.mapToCommand(updateUserInfoRequest)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        null,
+                        HttpStatus.OK,
+                        "회원 정보 수정 성공"
                 ),
                 HttpStatus.OK
         );
