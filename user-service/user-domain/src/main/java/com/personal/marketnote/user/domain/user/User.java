@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.personal.marketnote.common.domain.exception.ExceptionCode.SECOND_ERROR_CODE;
+
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
@@ -146,7 +148,7 @@ public class User {
 
     public void registerReferredUserCode(String referredUserCode) throws ReferredUserCodeAlreadyExistsException {
         if (FormatValidator.hasValue(this.referredUserCode)) {
-            throw new ReferredUserCodeAlreadyExistsException();
+            throw new ReferredUserCodeAlreadyExistsException(SECOND_ERROR_CODE);
         }
 
         this.referredUserCode = referredUserCode;

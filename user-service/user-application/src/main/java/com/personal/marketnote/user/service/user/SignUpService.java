@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.personal.marketnote.common.domain.exception.ExceptionCode.*;
 import static com.personal.marketnote.user.exception.ExceptionMessage.*;
 import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
 
@@ -34,22 +35,22 @@ public class SignUpService implements SignUpUseCase {
     @Override
     public SignUpResult signUp(SignUpCommand signUpCommand, AuthVendor authVendor, String oidcId) {
         if (!authVendor.isNative() && findUserPort.existsByOidcId(oidcId)) {
-            throw new UserExistsException(String.format(OIDC_ID_ALREADY_EXISTS_EXCEPTION_MESSAGE, oidcId));
+            throw new UserExistsException(String.format(OIDC_ID_ALREADY_EXISTS_EXCEPTION_MESSAGE, FIRST_ERROR_CODE, oidcId));
         }
 
         String nickname = signUpCommand.getNickname();
         if (findUserPort.existsByNickname(nickname)) {
-            throw new UserExistsException(String.format(NICKNAME_ALREADY_EXISTS_EXCEPTION_MESSAGE, nickname));
+            throw new UserExistsException(String.format(NICKNAME_ALREADY_EXISTS_EXCEPTION_MESSAGE, SECOND_ERROR_CODE, nickname));
         }
 
         String email = signUpCommand.getEmail();
         if (findUserPort.existsByEmail(email)) {
-            throw new UserExistsException(String.format(EMAIL_ALREADY_EXISTS_EXCEPTION_MESSAGE, email));
+            throw new UserExistsException(String.format(EMAIL_ALREADY_EXISTS_EXCEPTION_MESSAGE, THIRD_ERROR_CODE, email));
         }
 
         String phoneNumber = signUpCommand.getPhoneNumber();
         if (FormatValidator.hasValue(phoneNumber) && findUserPort.existsByPhoneNumber(phoneNumber)) {
-            throw new UserExistsException(String.format(PHONE_NUMBER_ALREADY_EXISTS_EXCEPTION_MESSAGE, phoneNumber));
+            throw new UserExistsException(String.format(PHONE_NUMBER_ALREADY_EXISTS_EXCEPTION_MESSAGE, FOURTH_ERROR_CODE, phoneNumber));
         }
 
         List<Terms> terms = findTermsPort.findAll();

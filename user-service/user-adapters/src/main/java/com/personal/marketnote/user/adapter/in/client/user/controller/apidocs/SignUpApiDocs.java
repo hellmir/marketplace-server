@@ -54,6 +54,7 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 201: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
+                | code | string | 응답 코드 | "SUC01" / "ERR01" / "ERR02" / "ERR03" / "ERR04" |
                 | timestamp | string(datetime) | 응답 일시 | "2025-12-26T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
                 | message | string | 처리 결과 | "회원 가입 성공" |
@@ -92,6 +93,7 @@ import java.lang.annotation.*;
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 201,
+                                          "code": "SUC01",
                                           "timestamp": "2025-12-26T22:52:31.889943",
                                           "content": {
                                             "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJ0b2tlblR5cGUiOiJBQ0NFU1NfVE9LRU4iLCJpYXQiOjE3NjE1MjgzMTYsImV4cCI6MTc2MTUzMDExNiwic3ViIjoiOCIsInJvbGVJZHMiOlsiUk9MRV9CVVlFUiJdLCJ1c2VySWQiOjgsImF1dGhWZW5kb3IiOiJOQVRJVkUifQ.3nhlFNz9NBfcJKIteTICcUyN7F1w068CJKu5uy5kB0I",
@@ -103,31 +105,47 @@ import java.lang.annotation.*;
                         )
                 ),
                 @ApiResponse(
-                        responseCode = "400",
-                        description = "OAuth2 토큰이 존재하지 않음",
-                        content = @Content(
-                                examples = @ExampleObject("""
-                                        {
-                                          "statusCode": 400,
-                                          "timestamp": "2025-12-26T09:53:02.089234",
-                                          "content": null,
-                                          "message": "OAuth2 토큰이 존재하지 않습니다. 로그인 후 다시 시도해 주세요."
-                                        }
-                                        """)
-                        )
-                ),
-                @ApiResponse(
                         responseCode = "409",
                         description = "중복된 회원 등록",
                         content = @Content(
-                                examples = @ExampleObject("""
-                                        {
-                                          "statusCode": 409,
-                                          "timestamp": "2025-12-26T09:53:02.089234",
-                                          "content": null,
-                                          "message": "이미 가입된 회원입니다."
-                                        }
-                                        """)
+                                examples = {
+                                        @ExampleObject("""
+                                                {
+                                                  "statusCode": 409,
+                                                  "code": "ERR01",
+                                                  "timestamp": "2025-12-28T11:50:53.656526",
+                                                  "content": null,
+                                                  "message": "이미 가입된 회원입니다. 가입된 OIDC ID: 1234"
+                                                }
+                                                """),
+                                        @ExampleObject("""
+                                                {
+                                                  "statusCode": 409,
+                                                  "code": "ERR02",
+                                                  "timestamp": "2025-12-28T11:50:53.656526",
+                                                  "content": null,
+                                                  "message": "이미 가입된 회원입니다. 가입된 닉네임: 고길동"
+                                                }
+                                                """),
+                                        @ExampleObject("""
+                                                {
+                                                  "statusCode": 409,
+                                                  "code": "ERR03",
+                                                  "timestamp": "2025-12-28T11:50:53.656526",
+                                                  "content": null,
+                                                  "message": "이미 가입된 회원입니다. 가입된 이메일 주소: 고길동"
+                                                }
+                                                """),
+                                        @ExampleObject("""
+                                                {
+                                                  "statusCode": 409,
+                                                  "code": "ERR04",
+                                                  "timestamp": "2025-12-28T11:50:53.656526",
+                                                  "content": null,
+                                                  "message": "이미 가입된 회원입니다. 가입된 전화번호: 010-1234-5678"
+                                                }
+                                                """)
+                                }
                         )
                 )
         }

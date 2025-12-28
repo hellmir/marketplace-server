@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
 import static com.personal.marketnote.user.security.token.utility.TokenConstant.ISS_CLAIM_KEY;
 import static com.personal.marketnote.user.security.token.utility.TokenConstant.SUB_CLAIM_KEY;
 
@@ -97,6 +98,7 @@ public class UserController {
                 BaseResponse.of(
                         new AuthenticationTokenResponse(accessToken, refreshToken),
                         HttpStatus.CREATED,
+                        DEFAULT_SUCCESS_CODE,
                         "회원 가입 성공"
                 ),
                 HttpStatus.CREATED
@@ -126,6 +128,7 @@ public class UserController {
                 BaseResponse.of(
                         null,
                         HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
                         "초대 코드 등록 성공"
                 ),
                 HttpStatus.OK
@@ -171,6 +174,7 @@ public class UserController {
                 BaseResponse.of(
                         new AuthenticationTokenResponse(accessToken, refreshToken),
                         HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
                         "회원 로그인 성공"
                 ),
                 HttpStatus.OK
@@ -215,6 +219,7 @@ public class UserController {
                 BaseResponse.of(
                         getUserResponse,
                         HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
                         "회원 정보 조회 성공"
                 ),
                 HttpStatus.OK
@@ -246,6 +251,7 @@ public class UserController {
                 BaseResponse.of(
                         null,
                         HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
                         "회원 정보 수정 성공"
                 ),
                 HttpStatus.OK
@@ -275,6 +281,7 @@ public class UserController {
                 BaseResponse.of(
                         LogoutResponse.of(accessToken, refreshToken),
                         HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
                         "회원 로그아웃 성공"
                 ),
                 HttpStatus.OK

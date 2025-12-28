@@ -46,6 +46,7 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 201: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
+                | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" |
                 | content | object | 응답 본문 | { ... } |
                 
                 ---
@@ -72,6 +73,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 201,
                                           "timestamp": "2025-12-26T09:53:02.089234",
+                                          "code": "SUC01",
                                           "content": {
                                             "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJ0b2tlblR5cGUiOiJBQ0NFU1NfVE9LRU4iLCJpYXQiOjE3NjE1MzI0MTEsImV4cCI6MTc2MTUzNDIxMSwic3ViIjoibnVsbCIsInJvbGVJZHMiOlsiUk9MRV9CVVlFUiJdLCJhdXRoVmVuZG9yIjoiTkFUSVZFIn0.ZzIV6LtD8jd5VQKdKcWschPDkyzOTSbIdhUE4ezvwk4"
                                           },
@@ -89,6 +91,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 400,
                                           "timestamp": "2025-12-26T09:53:02.089234",
+                                          "code": "BAD_REQUEST",
                                           "content": null,
                                           "message": "지원하지 않는 리프레시 토큰입니다."
                                         }

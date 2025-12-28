@@ -43,6 +43,7 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
+                | code | string | 응답 코드 | "SUC01" / "UNAUTHORIZED" |
                 | timestamp | string(datetime) | 응답 일시 | "2025-12-26T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
                 | message | string | 처리 결과 | "약관 동의/철회 성공" |
@@ -86,6 +87,7 @@ import java.lang.annotation.*;
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 200,
+                                          "code": "SUC01",
                                           "timestamp": "2025-12-27T14:32:14.084538",
                                           "content": {
                                             "userTerms": [
@@ -133,6 +135,7 @@ import java.lang.annotation.*;
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 401,
+                                          "code": "UNAUTHORIZED",
                                           "timestamp": "2025-12-27T16:22:02.196732",
                                           "content": null,
                                           "message": "Invalid token"

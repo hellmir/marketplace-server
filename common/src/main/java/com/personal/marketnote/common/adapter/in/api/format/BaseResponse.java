@@ -33,6 +33,11 @@ public class BaseResponse<T> {
     private int statusCode;
 
     /**
+     * 응답 코드.
+     */
+    private String code;
+
+    /**
      * 응답이 전송되는 시간을 나타내는 타임스탬프.
      */
     private LocalDateTime timestamp;
@@ -47,35 +52,35 @@ public class BaseResponse<T> {
      */
     private String message;
 
-    public static <T> BaseResponse<T> of(T content, HttpStatus status, String message) {
-        return of(content, status.value(), message);
+    public static <T> BaseResponse<T> of(T content, HttpStatus status, String code, String message) {
+        return of(content, status.value(), code, message);
     }
 
-    public static <T> BaseResponse<T> of(T content, int statusCode, String message) {
-        return new BaseResponse<>(statusCode, LocalDateTime.now(), content, message);
+    public static <T> BaseResponse<T> of(T content, int statusCode, String code, String message) {
+        return new BaseResponse<>(statusCode, code, LocalDateTime.now(), content, message);
     }
 
-    public static <T> BaseResponse<T> of(T content, int statusCode) {
-        return of(content, statusCode, null);
+    public static <T> BaseResponse<T> of(T content, int statusCode, String code) {
+        return of(content, statusCode, code, null);
     }
 
-    public static <T> BaseResponse<T> of(T content, HttpStatus status) {
-        return of(content, status, null);
+    public static <T> BaseResponse<T> of(T content, HttpStatus status, String code) {
+        return of(content, status, code, null);
     }
 
-    public static <T> BaseResponse<T> of(int statusCode) {
-        return of(null, statusCode);
+    public static <T> BaseResponse<T> of(int statusCode, String code) {
+        return of(null, statusCode, code);
     }
 
-    public static <T> BaseResponse<T> of(HttpStatus status) {
-        return of(null, status);
+    public static <T> BaseResponse<T> of(HttpStatus status, String code) {
+        return of(null, status, code);
     }
 
-    public static <T> BaseResponse<T> of(int statusCode, String message) {
-        return of(null, statusCode, message);
+    public static <T> BaseResponse<T> of(int statusCode, String code, String message) {
+        return of(null, statusCode, code, message);
     }
 
-    public static <T> BaseResponse<T> of(HttpStatus status, String message) {
-        return of(null, status, message);
+    public static <T> BaseResponse<T> of(HttpStatus status, String code, String message) {
+        return of(null, status, code, message);
     }
 }
