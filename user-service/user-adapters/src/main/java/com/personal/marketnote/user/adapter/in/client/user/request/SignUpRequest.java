@@ -13,17 +13,17 @@ public class SignUpRequest {
     @Schema(
             name = "nickname",
             description = "닉네임",
-            requiredMode = Schema.RequiredMode.REQUIRED
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
-    @NotEmpty(message = "\"nickname\" should not be empty. (+ not null)")
 //    @Pattern(regexp = NICKNAME_PATTERN, message = "닉네임은 한글만 가능하며, 6글자 이하여야 합니다.")
     private String nickname;
 
     @Schema(
             name = "email",
             description = "이메일 주소",
-            requiredMode = Schema.RequiredMode.NOT_REQUIRED
+            requiredMode = Schema.RequiredMode.REQUIRED
     )
+    @NotEmpty(message = "이메일 주소는 필수값입니다.")
 //    @Pattern(regexp = EMAIL_PATTERN, message = INVALID_EMAIL_EXCEPTION_MESSAGE)
     private String email;
 

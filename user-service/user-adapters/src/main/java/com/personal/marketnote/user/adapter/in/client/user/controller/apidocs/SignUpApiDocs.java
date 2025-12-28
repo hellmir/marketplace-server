@@ -41,8 +41,8 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
-                | nickname | string | 닉네임(2~20자, 한글) | Y | "고길동" |
-                | email | string | 이메일 주소(형식: example@example.com) | N | "example@example.com" |
+                | nickname | string | 닉네임(2~20자, 한글) | N | "고길동" |
+                | email | string | 이메일 주소(형식: example@example.com) | Y | "example@example.com" |
                 | password | string | 비밀번호(8자 이상, 대문자, 소문자, 숫자, 특수문자 포함) | N | "Password123!" |
                 | fullName | string | 성명(2~10자, 한글) | N | "홍길동" |
                 | phoneNumber | string | 전화번호(형식: 010-1234-5678) | N | "010-1234-5678" |
