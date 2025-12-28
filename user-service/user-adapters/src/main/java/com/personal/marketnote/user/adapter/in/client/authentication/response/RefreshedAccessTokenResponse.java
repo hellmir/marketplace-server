@@ -9,7 +9,6 @@ import lombok.ToString;
 @Getter
 @ToString
 public class RefreshedAccessTokenResponse {
-
     @Schema(description = "재발급된 Access Token")
     private final String accessToken;
 }

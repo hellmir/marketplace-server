@@ -125,7 +125,6 @@ public class RestTemplateGoogleTokenProcessor implements TokenProcessor {
             return OAuth2UserInfo.builder()
                     .id(jsonObject.getString("id"))
                     .name(jsonObject.getString("name"))
-                    .profileImageUrl(jsonObject.getString("picture"))
                     .build();
         } catch (JSONException e) {
             throw new RuntimeException("구글 로그인 서비스에서 줘야 할 걸 안 줌:\n" + jsonObject, e);

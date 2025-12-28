@@ -37,12 +37,12 @@ public class JwtUtil {
                    // 테스트가 쉬운 구조를 만들기 위해 TTL을 enum이 아닌 Spring properties에 정의하여 생성자로 주입
                    @Value("${spring.jwt.access-token.ttl}") Long accessTokenTtl,
                    @Value("${spring.jwt.refresh-token.ttl}") Long refreshTokenTtl) {
-        this.secretKey = new SecretKeySpec(jwtSecret.getBytes(StandardCharsets.UTF_8),
+        secretKey = new SecretKeySpec(jwtSecret.getBytes(StandardCharsets.UTF_8),
                 Jwts.SIG.HS256.key().build().getAlgorithm());
-        this.parser = Jwts.parser().verifyWith(secretKey)
+        parser = Jwts.parser().verifyWith(secretKey)
                 .json(new JacksonDeserializer<>())
                 .build();
-        this.ttlOfTokenType = Map.of(
+        ttlOfTokenType = Map.of(
                 JwtTokenType.ACCESS_TOKEN, accessTokenTtl,
                 JwtTokenType.REFRESH_TOKEN, refreshTokenTtl
         );
