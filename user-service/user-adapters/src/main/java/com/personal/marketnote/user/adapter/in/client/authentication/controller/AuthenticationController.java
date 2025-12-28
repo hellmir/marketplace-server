@@ -19,6 +19,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+/**
+ * 인증 컨트롤러
+ *
+ * @Author 성효빈
+ * @Date 2025-12-28
+ * @Description 인증 관련 API를 제공합니다.
+ */
 @RestController
 @RequestMapping("/api/v1/authentication")
 @Tag(
@@ -30,6 +38,18 @@ import org.springframework.web.bind.annotation.*;
 public class AuthenticationController {
     private final WebBasedAuthenticationServiceAdapter authServiceAdapter;
 
+    /**
+     * OAuth2 로그인
+     *
+     * @param authVendor OAuth2 인증 제공자
+     * @param code       OAuth2 인증 코드
+     * @param state      OAuth2 인증 상태
+     * @param request    HTTP 요청
+     * @return 인증 토큰 응답 {@link GrantedTokenInfo}
+     * @Author 성효빈
+     * @Date 2025-12-28
+     * @Description OAuth2 로그인을 수행합니다.
+     */
     @Oauth2LoginApiDocs
     @GetMapping("/{authVendor}/redirect-uri")
     public ResponseEntity<BaseResponse<GrantedTokenInfo>> oauth2Login(
@@ -45,6 +65,15 @@ public class AuthenticationController {
         return new ResponseEntity<>(response.headers(), HttpStatus.PERMANENT_REDIRECT);
     }
 
+    /**
+     * Access Token 재발급
+     *
+     * @param refreshAccessTokenRequest 리프레시 토큰 요청
+     * @return 재발급된 Access Token 응답 {@link RefreshedAccessTokenResponse}
+     * @Author 성효빈
+     * @Date 2025-12-28
+     * @Description Access Token을 재발급합니다.
+     */
     @RefreshAccessTokenApiDocs
     @PostMapping("/access-token/refresh")
     public ResponseEntity<BaseResponse<RefreshedAccessTokenResponse>> accessToken(
