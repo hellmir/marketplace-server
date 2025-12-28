@@ -54,7 +54,7 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
-                | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "NOT_FOUND" |
+                | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "NOT_FOUND" / "ERR01" / "ERR02" / "ERR03" / "ERR04" / "ERR05" / "ERR06" |
                 | timestamp | string(datetime) | 응답 일시 | "2025-12-26T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
                 | message | string | 처리 결과 | "회원 정보 수정 성공" |
@@ -128,6 +128,21 @@ import java.lang.annotation.*;
                                           "timestamp": "2025-12-26T09:53:02.089234",
                                           "content": null,
                                           "message": "존재하지 않는 회원입니다. 회원 ID: 1"
+                                        }
+                                        """)
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "409",
+                        description = "동일한 값 업데이트 요청",
+                        content = @Content(
+                                examples = @ExampleObject("""
+                                        {
+                                          "statusCode": 409,
+                                          "code": "ERR01",
+                                          "timestamp": "2025-12-28T14:18:34.282528",
+                                          "content": null,
+                                          "message": "업데이트할 대상의 값과 입력한 값이 동일합니다. 전송한 값: abc"
                                         }
                                         """)
                         )

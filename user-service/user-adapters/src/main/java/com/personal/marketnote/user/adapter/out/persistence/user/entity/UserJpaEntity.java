@@ -8,13 +8,14 @@ import com.personal.marketnote.common.adapter.out.persistence.audit.BaseGeneralE
 import com.personal.marketnote.user.adapter.out.persistence.authentication.entity.RoleJpaEntity;
 import com.personal.marketnote.user.adapter.out.persistence.user.repository.TermsJpaRepository;
 import com.personal.marketnote.user.domain.user.User;
+import com.personal.marketnote.user.domain.user.UserOauth2Vendor;
 import com.personal.marketnote.user.domain.user.UserTerms;
-import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static jakarta.persistence.CascadeType.MERGE;
 import static jakarta.persistence.CascadeType.PERSIST;
@@ -26,12 +27,6 @@ import static jakarta.persistence.CascadeType.PERSIST;
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
 public class UserJpaEntity extends BaseGeneralEntity {
-    @Column(name = "auth_vendor", nullable = false, columnDefinition = "SMALLINT DEFAULT 0")
-    private AuthVendor authVendor;
-
-    @Column(name = "oidc_id", length = 255)
-    private String oidcId;
-
     @Column(name = "nickname", nullable = false, unique = true, length = 31)
     private String nickname;
 
@@ -58,6 +53,10 @@ public class UserJpaEntity extends BaseGeneralEntity {
     private RoleJpaEntity roleJpaEntity;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "userJpaEntity", cascade = {PERSIST, MERGE})
+    @OrderBy("id ASC")
+    private List<UserOauth2VendorJpaEntity> userOauth2VendorsJpaEntities;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userJpaEntity", cascade = {PERSIST, MERGE})
     @OrderBy("termsJpaEntity.id ASC")
     private List<UserTermsJpaEntity> userTermsJpaEntities;
 
@@ -68,8 +67,6 @@ public class UserJpaEntity extends BaseGeneralEntity {
 
     public static UserJpaEntity from(User user, TermsJpaRepository termsJpaRepository) {
         UserJpaEntity userJpaEntity = UserJpaEntity.builder()
-                .authVendor(user.getAuthVendor())
-                .oidcId(user.getOidcId())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .password(user.getPassword())
@@ -80,6 +77,11 @@ public class UserJpaEntity extends BaseGeneralEntity {
                 .roleJpaEntity(RoleJpaEntity.from(user.getRole()))
                 .lastLoggedInAt(user.getLastLoggedInAt())
                 .build();
+
+        // set vendors after building to avoid recursive mapping
+        userJpaEntity.userOauth2VendorsJpaEntities = user.getUserOauth2Vendors().stream()
+                .map(v -> UserOauth2VendorJpaEntity.of(userJpaEntity, v.getAuthVendor(), v.getOidcId()))
+                .collect(Collectors.toList());
 
         userJpaEntity.userTermsJpaEntities = user.getUserTerms().stream()
                 .map(ut -> {
@@ -94,6 +96,26 @@ public class UserJpaEntity extends BaseGeneralEntity {
         return userJpaEntity;
     }
 
+    public static UserJpaEntity from(User user) {
+        UserJpaEntity userJpaEntity = UserJpaEntity.builder()
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .fullName(user.getFullName())
+                .phoneNumber(user.getPhoneNumber())
+                .referenceCode(user.getReferenceCode())
+                .referredUserCode(user.getReferredUserCode())
+                .roleJpaEntity(RoleJpaEntity.from(user.getRole()))
+                .lastLoggedInAt(user.getLastLoggedInAt())
+                .build();
+
+        userJpaEntity.userOauth2VendorsJpaEntities = user.getUserOauth2Vendors().stream()
+                .map(v -> UserOauth2VendorJpaEntity.of(userJpaEntity, v.getAuthVendor(), v.getOidcId()))
+                .collect(Collectors.toList());
+
+        return userJpaEntity;
+    }
+
     public void updateFrom(User user) {
         nickname = user.getNickname();
         email = user.getEmail();
@@ -102,6 +124,19 @@ public class UserJpaEntity extends BaseGeneralEntity {
         referredUserCode = user.getReferredUserCode();
         roleJpaEntity = RoleJpaEntity.from(user.getRole());
         lastLoggedInAt = user.getLastLoggedInAt();
+
+        int userOauth2VendorsJpaEntitySize = user.getUserOauth2Vendors().size();
+        for (int i = 0; i < userOauth2VendorsJpaEntitySize; i++) {
+            UserOauth2VendorJpaEntity userOauth2VendorJpaEntity = userOauth2VendorsJpaEntities.get(i);
+            UserOauth2Vendor userOauth2Vendor = user.getUserOauth2Vendors().get(i);
+            userOauth2VendorJpaEntity.updateFrom(this, userOauth2Vendor);
+        }
+
+        for (int i = userOauth2VendorsJpaEntitySize; i < user.getUserOauth2Vendors().size(); i++) {
+            UserOauth2VendorJpaEntity userOauth2VendorJpaEntity = userOauth2VendorsJpaEntities.get(i);
+            UserOauth2Vendor userOauth2Vendor = user.getUserOauth2Vendors().get(i);
+            userOauth2VendorJpaEntity.updateFrom(this, userOauth2Vendor);
+        }
 
         for (int i = 0; i < userTermsJpaEntities.size(); i++) {
             UserTermsJpaEntity userTermsJpaEntity = userTermsJpaEntities.get(i);

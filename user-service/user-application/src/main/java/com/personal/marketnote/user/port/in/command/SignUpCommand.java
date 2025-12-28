@@ -1,5 +1,6 @@
 package com.personal.marketnote.user.port.in.command;
 
+import com.personal.marketnote.common.utility.FormatValidator;
 import lombok.Getter;
 
 @Getter
@@ -20,5 +21,13 @@ public class SignUpCommand {
 
     public static SignUpCommand of(String nickname, String email, String password, String fullName, String phoneNumber) {
         return new SignUpCommand(nickname, email, password, fullName, phoneNumber);
+    }
+
+    public boolean hasPassword() {
+        return FormatValidator.hasValue(password);
+    }
+
+    public boolean hasPhoneNumber() {
+        return FormatValidator.hasValue(phoneNumber);
     }
 }

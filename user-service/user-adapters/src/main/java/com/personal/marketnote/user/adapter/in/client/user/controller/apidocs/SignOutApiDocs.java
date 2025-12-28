@@ -76,5 +76,5 @@ import java.lang.annotation.*;
                 )
         }
 )
-public @interface LogoutApiDocs {
+public @interface SignOutApiDocs {
 }

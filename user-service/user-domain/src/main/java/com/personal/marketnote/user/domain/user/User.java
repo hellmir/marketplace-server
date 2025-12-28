@@ -1,6 +1,6 @@
 package com.personal.marketnote.user.domain.user;
 
-import com.personal.marketnote.common.domain.exception.illegalargument.novalue.UpdateTargetNoValueException;
+import com.personal.marketnote.common.domain.exception.illegalstate.SameUpdateTargetException;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.domain.authentication.Role;
 import com.personal.marketnote.user.exception.ReferredUserCodeAlreadyExistsException;
@@ -12,18 +12,17 @@ import lombok.Getter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.personal.marketnote.common.domain.exception.ExceptionCode.SECOND_ERROR_CODE;
+import static com.personal.marketnote.common.domain.exception.ExceptionCode.*;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
 public class User {
     private Long id;
-    private AuthVendor authVendor;
-    private String oidcId;
     private String nickname;
     private String email;
     private String password;
@@ -32,40 +31,50 @@ public class User {
     private String referenceCode;
     private String referredUserCode;
     private Role role;
+    private List<UserOauth2Vendor> userOauth2Vendors;
     private List<UserTerms> userTerms;
-    private LocalDateTime lastLoggedInAt;
+    private final LocalDateTime lastLoggedInAt;
 
-    public static User of(AuthVendor authVendor, String oidcId) {
+    public static User from(AuthVendor authVendor, String oidcId) {
         return User.builder()
-                .authVendor(authVendor)
-                .oidcId(oidcId)
+                .userOauth2Vendors(List.of(UserOauth2Vendor.of(null, authVendor, oidcId)))
                 .role(Role.getGuest())
                 .build();
     }
 
-    public static User of(
+    public static User from(
             AuthVendor authVendor,
             String oidcId,
             String nickname,
             String email,
             String password,
+            PasswordEncoder passwordEncoder,
             String fullName,
             String phoneNumber,
             List<Terms> terms,
             String referenceCode
     ) {
+        List<UserOauth2Vendor> userOauth2Vendors = new ArrayList<>(AuthVendor.size());
+        userOauth2Vendors.add(UserOauth2Vendor.of(authVendor, oidcId));
+        List<AuthVendor> remainders = authVendor.getExceptValues();
+        for (AuthVendor remainder : remainders) {
+            userOauth2Vendors.add(UserOauth2Vendor.of(remainder, null));
+        }
+
         User user = User.builder()
-                .authVendor(authVendor)
-                .oidcId(oidcId)
+                .userOauth2Vendors(userOauth2Vendors)
                 .nickname(nickname)
                 .email(email)
-                .password(password)
                 .fullName(fullName)
                 .phoneNumber(phoneNumber)
                 .referenceCode(referenceCode)
                 .role(Role.getBuyer())
                 .lastLoggedInAt(LocalDateTime.now())
                 .build();
+
+        if (FormatValidator.hasValue(password)) {
+            user.password = passwordEncoder.encode(password);
+        }
 
         user.userTerms = terms.stream()
                 .map(term -> UserTerms.of(user, term))
@@ -74,10 +83,8 @@ public class User {
         return user;
     }
 
-    public static User of(
+    public static User from(
             Long id,
-            AuthVendor authVendor,
-            String oidcId,
             String nickname,
             String email,
             String password,
@@ -86,13 +93,12 @@ public class User {
             String referenceCode,
             String referredUserCode,
             Role role,
+            List<UserOauth2Vendor> userOauth2Vendors,
             List<UserTerms> userTerms,
             LocalDateTime lastLoggedInAt
     ) {
         return User.builder()
                 .id(id)
-                .authVendor(authVendor)
-                .oidcId(oidcId)
                 .nickname(nickname)
                 .email(email)
                 .password(password)
@@ -101,6 +107,7 @@ public class User {
                 .referenceCode(referenceCode)
                 .referredUserCode(referredUserCode)
                 .role(role)
+                .userOauth2Vendors(userOauth2Vendors)
                 .userTerms(userTerms)
                 .lastLoggedInAt(lastLoggedInAt)
                 .build();
@@ -120,37 +127,60 @@ public class User {
         return passwordEncoder.matches(targetPassword, password);
     }
 
-    public void update(
-            String email, String nickname, String phoneNumber, String password, PasswordEncoder passwordEncoder
-    ) throws UpdateTargetNoValueException {
-        if (FormatValidator.hasValue(email)) {
-            this.email = email;
-            return;
-        }
 
-        if (FormatValidator.hasValue(nickname)) {
-            this.nickname = nickname;
-            return;
-        }
-
-        if (FormatValidator.hasValue(phoneNumber)) {
-            this.phoneNumber = phoneNumber;
-            return;
-        }
-
-        if (FormatValidator.hasValue(password)) {
-            this.password = passwordEncoder.encode(password);
-            return;
-        }
-
-        throw new UpdateTargetNoValueException();
+    public void updateEmail(String email) {
+        this.email = email;
     }
 
-    public void registerReferredUserCode(String referredUserCode) throws ReferredUserCodeAlreadyExistsException {
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updatePhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void updatePassword(String password, PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(password);
+    }
+
+    public void registerReferredUserCode(String referredUserCode) {
         if (FormatValidator.hasValue(this.referredUserCode)) {
             throw new ReferredUserCodeAlreadyExistsException(SECOND_ERROR_CODE);
         }
 
         this.referredUserCode = referredUserCode;
+    }
+
+    public void registerEmail(String email) {
+        this.email = email;
+    }
+
+    public void addLoginAccountInfo(AuthVendor authVendor, String oidcId, String password, PasswordEncoder passwordEncoder) {
+        userOauth2Vendors.forEach(
+                userOauth2Vendor -> userOauth2Vendor.update(authVendor, oidcId)
+        );
+
+        if (FormatValidator.hasValue(password)) {
+            this.password = passwordEncoder.encode(password);
+        }
+    }
+
+    public void validateDifferentEmail(String email) {
+        if (FormatValidator.equals(this.email, email)) {
+            throw new SameUpdateTargetException(FIRST_ERROR_CODE, email);
+        }
+    }
+
+    public void validateDifferentNickname(String nickname) {
+        if (FormatValidator.equals(this.nickname, nickname)) {
+            throw new SameUpdateTargetException(SECOND_ERROR_CODE, nickname);
+        }
+    }
+
+    public void validateDifferentPhoneNumber(String phoneNumber) {
+        if (FormatValidator.equals(this.phoneNumber, phoneNumber)) {
+            throw new SameUpdateTargetException(THIRD_ERROR_CODE, phoneNumber);
+        }
     }
 }

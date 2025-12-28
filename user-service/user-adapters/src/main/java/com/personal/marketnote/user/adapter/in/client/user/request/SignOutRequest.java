@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 @Getter
-public class LogoutRequest {
+public class SignOutRequest {
     @Schema(
             name = "accessToken",
             description = "액세스 토큰",

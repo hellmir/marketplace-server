@@ -12,12 +12,12 @@ import java.time.LocalDateTime;
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
 public class Terms {
-    private Long id;
-    private String content;
-    private Boolean requiredYn;
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
-    private EntityStatus status;
+    private final Long id;
+    private final String content;
+    private final Boolean requiredYn;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime modifiedAt;
+    private final EntityStatus status;
 
     public static Terms of(
             Long id,

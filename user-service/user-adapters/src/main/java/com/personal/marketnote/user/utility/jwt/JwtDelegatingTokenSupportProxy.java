@@ -41,7 +41,7 @@ public class JwtDelegatingTokenSupportProxy extends DelegatingTokenSupport {
         GrantedTokenInfo tokenFrom3rdParty = super.grantToken(code, redirectUri, authVendor);
         String oidcId = tokenFrom3rdParty.id();
         User user = findUserPort.findByAuthVendorAndOidcId(authVendor, oidcId)
-                .orElse(User.of(authVendor, oidcId));
+                .orElse(User.from(authVendor, oidcId));
 
         OAuth2UserInfo userInfo = user.isGuest()
                 ? retrieveUserInfo(tokenFrom3rdParty.accessToken())
