@@ -4,17 +4,13 @@ import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.common.utility.FormatConverter;
 import com.personal.marketnote.common.utility.FormatValidator;
-import com.personal.marketnote.user.adapter.in.client.authentication.response.GetUserResponse;
 import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.*;
 import com.personal.marketnote.user.adapter.in.client.user.mapper.UserRequestToCommandMapper;
 import com.personal.marketnote.user.adapter.in.client.user.request.SignInRequest;
 import com.personal.marketnote.user.adapter.in.client.user.request.SignOutRequest;
 import com.personal.marketnote.user.adapter.in.client.user.request.SignUpRequest;
 import com.personal.marketnote.user.adapter.in.client.user.request.UpdateUserInfoRequest;
-import com.personal.marketnote.user.adapter.in.client.user.response.AuthenticationTokenResponse;
-import com.personal.marketnote.user.adapter.in.client.user.response.SignInResponse;
-import com.personal.marketnote.user.adapter.in.client.user.response.SignOutResponse;
-import com.personal.marketnote.user.adapter.in.client.user.response.SignUpResponse;
+import com.personal.marketnote.user.adapter.in.client.user.response.*;
 import com.personal.marketnote.user.port.in.result.SignInResult;
 import com.personal.marketnote.user.port.in.result.SignUpResult;
 import com.personal.marketnote.user.port.in.usecase.user.*;
@@ -202,23 +198,23 @@ public class UserController {
      * 자신의 정보 조회
      *
      * @param principal 사용자 인증 정보
-     * @return 회원 정보 조회 응답 {@link GetUserResponse}
+     * @return 회원 정보 조회 응답 {@link GetUserInfoResponse}
      * @Author 성효빈
      * @Date 2025-12-28
      * @Description 자신의 정보를 조회합니다.
      */
     @GetMapping("/me")
     @GetMyInfoApiDocs
-    public ResponseEntity<BaseResponse<GetUserResponse>> getMyInfo(
+    public ResponseEntity<BaseResponse<GetUserInfoResponse>> getMyInfo(
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
-        GetUserResponse getUserResponse = GetUserResponse.from(
+        GetUserInfoResponse getUserInfoResponse = GetUserInfoResponse.from(
                 getUserUseCase.getUserInfo(ElementExtractor.extractUserId(principal))
         );
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        getUserResponse,
+                        getUserInfoResponse,
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "자신의 정보 조회 성공"

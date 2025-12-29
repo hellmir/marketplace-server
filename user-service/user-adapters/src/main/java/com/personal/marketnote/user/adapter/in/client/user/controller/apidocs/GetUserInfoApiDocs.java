@@ -43,7 +43,7 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
-                | code | string | 응답 코드 | "SUC01" / "UNAUTHORIZED" / "NOT_FOUND" |
+                | code | string | 응답 코드 | "SUC01" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" |
                 | timestamp | string(datetime) | 응답 일시 | "2025-12-26T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
                 | message | string | 처리 결과 | "회원 정보 조회 성공" |
@@ -63,8 +63,7 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | id | number | 회원 ID | 1 |
-                | authVendor | string | 인증 제공자 | "NATIVE" / "KAKAO" / "GOOGLE" / "APPLE" |
-                | oidcId | string | OIDC ID | "1234567890" |
+                | accountInfo | object | 계정 정보 | { ... } |
                 | nickname | string | 닉네임 | "고길동" |
                 | email | string | 이메일 주소 | "example@example.com" |
                 | fullName | string | 성명 | "홍길동" |
@@ -73,6 +72,23 @@ import java.lang.annotation.*;
                 | roleId | string | 역할 ID | "ROLE_BUYER" |
                 | lastLoggedInAt | string(datetime) | 마지막 로그인 일시 | "2025-12-29T10:19:52.558748" |
                 | status | string | 상태 | "ACTIVE" / "INACTIVE" / "DELETED" |
+                
+                ---
+                
+                ### Response > content > userInfo > accountInfo
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | accounts | array | 계정 목록 | [ ... ] |
+                
+                ---
+                
+                ### Response > content > userInfo > accountInfo > accounts
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | oauth2VendorId | string | 인증 제공자 | "NATIVE" / "KAKAO" / "GOOGLE" / "APPLE" |
+                | oidcId | string | OIDC ID(일반 회원인 경우 이메일 주소) | "1234567890" |
                 """,
         security = {@SecurityRequirement(name = "bearer"), @SecurityRequirement(name = "admin")},
         parameters = {
@@ -93,19 +109,37 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2025-12-29T10:19:52.558748",
+                                          "timestamp": "2025-12-29T14:47:28.455214",
                                           "content": {
                                             "userInfo": {
-                                              "id": 61,
-                                              "authVendor": "NATIVE",
-                                              "oidcId": null,
-                                              "nickname": "고길동",
-                                              "email": "example@example.com",
-                                              "fullName": "홍길동",
-                                              "phoneNumber": "010-1234-5678",
-                                              "referenceCode": "a12bc3",
+                                              "id": 84,
+                                              "accountInfo": {
+                                                "accounts": [
+                                                  {
+                                                    "oauth2VendorId": "NATIVE",
+                                                    "oidcId": null
+                                                  },
+                                                  {
+                                                    "oauth2VendorId": "KAKAO",
+                                                    "oidcId": null
+                                                  },
+                                                  {
+                                                    "oauth2VendorId": "GOOGLE",
+                                                    "oidcId": "117148339918858993482"
+                                                  },
+                                                  {
+                                                    "oauth2VendorId": "APPLE",
+                                                    "oidcId": null
+                                                  }
+                                                ]
+                                              },
+                                              "nickname": null,
+                                              "email": "exaaample1@example.com",
+                                              "fullName": null,
+                                              "phoneNumber": null,
+                                              "referenceCode": "H8W9R9",
                                               "roleId": "ROLE_BUYER",
-                                              "lastLoggedInAt": "2025-12-29T10:19:52.558748",
+                                              "lastLoggedInAt": "2025-12-28T16:23:26.964246",
                                               "status": "ACTIVE"
                                             }
                                           },

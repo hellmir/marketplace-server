@@ -3,12 +3,16 @@ package com.personal.marketnote.user.service.user;
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.exception.UserNotFoundException;
+import com.personal.marketnote.user.port.in.result.GetUserInfoResult;
 import com.personal.marketnote.user.port.in.result.GetUserResult;
 import com.personal.marketnote.user.port.in.usecase.user.GetUserUseCase;
 import com.personal.marketnote.user.port.out.user.FindUserPort;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.personal.marketnote.user.exception.ExceptionMessage.*;
 import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
@@ -20,13 +24,13 @@ public class GetUserService implements GetUserUseCase {
     private final FindUserPort findUserPort;
 
     @Override
-    public GetUserResult getUserInfo(Long id) {
-        return GetUserResult.from(getUser(id));
+    public GetUserInfoResult getUserInfo(Long id) {
+        return GetUserInfoResult.from(getUser(id));
     }
 
     @Override
-    public GetUserResult getAllStatusUserInfo(Long id) {
-        return GetUserResult.from(getAllStatusUser(id));
+    public GetUserInfoResult getAllStatusUserInfo(Long id) {
+        return GetUserInfoResult.from(getAllStatusUser(id));
     }
 
     @Override
@@ -53,5 +57,12 @@ public class GetUserService implements GetUserUseCase {
                 .orElseThrow(() -> new UserNotFoundException(
                         String.format(USER_EMAIL_NOT_FOUND_EXCEPTION_MESSAGE, email))
                 );
+    }
+
+    @Override
+    public List<GetUserResult> getAllStatusUsers() {
+        return findUserPort.findAllStatusUsers().stream()
+                .map(GetUserResult::from)
+                .collect(Collectors.toList());
     }
 }

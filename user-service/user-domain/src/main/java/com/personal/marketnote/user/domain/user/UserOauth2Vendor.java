@@ -13,17 +13,17 @@ public class UserOauth2Vendor {
     private final AuthVendor authVendor;
     private String oidcId;
 
+    private UserOauth2Vendor(AuthVendor authVendor) {
+        this.authVendor = authVendor;
+    }
+
     private UserOauth2Vendor(AuthVendor authVendor, String oidcId) {
         this.authVendor = authVendor;
         this.oidcId = oidcId;
     }
 
-    public static UserOauth2Vendor of(
-            User user,
-            AuthVendor authVendor,
-            String oidcId
-    ) {
-        return new UserOauth2Vendor(user, authVendor, oidcId);
+    static UserOauth2Vendor of(AuthVendor authVendor) {
+        return new UserOauth2Vendor(authVendor);
     }
 
     public static UserOauth2Vendor of(
@@ -39,13 +39,23 @@ public class UserOauth2Vendor {
         }
     }
 
-    public void update(AuthVendor authVendor, String oidcId) {
+    void update(AuthVendor authVendor, String oidcId) {
         if (isMe(authVendor)) {
-            this.oidcId = oidcId;
+            addOidcId(authVendor, oidcId, user.getEmail());
         }
     }
 
     private boolean isMe(AuthVendor authVendor) {
         return this.authVendor.isMe(authVendor);
+    }
+
+    void addOidcId(AuthVendor authVendor, String oidcId, String email) {
+        // 일반 회원인 경우 회원 이메일 주소를 oidcId로 사용
+        if (authVendor.isNative()) {
+            this.oidcId = email;
+            return;
+        }
+
+        this.oidcId = oidcId;
     }
 }
