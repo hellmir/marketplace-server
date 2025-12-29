@@ -85,6 +85,11 @@ public class UserPersistenceAdapter implements SaveUserPort, FindUserPort, FindT
     }
 
     @Override
+    public Optional<User> findAllStatusUserById(Long id) {
+        return UserJpaEntityToDomainMapper.mapToDomain(userJpaRepository.findAllStatusUserById(id).orElse(null));
+    }
+
+    @Override
     public Optional<User> findAllStatusUserByEmail(String email) {
         return UserJpaEntityToDomainMapper.mapToDomain(userJpaRepository.findAllStatusUserByEmail(email).orElse(null));
     }
@@ -105,7 +110,7 @@ public class UserPersistenceAdapter implements SaveUserPort, FindUserPort, FindT
     }
 
     private UserJpaEntity findEntityById(Long id) {
-        return userJpaRepository.findById(id).orElseThrow(
+        return userJpaRepository.findAllStatusUserById(id).orElseThrow(
                 () -> new UserNotFoundException(String.format(USER_ID_NOT_FOUND_EXCEPTION_MESSAGE, id))
         );
     }

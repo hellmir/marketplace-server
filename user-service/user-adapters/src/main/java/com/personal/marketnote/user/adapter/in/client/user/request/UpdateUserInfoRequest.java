@@ -7,6 +7,13 @@ import lombok.Getter;
 @Getter
 public class UpdateUserInfoRequest {
     @Schema(
+            name = "isActive",
+            description = "계정 활성화 여부 (true: 활성화, false: 비활성화)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED
+    )
+    private Boolean isActive;
+
+    @Schema(
             name = "email",
             description = "이메일 주소",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED

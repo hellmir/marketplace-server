@@ -15,14 +15,12 @@ import com.personal.marketnote.user.adapter.in.client.user.response.*;
 import com.personal.marketnote.user.port.in.usecase.user.*;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import com.personal.marketnote.user.utility.jwt.JwtUtil;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
-import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 import static com.personal.marketnote.user.security.token.utility.TokenConstant.ISS_CLAIM_KEY;
 import static com.personal.marketnote.user.security.token.utility.TokenConstant.SUB_CLAIM_KEY;
 
@@ -228,39 +225,9 @@ public class UserController {
     }
 
     /**
-     * (관리자) 회원 정보 조회
+     * 자신의 정보 수정
      *
-     * @param id 회원 ID
-     * @return 회원 정보 조회 응답 {@link GetUserResponse}
-     * @Author 성효빈
-     * @Date 2025-12-29
-     * @Description 회원 정보를 조회합니다. 관리자만 가능합니다.
-     */
-    @GetMapping("/{id}")
-    @PreAuthorize(ADMIN_POINTCUT)
-    @GetUserInfoApiDocs
-    public ResponseEntity<BaseResponse<GetUserResponse>> getUserInfo(
-            @PathVariable @Schema(description = "회원 ID", example = "1") Long id
-    ) {
-        GetUserResponse getUserResponse = GetUserResponse.from(
-                getUserUseCase.getUserInfo(id)
-        );
-
-        return new ResponseEntity<>(
-                BaseResponse.of(
-                        getUserResponse,
-                        HttpStatus.OK,
-                        DEFAULT_SUCCESS_CODE,
-                        "회원 정보 조회 성공"
-                ),
-                HttpStatus.OK
-        );
-    }
-
-    /**
-     * 회원 정보 수정
-     *
-     * @param updateUserInfoRequest 회원 정보 수정 요청
+     * @param updateUserInfoRequest 자신의 정보 수정 요청
      * @param principal             사용자 인증 정보
      * @return 회원 정보 수정 응답 {@link Void}
      * @Author 성효빈
@@ -268,12 +235,13 @@ public class UserController {
      * @Description 회원 정보를 수정합니다.
      */
     @PatchMapping
-    @UpdateUserInfoApiDocs
-    public ResponseEntity<BaseResponse<Void>> updateUserInfo(
+    @UpdateMyInfoApiDocs
+    public ResponseEntity<BaseResponse<Void>> updateMyInfo(
             @Valid @RequestBody UpdateUserInfoRequest updateUserInfoRequest,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
         updateUserUseCase.updateUserInfo(
+                false,
                 ElementExtractor.extractUserId(principal),
                 UserRequestToCommandMapper.mapToCommand(updateUserInfoRequest)
         );
@@ -283,7 +251,7 @@ public class UserController {
                         null,
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
-                        "회원 정보 수정 성공"
+                        "자신의 정보 수정 성공"
                 ),
                 HttpStatus.OK
         );

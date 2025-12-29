@@ -14,4 +14,12 @@ public enum EntityStatus {
     public boolean isActive() {
         return this == ACTIVE;
     }
+
+    public static EntityStatus from(boolean isActive) {
+        if (isActive) {
+            return ACTIVE;
+        }
+
+        return INACTIVE;
+    }
 }

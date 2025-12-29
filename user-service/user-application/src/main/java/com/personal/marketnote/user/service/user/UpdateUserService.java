@@ -27,13 +27,20 @@ public class UpdateUserService implements UpdateUserUseCase {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void updateUserInfo(Long userId, UpdateUserInfoCommand updateUserInfoCommand) {
-        User user = getUserUseCase.getUser(userId);
-        updateTarget(updateUserInfoCommand, user);
+    public void updateUserInfo(boolean isAdmin, Long id, UpdateUserInfoCommand updateUserInfoCommand) {
+        User user = isAdmin
+                ? getUserUseCase.getAllStatusUser(id)
+                : getUserUseCase.getUser(id);
+        updateTarget(isAdmin, updateUserInfoCommand, user);
         updateUserPort.update(user);
     }
 
-    private void updateTarget(UpdateUserInfoCommand updateUserInfoCommand, User user) {
+    private void updateTarget(boolean isAdmin, UpdateUserInfoCommand updateUserInfoCommand, User user) {
+        if (isAdmin && updateUserInfoCommand.hasIsActive()) {
+            user.updateStatus(updateUserInfoCommand.isActive());
+            return;
+        }
+
         String password = updateUserInfoCommand.getPassword();
         if (updateUserInfoCommand.hasPassword()) {
             user.updatePassword(password, passwordEncoder);

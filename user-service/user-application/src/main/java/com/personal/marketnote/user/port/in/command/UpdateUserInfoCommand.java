@@ -5,20 +5,26 @@ import lombok.Getter;
 
 @Getter
 public class UpdateUserInfoCommand {
+    private final boolean isActive;
     private final String email;
     private final String nickname;
     private final String phoneNumber;
     private final String password;
 
-    private UpdateUserInfoCommand(String email, String nickname, String phoneNumber, String password) {
+    private UpdateUserInfoCommand(boolean isActive, String email, String nickname, String phoneNumber, String password) {
+        this.isActive = isActive;
         this.email = email;
         this.nickname = nickname;
         this.phoneNumber = phoneNumber;
         this.password = password;
     }
 
-    public static UpdateUserInfoCommand of(String email, String nickname, String phoneNumber, String password) {
-        return new UpdateUserInfoCommand(email, nickname, phoneNumber, password);
+    public static UpdateUserInfoCommand of(boolean isActive, String email, String nickname, String phoneNumber, String password) {
+        return new UpdateUserInfoCommand(isActive, email, nickname, phoneNumber, password);
+    }
+
+    public boolean hasIsActive() {
+        return FormatValidator.hasValue(isActive);
     }
 
     public boolean hasPassword() {

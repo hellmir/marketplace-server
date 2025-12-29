@@ -71,6 +71,8 @@ import java.lang.annotation.*;
                 | phoneNumber | string | 전화번호 | "010-1234-5678" |
                 | referenceCode | string | 참조 코드 | "1234567890" |
                 | roleId | string | 역할 ID | "ROLE_BUYER" |
+                | lastLoggedInAt | string(datetime) | 마지막 로그인 일시 | "2025-12-29T10:19:52.558748" |
+                | status | string | 상태 | "ACTIVE" / "INACTIVE" / "DELETED" |
                 """,
         security = {@SecurityRequirement(name = "bearer"), @SecurityRequirement(name = "admin")},
         parameters = {
@@ -103,7 +105,8 @@ import java.lang.annotation.*;
                                               "phoneNumber": "010-1234-5678",
                                               "referenceCode": "a12bc3",
                                               "roleId": "ROLE_BUYER",
-                                              "lastLoggedInAt": "2025-12-29T10:19:52.558748"
+                                              "lastLoggedInAt": "2025-12-29T10:19:52.558748",
+                                              "status": "ACTIVE"
                                             }
                                           },
                                           "message": "회원 정보 조회 성공"
