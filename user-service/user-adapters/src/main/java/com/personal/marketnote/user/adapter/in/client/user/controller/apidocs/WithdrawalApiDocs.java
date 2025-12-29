@@ -28,6 +28,7 @@ import java.lang.annotation.*;
                 
                  | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                  | --- | --- | --- | --- | --- |
+                 | googleAccessToken | string | 구글 액세스 토큰(현재 구글 로그인 상태인 경우 함께 전송) | N | "f8310f8asohvh80scvh0zio3hr31d" |
                 
                  ---
                 

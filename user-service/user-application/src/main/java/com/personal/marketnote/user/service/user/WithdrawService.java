@@ -26,12 +26,12 @@ public class WithdrawService implements WithdrawUseCase {
     private final Logger log = LoggerFactory.getLogger(WithdrawService.class);
 
     @Override
-    public void withdrawUser(Long id) {
+    public void withdrawUser(Long id, String googleAccessToken) {
         User user = getUserUseCase.getAllStatusUser(id);
         user.withdraw();
 
         String kakaoOidcId = user.getKakaoOidcId();
-        if (hasOauth2Account(kakaoOidcId)) {
+        if (FormatValidator.hasValue(kakaoOidcId)) {
             try {
                 oauth2AccountUnlinkPort.unlinkKakaoAccount(user.getKakaoOidcId());
                 user.removeKakaoOidcId();
@@ -40,10 +40,23 @@ public class WithdrawService implements WithdrawUseCase {
             }
         }
 
-        updateUserPort.update(user);
-    }
+        if (user.hasGoogleAccount()) {
+            // 현재 구글 로그인 상태인 경우 구글 로그인 연결 해제 요청
+            if (FormatValidator.hasValue(googleAccessToken)) {
+                try {
+                    oauth2AccountUnlinkPort.unlinkGoogleAccount(googleAccessToken);
+                } catch (UnlinkOauth2AccountFailedException e) {
+                    log.error("구글 계정 연결 해제에 실패했습니다.", e);
+                }
+            }
 
-    private boolean hasOauth2Account(String oidcId) {
-        return FormatValidator.hasValue(oidcId);
+            user.removeGoogleOidcId();
+        }
+
+        if (user.hasAppleAccount()) {
+            user.removeAppleOidcId();
+        }
+
+        updateUserPort.update(user);
     }
 }

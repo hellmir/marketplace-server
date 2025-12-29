@@ -149,8 +149,9 @@ public class UserController {
             authVendor = resolveVendorFromIssuer(FormatConverter.toUpperCase(issuer));
         }
 
-        SignInResult signInResult = signInUseCase.signIn(UserRequestToCommandMapper.mapToCommand(signInRequest),
-                authVendor, oidcId);
+        SignInResult signInResult = signInUseCase.signIn(
+                UserRequestToCommandMapper.mapToCommand(signInRequest), authVendor, oidcId
+        );
 
         List<String> roleIds = List.of(signInResult.roleId());
         Long id = signInResult.id();
@@ -270,7 +271,8 @@ public class UserController {
     /**
      * 회원 탈퇴
      *
-     * @param principal 사용자 인증 정보
+     * @param principal         사용자 인증 정보
+     * @param googleAccessToken Google 액세스 토큰
      * @Author 성효빈
      * @Date 2025-12-29
      * @Description 회원 탈퇴를 수행합니다.
@@ -278,9 +280,10 @@ public class UserController {
     @DeleteMapping
     @WithdrawalApiDocs
     public ResponseEntity<BaseResponse<Void>> withdrawUser(
-            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal,
+            @RequestHeader(value = "X-Google-Access-Token", required = false) String googleAccessToken
     ) {
-        withdrawUseCase.withdrawUser(ElementExtractor.extractUserId(principal));
+        withdrawUseCase.withdrawUser(ElementExtractor.extractUserId(principal), googleAccessToken);
 
         return new ResponseEntity<>(
                 BaseResponse.of(

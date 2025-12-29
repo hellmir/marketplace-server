@@ -7,7 +7,7 @@ public interface WithdrawUseCase {
      * @Author 성효빈
      * @Description 회원에서 탈퇴합니다.
      */
-    default void withdrawUser(Long id) {
-        withdrawUser(id);
+    default void withdrawUser(Long id, String googleAccessToken) {
+        withdrawUser(id, googleAccessToken);
     }
 }

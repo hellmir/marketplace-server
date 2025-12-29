@@ -1,4 +1,4 @@
-## partially resolve
-## resolve
+## partially addresses 
+## resolves 
 
 ## Task
