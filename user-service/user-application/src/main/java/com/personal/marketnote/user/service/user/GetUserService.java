@@ -63,6 +63,14 @@ public class GetUserService implements GetUserUseCase {
     }
 
     @Override
+    public User getAllStatusUser(AuthVendor authVendor, String oidcId) {
+        return findUserPort.findByAuthVendorAndOidcId(authVendor, oidcId)
+                .orElseThrow(
+                        () -> new UserNotFoundException(String.format(USER_OIDC_ID_NOT_FOUND_EXCEPTION_MESSAGE, oidcId))
+                );
+    }
+
+    @Override
     public Page<GetUserResult> getAllStatusUsers(
             int pageSize, int pageNumber,
             Sort.Direction sortDirection, SortProperty sortProperty,

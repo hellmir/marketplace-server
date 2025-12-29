@@ -50,6 +50,16 @@ public interface GetUserUseCase {
     User getAllStatusUser(String email);
 
     /**
+     * @param authVendor 인증 제공자
+     * @param oidcId     외부 인증 ID
+     * @return 회원 도메인 {@link User}
+     * @Date 2025-12-30
+     * @Author 성효빈
+     * @Description 활성화/비활성화/비노출 회원을 조회합니다.
+     */
+    User getAllStatusUser(AuthVendor authVendor, String oidcId);
+
+    /**
      * @param id 회원 ID
      * @return 회원 정보 조회 결과 {@link GetUserInfoResult}
      * @Date 2025-12-28

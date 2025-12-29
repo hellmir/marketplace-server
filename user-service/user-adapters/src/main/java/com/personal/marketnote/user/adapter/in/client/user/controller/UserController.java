@@ -17,6 +17,7 @@ import com.personal.marketnote.user.port.in.usecase.user.*;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import com.personal.marketnote.user.utility.jwt.JwtUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -140,7 +141,8 @@ public class UserController {
     @SignInApiDocs
     public ResponseEntity<BaseResponse<SignInResponse>> signInUser(
             @Valid @RequestBody SignInRequest signInRequest,
-            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal,
+            HttpServletRequest request
     ) {
         AuthVendor authVendor = AuthVendor.NATIVE;
         String oidcId = null;
@@ -151,8 +153,10 @@ public class UserController {
             authVendor = resolveVendorFromIssuer(FormatConverter.toUpperCase(issuer));
         }
 
+        String clientIp = extractClientIp(request);
+
         SignInResult signInResult = signInUseCase.signIn(
-                UserRequestToCommandMapper.mapToCommand(signInRequest), authVendor, oidcId
+                UserRequestToCommandMapper.mapToCommand(signInRequest), authVendor, oidcId, clientIp
         );
 
         List<String> roleIds = List.of(signInResult.roleId());
@@ -163,12 +167,29 @@ public class UserController {
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        SignInResponse.of(accessToken, refreshToken,
+                        SignInResponse.of(
+                                accessToken, refreshToken,
                                 signInResult.isRequiredTermsAgreed()),
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
-                        "회원 로그인 성공"),
-                HttpStatus.OK);
+                        "회원 로그인 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    private String extractClientIp(HttpServletRequest request) {
+        String xff = request.getHeader("X-Forwarded-For");
+        if (FormatValidator.hasValue(xff)) {
+            return xff.split(",")[0].trim();
+        }
+
+        String realIp = request.getHeader("X-Real-IP");
+        if (FormatValidator.hasValue(realIp)) {
+            return realIp;
+        }
+
+        return request.getRemoteAddr();
     }
 
     private AuthVendor resolveVendorFromIssuer(String issuer) {
@@ -247,7 +268,6 @@ public class UserController {
      * 회원 로그아웃
      *
      * @param signOutRequest 로그아웃 요청
-     * @param principal      사용자 인증 정보
      * @return 로그아웃 응답 {@link SignOutResponse}
      * @Author 성효빈
      * @Date 2025-12-28
@@ -255,10 +275,7 @@ public class UserController {
      */
     @DeleteMapping("/sign-out")
     @SignOutApiDocs
-    public ResponseEntity<BaseResponse<SignOutResponse>> signOutUser(
-            @Valid @RequestBody SignOutRequest signOutRequest,
-            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
-    ) {
+    public ResponseEntity<BaseResponse<SignOutResponse>> signOutUser(@Valid @RequestBody SignOutRequest signOutRequest) {
         String accessToken = jwtUtil.revokeToken(signOutRequest.getAccessToken());
         String refreshToken = jwtUtil.revokeToken(signOutRequest.getRefreshToken());
 

@@ -3,22 +3,20 @@ package com.personal.marketnote.user.domain.user;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-
 @Getter
 public class LoginHistory {
     private Long id;
     private final User user;
-    private final AuthVendor type;
-    private final LocalDateTime createdAt;
+    private final AuthVendor authVendor;
+    private final String ipAddress;
 
-    private LoginHistory(User user, AuthVendor type, LocalDateTime createdAt) {
+    private LoginHistory(User user, AuthVendor authVendor, String ipAddress) {
         this.user = user;
-        this.type = type;
-        this.createdAt = createdAt;
+        this.authVendor = authVendor;
+        this.ipAddress = ipAddress;
     }
 
-    public static LoginHistory of(User user, AuthVendor type) {
-        return new LoginHistory(user, type, LocalDateTime.now());
+    public static LoginHistory of(User user, AuthVendor authVendor, String ipAddress) {
+        return new LoginHistory(user, authVendor, ipAddress);
     }
 }

@@ -34,7 +34,7 @@ public class User {
     private Role role;
     private List<UserOauth2Vendor> userOauth2Vendors;
     private List<UserTerms> userTerms;
-    private final LocalDateTime lastLoggedInAt;
+    private LocalDateTime lastLoggedInAt;
     private EntityStatus status;
     private boolean withdrawalYn;
 
