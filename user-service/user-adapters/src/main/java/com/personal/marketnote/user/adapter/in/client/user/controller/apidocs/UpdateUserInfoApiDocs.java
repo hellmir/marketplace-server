@@ -48,7 +48,7 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
-                | isActive | boolean | 계정 활성화 여부 | true |
+                | isActive | boolean | 계정 활성화 여부 | true / false |
                 | email | string | 이메일 주소 | "example@example.com" |
                 | nickname | string | 닉네임 | "고길동" |
                 | phoneNumber | string | 전화번호 | "010-1234-5678" |
