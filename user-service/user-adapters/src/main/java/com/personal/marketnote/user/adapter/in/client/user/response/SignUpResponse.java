@@ -1,13 +1,11 @@
 package com.personal.marketnote.user.adapter.in.client.user.response;
 
-import com.personal.marketnote.user.port.in.result.SignUpResult;
-
 public record SignUpResponse(
-        Long id,
-        String roleId,
+        String accessToken,
+        String refreshToken,
         boolean isNewUser
 ) {
-    public static SignUpResponse from(SignUpResult signUpResult) {
-        return new SignUpResponse(signUpResult.id(), signUpResult.roleId(), signUpResult.isNewUser());
+    public static SignUpResponse of(String accessToken, String refreshToken, boolean isNewUser) {
+        return new SignUpResponse(accessToken, refreshToken, isNewUser);
     }
 }

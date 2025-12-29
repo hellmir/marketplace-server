@@ -11,7 +11,12 @@ import com.personal.marketnote.user.adapter.in.client.user.request.SignInRequest
 import com.personal.marketnote.user.adapter.in.client.user.request.SignOutRequest;
 import com.personal.marketnote.user.adapter.in.client.user.request.SignUpRequest;
 import com.personal.marketnote.user.adapter.in.client.user.request.UpdateUserInfoRequest;
-import com.personal.marketnote.user.adapter.in.client.user.response.*;
+import com.personal.marketnote.user.adapter.in.client.user.response.AuthenticationTokenResponse;
+import com.personal.marketnote.user.adapter.in.client.user.response.SignInResponse;
+import com.personal.marketnote.user.adapter.in.client.user.response.SignOutResponse;
+import com.personal.marketnote.user.adapter.in.client.user.response.SignUpResponse;
+import com.personal.marketnote.user.port.in.result.SignInResult;
+import com.personal.marketnote.user.port.in.result.SignUpResult;
 import com.personal.marketnote.user.port.in.usecase.user.*;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import com.personal.marketnote.user.utility.jwt.JwtUtil;
@@ -69,7 +74,7 @@ public class UserController {
      */
     @PostMapping("/sign-up")
     @SignUpApiDocs
-    public ResponseEntity<BaseResponse<SignUpTokenResponse>> signUpUser(
+    public ResponseEntity<BaseResponse<SignUpResponse>> signUpUser(
             @Valid @RequestBody SignUpRequest signUpRequest,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
@@ -82,19 +87,18 @@ public class UserController {
             authVendor = resolveVendorFromIssuer(FormatConverter.toUpperCase(issuer));
         }
 
-        SignUpResponse signUpResponse = SignUpResponse.from(
-                signUpUseCase.signUp(UserRequestToCommandMapper.mapToCommand(signUpRequest), authVendor, oidcId)
-        );
+        SignUpResult signUpResult =
+                signUpUseCase.signUp(UserRequestToCommandMapper.mapToCommand(signUpRequest), authVendor, oidcId);
 
-        List<String> roleIds = List.of(signUpResponse.roleId());
-        Long id = signUpResponse.id();
-        String subject = String.valueOf(signUpResponse.id());
+        List<String> roleIds = List.of(signUpResult.roleId());
+        Long id = signUpResult.id();
+        String subject = String.valueOf(signUpResult.id());
         String accessToken = jwtUtil.generateAccessToken(subject, id, roleIds, authVendor);
         String refreshToken = jwtUtil.generateRefreshToken(subject, id, roleIds, authVendor);
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        SignUpTokenResponse.of(accessToken, refreshToken, signUpResponse.isNewUser()),
+                        SignUpResponse.of(accessToken, refreshToken, signUpResult.isNewUser()),
                         HttpStatus.CREATED,
                         DEFAULT_SUCCESS_CODE,
                         "회원 가입 성공"
@@ -145,7 +149,7 @@ public class UserController {
      */
     @PostMapping("/sign-in")
     @SignInApiDocs
-    public ResponseEntity<BaseResponse<AuthenticationTokenResponse>> signInUser(
+    public ResponseEntity<BaseResponse<SignInResponse>> signInUser(
             @Valid @RequestBody SignInRequest signInRequest,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
@@ -158,19 +162,18 @@ public class UserController {
             authVendor = resolveVendorFromIssuer(FormatConverter.toUpperCase(issuer));
         }
 
-        SignInResponse signInResponse = SignInResponse.from(
-                signInUseCase.signIn(UserRequestToCommandMapper.mapToCommand(signInRequest), authVendor, oidcId)
-        );
+        SignInResult signInResult =
+                signInUseCase.signIn(UserRequestToCommandMapper.mapToCommand(signInRequest), authVendor, oidcId);
 
-        List<String> roleIds = List.of(signInResponse.roleId());
-        Long id = signInResponse.id();
-        String subject = String.valueOf(signInResponse.id());
+        List<String> roleIds = List.of(signInResult.roleId());
+        Long id = signInResult.id();
+        String subject = String.valueOf(signInResult.id());
         String accessToken = jwtUtil.generateAccessToken(subject, id, roleIds, authVendor);
         String refreshToken = jwtUtil.generateRefreshToken(subject, id, roleIds, authVendor);
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        AuthenticationTokenResponse.of(accessToken, refreshToken),
+                        SignInResponse.of(accessToken, refreshToken, signInResult.isRequiredTermsAgreed()),
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "회원 로그인 성공"

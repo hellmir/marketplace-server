@@ -36,4 +36,8 @@ public class UserTerms {
     public void acceptOrCancel() {
         agreementYn = !agreementYn;
     }
+
+    public boolean isRequiredTermsAgreed() {
+        return !terms.isRequired() || agreementYn;
+    }
 }

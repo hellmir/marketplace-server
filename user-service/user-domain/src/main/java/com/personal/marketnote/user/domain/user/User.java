@@ -194,4 +194,9 @@ public class User {
     public boolean isActive() {
         return status.isActive();
     }
+
+    public boolean isRequiredTermsAgreed() {
+        return userTerms.stream()
+                .allMatch(UserTerms::isRequiredTermsAgreed);
+    }
 }

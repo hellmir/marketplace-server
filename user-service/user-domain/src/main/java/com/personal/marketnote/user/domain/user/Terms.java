@@ -36,4 +36,8 @@ public class Terms {
                 .status(status)
                 .build();
     }
+
+    public boolean isRequired() {
+        return requiredYn;
+    }
 }
