@@ -1,12 +1,11 @@
 package com.personal.marketnote.user.adapter.in.client.user.response;
 
-import com.personal.marketnote.user.port.in.result.SignInResult;
-
 public record SignInResponse(
-        Long id,
-        String roleId
+        String accessToken,
+        String refreshToken,
+        boolean isRequiredTermsAgreed
 ) {
-    public static SignInResponse from(SignInResult signInResult) {
-        return new SignInResponse(signInResult.id(), signInResult.roleId());
+    public static SignInResponse of(String accessToken, String refreshToken, boolean isRequiredTermsAgreed) {
+        return new SignInResponse(accessToken, refreshToken, isRequiredTermsAgreed);
     }
 }

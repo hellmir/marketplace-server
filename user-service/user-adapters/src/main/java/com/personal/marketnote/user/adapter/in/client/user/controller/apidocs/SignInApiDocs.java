@@ -28,6 +28,8 @@ import java.lang.annotation.*;
                 
                 - Access Token을 전송하는 경우 이메일 주소/비밀번호는 무시됩니다. (우선순위: Access Token > 이메일 주소/비밀번호)
                 
+                - 하나 이상의 필수 약관을 동의하지 않은 경우 isRequiredTermsAgreed: false를 반환합니다.
+                
                 - 비활성화된 계정인 경우 ERR02(403 FORBIDDEN)를 반환합니다.
                 
                 ---
@@ -59,6 +61,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | accessToken | string | 신규 발급된 Access Token | "f8310f8asohvh80scvh0zio3hr31d" |
                 | refreshToken | string | 신규 발급된 Refresh Token | "f8310f8asohvh80scvh0zio3hr31d" |
+                | isRequiredTermsAgreed | boolean | 필수 약관 동의 여부 | true /false |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -85,7 +88,8 @@ import java.lang.annotation.*;
                                           "timestamp": "2025-12-26T22:52:31.889943",
                                           "content": {
                                             "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJ0b2tlblR5cGUiOiJBQ0NFU1NfVE9LRU4iLCJpYXQiOjE3NjE1MjgzMTYsImV4cCI6MTc2MTUzMDExNiwic3ViIjoiOCIsInJvbGVJZHMiOlsiUk9MRV9CVVlFUiJdLCJ1c2VySWQiOjgsImF1dGhWZW5kb3IiOiJOQVRJVkUifQ.3nhlFNz9NBfcJKIteTICcUyN7F1w068CJKu5uy5kB0I",
-                                            "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJ0b2tlblR5cGUiOiJSRUZSRVNIX1RPS0VOIiwiaWF0IjoxNzYxNDg2NzUxLCJleHAiOjE3NjI2OTYzNTEsInN1YiI6Im51bGwiLCJyb2xlSWRzIjpbIlJPTEVfQlVZRVIiXSwiYXV0aFZlbmRvciI6Ik5BVElWRSJ9._YvI9YT4aklPzJdN5D4IRqx0uzsyz4wjBMgCLGcf_CA"
+                                            "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJ0b2tlblR5cGUiOiJSRUZSRVNIX1RPS0VOIiwiaWF0IjoxNzYxNDg2NzUxLCJleHAiOjE3NjI2OTYzNTEsInN1YiI6Im51bGwiLCJyb2xlSWRzIjpbIlJPTEVfQlVZRVIiXSwiYXV0aFZlbmRvciI6Ik5BVElWRSJ9._YvI9YT4aklPzJdN5D4IRqx0uzsyz4wjBMgCLGcf_CA",
+                                            "isRequiredTermsAgreed": true
                                           },
                                           "message": "회원 로그인 성공"
                                         }
