@@ -74,15 +74,21 @@ public class SignUpService implements SignUpUseCase {
         if (findUserPort.existsByEmail(email)) {
             User signedUpUser = getUserUseCase.getAllStatusUser(email);
 
-            // 계정 활성화 여부 검증
-            if (!signedUpUser.isActive()) {
-                throw new UserNotActiveException(SIXTH_ERROR_CODE, email);
+            // 탈퇴 회원인 경우 재활성화
+            if (signedUpUser.isWithdrawn()) {
+                signedUpUser.cancelWithdrawal();
+                signedUpUser.activate();
             }
 
-            signedUpUser.addLoginAccountInfo(authVendor, oidcId, signUpCommand.getPassword(), passwordEncoder);
-            updateUserPort.update(signedUpUser);
+            // 계정 활성화 여부 검증
+            if (signedUpUser.isActive()) {
+                signedUpUser.addLoginAccountInfo(authVendor, oidcId, signUpCommand.getPassword(), passwordEncoder);
+                updateUserPort.update(signedUpUser);
 
-            return SignUpResult.from(signedUpUser, false);
+                return SignUpResult.from(signedUpUser, false);
+            }
+
+            throw new UserNotActiveException(SIXTH_ERROR_CODE, email);
         }
 
         List<Terms> terms = findTermsPort.findAll();
@@ -100,7 +106,10 @@ public class SignUpService implements SignUpUseCase {
                                 signUpCommand.getFullName(),
                                 signUpCommand.getPhoneNumber(),
                                 terms,
-                                referenceCode)),
-                true);
+                                referenceCode
+                        )
+                ),
+                true
+        );
     }
 }

@@ -72,6 +72,7 @@ import java.lang.annotation.*;
                 | roleId | string | 역할 ID | "ROLE_BUYER" |
                 | lastLoggedInAt | string(datetime) | 마지막 로그인 일시 | "2025-12-29T10:19:52.558748" |
                 | status | string | 상태 | "ACTIVE" / "INACTIVE" / "DELETED" |
+                | isWithdrawn | boolean | 탈퇴 여부 | true / false |
                 
                 ---
                 
@@ -140,7 +141,8 @@ import java.lang.annotation.*;
                                               "referenceCode": "H8W9R9",
                                               "roleId": "ROLE_BUYER",
                                               "lastLoggedInAt": "2025-12-28T16:23:26.964246",
-                                              "status": "ACTIVE"
+                                              "status": "ACTIVE",
+                                              "isWithdrawn": false
                                             }
                                           },
                                           "message": "회원 정보 조회 성공"

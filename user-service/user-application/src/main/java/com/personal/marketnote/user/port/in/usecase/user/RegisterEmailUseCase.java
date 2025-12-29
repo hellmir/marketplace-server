@@ -4,8 +4,9 @@ import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 
 public interface RegisterEmailUseCase {
     /**
-     * @param id    사용자 ID
-     * @param email 이메일 주소
+     * @param id         회원 ID
+     * @param authVendor 인증 제공자
+     * @param email      이메일 주소
      * @Author 성효빈
      * @Date 2025-12-28
      * @Description 사용자의 이메일 주소를 등록합니다.
