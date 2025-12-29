@@ -36,6 +36,7 @@ public class User {
     private List<UserTerms> userTerms;
     private final LocalDateTime lastLoggedInAt;
     private EntityStatus status;
+    private boolean withdrawalYn;
 
     public static User from(AuthVendor authVendor, String oidcId) {
         return User.builder()
@@ -103,7 +104,8 @@ public class User {
             List<UserOauth2Vendor> userOauth2Vendors,
             List<UserTerms> userTerms,
             LocalDateTime lastLoggedInAt,
-            EntityStatus status
+            EntityStatus status,
+            boolean withdrawalYn
     ) {
         return User.builder()
                 .id(id)
@@ -119,6 +121,7 @@ public class User {
                 .userTerms(userTerms)
                 .lastLoggedInAt(lastLoggedInAt)
                 .status(status)
+                .withdrawalYn(withdrawalYn)
                 .build();
     }
 
@@ -196,6 +199,10 @@ public class User {
         }
     }
 
+    public void activate() {
+        status = EntityStatus.ACTIVE;
+    }
+
     public boolean isActive() {
         return status.isActive();
     }
@@ -203,5 +210,18 @@ public class User {
     public boolean isRequiredTermsAgreed() {
         return userTerms.stream()
                 .allMatch(UserTerms::isRequiredTermsAgreed);
+    }
+
+    public void withdraw() {
+        withdrawalYn = true;
+        status = EntityStatus.INACTIVE;
+    }
+
+    public void cancelWithdrawal() {
+        withdrawalYn = false;
+    }
+
+    public boolean isWithdrawn() {
+        return withdrawalYn;
     }
 }

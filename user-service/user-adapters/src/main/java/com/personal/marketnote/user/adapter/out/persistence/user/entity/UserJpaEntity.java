@@ -65,6 +65,9 @@ public class UserJpaEntity extends BaseGeneralEntity {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime lastLoggedInAt;
 
+    @Column(name = "withdrawn_yn", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean withdrawalYn;
+
     public static UserJpaEntity from(User user, TermsJpaRepository termsJpaRepository) {
         UserJpaEntity userJpaEntity = UserJpaEntity.builder()
                 .nickname(user.getNickname())
@@ -107,6 +110,7 @@ public class UserJpaEntity extends BaseGeneralEntity {
                 .referredUserCode(user.getReferredUserCode())
                 .roleJpaEntity(RoleJpaEntity.from(user.getRole()))
                 .lastLoggedInAt(user.getLastLoggedInAt())
+                .withdrawalYn(user.isWithdrawn())
                 .build();
 
         userJpaEntity.userOauth2VendorsJpaEntities = user.getUserOauth2Vendors().stream()
@@ -125,24 +129,20 @@ public class UserJpaEntity extends BaseGeneralEntity {
         referredUserCode = user.getReferredUserCode();
         roleJpaEntity = RoleJpaEntity.from(user.getRole());
         lastLoggedInAt = user.getLastLoggedInAt();
+        withdrawalYn = user.isWithdrawn();
 
-        int userOauth2VendorsJpaEntitySize = user.getUserOauth2Vendors().size();
-        for (int i = 0; i < userOauth2VendorsJpaEntitySize; i++) {
+        // 회원 계정 정보 업데이트
+        for (int i = 0; i < userOauth2VendorsJpaEntities.size(); i++) {
             UserOauth2VendorJpaEntity userOauth2VendorJpaEntity = userOauth2VendorsJpaEntities.get(i);
             UserOauth2Vendor userOauth2Vendor = user.getUserOauth2Vendors().get(i);
             userOauth2VendorJpaEntity.updateFrom(this, userOauth2Vendor);
         }
 
-        for (int i = userOauth2VendorsJpaEntitySize; i < user.getUserOauth2Vendors().size(); i++) {
-            UserOauth2VendorJpaEntity userOauth2VendorJpaEntity = userOauth2VendorsJpaEntities.get(i);
-            UserOauth2Vendor userOauth2Vendor = user.getUserOauth2Vendors().get(i);
-            userOauth2VendorJpaEntity.updateFrom(this, userOauth2Vendor);
-        }
-
+        // 회원 약관 동의 정보 업데이트
         for (int i = 0; i < userTermsJpaEntities.size(); i++) {
             UserTermsJpaEntity userTermsJpaEntity = userTermsJpaEntities.get(i);
-            UserTerms userTerms = user.getUserTerms().get(i);
-            userTermsJpaEntity.updateFrom(userTerms);
+            UserTerms targetUserTerms = user.getUserTerms().get(i);
+            userTermsJpaEntity.updateFrom(targetUserTerms);
         }
     }
 

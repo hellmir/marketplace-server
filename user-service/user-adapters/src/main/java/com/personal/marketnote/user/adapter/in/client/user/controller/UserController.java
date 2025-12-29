@@ -56,6 +56,7 @@ public class UserController {
     private final GetUserUseCase getUserUseCase;
     private final UpdateUserUseCase updateUserUseCase;
     private final RegisterReferredUserCodeUseCase registerReferredUserCodeUseCase;
+    private final WithdrawUseCase withdrawUseCase;
     private final JwtUtil jwtUtil;
 
     /**
@@ -281,6 +282,32 @@ public class UserController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "회원 로그아웃 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 회원 탈퇴
+     *
+     * @param principal 사용자 인증 정보
+     * @Author 성효빈
+     * @Date 2025-12-29
+     * @Description 회원 탈퇴를 수행합니다.
+     */
+    @DeleteMapping
+    @WithdrawalApiDocs
+    public ResponseEntity<BaseResponse<Void>> withdrawUser(
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        withdrawUseCase.withdrawUser(ElementExtractor.extractUserId(principal));
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        null,
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "회원 탈퇴 성공"
                 ),
                 HttpStatus.OK
         );

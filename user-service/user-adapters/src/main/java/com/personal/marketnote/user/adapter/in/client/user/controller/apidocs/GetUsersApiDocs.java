@@ -69,7 +69,7 @@ import java.lang.annotation.*;
                 | roleId | string | 역할 ID | "ROLE_BUYER" |
                 | lastLoggedInAt | string(datetime) | 마지막 로그인 일시 | "2025-12-29T10:19:52.558748" |
                 | status | string | 상태 | "ACTIVE" / "INACTIVE" / "DELETED" |
-                
+                | isWithdrawn | boolean | 탈퇴 여부 | true / false |
                 ---
                 
                 ### Response > content > users > accountInfo
@@ -129,7 +129,8 @@ import java.lang.annotation.*;
                                                 "referenceCode": "F4T6D3",
                                                 "roleId": "ROLE_BUYER",
                                                 "lastLoggedInAt": "2025-12-28T10:38:42.477508",
-                                                "status": "ACTIVE"
+                                                "status": "ACTIVE",
+                                                "isWithdrawn": false
                                               },
                                               {
                                                 "id": 83,
@@ -160,7 +161,8 @@ import java.lang.annotation.*;
                                                 "referenceCode": "X3B8Q7",
                                                 "roleId": "ROLE_ADMIN",
                                                 "lastLoggedInAt": "2025-12-28T15:59:59.132803",
-                                                "status": "ACTIVE"
+                                                "status": "ACTIVE",
+                                                "isWithdrawn": false
                                               },
                                               {
                                                 "id": 84,
@@ -191,7 +193,8 @@ import java.lang.annotation.*;
                                                 "referenceCode": "H8W9R9",
                                                 "roleId": "ROLE_BUYER",
                                                 "lastLoggedInAt": "2025-12-28T16:23:26.964246",
-                                                "status": "ACTIVE"
+                                                "status": "ACTIVE",
+                                                "isWithdrawn": false
                                               },
                                               {
                                                 "id": 87,
@@ -222,7 +225,8 @@ import java.lang.annotation.*;
                                                 "referenceCode": "H8M7G6",
                                                 "roleId": "ROLE_BUYER",
                                                 "lastLoggedInAt": "2025-12-29T15:22:45.433588",
-                                                "status": "ACTIVE"
+                                                "status": "ACTIVE",
+                                                "isWithdrawn": false
                                               },
                                               {
                                                 "id": 86,
@@ -253,7 +257,8 @@ import java.lang.annotation.*;
                                                 "referenceCode": "Q9J4N2",
                                                 "roleId": "ROLE_BUYER",
                                                 "lastLoggedInAt": "2025-12-28T15:04:14.896225",
-                                                "status": "ACTIVE"
+                                                "status": "ACTIVE",
+                                                "isWithdrawn": false
                                               }
                                             ]
                                           },
