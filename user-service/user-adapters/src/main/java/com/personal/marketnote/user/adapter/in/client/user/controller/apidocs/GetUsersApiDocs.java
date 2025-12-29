@@ -1,8 +1,11 @@
 package com.personal.marketnote.user.adapter.in.client.user.controller.apidocs;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
@@ -32,6 +35,12 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
+                | pageSize | number | 페이지 크기 | N | default: 10 |
+                | pageNumber | number | 페이지 번호(1부터) | N | default: 1 |
+                | sortDirection | string | 정렬 방향 | N | default: "ASC" |
+                | sortProperty | string | 정렬 속성 | N | default: "ID" |
+                | searchTarget | string | 검색 대상 | N | default: "ID" |
+                | searchKeyword | string | 검색 키워드 | N | default: "" |
                 
                 ---
                 
@@ -51,6 +60,11 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
+                | pageSize | number | 페이지 크기 | 10 |
+                | pageNumber | number | 현재 페이지 | 1 |
+                | totalCount | number | 총 아이템 수 | 127 |
+                | hasPrevious | boolean | 이전 페이지 존재 여부 | true / false |
+                | hasNext | boolean | 다음 페이지 존재 여부 | true / false |
                 | users | array | 회원 목록 | [ ... ] |
                 
                 ---
@@ -88,6 +102,50 @@ import java.lang.annotation.*;
                 | oidcId | string | OIDC ID(일반 회원인 경우 이메일 주소) | "1234567890" |
                 """,
         security = {@SecurityRequirement(name = "bearer"), @SecurityRequirement(name = "admin")},
+        parameters = {
+                @Parameter(
+                        name = "pageSize",
+                        in = ParameterIn.QUERY,
+                        required = false,
+                        description = "페이지 크기",
+                        schema = @Schema(type = "integer", minimum = "1", example = "10")
+                ),
+                @Parameter(
+                        name = "pageNumber",
+                        in = ParameterIn.QUERY,
+                        required = false,
+                        description = "페이지 번호(1부터)",
+                        schema = @Schema(type = "integer", minimum = "1", example = "1")
+                ),
+                @Parameter(
+                        name = "sortDirection",
+                        in = ParameterIn.QUERY,
+                        required = false,
+                        description = "정렬 방향",
+                        schema = @Schema(type = "string", example = "ASC")
+                ),
+                @Parameter(
+                        name = "sortProperty",
+                        in = ParameterIn.QUERY,
+                        required = false,
+                        description = "정렬 속성",
+                        schema = @Schema(type = "string", example = "ID")
+                ),
+                @Parameter(
+                        name = "searchTarget",
+                        in = ParameterIn.QUERY,
+                        required = false,
+                        description = "검색 대상",
+                        schema = @Schema(type = "string", example = "ID")
+                ),
+                @Parameter(
+                        name = "searchKeyword",
+                        in = ParameterIn.QUERY,
+                        required = false,
+                        description = "검색 키워드",
+                        schema = @Schema(type = "string", example = "")
+                )
+        },
         responses = {
                 @ApiResponse(
                         responseCode = "200",
@@ -97,16 +155,21 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2025-12-29T15:31:10.095061",
+                                          "timestamp": "2025-12-29T17:12:17.565718",
                                           "content": {
+                                            "pageSize": 3,
+                                            "pageNumber": 2,
+                                            "totalCount": 5,
+                                            "hasPrevious": true,
+                                            "hasNext": false,
                                             "users": [
                                               {
-                                                "id": 85,
+                                                "id": 86,
                                                 "accountInfo": {
                                                   "accounts": [
                                                     {
                                                       "oauth2VendorId": "NATIVE",
-                                                      "oidcId": "asdexample@example.com"
+                                                      "oidcId": "sung@personal.com"
                                                     },
                                                     {
                                                       "oauth2VendorId": "KAKAO",
@@ -123,78 +186,14 @@ import java.lang.annotation.*;
                                                   ]
                                                 },
                                                 "nickname": null,
-                                                "email": "asdexample@example.com",
+                                                "email": "sung@personal.com",
                                                 "fullName": null,
                                                 "phoneNumber": null,
-                                                "referenceCode": "F4T6D3",
+                                                "referenceCode": "Q9J4N2",
                                                 "roleId": "ROLE_BUYER",
-                                                "lastLoggedInAt": "2025-12-28T10:38:42.477508",
-                                                "status": "ACTIVE",
-                                                "isWithdrawn": false
-                                              },
-                                              {
-                                                "id": 83,
-                                                "accountInfo": {
-                                                  "accounts": [
-                                                    {
-                                                      "oauth2VendorId": "NATIVE",
-                                                      "oidcId": "example@example.com"
-                                                    },
-                                                    {
-                                                      "oauth2VendorId": "KAKAO",
-                                                      "oidcId": null
-                                                    },
-                                                    {
-                                                      "oauth2VendorId": "GOOGLE",
-                                                      "oidcId": null
-                                                    },
-                                                    {
-                                                      "oauth2VendorId": "APPLE",
-                                                      "oidcId": null
-                                                    }
-                                                  ]
-                                                },
-                                                "nickname": null,
-                                                "email": "example@example.com",
-                                                "fullName": null,
-                                                "phoneNumber": null,
-                                                "referenceCode": "X3B8Q7",
-                                                "roleId": "ROLE_ADMIN",
-                                                "lastLoggedInAt": "2025-12-28T15:59:59.132803",
-                                                "status": "ACTIVE",
-                                                "isWithdrawn": false
-                                              },
-                                              {
-                                                "id": 84,
-                                                "accountInfo": {
-                                                  "accounts": [
-                                                    {
-                                                      "oauth2VendorId": "NATIVE",
-                                                      "oidcId": null
-                                                    },
-                                                    {
-                                                      "oauth2VendorId": "KAKAO",
-                                                      "oidcId": null
-                                                    },
-                                                    {
-                                                      "oauth2VendorId": "GOOGLE",
-                                                      "oidcId": "117148339918858993482"
-                                                    },
-                                                    {
-                                                      "oauth2VendorId": "APPLE",
-                                                      "oidcId": null
-                                                    }
-                                                  ]
-                                                },
-                                                "nickname": null,
-                                                "email": "exaaample1@example.com",
-                                                "fullName": null,
-                                                "phoneNumber": null,
-                                                "referenceCode": "H8W9R9",
-                                                "roleId": "ROLE_BUYER",
-                                                "lastLoggedInAt": "2025-12-28T16:23:26.964246",
-                                                "status": "ACTIVE",
-                                                "isWithdrawn": false
+                                                "lastLoggedInAt": "2025-12-28T15:04:14.896225",
+                                                "status": "INACTIVE",
+                                                "isWithdrawn": true
                                               },
                                               {
                                                 "id": 87,
@@ -225,38 +224,6 @@ import java.lang.annotation.*;
                                                 "referenceCode": "H8M7G6",
                                                 "roleId": "ROLE_BUYER",
                                                 "lastLoggedInAt": "2025-12-29T15:22:45.433588",
-                                                "status": "ACTIVE",
-                                                "isWithdrawn": false
-                                              },
-                                              {
-                                                "id": 86,
-                                                "accountInfo": {
-                                                  "accounts": [
-                                                    {
-                                                      "oauth2VendorId": "NATIVE",
-                                                      "oidcId": "sung@personal.com"
-                                                    },
-                                                    {
-                                                      "oauth2VendorId": "KAKAO",
-                                                      "oidcId": null
-                                                    },
-                                                    {
-                                                      "oauth2VendorId": "GOOGLE",
-                                                      "oidcId": null
-                                                    },
-                                                    {
-                                                      "oauth2VendorId": "APPLE",
-                                                      "oidcId": null
-                                                    }
-                                                  ]
-                                                },
-                                                "nickname": null,
-                                                "email": "sung@personal.com",
-                                                "fullName": null,
-                                                "phoneNumber": null,
-                                                "referenceCode": "Q9J4N2",
-                                                "roleId": "ROLE_BUYER",
-                                                "lastLoggedInAt": "2025-12-28T15:04:14.896225",
                                                 "status": "ACTIVE",
                                                 "isWithdrawn": false
                                               }

@@ -2,6 +2,8 @@ package com.personal.marketnote.user.adapter.out.persistence.user.repository;
 
 import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserJpaEntity;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,6 +25,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
                 AND uov.authVendor = :authVendor
                 AND uov.oidcId = :oidcId
                 )
+            ORDER BY u.id ASC
             """)
     boolean existsByAuthVendorAndOidcId(@Param("authVendor") AuthVendor authVendor, @Param("oidcId") String oidcId);
 
@@ -32,6 +35,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             WHERE 1 = 1
                 AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
                 AND u.nickname = :nickname
+            ORDER BY u.id ASC
             """)
     boolean existsByNickname(@Param("nickname") String nickname);
 
@@ -40,6 +44,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             FROM UserJpaEntity u
             WHERE 1 = 1
                 AND u.email = :email
+            ORDER BY u.id ASC
             """)
     boolean existsByEmail(@Param("email") String email);
 
@@ -49,6 +54,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             WHERE 1 = 1
                 AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
               AND u.phoneNumber = :phoneNumber
+            ORDER BY u.id ASC
             """)
     boolean existsByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 
@@ -57,6 +63,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             FROM UserJpaEntity u
             WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
                 AND u.referenceCode = :referenceCode
+            ORDER BY u.id ASC
             """)
     boolean existsByReferenceCode(@Param("referenceCode") String referenceCode);
 
@@ -65,6 +72,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             FROM UserJpaEntity u
             WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
                 AND u.id = :id
+            ORDER BY u.id ASC
             """)
     Optional<UserJpaEntity> findById(@Param("id") Long id);
 
@@ -80,8 +88,10 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
               AND uov.authVendor = :authVendor
               AND uov.oidcId = :oidcId
               )
+            ORDER BY u.id ASC
             """)
-    Optional<UserJpaEntity> findByAuthVendorAndOidcId(@Param("authVendor") AuthVendor authVendor, @Param("oidcId") String oidcId);
+    Optional<UserJpaEntity> findByAuthVendorAndOidcId(@Param("authVendor") AuthVendor authVendor,
+                                                      @Param("oidcId") String oidcId);
 
     @Query("""
             SELECT u
@@ -89,6 +99,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             WHERE 1 = 1
                 AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
                 AND u.phoneNumber = :phoneNumber
+            ORDER BY u.id ASC
             """)
     Optional<UserJpaEntity> findByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 
@@ -98,6 +109,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             WHERE 1 = 1
                 AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
                 AND u.email = :email
+            ORDER BY u.id ASC
             """)
     Optional<UserJpaEntity> findByEmail(@Param("email") String email);
 
@@ -121,7 +133,32 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             SELECT u
             FROM UserJpaEntity u
             WHERE 1 = 1
-                AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+            ORDER BY u.id ASC
             """)
     List<UserJpaEntity> findAllStatusUsers();
+
+    @Query("""
+            SELECT u
+            FROM UserJpaEntity u
+            WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+              AND (
+                    :searchKeyword IS NULL
+                 OR :searchKeyword = ''
+                 OR (
+                        ( :byId = true AND str(u.id) LIKE CONCAT('%', :searchKeyword, '%') )
+                     OR ( :byNickname = true AND LOWER(u.nickname) LIKE CONCAT('%', LOWER(:searchKeyword), '%') )
+                     OR ( :byEmail = true AND LOWER(u.email) LIKE CONCAT('%', LOWER(:searchKeyword), '%') )
+                     OR ( :byPhone = true AND LOWER(u.phoneNumber) LIKE CONCAT('%', LOWER(:searchKeyword), '%') )
+                     OR ( :byRefCode = true AND LOWER(u.referenceCode) LIKE CONCAT('%', LOWER(:searchKeyword), '%') )
+                   )
+              )
+            """)
+    Page<UserJpaEntity> findAllStatusUsersByPage(
+            Pageable pageable,
+            @Param("byId") boolean byId,
+            @Param("byNickname") boolean byNickname,
+            @Param("byEmail") boolean byEmail,
+            @Param("byPhone") boolean byPhone,
+            @Param("byRefCode") boolean byRefCode,
+            @Param("searchKeyword") String searchKeyword);
 }

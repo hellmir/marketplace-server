@@ -5,6 +5,7 @@ import com.personal.marketnote.user.adapter.out.mapper.UserJpaEntityToDomainMapp
 import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserJpaEntity;
 import com.personal.marketnote.user.adapter.out.persistence.user.repository.TermsJpaRepository;
 import com.personal.marketnote.user.adapter.out.persistence.user.repository.UserJpaRepository;
+import com.personal.marketnote.user.domain.user.SearchTarget;
 import com.personal.marketnote.user.domain.user.Terms;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.exception.UserNotFoundException;
@@ -14,6 +15,9 @@ import com.personal.marketnote.user.port.out.user.SaveUserPort;
 import com.personal.marketnote.user.port.out.user.UpdateUserPort;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -104,6 +108,27 @@ public class UserPersistenceAdapter implements SaveUserPort, FindUserPort, FindT
     }
 
     @Override
+    public Page<User> findAllStatusUsersByPage(Pageable pageable, SearchTarget searchTarget, String searchKeyword) {
+        boolean byId = searchTarget == SearchTarget.ID;
+        boolean byNickname = searchTarget == SearchTarget.NICKNAME;
+        boolean byEmail = searchTarget == SearchTarget.EMAIL;
+        boolean byPhone = searchTarget == SearchTarget.PHONE_NUMBER;
+        boolean byRefCode = searchTarget == SearchTarget.REFERENCE_CODE;
+
+        Page<UserJpaEntity> userJpaEntityPage = userJpaRepository.findAllStatusUsersByPage(
+                pageable, byId, byNickname, byEmail, byPhone, byRefCode, searchKeyword);
+
+        List<User> users = userJpaEntityPage
+                .stream()
+                .map(UserJpaEntityToDomainMapper::mapToDomain)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(users, pageable, userJpaEntityPage.getTotalElements());
+    }
+
+    @Override
     public List<Terms> findAll() {
         return termsJpaRepository.findAllByOrderByIdAsc().stream()
                 .map(UserJpaEntityToDomainMapper::mapToDomain)
@@ -120,7 +145,6 @@ public class UserPersistenceAdapter implements SaveUserPort, FindUserPort, FindT
 
     private UserJpaEntity findEntityById(Long id) {
         return userJpaRepository.findAllStatusUserById(id).orElseThrow(
-                () -> new UserNotFoundException(String.format(USER_ID_NOT_FOUND_EXCEPTION_MESSAGE, id))
-        );
+                () -> new UserNotFoundException(String.format(USER_ID_NOT_FOUND_EXCEPTION_MESSAGE, id)));
     }
 }

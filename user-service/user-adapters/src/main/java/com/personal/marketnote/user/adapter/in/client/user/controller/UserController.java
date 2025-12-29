@@ -94,7 +94,8 @@ public class UserController {
                         SignUpResponse.of(accessToken, refreshToken, signUpResult.isNewUser()),
                         HttpStatus.CREATED,
                         DEFAULT_SUCCESS_CODE,
-                        "회원 가입 성공"),
+                        "회원 가입 성공"
+                ),
                 HttpStatus.CREATED);
     }
 
@@ -111,7 +112,8 @@ public class UserController {
     @RegisterReferredUserCodeApiDocs
     public ResponseEntity<BaseResponse<Void>> registerReferredUserCode(
             @Valid @RequestParam String referredUserCode,
-            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
         registerReferredUserCodeUseCase.registerReferredUserCode(
                 ElementExtractor.extractUserId(principal), referredUserCode);
 
@@ -197,7 +199,8 @@ public class UserController {
     @GetMapping("/me")
     @GetMyInfoApiDocs
     public ResponseEntity<BaseResponse<GetUserInfoResponse>> getMyInfo(
-            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
         GetUserInfoResponse getUserInfoResponse = GetUserInfoResponse.from(
                 getUserUseCase.getUserInfo(ElementExtractor.extractUserId(principal)));
 

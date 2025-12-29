@@ -8,12 +8,15 @@ import com.personal.marketnote.user.adapter.in.client.user.mapper.UserRequestToC
 import com.personal.marketnote.user.adapter.in.client.user.request.UpdateUserInfoRequest;
 import com.personal.marketnote.user.adapter.in.client.user.response.GetUserInfoResponse;
 import com.personal.marketnote.user.adapter.in.client.user.response.GetUsersResponse;
+import com.personal.marketnote.user.domain.user.SearchTarget;
+import com.personal.marketnote.user.domain.user.SortProperty;
 import com.personal.marketnote.user.port.in.usecase.user.GetUserUseCase;
 import com.personal.marketnote.user.port.in.usecase.user.UpdateUserUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
 import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
+import static com.personal.marketnote.common.utility.ApiConstant.DEFAULT_PAGE_NUMBER;
 
 /**
  * 회원 관리자 컨트롤러
@@ -38,12 +42,20 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 @RequiredArgsConstructor
 @Slf4j
 public class UserAdminController {
+    private static final String GET_USERS_DEFAULT_PAGE_SIZE = "10";
+
     private final GetUserUseCase getUserUseCase;
     private final UpdateUserUseCase updateUserUseCase;
 
     /**
      * (관리자) 회원 목록 조회
      *
+     * @param pageSize      페이지 크기
+     * @param pageNumber    페이지 번호
+     * @param sortDirection 정렬 방향
+     * @param sortProperty  정렬 속성
+     * @param searchTarget  검색 대상
+     * @param searchKeyword 검색 키워드
      * @return 회원 목록 조회 응답 {@link GetUsersResponse}
      * @Author 성효빈
      * @Date 2025-12-29
@@ -53,9 +65,22 @@ public class UserAdminController {
     @PreAuthorize(ADMIN_POINTCUT)
     @GetUsersApiDocs
     public ResponseEntity<BaseResponse<GetUsersResponse>> getUsers(
+            @RequestParam(required = false, defaultValue = GET_USERS_DEFAULT_PAGE_SIZE) int pageSize,
+            @RequestParam(required = false, defaultValue = DEFAULT_PAGE_NUMBER) int pageNumber,
+            @RequestParam(required = false, defaultValue = "ASC") Sort.Direction sortDirection,
+            @RequestParam(required = false, defaultValue = "EMAIL") SortProperty sortProperty,
+            @RequestParam(required = false, defaultValue = "EMAIL") SearchTarget searchTarget,
+            @RequestParam(required = false) String searchKeyword
     ) {
         GetUsersResponse getUsersResponse = GetUsersResponse.from(
-                getUserUseCase.getAllStatusUsers()
+                getUserUseCase.getAllStatusUsers(
+                        pageSize,
+                        pageNumber - 1,
+                        sortDirection,
+                        sortProperty,
+                        searchTarget,
+                        searchKeyword
+                )
         );
 
         return new ResponseEntity<>(
