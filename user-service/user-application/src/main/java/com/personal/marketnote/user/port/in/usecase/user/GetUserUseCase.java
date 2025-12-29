@@ -1,9 +1,13 @@
 package com.personal.marketnote.user.port.in.usecase.user;
 
+import com.personal.marketnote.user.domain.user.SearchTarget;
+import com.personal.marketnote.user.domain.user.SortProperty;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.port.in.result.GetUserInfoResult;
 import com.personal.marketnote.user.port.in.result.GetUserResult;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -64,10 +68,19 @@ public interface GetUserUseCase {
     GetUserInfoResult getAllStatusUserInfo(Long id);
 
     /**
-     * @return 회원 목록 조회 결과 {@link List< GetUserInfoResult >}
+     * @param pageSize   페이지 크기
+     * @param pageNumber 페이지 번호
+     * @return 회원 목록 조회 결과 {@link List< GetUserResult >}
      * @Date 2025-12-29
      * @Author 성효빈
      * @Description 활성화/비활성화/비노출 회원 목록을 조회합니다.
      */
-    List<GetUserResult> getAllStatusUsers();
+    Page<GetUserResult> getAllStatusUsers(
+            int pageSize,
+            int pageNumber,
+            Sort.Direction sortDirection,
+            SortProperty sortProperty,
+            SearchTarget searchTarget,
+            String searchKeyword
+    );
 }

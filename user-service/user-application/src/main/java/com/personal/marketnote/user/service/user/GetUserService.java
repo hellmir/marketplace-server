@@ -1,6 +1,8 @@
 package com.personal.marketnote.user.service.user;
 
 import com.personal.marketnote.common.application.UseCase;
+import com.personal.marketnote.user.domain.user.SearchTarget;
+import com.personal.marketnote.user.domain.user.SortProperty;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.exception.UserNotFoundException;
 import com.personal.marketnote.user.port.in.result.GetUserInfoResult;
@@ -9,10 +11,11 @@ import com.personal.marketnote.user.port.in.usecase.user.GetUserUseCase;
 import com.personal.marketnote.user.port.out.user.FindUserPort;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.personal.marketnote.user.exception.ExceptionMessage.*;
 import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
@@ -60,9 +63,14 @@ public class GetUserService implements GetUserUseCase {
     }
 
     @Override
-    public List<GetUserResult> getAllStatusUsers() {
-        return findUserPort.findAllStatusUsers().stream()
-                .map(GetUserResult::from)
-                .collect(Collectors.toList());
+    public Page<GetUserResult> getAllStatusUsers(
+            int pageSize, int pageNumber,
+            Sort.Direction sortDirection, SortProperty sortProperty,
+            SearchTarget searchTarget, String searchKeyword
+    ) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortDirection, sortProperty.getLowerValue()));
+
+        return findUserPort.findAllStatusUsersByPage(pageable, searchTarget, searchKeyword)
+                .map(GetUserResult::from);
     }
 }
