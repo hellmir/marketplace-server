@@ -1,11 +1,16 @@
 package com.personal.marketnote.user.service.user;
 
 import com.personal.marketnote.common.application.UseCase;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.port.in.usecase.user.GetUserUseCase;
 import com.personal.marketnote.user.port.in.usecase.user.WithdrawUseCase;
+import com.personal.marketnote.user.port.out.oauth.Oauth2AccountUnlinkPort;
 import com.personal.marketnote.user.port.out.user.UpdateUserPort;
+import com.personal.marketnote.user.service.exception.UnlinkOauth2AccountFailedException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
@@ -16,11 +21,29 @@ import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMIT
 public class WithdrawService implements WithdrawUseCase {
     private final GetUserUseCase getUserUseCase;
     private final UpdateUserPort updateUserPort;
+    private final Oauth2AccountUnlinkPort oauth2AccountUnlinkPort;
+
+    private final Logger log = LoggerFactory.getLogger(WithdrawService.class);
 
     @Override
     public void withdrawUser(Long id) {
         User user = getUserUseCase.getAllStatusUser(id);
         user.withdraw();
+
+        String kakaoOidcId = user.getKakaoOidcId();
+        if (hasOauth2Account(kakaoOidcId)) {
+            try {
+                oauth2AccountUnlinkPort.unlinkKakaoAccount(user.getKakaoOidcId());
+                user.removeKakaoOidcId();
+            } catch (UnlinkOauth2AccountFailedException e) {
+                log.error("카카오 계정 연결 해제에 실패했습니다. oidcId={}", kakaoOidcId, e);
+            }
+        }
+
         updateUserPort.update(user);
+    }
+
+    private boolean hasOauth2Account(String oidcId) {
+        return FormatValidator.hasValue(oidcId);
     }
 }

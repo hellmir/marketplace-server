@@ -5,7 +5,9 @@ public interface WithdrawUseCase {
      * @param id 회원 ID
      * @Date 2025-12-29
      * @Author 성효빈
-     * @Description 회원을 탈퇴합니다.
+     * @Description 회원에서 탈퇴합니다.
      */
-    void withdrawUser(Long id);
+    default void withdrawUser(Long id) {
+        withdrawUser(id);
+    }
 }
