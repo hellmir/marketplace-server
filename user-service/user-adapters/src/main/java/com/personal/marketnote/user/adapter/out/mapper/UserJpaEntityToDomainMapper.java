@@ -56,7 +56,7 @@ public class UserJpaEntityToDomainMapper {
         return Optional.ofNullable(userOauth2VendorsJpaEntities)
                 .filter(Objects::nonNull)
                 .map(entities -> entities.stream()
-                        .map(entity -> UserOauth2Vendor.of(null, entity.getAuthVendor(), entity.getOidcId()))
+                        .map(entity -> UserOauth2Vendor.of(entity.getAuthVendor(), entity.getOidcId()))
                         .collect(Collectors.toList()));
     }
 

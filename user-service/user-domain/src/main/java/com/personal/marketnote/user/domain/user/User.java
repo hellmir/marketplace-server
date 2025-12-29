@@ -39,13 +39,13 @@ public class User {
 
     public static User from(AuthVendor authVendor, String oidcId) {
         return User.builder()
-                .userOauth2Vendors(List.of(UserOauth2Vendor.of(null, authVendor, oidcId)))
+                .userOauth2Vendors(List.of(UserOauth2Vendor.of(authVendor, oidcId)))
                 .role(Role.getGuest())
                 .build();
     }
 
     public static User from(
-            AuthVendor authVendor,
+            AuthVendor targetAuthVendor,
             String oidcId,
             String nickname,
             String email,
@@ -57,10 +57,15 @@ public class User {
             String referenceCode
     ) {
         List<UserOauth2Vendor> userOauth2Vendors = new ArrayList<>(AuthVendor.size());
-        userOauth2Vendors.add(UserOauth2Vendor.of(authVendor, oidcId));
-        List<AuthVendor> remainders = authVendor.getExceptValues();
-        for (AuthVendor remainder : remainders) {
-            userOauth2Vendors.add(UserOauth2Vendor.of(remainder, null));
+        AuthVendor[] allAuthVendors = AuthVendor.values();
+
+        for (AuthVendor authVendor : allAuthVendors) {
+            UserOauth2Vendor userOauth2Vendor = UserOauth2Vendor.of(authVendor);
+            userOauth2Vendors.add(userOauth2Vendor);
+
+            if (authVendor.isMe(targetAuthVendor)) {
+                userOauth2Vendor.addOidcId(targetAuthVendor, oidcId, email);
+            }
         }
 
         User user = User.builder()
@@ -74,7 +79,7 @@ public class User {
                 .lastLoggedInAt(LocalDateTime.now())
                 .build();
 
-        if (FormatValidator.hasValue(password)) {
+        if (targetAuthVendor.isNative() && FormatValidator.hasValue(password)) {
             user.password = passwordEncoder.encode(password);
         }
 

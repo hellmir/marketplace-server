@@ -95,6 +95,15 @@ public class UserPersistenceAdapter implements SaveUserPort, FindUserPort, FindT
     }
 
     @Override
+    public List<User> findAllStatusUsers() {
+        return userJpaRepository.findAllStatusUsers().stream()
+                .map(UserJpaEntityToDomainMapper::mapToDomain)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<Terms> findAll() {
         return termsJpaRepository.findAllByOrderByIdAsc().stream()
                 .map(UserJpaEntityToDomainMapper::mapToDomain)

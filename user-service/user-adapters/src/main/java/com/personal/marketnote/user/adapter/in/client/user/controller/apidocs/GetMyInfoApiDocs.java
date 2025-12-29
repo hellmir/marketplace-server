@@ -58,8 +58,7 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | id | number | 회원 ID | 1 |
-                | authVendor | string | 인증 제공자 | "NATIVE" / "KAKAO" / "GOOGLE" / "APPLE" |
-                | oidcId | string | OIDC ID | "1234567890" |
+                | accountInfo | object | 계정 정보 | { ... } |
                 | nickname | string | 닉네임 | "고길동" |
                 | email | string | 이메일 주소 | "example@example.com" |
                 | fullName | string | 성명 | "홍길동" |
@@ -68,6 +67,23 @@ import java.lang.annotation.*;
                 | roleId | string | 역할 ID | "ROLE_BUYER" |
                 | lastLoggedInAt | string(datetime) | 마지막 로그인 일시 | "2025-12-29T10:19:52.558748" |
                 | status | string | 상태 | "ACTIVE" / "INACTIVE" / "DELETED" |
+                
+                ---
+                
+                ### Response > content > userInfo > accountInfo
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | accounts | array | 계정 목록 | [ ... ] |
+                
+                ---
+                
+                ### Response > content > userInfo > accountInfo > accounts
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | oauth2VendorId | string | 인증 제공자 | "NATIVE" / "KAKAO" / "GOOGLE" / "APPLE" |
+                | oidcId | string | OIDC ID(일반 회원인 경우 이메일 주소) | "1234567890" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         responses = {
@@ -79,19 +95,37 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2025-12-28T10:41:37.842294",
+                                          "timestamp": "2025-12-29T14:48:49.550308",
                                           "content": {
                                             "userInfo": {
-                                              "id": 61,
-                                              "authVendor": "NATIVE",
-                                              "oidcId": null,
-                                              "nickname": "고길동",
+                                              "id": 83,
+                                              "accountInfo": {
+                                                "accounts": [
+                                                  {
+                                                    "oauth2VendorId": "NATIVE",
+                                                    "oidcId": "example@example.com"
+                                                  },
+                                                  {
+                                                    "oauth2VendorId": "KAKAO",
+                                                    "oidcId": null
+                                                  },
+                                                  {
+                                                    "oauth2VendorId": "GOOGLE",
+                                                    "oidcId": null
+                                                  },
+                                                  {
+                                                    "oauth2VendorId": "APPLE",
+                                                    "oidcId": null
+                                                  }
+                                                ]
+                                              },
+                                              "nickname": null,
                                               "email": "example@example.com",
-                                              "fullName": "홍길동",
-                                              "phoneNumber": "010-1234-5678",
-                                              "referenceCode": "a12bc3",
-                                              "roleId": "ROLE_BUYER",
-                                              "lastLoggedInAt": "2025-12-29T10:19:52.558748",
+                                              "fullName": null,
+                                              "phoneNumber": null,
+                                              "referenceCode": "X3B8Q7",
+                                              "roleId": "ROLE_ADMIN",
+                                              "lastLoggedInAt": "2025-12-28T15:59:59.132803",
                                               "status": "ACTIVE"
                                             }
                                           },

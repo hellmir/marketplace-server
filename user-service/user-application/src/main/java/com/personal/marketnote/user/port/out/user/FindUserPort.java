@@ -3,6 +3,7 @@ package com.personal.marketnote.user.port.out.user;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface FindUserPort {
@@ -27,4 +28,6 @@ public interface FindUserPort {
     Optional<User> findAllStatusUserById(Long id);
 
     Optional<User> findAllStatusUserByEmail(String email);
+
+    List<User> findAllStatusUsers();
 }

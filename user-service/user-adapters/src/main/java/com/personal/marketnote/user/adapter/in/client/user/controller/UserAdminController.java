@@ -1,11 +1,13 @@
 package com.personal.marketnote.user.adapter.in.client.user.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
-import com.personal.marketnote.user.adapter.in.client.authentication.response.GetUserResponse;
 import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.GetUserInfoApiDocs;
+import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.GetUsersApiDocs;
 import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.UpdateUserInfoApiDocs;
 import com.personal.marketnote.user.adapter.in.client.user.mapper.UserRequestToCommandMapper;
 import com.personal.marketnote.user.adapter.in.client.user.request.UpdateUserInfoRequest;
+import com.personal.marketnote.user.adapter.in.client.user.response.GetUserInfoResponse;
+import com.personal.marketnote.user.adapter.in.client.user.response.GetUsersResponse;
 import com.personal.marketnote.user.port.in.usecase.user.GetUserUseCase;
 import com.personal.marketnote.user.port.in.usecase.user.UpdateUserUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,10 +42,38 @@ public class UserAdminController {
     private final UpdateUserUseCase updateUserUseCase;
 
     /**
+     * (관리자) 회원 목록 조회
+     *
+     * @return 회원 목록 조회 응답 {@link GetUsersResponse}
+     * @Author 성효빈
+     * @Date 2025-12-29
+     * @Description 회원 정보를 조회합니다. 관리자만 가능합니다.
+     */
+    @GetMapping
+    @PreAuthorize(ADMIN_POINTCUT)
+    @GetUsersApiDocs
+    public ResponseEntity<BaseResponse<GetUsersResponse>> getUsers(
+    ) {
+        GetUsersResponse getUsersResponse = GetUsersResponse.from(
+                getUserUseCase.getAllStatusUsers()
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        getUsersResponse,
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "회원 목록 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
      * (관리자) 회원 정보 조회
      *
      * @param id 회원 ID
-     * @return 회원 정보 조회 응답 {@link GetUserResponse}
+     * @return 회원 정보 조회 응답 {@link GetUserInfoResponse}
      * @Author 성효빈
      * @Date 2025-12-29
      * @Description 회원 정보를 조회합니다. 관리자만 가능합니다.
@@ -51,16 +81,16 @@ public class UserAdminController {
     @GetMapping("/{id}")
     @PreAuthorize(ADMIN_POINTCUT)
     @GetUserInfoApiDocs
-    public ResponseEntity<BaseResponse<GetUserResponse>> getUserInfo(
+    public ResponseEntity<BaseResponse<GetUserInfoResponse>> getUserInfo(
             @PathVariable Long id
     ) {
-        GetUserResponse getUserResponse = GetUserResponse.from(
+        GetUserInfoResponse getUserInfoResponse = GetUserInfoResponse.from(
                 getUserUseCase.getAllStatusUserInfo(id)
         );
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        getUserResponse,
+                        getUserInfoResponse,
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "회원 정보 조회 성공"

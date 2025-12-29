@@ -1,8 +1,11 @@
 package com.personal.marketnote.user.port.in.usecase.user;
 
 import com.personal.marketnote.user.domain.user.User;
+import com.personal.marketnote.user.port.in.result.GetUserInfoResult;
 import com.personal.marketnote.user.port.in.result.GetUserResult;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
+
+import java.util.List;
 
 public interface GetUserUseCase {
     /**
@@ -10,7 +13,7 @@ public interface GetUserUseCase {
      * @return 회원 도메인 {@link User}
      * @Date 2025-12-28
      * @Author 성효빈
-     * @Description 회원을 조회합니다.
+     * @Description 활성화된 회원을 조회합니다.
      */
     User getUser(Long id);
 
@@ -20,7 +23,7 @@ public interface GetUserUseCase {
      * @return 회원 도메인 {@link User}
      * @Date 2025-12-28
      * @Author 성효빈
-     * @Description 회원을 조회합니다.
+     * @Description 활성화된 회원을 조회합니다.
      */
     User getUser(AuthVendor authVendor, String oidcId);
 
@@ -44,19 +47,27 @@ public interface GetUserUseCase {
 
     /**
      * @param id 회원 ID
-     * @return 회원 정보 조회 결과 {@link GetUserResult}
+     * @return 회원 정보 조회 결과 {@link GetUserInfoResult}
      * @Date 2025-12-28
      * @Author 성효빈
-     * @Description 회원 DTO를 조회합니다.
+     * @Description 활성화된 회원 정보를 조회합니다.
      */
-    GetUserResult getUserInfo(Long id);
+    GetUserInfoResult getUserInfo(Long id);
 
     /**
      * @param id 회원 ID
-     * @return 회원 정보 조회 결과 {@link GetUserResult}
+     * @return 회원 정보 조회 결과 {@link GetUserInfoResult}
      * @Date 2025-12-29
      * @Author 성효빈
-     * @Description 회원 DTO를 조회합니다.
+     * @Description 활성화/비활성화/비노출 회원 정보를 조회합니다.
      */
-    GetUserResult getAllStatusUserInfo(Long id);
+    GetUserInfoResult getAllStatusUserInfo(Long id);
+
+    /**
+     * @return 회원 목록 조회 결과 {@link List< GetUserInfoResult >}
+     * @Date 2025-12-29
+     * @Author 성효빈
+     * @Description 활성화/비활성화/비노출 회원 목록을 조회합니다.
+     */
+    List<GetUserResult> getAllStatusUsers();
 }
