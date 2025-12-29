@@ -154,4 +154,8 @@ public class UserJpaEntity extends BaseGeneralEntity {
 
         deactivateEntity();
     }
+
+    public void updateLoginTime() {
+        lastLoggedInAt = LocalDateTime.now();
+    }
 }

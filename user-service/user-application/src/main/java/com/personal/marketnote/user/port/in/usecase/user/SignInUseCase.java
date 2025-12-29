@@ -14,5 +14,5 @@ public interface SignInUseCase {
      * @Date 2025-12-28
      * @Description 네이티브 로그인 또는 소셜 로그인을 수행합니다.
      */
-    SignInResult signIn(SignInCommand signInCommand, AuthVendor authVendor, String oidcId);
+    SignInResult signIn(SignInCommand signInCommand, AuthVendor authVendor, String oidcId, String ipAddress);
 }
