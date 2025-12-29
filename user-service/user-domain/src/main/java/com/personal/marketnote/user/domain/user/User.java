@@ -225,14 +225,9 @@ public class User {
         return withdrawalYn;
     }
 
-    public boolean hasKakaoAccount() {
-        return userOauth2Vendors.stream()
-                .anyMatch(userOauth2Vendor -> userOauth2Vendor.isKakao());
-    }
-
     public String getKakaoOidcId() {
         return userOauth2Vendors.stream()
-                .filter(userOauth2Vendor -> userOauth2Vendor.isKakao())
+                .filter(UserOauth2Vendor::isKakao)
                 .map(UserOauth2Vendor::getOidcId)
                 .findFirst()
                 .orElse(null);
@@ -240,7 +235,29 @@ public class User {
 
     public void removeKakaoOidcId() {
         userOauth2Vendors.stream()
-                .filter(userOauth2Vendor -> userOauth2Vendor.isKakao())
+                .filter(UserOauth2Vendor::isKakao)
+                .forEach(UserOauth2Vendor::removeOidcId);
+    }
+
+    public boolean hasGoogleAccount() {
+        return userOauth2Vendors.stream()
+                .anyMatch(UserOauth2Vendor::hasGoogleAccount);
+    }
+
+    public void removeGoogleOidcId() {
+        userOauth2Vendors.stream()
+                .filter(UserOauth2Vendor::isGoogle)
+                .forEach(UserOauth2Vendor::removeOidcId);
+    }
+
+    public boolean hasAppleAccount() {
+        return userOauth2Vendors.stream()
+                .anyMatch(UserOauth2Vendor::hasAppleAccount);
+    }
+
+    public void removeAppleOidcId() {
+        userOauth2Vendors.stream()
+                .filter(UserOauth2Vendor::isApple)
                 .forEach(UserOauth2Vendor::removeOidcId);
     }
 }

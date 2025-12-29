@@ -59,8 +59,9 @@ public class RestTemplateGoogleTokenProcessor implements TokenProcessor {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(requestBody);
 
-        ResponseEntity<OAuth2GrantedToken> responseEntity = restTemplate.exchange(requestEntity,
-                OAuth2GrantedToken.class);
+        ResponseEntity<OAuth2GrantedToken> responseEntity = restTemplate.exchange(
+                requestEntity, OAuth2GrantedToken.class
+        );
 
         if (responseEntity.getStatusCode().is4xxClientError()) {
             throw new UnsupportedCodeException("Code is invalid");
