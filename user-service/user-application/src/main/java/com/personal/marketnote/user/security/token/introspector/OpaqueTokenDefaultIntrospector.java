@@ -32,6 +32,11 @@ public class OpaqueTokenDefaultIntrospector implements OpaqueTokenIntrospector {
     @Override
     public OAuth2AuthenticatedPrincipal introspect(String token) {
         try {
+            // Kakao ID Token (JWT, RS256, iss: https://kauth.kakao.com)
+            if (looksLikeKakaoIdToken(token)) {
+                return parseVendorIdToken(token, AuthVendor.KAKAO);
+            }
+
             // Google ID Token (JWT, RS256, iss: accounts.google.com)
             if (looksLikeGoogleIdToken(token)) {
                 return parseVendorIdToken(token, AuthVendor.GOOGLE);
@@ -107,14 +112,22 @@ public class OpaqueTokenDefaultIntrospector implements OpaqueTokenIntrospector {
         );
     }
 
+    private boolean looksLikeKakaoIdToken(String token) {
+        return looksLikeIdToken(
+                token, iss -> "kauth.kakao.com".equals(iss) || "https://kauth.kakao.com".equals(iss)
+        );
+    }
+
     private boolean looksLikeGoogleIdToken(String token) {
-        return looksLikeIdToken(token,
-                iss -> "accounts.google.com".equals(iss) || "https://accounts.google.com".equals(iss));
+        return looksLikeIdToken(
+                token, iss -> "accounts.google.com".equals(iss) || "https://accounts.google.com".equals(iss)
+        );
     }
 
     private boolean looksLikeAppleIdToken(String token) {
-        return looksLikeIdToken(token,
-                iss -> "appleid.apple.com".equals(iss) || "https://appleid.apple.com".equals(iss));
+        return looksLikeIdToken(
+                token, iss -> "appleid.apple.com".equals(iss) || "https://appleid.apple.com".equals(iss)
+        );
     }
 
     private boolean looksLikeIdToken(String token, java.util.function.Predicate<String> issPredicate) {

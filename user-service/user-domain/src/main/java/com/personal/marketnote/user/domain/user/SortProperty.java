@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum SortProperty {
+
     ID("회원 기본키"),
     NICKNAME("닉네임"),
     EMAIL("이메일 주소"),
