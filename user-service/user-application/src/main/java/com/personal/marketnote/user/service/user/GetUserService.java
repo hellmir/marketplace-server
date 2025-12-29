@@ -20,6 +20,16 @@ public class GetUserService implements GetUserUseCase {
     private final FindUserPort findUserPort;
 
     @Override
+    public GetUserResult getUserInfo(Long id) {
+        return GetUserResult.from(getUser(id));
+    }
+
+    @Override
+    public GetUserResult getAllStatusUserInfo(Long id) {
+        return GetUserResult.from(getAllStatusUser(id));
+    }
+
+    @Override
     public User getUser(Long id) {
         return findUserPort.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(String.format(USER_ID_NOT_FOUND_EXCEPTION_MESSAGE, id)));
@@ -32,15 +42,16 @@ public class GetUserService implements GetUserUseCase {
     }
 
     @Override
+    public User getAllStatusUser(Long id) {
+        return findUserPort.findAllStatusUserById(id)
+                .orElseThrow(() -> new UserNotFoundException(String.format(USER_ID_NOT_FOUND_EXCEPTION_MESSAGE, id)));
+    }
+
+    @Override
     public User getAllStatusUser(String email) throws UserNotFoundException {
         return findUserPort.findAllStatusUserByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(
                         String.format(USER_EMAIL_NOT_FOUND_EXCEPTION_MESSAGE, email))
                 );
-    }
-
-    @Override
-    public GetUserResult getUserInfo(Long id) {
-        return GetUserResult.from(getUser(id));
     }
 }

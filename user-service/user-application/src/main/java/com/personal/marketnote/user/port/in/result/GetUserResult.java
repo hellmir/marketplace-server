@@ -16,7 +16,8 @@ public record GetUserResult(
         String phoneNumber,
         String referenceCode,
         String roleId,
-        LocalDateTime lastLoggedInAt
+        LocalDateTime lastLoggedInAt,
+        String status
 ) {
     public static GetUserResult from(User user) {
         return GetUserResult.builder()
@@ -29,6 +30,7 @@ public record GetUserResult(
                 .referenceCode(user.getReferenceCode())
                 .roleId(user.getRole().getId())
                 .lastLoggedInAt(user.getLastLoggedInAt())
+                .status(user.getStatus().name())
                 .build();
     }
 }

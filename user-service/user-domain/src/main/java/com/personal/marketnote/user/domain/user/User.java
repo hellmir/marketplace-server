@@ -131,6 +131,9 @@ public class User {
         return passwordEncoder.matches(targetPassword, password);
     }
 
+    public void updateStatus(boolean isActive) {
+        status = EntityStatus.from(isActive);
+    }
 
     public void updateEmail(String email) {
         this.email = email;

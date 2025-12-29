@@ -104,6 +104,14 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             SELECT u
             FROM UserJpaEntity u
             WHERE 1 = 1
+                AND u.id = :id
+            """)
+    Optional<UserJpaEntity> findAllStatusUserById(@Param("id") Long id);
+
+    @Query("""
+            SELECT u
+            FROM UserJpaEntity u
+            WHERE 1 = 1
                 AND u.email = :email
             """)
     Optional<UserJpaEntity> findAllStatusUserByEmail(@Param("email") String email);

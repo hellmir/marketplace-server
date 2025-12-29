@@ -25,6 +25,7 @@ public class UserRequestToCommandMapper {
 
     public static UpdateUserInfoCommand mapToCommand(UpdateUserInfoRequest updateUserInfoRequest) {
         return UpdateUserInfoCommand.of(
+                updateUserInfoRequest.getIsActive(),
                 updateUserInfoRequest.getEmail(),
                 updateUserInfoRequest.getNickname(),
                 updateUserInfoRequest.getPhoneNumber(),

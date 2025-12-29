@@ -33,6 +33,7 @@ public class SpringDocConfig {
     /* ❶ 원하는 9개 태그만 고정 순서로 선언 */
     private static final List<String> TAGS_ORDER = List.of(
             "인증 API",
+            "회원 관리자 API",
             "회원 API",
             "회원 약관 API"
     );

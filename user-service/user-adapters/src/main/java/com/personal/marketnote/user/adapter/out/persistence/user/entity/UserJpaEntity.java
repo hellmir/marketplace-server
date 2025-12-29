@@ -117,6 +117,7 @@ public class UserJpaEntity extends BaseGeneralEntity {
     }
 
     public void updateFrom(User user) {
+        updateActivation(user);
         nickname = user.getNickname();
         email = user.getEmail();
         password = user.getPassword();
@@ -143,5 +144,14 @@ public class UserJpaEntity extends BaseGeneralEntity {
             UserTerms userTerms = user.getUserTerms().get(i);
             userTermsJpaEntity.updateFrom(userTerms);
         }
+    }
+
+    private void updateActivation(User user) {
+        if (user.isActive()) {
+            activateEntity();
+            return;
+        }
+
+        deactivateEntity();
     }
 }
