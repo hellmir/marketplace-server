@@ -224,4 +224,23 @@ public class User {
     public boolean isWithdrawn() {
         return withdrawalYn;
     }
+
+    public boolean hasKakaoAccount() {
+        return userOauth2Vendors.stream()
+                .anyMatch(userOauth2Vendor -> userOauth2Vendor.isKakao());
+    }
+
+    public String getKakaoOidcId() {
+        return userOauth2Vendors.stream()
+                .filter(userOauth2Vendor -> userOauth2Vendor.isKakao())
+                .map(UserOauth2Vendor::getOidcId)
+                .findFirst()
+                .orElse(null);
+    }
+
+    public void removeKakaoOidcId() {
+        userOauth2Vendors.stream()
+                .filter(userOauth2Vendor -> userOauth2Vendor.isKakao())
+                .forEach(UserOauth2Vendor::removeOidcId);
+    }
 }

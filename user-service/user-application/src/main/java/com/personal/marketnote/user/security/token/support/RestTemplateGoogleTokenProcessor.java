@@ -22,6 +22,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import static com.personal.marketnote.user.security.token.utility.TokenConstant.AUTHENTICATION_SCHEME;
 import static com.personal.marketnote.user.security.token.utility.TokenConstant.SUB_CLAIM_KEY;
 
 @Component
@@ -88,7 +89,7 @@ public class RestTemplateGoogleTokenProcessor implements TokenProcessor {
     @Override
     public OAuth2AuthenticationInfo authenticate(String accessToken) throws InvalidAccessTokenException {
         RequestEntity<Void> requestEntity = RequestEntity.get(GOOGLE_ME_URL)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .header(HttpHeaders.AUTHORIZATION, AUTHENTICATION_SCHEME + accessToken)
                 .build();
 
         ResponseEntity<String> responseEntity = this.restTemplate.exchange(requestEntity, String.class);
@@ -107,7 +108,7 @@ public class RestTemplateGoogleTokenProcessor implements TokenProcessor {
     @Override
     public OAuth2UserInfo retrieveUserInfo(String accessToken) throws InvalidAccessTokenException {
         RequestEntity<Void> requestEntity = RequestEntity.get(GOOGLE_USER_INFO_URL)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .header(HttpHeaders.AUTHORIZATION, AUTHENTICATION_SCHEME + accessToken)
                 .build();
 
         ResponseEntity<String> responseEntity = this.restTemplate.exchange(requestEntity, String.class);

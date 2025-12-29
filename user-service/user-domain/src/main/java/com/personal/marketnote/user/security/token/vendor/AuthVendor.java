@@ -42,4 +42,8 @@ public enum AuthVendor {
     public boolean isMe(AuthVendor authVendor) {
         return this == authVendor;
     }
+
+    public boolean isKakao() {
+        return this == KAKAO;
+    }
 }

@@ -58,4 +58,12 @@ public class UserOauth2Vendor {
 
         this.oidcId = oidcId;
     }
+
+    public boolean isKakao() {
+        return authVendor.isKakao();
+    }
+
+    public void removeOidcId() {
+        oidcId = null;
+    }
 }
