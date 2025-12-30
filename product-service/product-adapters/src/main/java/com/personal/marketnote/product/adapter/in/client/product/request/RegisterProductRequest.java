@@ -33,15 +33,6 @@ public class RegisterProductRequest {
     )
     @NotBlank(message = "상품 설명은 필수값입니다.")
     private String detail;
-
-    @Schema(
-            name = "orderNumber",
-            description = "정렬 순서",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
-    @NotNull
-    @Min(value = 0, message = "정렬 순서는 0 이상이어야 합니다.")
-    private Long orderNumber;
 }
 
 

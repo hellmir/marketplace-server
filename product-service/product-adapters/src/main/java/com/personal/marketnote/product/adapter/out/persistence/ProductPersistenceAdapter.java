@@ -15,8 +15,10 @@ public class ProductPersistenceAdapter implements SaveProductPort {
 
     @Override
     public Product save(Product product) {
-        ProductJpaEntity entity = ProductJpaEntity.from(product);
-        return ProductJpaEntityToDomainMapper.mapToDomain(productJpaRepository.save(entity)).get();
+        ProductJpaEntity savedEntity = productJpaRepository.save(ProductJpaEntity.from(product));
+        savedEntity.addOrderNum();
+
+        return ProductJpaEntityToDomainMapper.mapToDomain(savedEntity).get();
     }
 }
 

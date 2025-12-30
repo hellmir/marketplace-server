@@ -19,14 +19,14 @@ public class RegisterProductService implements RegisterProductUseCase {
 
     @Override
     public RegisterProductResult registerProduct(RegisterProductCommand command) {
-        Product toCreate = Product.create(
-                command.sellerId(),
-                command.name(),
-                command.detail(),
-                command.orderNumber()
+        Product savedProduct = saveProductPort.save(
+                Product.of(
+                        command.sellerId(),
+                        command.name(),
+                        command.detail()
+                )
         );
 
-        Product savedProduct = saveProductPort.save(toCreate);
         return RegisterProductResult.from(savedProduct);
     }
 }

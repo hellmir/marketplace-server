@@ -2,7 +2,7 @@ package com.personal.marketnote.product.adapter.in.client.product.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductApiDocs;
-import com.personal.marketnote.product.adapter.in.client.product.request.CreateProductRequest;
+import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductRequest;
 import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductResponse;
 import com.personal.marketnote.product.port.in.command.RegisterProductCommand;
 import com.personal.marketnote.product.port.in.result.RegisterProductResult;
@@ -31,14 +31,13 @@ public class ProductController {
     @PostMapping
     @RegisterProductApiDocs
     public ResponseEntity<BaseResponse<RegisterProductResponse>> registerProduct(
-            @Valid @RequestBody CreateProductRequest request
+            @Valid @RequestBody RegisterProductRequest request
     ) {
         RegisterProductResult result = registerProductUseCase.registerProduct(
                 new RegisterProductCommand(
                         request.getSellerId(),
                         request.getName(),
-                        request.getDetail(),
-                        request.getOrderNumber()
+                        request.getDetail()
                 )
         );
 

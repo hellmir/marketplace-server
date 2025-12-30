@@ -1,6 +1,6 @@
 package com.personal.marketnote.product.adapter.in.client.product.controller.apidocs;
 
-import com.personal.marketnote.product.adapter.in.client.product.request.CreateProductRequest;
+import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -57,7 +57,7 @@ import java.lang.annotation.*;
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                 required = true,
                 content = @Content(
-                        schema = @Schema(implementation = CreateProductRequest.class),
+                        schema = @Schema(implementation = RegisterProductRequest.class),
                         examples = @ExampleObject("""
                                 {
                                     "sellerId": 1,

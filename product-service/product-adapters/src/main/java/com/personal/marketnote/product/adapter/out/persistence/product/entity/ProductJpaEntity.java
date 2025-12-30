@@ -26,8 +26,8 @@ public class ProductJpaEntity extends BaseGeneralEntity {
     @Column(name = "sales", nullable = false, columnDefinition = "INT DEFAULT 0")
     private Integer sales;
 
-    @Column(name = "order_number")
-    private Long orderNumber;
+    @Column(name = "order_num")
+    private Long orderNum;
 
     public static ProductJpaEntity from(Product product) {
         return ProductJpaEntity.builder()
@@ -35,8 +35,11 @@ public class ProductJpaEntity extends BaseGeneralEntity {
                 .name(product.getName())
                 .detail(product.getDetail())
                 .sales(product.getSales())
-                .orderNumber(product.getOrderNumber())
                 .build();
+    }
+
+    public void addOrderNum() {
+        orderNum = this.getId();
     }
 }
 

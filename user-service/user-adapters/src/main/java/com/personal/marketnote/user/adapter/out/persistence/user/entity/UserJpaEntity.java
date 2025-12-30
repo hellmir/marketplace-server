@@ -78,6 +78,7 @@ public class UserJpaEntity extends BaseGeneralEntity {
                 .referenceCode(user.getReferenceCode())
                 .referredUserCode(user.getReferredUserCode())
                 .roleJpaEntity(RoleJpaEntity.from(user.getRole()))
+                .withdrawalYn(user.isWithdrawn())
                 .lastLoggedInAt(user.getLastLoggedInAt())
                 .build();
 

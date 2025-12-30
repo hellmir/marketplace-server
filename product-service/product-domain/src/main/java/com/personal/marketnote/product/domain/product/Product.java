@@ -1,7 +1,6 @@
 package com.personal.marketnote.product.domain.product;
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
-import com.personal.marketnote.common.utility.FormatValidator;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,23 +15,15 @@ public class Product {
     private String name;
     private String detail;
     private Integer sales;
-    private Long orderNumber;
+    private Long orderNum;
     private EntityStatus status;
 
-    public static Product create(Long sellerId, String name, String detail, Long orderNumber) {
-        if (!FormatValidator.hasValue(sellerId) || sellerId <= 0) {
-            throw new IllegalArgumentException("sellerId must be positive");
-        }
-        if (!FormatValidator.hasValue(name)) {
-            throw new IllegalArgumentException("name must not be empty");
-        }
-
+    public static Product of(Long sellerId, String name, String detail) {
         return Product.builder()
                 .sellerId(sellerId)
                 .name(name)
                 .detail(detail)
                 .sales(0)
-                .orderNumber(orderNumber)
                 .status(EntityStatus.ACTIVE)
                 .build();
     }
@@ -43,7 +34,7 @@ public class Product {
             String name,
             String detail,
             Integer sales,
-            Long orderNumber,
+            Long orderNum,
             EntityStatus status
     ) {
         return Product.builder()
@@ -52,7 +43,7 @@ public class Product {
                 .name(name)
                 .detail(detail)
                 .sales(sales)
-                .orderNumber(orderNumber)
+                .orderNum(orderNum)
                 .status(status)
                 .build();
     }
