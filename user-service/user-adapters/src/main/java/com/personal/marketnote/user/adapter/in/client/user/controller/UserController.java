@@ -70,7 +70,8 @@ public class UserController {
     @SignUpApiDocs
     public ResponseEntity<BaseResponse<SignUpResponse>> signUpUser(
             @Valid @RequestBody SignUpRequest signUpRequest,
-            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal,
+            HttpServletRequest request
     ) {
         AuthVendor authVendor = AuthVendor.NATIVE;
         String oidcId = null;
@@ -81,8 +82,10 @@ public class UserController {
             authVendor = resolveVendorFromIssuer(FormatConverter.toUpperCase(issuer));
         }
 
+        String clientIp = extractClientIp(request);
+
         SignUpResult signUpResult = signUpUseCase.signUp(
-                UserRequestToCommandMapper.mapToCommand(signUpRequest), authVendor, oidcId
+                UserRequestToCommandMapper.mapToCommand(signUpRequest), authVendor, oidcId, clientIp
         );
 
         List<String> roleIds = List.of(signUpResult.roleId());

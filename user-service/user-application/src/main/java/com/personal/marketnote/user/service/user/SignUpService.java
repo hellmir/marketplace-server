@@ -3,6 +3,7 @@ package com.personal.marketnote.user.service.user;
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.domain.exception.illegalargument.novalue.PasswordNoValueException;
 import com.personal.marketnote.common.utility.RandomCodeGenerator;
+import com.personal.marketnote.user.domain.user.LoginHistory;
 import com.personal.marketnote.user.domain.user.Terms;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.exception.InvalidVerificationCodeException;
@@ -13,10 +14,7 @@ import com.personal.marketnote.user.port.in.result.SignUpResult;
 import com.personal.marketnote.user.port.in.usecase.user.GetUserUseCase;
 import com.personal.marketnote.user.port.in.usecase.user.SignUpUseCase;
 import com.personal.marketnote.user.port.out.authentication.VerifyEmailVerificationCodePort;
-import com.personal.marketnote.user.port.out.user.FindTermsPort;
-import com.personal.marketnote.user.port.out.user.FindUserPort;
-import com.personal.marketnote.user.port.out.user.SaveUserPort;
-import com.personal.marketnote.user.port.out.user.UpdateUserPort;
+import com.personal.marketnote.user.port.out.user.*;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,9 +37,10 @@ public class SignUpService implements SignUpUseCase {
     private final PasswordEncoder passwordEncoder;
     private final UpdateUserPort updateUserPort;
     private final VerifyEmailVerificationCodePort verifyEmailVerificationCodePort;
+    private final SaveLoginHistoryPort saveLoginHistoryPort;
 
     @Override
-    public SignUpResult signUp(SignUpCommand signUpCommand, AuthVendor authVendor, String oidcId) {
+    public SignUpResult signUp(SignUpCommand signUpCommand, AuthVendor authVendor, String oidcId, String ipAddress) {
         if (authVendor.isNative() && !signUpCommand.hasPassword()) {
             throw new PasswordNoValueException(FIRST_ERROR_CODE);
         }
@@ -84,6 +83,7 @@ public class SignUpService implements SignUpUseCase {
             if (signedUpUser.isActive()) {
                 signedUpUser.addLoginAccountInfo(authVendor, oidcId, signUpCommand.getPassword(), passwordEncoder);
                 updateUserPort.update(signedUpUser);
+                saveLoginHistoryPort.saveLoginHistory(LoginHistory.of(signedUpUser, authVendor, ipAddress));
 
                 return SignUpResult.from(signedUpUser, false);
             }
@@ -94,22 +94,23 @@ public class SignUpService implements SignUpUseCase {
         List<Terms> terms = findTermsPort.findAll();
         String referenceCode = RandomCodeGenerator.generateReferenceCode();
 
-        return SignUpResult.from(
-                saveUserPort.save(
-                        User.from(
-                                authVendor,
-                                oidcId,
-                                signUpCommand.getNickname(),
-                                signUpCommand.getEmail(),
-                                signUpCommand.getPassword(),
-                                passwordEncoder,
-                                signUpCommand.getFullName(),
-                                signUpCommand.getPhoneNumber(),
-                                terms,
-                                referenceCode
-                        )
-                ),
-                true
+        User signedUpUser = saveUserPort.save(
+                User.from(
+                        authVendor,
+                        oidcId,
+                        signUpCommand.getNickname(),
+                        signUpCommand.getEmail(),
+                        signUpCommand.getPassword(),
+                        passwordEncoder,
+                        signUpCommand.getFullName(),
+                        signUpCommand.getPhoneNumber(),
+                        terms,
+                        referenceCode
+                )
         );
+
+        saveLoginHistoryPort.saveLoginHistory(LoginHistory.of(signedUpUser, authVendor, ipAddress));
+
+        return SignUpResult.from(signedUpUser, true);
     }
 }
