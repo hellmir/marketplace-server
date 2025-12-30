@@ -33,7 +33,7 @@ import java.lang.annotation.*;
         
         | **키** | **타입** | **설명** | **필수 여부** | **예시** |
         | --- | --- | --- | --- | --- |
-        | userId | number | 회원 ID (path) | Y | 42 |
+        | userId | number | 회원 ID (path) | Y | 1 |
         | pageSize | number | 페이지 크기 | N | default: 10 |
         | pageNumber | number | 페이지 번호(1부터) | N | default: 1 |
         | sortDirection | string | 정렬 방향 | N | default: "DESC" |
@@ -71,16 +71,46 @@ import java.lang.annotation.*;
         | **키** | **타입** | **설명** | **예시** |
         | --- | --- | --- | --- |
         | id | number | 로그인 내역 ID | 1 |
-        | userId | number | 회원 ID | 42 |
+        | userId | number | 회원 ID | 1 |
         | authVendor | string | 인증 제공자 | "NATIVE"/"KAKAO"/"GOOGLE"/"APPLE" |
         | ipAddress | string | 로그인 IP | "203.0.113.10" |
         """, security = {@SecurityRequirement(name = "bearer"),
         @SecurityRequirement(name = "admin")}, parameters = {
-        @Parameter(name = "userId", in = ParameterIn.PATH, required = true, description = "회원 ID", schema = @Schema(type = "integer", minimum = "1", example = "42")),
-        @Parameter(name = "pageSize", in = ParameterIn.QUERY, required = false, description = "페이지 크기", schema = @Schema(type = "integer", minimum = "1", example = "10")),
-        @Parameter(name = "pageNumber", in = ParameterIn.QUERY, required = false, description = "페이지 번호(1부터)", schema = @Schema(type = "integer", minimum = "1", example = "1")),
-        @Parameter(name = "sortDirection", in = ParameterIn.QUERY, required = false, description = "정렬 방향", schema = @Schema(type = "string", example = "DESC")),
-        @Parameter(name = "sortProperty", in = ParameterIn.QUERY, required = false, description = "정렬 속성", schema = @Schema(type = "string", example = "ID"))
+        @Parameter(
+                name = "userId",
+                in = ParameterIn.PATH,
+                required = true,
+                description = "회원 ID",
+                schema = @Schema(type = "number", example = "1")
+        ),
+        @Parameter(
+                name = "pageSize",
+                in = ParameterIn.QUERY,
+                required = false,
+                description = "페이지 크기",
+                schema = @Schema(type = "number", example = "10")
+        ),
+        @Parameter(
+                name = "pageNumber",
+                in = ParameterIn.QUERY,
+                required = false,
+                description = "페이지 번호(1부터)",
+                schema = @Schema(type = "number", example = "1")
+        ),
+        @Parameter(
+                name = "sortDirection",
+                in = ParameterIn.QUERY,
+                required = false,
+                description = "정렬 방향",
+                schema = @Schema(type = "string", example = "DESC")
+        ),
+        @Parameter(
+                name = "sortProperty",
+                in = ParameterIn.QUERY,
+                required = false,
+                description = "정렬 속성",
+                schema = @Schema(type = "string", example = "ID")
+        )
 }, responses = {
         @ApiResponse(
                 responseCode = "200",
@@ -90,55 +120,62 @@ import java.lang.annotation.*;
                                 {
                                   "statusCode": 200,
                                   "code": "SUC01",
-                                  "timestamp": "2025-12-30T11:52:04.051325",
+                                  "timestamp": "2025-12-30T13:32:27.721435519",
                                   "content": {
                                     "pageSize": 10,
                                     "pageNumber": 1,
-                                    "totalCount": 6,
+                                    "totalCount": 7,
                                     "hasPrevious": false,
                                     "hasNext": false,
                                     "histories": [
                                       {
-                                        "id": 8,
-                                        "userId": 83,
+                                        "id": 13,
+                                        "userId": 13,
+                                        "authVendor": "KAKAO",
+                                        "ipAddress": "221.147.24.144",
+                                        "loggedInAt": "2025-12-30T13:31:08.926108"
+                                      },
+                                      {
+                                        "id": 12,
+                                        "userId": 13,
+                                        "authVendor": "KAKAO",
+                                        "ipAddress": "221.147.24.144",
+                                        "loggedInAt": "2025-12-30T13:30:04.124981"
+                                      },
+                                      {
+                                        "id": 11,
+                                        "userId": 13,
+                                        "authVendor": "KAKAO",
+                                        "ipAddress": "221.147.24.144",
+                                        "loggedInAt": "2025-12-30T13:29:48.890364"
+                                      },
+                                      {
+                                        "id": 10,
+                                        "userId": 13,
+                                        "authVendor": "KAKAO",
+                                        "ipAddress": "221.147.24.144",
+                                        "loggedInAt": "2025-12-30T22:28:21.960414"
+                                      },
+                                      {
+                                        "id": 9,
+                                        "userId": 13,
                                         "authVendor": "NATIVE",
                                         "ipAddress": "221.147.24.144",
-                                        "loggedInAt": "2025-12-30T11:51:50.435743"
+                                        "loggedInAt": "2025-12-30T13:16:49.951182"
+                                      },
+                                      {
+                                        "id": 8,
+                                        "userId": 13,
+                                        "authVendor": "GOOGLE",
+                                        "ipAddress": "221.147.24.144",
+                                        "loggedInAt": "2025-12-30T13:16:39.257946"
                                       },
                                       {
                                         "id": 7,
-                                        "userId": 83,
-                                        "authVendor": "NATIVE",
+                                        "userId": 13,
+                                        "authVendor": "GOOGLE",
                                         "ipAddress": "221.147.24.144",
-                                        "loggedInAt": "2025-12-30T02:32:53.022593"
-                                      },
-                                      {
-                                        "id": 6,
-                                        "userId": 83,
-                                        "authVendor": "NATIVE",
-                                        "ipAddress": "221.147.24.144",
-                                        "loggedInAt": "2025-12-30T11:21:24.706654"
-                                      },
-                                      {
-                                        "id": 5,
-                                        "userId": 83,
-                                        "authVendor": "NATIVE",
-                                        "ipAddress": "221.147.24.144",
-                                        "loggedInAt": "2025-12-30T10:31:43.226108"
-                                      },
-                                      {
-                                        "id": 4,
-                                        "userId": 83,
-                                        "authVendor": "NATIVE",
-                                        "ipAddress": "221.147.24.144",
-                                        "loggedInAt": "2025-12-30T10:21:36.02251"
-                                      },
-                                      {
-                                        "id": 3,
-                                        "userId": 83,
-                                        "authVendor": "NATIVE",
-                                        "ipAddress": "221.147.24.144",
-                                        "loggedInAt": "2025-12-30T10:20:41.648614"
+                                        "loggedInAt": "2025-12-30T13:16:16.724356"
                                       }
                                     ]
                                   },
