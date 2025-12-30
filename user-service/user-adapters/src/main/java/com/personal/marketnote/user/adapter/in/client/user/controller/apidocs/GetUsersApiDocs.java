@@ -37,10 +37,10 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- | --- |
                 | pageSize | number | 페이지 크기 | N | default: 10 |
                 | pageNumber | number | 페이지 번호(1부터) | N | default: 1 |
-                | sortDirection | string | 정렬 방향 | N | default: "ASC" |
-                | sortProperty | string | 정렬 속성 | N | default: "ID" |
-                | searchTarget | string | 검색 대상 | N | default: "ID" |
-                | searchKeyword | string | 검색 키워드 | N | default: "" |
+                | sortDirection | string | 정렬 방향 | N | default: "DESC" |
+                | sortProperty | string | 정렬 속성 | N | default: "ORDER_NUM" |
+                | searchTarget | string | 검색 대상 | N | default: "EMAIL" |
+                | searchKeyword | string | 검색 키워드 | N | default: "ample@example.co" |
                 
                 ---
                 
@@ -84,6 +84,7 @@ import java.lang.annotation.*;
                 | lastLoggedInAt | string(datetime) | 마지막 로그인 일시 | "2025-12-29T10:19:52.558748" |
                 | status | string | 상태 | "ACTIVE" / "INACTIVE" / "DELETED" |
                 | isWithdrawn | boolean | 탈퇴 여부 | true / false |
+                | orderNum | number | 정렬 순서 | 1 |
                 ---
                 
                 ### Response > content > users > accountInfo
@@ -122,21 +123,21 @@ import java.lang.annotation.*;
                         in = ParameterIn.QUERY,
                         required = false,
                         description = "정렬 방향",
-                        schema = @Schema(type = "string", example = "ASC")
+                        schema = @Schema(type = "string", example = "DESC")
                 ),
                 @Parameter(
                         name = "sortProperty",
                         in = ParameterIn.QUERY,
                         required = false,
                         description = "정렬 속성",
-                        schema = @Schema(type = "string", example = "ID")
+                        schema = @Schema(type = "string", example = "ORDER_NUM")
                 ),
                 @Parameter(
                         name = "searchTarget",
                         in = ParameterIn.QUERY,
                         required = false,
                         description = "검색 대상",
-                        schema = @Schema(type = "string", example = "ID")
+                        schema = @Schema(type = "string", example = "EMAIL")
                 ),
                 @Parameter(
                         name = "searchKeyword",
@@ -193,7 +194,8 @@ import java.lang.annotation.*;
                                                 "roleId": "ROLE_BUYER",
                                                 "lastLoggedInAt": "2025-12-28T15:04:14.896225",
                                                 "status": "INACTIVE",
-                                                "isWithdrawn": true
+                                                "isWithdrawn": true,
+                                                "orderNum": 1
                                               },
                                               {
                                                 "id": 87,
@@ -225,7 +227,8 @@ import java.lang.annotation.*;
                                                 "roleId": "ROLE_BUYER",
                                                 "lastLoggedInAt": "2025-12-29T15:22:45.433588",
                                                 "status": "ACTIVE",
-                                                "isWithdrawn": false
+                                                "isWithdrawn": false,
+                                                "orderNum": 2
                                               }
                                             ]
                                           },

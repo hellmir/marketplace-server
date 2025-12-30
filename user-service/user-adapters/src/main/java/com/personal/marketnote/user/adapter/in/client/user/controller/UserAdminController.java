@@ -73,8 +73,8 @@ public class UserAdminController {
     public ResponseEntity<BaseResponse<GetUsersResponse>> getUsers(
             @RequestParam(required = false, defaultValue = GET_USERS_DEFAULT_PAGE_SIZE) int pageSize,
             @RequestParam(required = false, defaultValue = DEFAULT_PAGE_NUMBER) int pageNumber,
-            @RequestParam(required = false, defaultValue = "ASC") Sort.Direction sortDirection,
-            @RequestParam(required = false, defaultValue = "EMAIL") SortProperty sortProperty,
+            @RequestParam(required = false, defaultValue = "DESC") Sort.Direction sortDirection,
+            @RequestParam(required = false, defaultValue = "ORDER_NUM") SortProperty sortProperty,
             @RequestParam(required = false, defaultValue = "EMAIL") SearchTarget searchTarget,
             @RequestParam(required = false) String searchKeyword
     ) {

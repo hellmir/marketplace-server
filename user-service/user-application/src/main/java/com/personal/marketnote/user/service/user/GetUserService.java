@@ -76,7 +76,7 @@ public class GetUserService implements GetUserUseCase {
             Sort.Direction sortDirection, SortProperty sortProperty,
             SearchTarget searchTarget, String searchKeyword
     ) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortDirection, sortProperty.getLowerValue()));
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortDirection, sortProperty.getCamelCaseValue()));
 
         return findUserPort.findAllStatusUsersByPage(pageable, searchTarget, searchKeyword)
                 .map(GetUserResult::from);

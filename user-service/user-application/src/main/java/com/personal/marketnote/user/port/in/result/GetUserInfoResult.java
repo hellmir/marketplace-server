@@ -18,7 +18,8 @@ public record GetUserInfoResult(
         String roleId,
         LocalDateTime lastLoggedInAt,
         String status,
-        boolean isWithdrawn
+        boolean isWithdrawn,
+        Long orderNum
 ) {
     public static GetUserInfoResult from(User user) {
         return GetUserInfoResult.builder()
@@ -33,6 +34,7 @@ public record GetUserInfoResult(
                 .lastLoggedInAt(user.getLastLoggedInAt())
                 .status(user.getStatus().name())
                 .isWithdrawn(user.isWithdrawn())
+                .orderNum(user.getOrderNum())
                 .build();
     }
 }

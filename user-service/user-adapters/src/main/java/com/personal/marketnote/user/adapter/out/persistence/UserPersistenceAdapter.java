@@ -37,9 +37,10 @@ public class UserPersistenceAdapter
 
     @Override
     public User save(User user) {
-        UserJpaEntity userJpaEntity = UserJpaEntity.from(user, termsJpaRepository);
+        UserJpaEntity savedEntity = userJpaRepository.save(UserJpaEntity.from(user, termsJpaRepository));
+        savedEntity.setIdToOrderNum();
 
-        return UserJpaEntityToDomainMapper.mapToDomain(userJpaRepository.save(userJpaEntity)).get();
+        return UserJpaEntityToDomainMapper.mapToDomain(savedEntity).get();
     }
 
     @Override

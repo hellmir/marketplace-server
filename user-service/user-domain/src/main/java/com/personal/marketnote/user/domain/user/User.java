@@ -37,6 +37,7 @@ public class User {
     private LocalDateTime lastLoggedInAt;
     private EntityStatus status;
     private boolean withdrawalYn;
+    private Long orderNum;
 
     public static User from(AuthVendor authVendor, String oidcId) {
         return User.builder()
@@ -60,10 +61,12 @@ public class User {
         List<UserOauth2Vendor> userOauth2Vendors = new ArrayList<>(AuthVendor.size());
         AuthVendor[] allAuthVendors = AuthVendor.values();
 
+        // 최초 회원 가입 시 모든 공급업체 튜플 추가
         for (AuthVendor authVendor : allAuthVendors) {
             UserOauth2Vendor userOauth2Vendor = UserOauth2Vendor.of(authVendor);
             userOauth2Vendors.add(userOauth2Vendor);
 
+            // 실제 가입한 공급업체만 OIDC ID 삽입
             if (authVendor.isMe(targetAuthVendor)) {
                 userOauth2Vendor.addOidcId(targetAuthVendor, oidcId, email);
             }
@@ -80,10 +83,12 @@ public class User {
                 .lastLoggedInAt(LocalDateTime.now())
                 .build();
 
+        // 일반 회원 가입인 경우 비밀번호 설정
         if (targetAuthVendor.isNative() && FormatValidator.hasValue(password)) {
             user.password = passwordEncoder.encode(password);
         }
 
+        // 최초 회원 가입 시 모든 이용 약관 튜플 추가
         user.userTerms = terms.stream()
                 .map(term -> UserTerms.of(user, term))
                 .collect(Collectors.toList());
@@ -105,7 +110,8 @@ public class User {
             List<UserTerms> userTerms,
             LocalDateTime lastLoggedInAt,
             EntityStatus status,
-            boolean withdrawalYn
+            boolean withdrawalYn,
+            Long orderNum
     ) {
         return User.builder()
                 .id(id)
@@ -122,6 +128,7 @@ public class User {
                 .lastLoggedInAt(lastLoggedInAt)
                 .status(status)
                 .withdrawalYn(withdrawalYn)
+                .orderNum(orderNum)
                 .build();
     }
 

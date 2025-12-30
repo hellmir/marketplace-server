@@ -79,4 +79,30 @@ public class FormatConverter {
 
         return value.toUpperCase();
     }
+
+    public static String snakeToCamel(String name) {
+        if (!FormatValidator.hasValue(name)) {
+            return "";
+        }
+
+        StringBuilder result = new StringBuilder();
+        boolean nextUpper = false;
+
+        for (char c : name.toCharArray()) {
+            if (c == '_') {
+                nextUpper = true;
+                continue;
+            }
+
+            if (nextUpper) {
+                result.append(Character.toUpperCase(c));
+                nextUpper = false;
+                continue;
+            }
+
+            result.append(Character.toLowerCase(c));
+        }
+
+        return result.toString();
+    }
 }

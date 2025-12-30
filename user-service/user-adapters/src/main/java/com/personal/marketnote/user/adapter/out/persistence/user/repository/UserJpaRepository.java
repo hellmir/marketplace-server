@@ -67,7 +67,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             FROM UserJpaEntity u
             WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
                 AND u.id = :id
-            ORDER BY u.id ASC
+            ORDER BY u.orderNum ASC
             """)
     Optional<UserJpaEntity> findById(@Param("id") Long id);
 
@@ -83,7 +83,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
               AND uov.authVendor = :authVendor
               AND uov.oidcId = :oidcId
               )
-            ORDER BY u.id ASC
+            ORDER BY u.orderNum ASC
             """)
     Optional<UserJpaEntity> findByAuthVendorAndOidcId(@Param("authVendor") AuthVendor authVendor,
                                                       @Param("oidcId") String oidcId);
@@ -94,7 +94,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             WHERE 1 = 1
                 AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
                 AND u.phoneNumber = :phoneNumber
-            ORDER BY u.id ASC
+            ORDER BY u.orderNum ASC
             """)
     Optional<UserJpaEntity> findByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 
@@ -104,7 +104,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             WHERE 1 = 1
                 AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
                 AND u.email = :email
-            ORDER BY u.id ASC
+            ORDER BY u.orderNum ASC
             """)
     Optional<UserJpaEntity> findByEmail(@Param("email") String email);
 
@@ -112,7 +112,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             SELECT u
             FROM UserJpaEntity u
             WHERE 1 = 1
-                AND u.id = :id
+                AND u.orderNum = :id
             """)
     Optional<UserJpaEntity> findAllStatusUserById(@Param("id") Long id);
 
@@ -128,7 +128,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             SELECT u
             FROM UserJpaEntity u
             WHERE 1 = 1
-            ORDER BY u.id ASC
+            ORDER BY u.orderNum ASC
             """)
     List<UserJpaEntity> findAllStatusUsers();
 
