@@ -22,9 +22,7 @@ import java.lang.annotation.*;
         
         ## Description
         
-        - 상품을 등록합니다.
-        
-        - 판매자 ID, 상품명은 필수입니다.
+        판매할 상품을 등록합니다.
         
         ---
         
@@ -33,9 +31,8 @@ import java.lang.annotation.*;
         | **키** | **타입** | **설명** | **필수 여부** | **예시** |
         | --- | --- | --- | --- | --- |
         | sellerId | number | 판매자 회원 ID | Y | 1 |
-        | name | string | 상품명 | Y | "건강기능식강1" |
+        | name | string | 상품명 | Y | "건강기능식품1" |
         | detail | string | 상품 설명 | N | "건강기능식품1 설명" |
-        | orderNumber | number | 정렬 순서 | N | 100 |
         
         ---
         
@@ -65,8 +62,7 @@ import java.lang.annotation.*;
                                 {
                                     "sellerId": 1,
                                     "name": "건강기능식품1",
-                                    "detail": "건강기능식품1 설명",
-                                    "orderNumber": 100
+                                    "detail": "건강기능식품1 설명"
                                 }
                                 """)
                 )

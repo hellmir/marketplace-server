@@ -19,8 +19,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static com.personal.marketnote.common.security.token.utility.TokenConstant.ISS_CLAIM_KEY;
 import static com.personal.marketnote.common.utility.ApiConstant.USER_ID_KEY;
-import static com.personal.marketnote.user.security.token.utility.TokenConstant.ISS_CLAIM_KEY;
 
 @Component
 @Profile("qa.test | prod")

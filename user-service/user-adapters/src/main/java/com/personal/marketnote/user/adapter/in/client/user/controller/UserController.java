@@ -30,8 +30,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
-import static com.personal.marketnote.user.security.token.utility.TokenConstant.ISS_CLAIM_KEY;
-import static com.personal.marketnote.user.security.token.utility.TokenConstant.SUB_CLAIM_KEY;
+import static com.personal.marketnote.common.security.token.utility.TokenConstant.ISS_CLAIM_KEY;
+import static com.personal.marketnote.common.security.token.utility.TokenConstant.SUB_CLAIM_KEY;
 
 // TODO: 로그인 내역 기능 추가
 

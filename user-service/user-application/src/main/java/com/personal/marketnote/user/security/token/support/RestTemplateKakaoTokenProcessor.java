@@ -23,8 +23,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Base64;
 
-import static com.personal.marketnote.user.security.token.utility.TokenConstant.AUTHENTICATION_SCHEME;
-import static com.personal.marketnote.user.security.token.utility.TokenConstant.SUB_CLAIM_KEY;
+import static com.personal.marketnote.common.security.token.utility.TokenConstant.AUTHENTICATION_SCHEME;
+import static com.personal.marketnote.common.security.token.utility.TokenConstant.SUB_CLAIM_KEY;
 
 @Component
 @Profile("qa.test | prod")
