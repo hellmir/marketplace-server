@@ -49,7 +49,6 @@ import static com.personal.marketnote.user.security.token.utility.TokenConstant.
 @Slf4j
 public class UserController {
     private final SignUpUseCase signUpUseCase;
-    private final RegisterEmailUseCase registerEmailUseCase;
     private final SignInUseCase signInUseCase;
     private final GetUserUseCase getUserUseCase;
     private final UpdateUserUseCase updateUserUseCase;
@@ -71,7 +70,8 @@ public class UserController {
     @SignUpApiDocs
     public ResponseEntity<BaseResponse<SignUpResponse>> signUpUser(
             @Valid @RequestBody SignUpRequest signUpRequest,
-            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
         AuthVendor authVendor = AuthVendor.NATIVE;
         String oidcId = null;
 
@@ -81,8 +81,9 @@ public class UserController {
             authVendor = resolveVendorFromIssuer(FormatConverter.toUpperCase(issuer));
         }
 
-        SignUpResult signUpResult = signUpUseCase.signUp(UserRequestToCommandMapper.mapToCommand(signUpRequest),
-                authVendor, oidcId);
+        SignUpResult signUpResult = signUpUseCase.signUp(
+                UserRequestToCommandMapper.mapToCommand(signUpRequest), authVendor, oidcId
+        );
 
         List<String> roleIds = List.of(signUpResult.roleId());
         Long id = signUpResult.id();
@@ -97,7 +98,8 @@ public class UserController {
                         DEFAULT_SUCCESS_CODE,
                         "회원 가입 성공"
                 ),
-                HttpStatus.CREATED);
+                HttpStatus.CREATED
+        );
     }
 
     /**
@@ -116,15 +118,18 @@ public class UserController {
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
         registerReferredUserCodeUseCase.registerReferredUserCode(
-                ElementExtractor.extractUserId(principal), referredUserCode);
+                ElementExtractor.extractUserId(principal), referredUserCode
+        );
 
         return new ResponseEntity<>(
                 BaseResponse.of(
                         null,
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
-                        "초대 코드 등록 성공"),
-                HttpStatus.OK);
+                        "초대 코드 등록 성공"
+                ),
+                HttpStatus.OK
+        );
     }
 
     /**
@@ -169,7 +174,8 @@ public class UserController {
                 BaseResponse.of(
                         SignInResponse.of(
                                 accessToken, refreshToken,
-                                signInResult.isRequiredTermsAgreed()),
+                                signInResult.isRequiredTermsAgreed()
+                        ),
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "회원 로그인 성공"
@@ -223,15 +229,18 @@ public class UserController {
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
         GetUserInfoResponse getUserInfoResponse = GetUserInfoResponse.from(
-                getUserUseCase.getUserInfo(ElementExtractor.extractUserId(principal)));
+                getUserUseCase.getUserInfo(ElementExtractor.extractUserId(principal))
+        );
 
         return new ResponseEntity<>(
                 BaseResponse.of(
                         getUserInfoResponse,
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
-                        "자신의 정보 조회 성공"),
-                HttpStatus.OK);
+                        "자신의 정보 조회 성공"
+                ),
+                HttpStatus.OK
+        );
     }
 
     /**
@@ -253,15 +262,18 @@ public class UserController {
         updateUserUseCase.updateUserInfo(
                 false,
                 ElementExtractor.extractUserId(principal),
-                UserRequestToCommandMapper.mapToCommand(updateUserInfoRequest));
+                UserRequestToCommandMapper.mapToCommand(updateUserInfoRequest)
+        );
 
         return new ResponseEntity<>(
                 BaseResponse.of(
                         null,
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
-                        "자신의 정보 수정 성공"),
-                HttpStatus.OK);
+                        "자신의 정보 수정 성공"
+                ),
+                HttpStatus.OK
+        );
     }
 
     /**
@@ -284,8 +296,10 @@ public class UserController {
                         SignOutResponse.of(accessToken, refreshToken),
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
-                        "회원 로그아웃 성공"),
-                HttpStatus.OK);
+                        "회원 로그아웃 성공"
+                ),
+                HttpStatus.OK
+        );
     }
 
     /**
@@ -310,7 +324,9 @@ public class UserController {
                         null,
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
-                        "회원 탈퇴 성공"),
-                HttpStatus.OK);
+                        "회원 탈퇴 성공"
+                ),
+                HttpStatus.OK
+        );
     }
 }

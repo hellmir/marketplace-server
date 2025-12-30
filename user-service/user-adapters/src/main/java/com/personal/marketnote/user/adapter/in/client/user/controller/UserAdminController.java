@@ -1,15 +1,19 @@
 package com.personal.marketnote.user.adapter.in.client.user.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
+import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.GetLoginHistoriesApiDocs;
 import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.GetUserInfoApiDocs;
 import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.GetUsersApiDocs;
 import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.UpdateUserInfoApiDocs;
 import com.personal.marketnote.user.adapter.in.client.user.mapper.UserRequestToCommandMapper;
 import com.personal.marketnote.user.adapter.in.client.user.request.UpdateUserInfoRequest;
+import com.personal.marketnote.user.adapter.in.client.user.response.GetLoginHistoriesResponse;
 import com.personal.marketnote.user.adapter.in.client.user.response.GetUserInfoResponse;
 import com.personal.marketnote.user.adapter.in.client.user.response.GetUsersResponse;
+import com.personal.marketnote.user.domain.user.LoginHistorySortProperty;
 import com.personal.marketnote.user.domain.user.SearchTarget;
 import com.personal.marketnote.user.domain.user.SortProperty;
+import com.personal.marketnote.user.port.in.usecase.user.GetLoginHistoryUseCase;
 import com.personal.marketnote.user.port.in.usecase.user.GetUserUseCase;
 import com.personal.marketnote.user.port.in.usecase.user.UpdateUserUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -43,9 +47,11 @@ import static com.personal.marketnote.common.utility.ApiConstant.DEFAULT_PAGE_NU
 @Slf4j
 public class UserAdminController {
     private static final String GET_USERS_DEFAULT_PAGE_SIZE = "10";
+    private static final String GET_LOGIN_HISTORIES_DEFAULT_PAGE_SIZE = "20";
 
     private final GetUserUseCase getUserUseCase;
     private final UpdateUserUseCase updateUserUseCase;
+    private final GetLoginHistoryUseCase getLoginHistoryUseCase;
 
     /**
      * (관리자) 회원 목록 조회
@@ -106,9 +112,7 @@ public class UserAdminController {
     @GetMapping("/{id}")
     @PreAuthorize(ADMIN_POINTCUT)
     @GetUserInfoApiDocs
-    public ResponseEntity<BaseResponse<GetUserInfoResponse>> getUserInfo(
-            @PathVariable Long id
-    ) {
+    public ResponseEntity<BaseResponse<GetUserInfoResponse>> getUserInfo(@PathVariable Long id) {
         GetUserInfoResponse getUserInfoResponse = GetUserInfoResponse.from(
                 getUserUseCase.getAllStatusUserInfo(id)
         );
@@ -150,6 +154,49 @@ public class UserAdminController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "회원 정보 수정 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * (관리자) 특정 회원의 로그인 내역 조회
+     *
+     * @param userId        회원 ID
+     * @param pageSize      페이지 크기
+     * @param pageNumber    페이지 번호
+     * @param sortDirection 정렬 방향
+     * @param sortProperty  정렬 속성
+     * @return 로그인 내역 목록 조회 응답 {@link GetLoginHistoriesResponse}
+     * @Author 시스템
+     * @Date 2025-12-30
+     * @Description 특정 회원의 로그인 내역을 조회합니다. 관리자만 가능합니다.
+     */
+    @GetMapping("/{userId}/login-histories")
+    @PreAuthorize(ADMIN_POINTCUT)
+    @GetLoginHistoriesApiDocs
+    public ResponseEntity<BaseResponse<GetLoginHistoriesResponse>> getLoginHistories(
+            @PathVariable Long userId,
+            @RequestParam(required = false, defaultValue = GET_LOGIN_HISTORIES_DEFAULT_PAGE_SIZE) int pageSize,
+            @RequestParam(required = false, defaultValue = DEFAULT_PAGE_NUMBER) int pageNumber,
+            @RequestParam(required = false, defaultValue = "DESC") Sort.Direction sortDirection,
+            @RequestParam(required = false, defaultValue = "ID") LoginHistorySortProperty sortProperty
+    ) {
+        GetLoginHistoriesResponse response = com.personal.marketnote.user.adapter.in.client.user.response.GetLoginHistoriesResponse.from(
+                getLoginHistoryUseCase.getLoginHistories(
+                        userId,
+                        pageSize,
+                        pageNumber - 1,
+                        sortDirection,
+                        sortProperty)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        response,
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "회원 로그인 내역 조회 성공"
                 ),
                 HttpStatus.OK
         );

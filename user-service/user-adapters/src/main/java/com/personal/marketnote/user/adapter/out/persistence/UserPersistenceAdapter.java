@@ -30,7 +30,7 @@ import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMIT
 @PersistenceAdapter
 @RequiredArgsConstructor
 public class UserPersistenceAdapter
-        implements SaveUserPort, FindUserPort, FindTermsPort, UpdateUserPort, SaveLoginHistoryPort {
+        implements SaveUserPort, FindUserPort, FindTermsPort, UpdateUserPort, SaveLoginHistoryPort, FindLoginHistoryPort {
     private final UserJpaRepository userJpaRepository;
     private final TermsJpaRepository termsJpaRepository;
     private final LoginHistoryJpaRepository loginHistoryJpaRepository;
@@ -77,7 +77,8 @@ public class UserPersistenceAdapter
     @Transactional(isolation = READ_UNCOMMITTED, readOnly = true, timeout = 120)
     public Optional<User> findByAuthVendorAndOidcId(AuthVendor authVendor, String oidcId) {
         return UserJpaEntityToDomainMapper.mapToDomain(
-                userJpaRepository.findByAuthVendorAndOidcId(authVendor, oidcId).orElse(null));
+                userJpaRepository.findByAuthVendorAndOidcId(authVendor, oidcId).orElse(null)
+        );
     }
 
     @Override
@@ -118,7 +119,8 @@ public class UserPersistenceAdapter
         boolean byRefCode = searchTarget == SearchTarget.REFERENCE_CODE;
 
         Page<UserJpaEntity> userJpaEntityPage = userJpaRepository.findAllStatusUsersByPage(
-                pageable, byId, byNickname, byEmail, byPhone, byRefCode, searchKeyword);
+                pageable, byId, byNickname, byEmail, byPhone, byRefCode, searchKeyword
+        );
 
         List<User> users = userJpaEntityPage
                 .stream()
@@ -156,8 +158,27 @@ public class UserPersistenceAdapter
         loginHistoryJpaRepository.save(entity);
     }
 
+    @Override
+    public Page<LoginHistory> findLoginHistoriesByUserId(Pageable pageable, Long userId) {
+        Page<LoginHistoryJpaEntity> page = loginHistoryJpaRepository.findLoginHistoriesByUserId(pageable, userId);
+
+        List<LoginHistory> histories = page.stream()
+                .map(e -> LoginHistory.of(
+                        e.getId(),
+                        UserJpaEntityToDomainMapper.mapToDomain(e.getUserJpaEntity()).orElseGet(
+                                () -> com.personal.marketnote.user.domain.user.User.referenceOf(e.getUserJpaEntity().getId())),
+                        e.getAuthVendor(),
+                        e.getIpAddress(),
+                        e.getCreatedAt())
+                )
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(histories, pageable, page.getTotalElements());
+    }
+
     private UserJpaEntity findEntityById(Long id) {
         return userJpaRepository.findAllStatusUserById(id).orElseThrow(
-                () -> new UserNotFoundException(String.format(USER_ID_NOT_FOUND_EXCEPTION_MESSAGE, id)));
+                () -> new UserNotFoundException(String.format(USER_ID_NOT_FOUND_EXCEPTION_MESSAGE, id))
+        );
     }
 }
