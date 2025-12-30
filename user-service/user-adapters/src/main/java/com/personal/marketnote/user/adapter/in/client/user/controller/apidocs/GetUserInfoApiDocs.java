@@ -74,7 +74,7 @@ import java.lang.annotation.*;
                 | lastLoggedInAt | string(datetime) | 마지막 로그인 일시 | "2025-12-29T10:19:52.558748" |
                 | status | string | 상태 | "ACTIVE" / "INACTIVE" / "DELETED" |
                 | isWithdrawn | boolean | 탈퇴 여부 | true / false |
-                
+                | orderNum | number | 정렬 순서 | 1 |
                 ---
                 
                 ### Response > content > userInfo > accountInfo
@@ -143,7 +143,8 @@ import java.lang.annotation.*;
                                               "roleId": "ROLE_BUYER",
                                               "lastLoggedInAt": "2025-12-28T16:23:26.964246",
                                               "status": "ACTIVE",
-                                              "isWithdrawn": false
+                                              "isWithdrawn": false,
+                                              "orderNum": 1
                                             }
                                           },
                                           "message": "회원 정보 조회 성공"
