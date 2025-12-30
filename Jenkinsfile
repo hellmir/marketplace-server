@@ -2,7 +2,7 @@ pipeline {
 	agent any
 
 	parameters {
-		choice(name: 'SERVICE', choices: ['auto','user-service','product-service','order-service'], description: '배포 대상 서비스')
+		choice(name: 'SERVICE', choices: ['auto','user-service','product-service'], description: '배포 대상 서비스')
 	}
 
 	environment {
@@ -25,7 +25,6 @@ pipeline {
 
 					def targetAdapters = [
 						'user-service'   : 'user-adapters',
-						'order-service'  : 'order-adapters',
 						'product-service': 'product-adapters'
 					]
 
@@ -147,19 +146,21 @@ pipeline {
 					withCredentials([
 						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_ECR_REPOSITORY',      variable: 'USER_SERVICE_ECR_REPOSITORY'),
 						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_ECR_REPOSITORY',   variable: 'PRODUCT_SERVICE_ECR_REPOSITORY'),
-						string(credentialsId: 'MARKETNOTE_QA_ORDER_SERVICE_ECR_REPOSITORY',     variable: 'ORDER_SERVICE_ECR_REPOSITORY'),
 
 						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_ECS_SERVICE_NAME',    variable: 'USER_SERVICE_ECS_SERVICE_NAME'),
 						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_ECS_SERVICE_NAME', variable: 'PRODUCT_SERVICE_ECS_SERVICE_NAME'),
-						string(credentialsId: 'MARKETNOTE_QA_ORDER_SERVICE_ECS_SERVICE_NAME',   variable: 'ORDER_SERVICE_ECS_SERVICE_NAME'),
 
 						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_TARGET_GROUP_ARN',    variable: 'USER_SERVICE_TARGET_GROUP_ARN'),
 						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_TARGET_GROUP_ARN', variable: 'PRODUCT_SERVICE_TARGET_GROUP_ARN'),
-						string(credentialsId: 'MARKETNOTE_QA_ORDER_SERVICE_TARGET_GROUP_ARN',   variable: 'ORDER_SERVICE_TARGET_GROUP_ARN'),
 
 						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_SERVER_ORIGIN',       variable: 'USER_SERVICE_SERVER_ORIGIN'),
 						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_SERVER_ORIGIN',    variable: 'PRODUCT_SERVICE_SERVER_ORIGIN'),
-						string(credentialsId: 'MARKETNOTE_QA_ORDER_SERVICE_SERVER_ORIGIN',      variable: 'ORDER_SERVICE_SERVER_ORIGIN')
+
+						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_DB_URL',              variable: 'USER_SERVICE_DB_URL'),
+                        string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_DB_URL',           variable: 'PRODUCT_SERVICE_DB_URL'),
+
+                        string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_DB_PASSWORD',         variable: 'USER_SERVICE_DB_PASSWORD'),
+                        string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_DB_PASSWORD',      variable: 'PRODUCT_SERVICE_DB_PASSWORD'),
 					]) {
 						def svc = env.SERVICE_NAME
 						if (svc == 'user-service') {
@@ -167,17 +168,16 @@ pipeline {
 							env.ECS_SERVICE_NAME = USER_SERVICE_ECS_SERVICE_NAME
 							env.TARGET_GROUP_ARN = USER_SERVICE_TARGET_GROUP_ARN
 							env.SERVER_ORIGIN = USER_SERVICE_SERVER_ORIGIN
+							env.DB_URL = USER_SERVICE_DB_URL
+							env.DB_PASSWORD = USER_SERVICE_DB_PASSWORD
 						} else if (svc == 'product-service') {
 							env.ECR_REPOSITORY = PRODUCT_SERVICE_ECR_REPOSITORY
 							env.ECS_SERVICE_NAME = PRODUCT_SERVICE_ECS_SERVICE_NAME
 							env.TARGET_GROUP_ARN = PRODUCT_SERVICE_TARGET_GROUP_ARN
 							env.SERVER_ORIGIN = PRODUCT_SERVICE_SERVER_ORIGIN
-						} else if (svc == 'order-service') {
-							env.ECR_REPOSITORY = ORDER_SERVICE_ECR_REPOSITORY
-							env.ECS_SERVICE_NAME = ORDER_SERVICE_ECS_SERVICE_NAME
-							env.TARGET_GROUP_ARN = ORDER_SERVICE_TARGET_GROUP_ARN
-							env.SERVER_ORIGIN = ORDER_SERVICE_SERVER_ORIGIN
-						} else {
+							env.DB_URL = PRODUCT_SERVICE_DB_URL
+                        	env.DB_PASSWORD = PRODUCT_SERVICE_DB_PASSWORD
+						}  else {
 							error "SERVICE_NAME not mapped: ${svc}"
 						}
 
@@ -383,9 +383,7 @@ pipeline {
 			steps {
 				script {
 					withCredentials([
-						string(credentialsId: 'MARKETNOTE_DB_URL',                          variable: 'DB_URL'),
 						string(credentialsId: 'MARKETNOTE_DB_USERNAME',                     variable: 'DB_USERNAME'),
-						string(credentialsId: 'MARKETNOTE_DB_PASSWORD',                     variable: 'DB_PASSWORD'),
 						string(credentialsId: 'MARKETNOTE_JWT_SECRET_KEY',                  variable: 'JWT_SECRET_KEY'),
 						string(credentialsId: 'MARKETNOTE_ACCESS_TOKEN_EXPIRATION_TIME',    variable: 'ACCESS_TOKEN_EXPIRATION_TIME'),
 						string(credentialsId: 'MARKETNOTE_REFRESH_TOKEN_EXPIRATION_TIME',   variable: 'REFRESH_TOKEN_EXPIRATION_TIME'),
