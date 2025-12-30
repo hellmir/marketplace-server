@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 public class UserJpaEntityToDomainMapper {
     public static Optional<User> mapToDomain(UserJpaEntity userJpaEntity) {
         return Optional.ofNullable(userJpaEntity)
-                .filter(Objects::nonNull)
                 .map(entity -> {
                     Role role = mapToDomain(entity.getRoleJpaEntity()).get();
                     List<UserTerms> userTerms = mapToDomain(entity.getUserTermsJpaEntities()).get();

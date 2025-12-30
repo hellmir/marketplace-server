@@ -7,7 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.stereotype.Component;
 
-import static com.personal.marketnote.user.security.token.utility.TokenConstant.AUTHENTICATION_SCHEME;
+import static com.personal.marketnote.common.security.token.utility.TokenConstant.AUTHENTICATION_SCHEME;
 
 @Component
 @Profile("!qa.test & !prod")

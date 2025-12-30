@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Configuration
 @Slf4j
-public class SpringDocConfig {
+public class UserSwaggerConfig {
     @Value("${server.origin}")
     private String serverOrigin;
 
