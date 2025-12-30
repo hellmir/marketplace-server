@@ -69,7 +69,21 @@ public class HmacJwtOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
         String sub = String.valueOf(payload.getOrDefault("sub", "-1"));
         Collection<GrantedAuthority> authorities = extractAuthorities(payload);
 
-        return new DefaultOAuth2AuthenticatedPrincipal(sub, payload, authorities);
+        // Spring Security는 exp/iat/nbf를 Instant로 기대하므로 변환
+        Map<String, Object> normalized = new HashMap<>(payload);
+        Object iatObj = payload.get("iat");
+        Object nbfObj = payload.get("nbf");
+        if (expObj instanceof Number n) {
+            normalized.put("exp", Instant.ofEpochSecond(n.longValue()));
+        }
+        if (iatObj instanceof Number n) {
+            normalized.put("iat", Instant.ofEpochSecond(n.longValue()));
+        }
+        if (nbfObj instanceof Number n) {
+            normalized.put("nbf", Instant.ofEpochSecond(n.longValue()));
+        }
+
+        return new DefaultOAuth2AuthenticatedPrincipal(sub, normalized, authorities);
     }
 
     private Map<String, Object> parsePart(String b64) {
