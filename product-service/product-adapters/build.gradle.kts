@@ -63,6 +63,10 @@ dependencies {
     testCompileOnly("org.projectlombok:lombok:$lombokVersion") // 빌드 타임에만 필요한 라이브러리
     testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion") // 애너테이션 프로세서 활성화
 
+    // security
+    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+
     // JSON parser
     implementation("org.json:json:20240303")
 
@@ -114,6 +118,11 @@ dependencies {
 
     // spring-data-redis sources (IDE에서 소스 자동 첨부가 안 될 때 CLI로 받기 위함)
     redisSources("org.springframework.data:spring-data-redis:3.5.4:sources")
+
+    // JWT
+    implementation("io.jsonwebtoken:jjwt-api:0.12.3")
+    implementation("io.jsonwebtoken:jjwt-impl:0.12.3")
+    implementation("io.jsonwebtoken:jjwt-jackson:0.12.3")
 }
 
 // ✅ 테스트 실행 시 JUnit 5 플랫폼 사용 설정

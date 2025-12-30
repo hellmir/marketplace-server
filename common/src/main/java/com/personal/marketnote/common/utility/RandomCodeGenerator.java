@@ -6,6 +6,7 @@ public class RandomCodeGenerator {
     private static final char[] REFERENCE_CODE_AALLOWED_LETTERS = "ABCDEFGHJKMNPQRTUVWXYZ".toCharArray();
     private static final char[] REFERENCE_CODE_ALLOWED_DIGITS = "2346789".toCharArray();
     private static final char[] ALL_ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".toCharArray();
+    private static final char[] ALL_DIGITS = "1234567890".toCharArray();
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
@@ -36,7 +37,7 @@ public class RandomCodeGenerator {
     private static String generateRandomCode(int length) {
         StringBuilder code = new StringBuilder(length);
         for (int i = 0; i < length; i++) {
-            code.append(ALL_ALLOWED_CHARS[SECURE_RANDOM.nextInt(ALL_ALLOWED_CHARS.length)]);
+            code.append(ALL_DIGITS[SECURE_RANDOM.nextInt(ALL_DIGITS.length)]);
         }
 
         return code.toString();
