@@ -125,6 +125,15 @@ public class User {
                 .build();
     }
 
+    public static User referenceOf(Long id) {
+        return User.builder()
+                .id(id)
+                .role(Role.getGuest())
+                .userOauth2Vendors(new ArrayList<>())
+                .userTerms(new ArrayList<>())
+                .build();
+    }
+
     public boolean isGuest() {
         return role.isGuest();
     }
