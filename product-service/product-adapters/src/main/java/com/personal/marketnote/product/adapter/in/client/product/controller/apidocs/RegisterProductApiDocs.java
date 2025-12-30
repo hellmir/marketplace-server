@@ -13,7 +13,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Operation(summary = "상품 등록", description = """
+@Operation(summary = "(판매자) 상품 등록", description = """
         작성일자: 2025-12-30
         
         작성자: 성효빈
@@ -22,7 +22,9 @@ import java.lang.annotation.*;
         
         ## Description
         
-        판매할 상품을 등록합니다.
+        - 판매할 상품을 등록합니다.
+        
+        - 판매자 또는 관리자만 가능합니다.
         
         ---
         
