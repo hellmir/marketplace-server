@@ -124,10 +124,6 @@ public class JwtUtil {
         return fromClaim;
     }
 
-    public String generateAccessToken(String id, List<String> roleIds, AuthVendor authVendor) {
-        return generateAccessToken(id, null, roleIds, authVendor);
-    }
-
     public String generateAccessToken(String id, Long userId, List<String> roleIds, AuthVendor authVendor) {
         validate(id, roleIds, authVendor);
 

@@ -3,6 +3,7 @@ package com.personal.marketnote.user.utility.jwt;
 import com.personal.marketnote.common.domain.exception.token.InvalidAccessTokenException;
 import com.personal.marketnote.common.domain.exception.token.InvalidRefreshTokenException;
 import com.personal.marketnote.common.domain.exception.token.UnsupportedCodeException;
+import com.personal.marketnote.common.utility.FormatConverter;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.port.out.user.FindUserPort;
 import com.personal.marketnote.user.security.token.dto.GrantedTokenInfo;
@@ -47,7 +48,7 @@ public class JwtDelegatingTokenSupportProxy extends DelegatingTokenSupport {
                 ? retrieveUserInfo(tokenFrom3rdParty.accessToken())
                 : null;
 
-        String accessToken = jwtUtil.generateAccessToken(oidcId, List.of(user.getRole().getId()), authVendor);
+        String accessToken = jwtUtil.generateAccessToken(oidcId, user.getId(), List.of(user.getRole().getId()), authVendor);
         String refreshToken = jwtUtil.generateRefreshToken(oidcId, List.of(user.getRole().getId()), authVendor);
 
         return GrantedTokenInfo.builder()
@@ -78,9 +79,10 @@ public class JwtDelegatingTokenSupportProxy extends DelegatingTokenSupport {
     public GrantedTokenInfo refreshToken(String refreshToken) throws InvalidRefreshTokenException {
         try {
             TokenClaims tokenClaims = jwtUtil.parseRefreshToken(refreshToken);
+            String id = tokenClaims.getId();
 
             return GrantedTokenInfo.builder()
-                    .accessToken(jwtUtil.generateAccessToken(tokenClaims.getId(), tokenClaims.getRoleIds(), tokenClaims.getAuthVendor()))
+                    .accessToken(jwtUtil.generateAccessToken(id, FormatConverter.parseToLong(id), tokenClaims.getRoleIds(), tokenClaims.getAuthVendor()))
                     .refreshToken(jwtUtil.generateRefreshToken(tokenClaims.getId(), tokenClaims.getRoleIds(), tokenClaims.getAuthVendor()))
                     .id(tokenClaims.getId())
                     .authVendor(tokenClaims.getAuthVendor())
