@@ -3,6 +3,7 @@ package com.personal.marketnote.product.adapter.out.persistence;
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
 import com.personal.marketnote.product.adapter.out.persistence.productcategory.entity.ProductCategoryJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.productcategory.repository.ProductCategoryJpaRepository;
+import com.personal.marketnote.product.port.out.productcategory.FindProductCategoryPort;
 import com.personal.marketnote.product.port.out.productcategory.ReplaceProductCategoriesPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +14,7 @@ import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMIT
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class ProductCategoryPersistenceAdapter implements ReplaceProductCategoriesPort {
+public class ProductCategoryPersistenceAdapter implements ReplaceProductCategoriesPort, FindProductCategoryPort {
     private final ProductCategoryJpaRepository productCategoryJpaRepository;
 
     @Override
@@ -29,5 +30,10 @@ public class ProductCategoryPersistenceAdapter implements ReplaceProductCategori
                 .toList();
 
         productCategoryJpaRepository.saveAll(toSave);
+    }
+
+    @Override
+    public boolean existsByCategoryId(Long categoryId) {
+        return productCategoryJpaRepository.existsByCategoryId(categoryId);
     }
 }

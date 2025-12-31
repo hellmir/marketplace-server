@@ -126,13 +126,13 @@ import java.lang.annotation.*;
                         )
                 ),
                 @ApiResponse(
-                        responseCode = "400",
-                        description = "유효하지 않은 상위 카테고리 ID",
+                        responseCode = "404",
+                        description = "존재하지 않는 상위 카테고리 ID",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 404,
-                                          "code": "ERR01",
+                                          "code": "NOT_FOUND",
                                           "timestamp": "2025-12-31T16:17:14.612354",
                                           "content": null,
                                           "message": "존재하지 않는 상위 카테고리 ID입니다. 전송된 상위 카테고리 ID: 1003"

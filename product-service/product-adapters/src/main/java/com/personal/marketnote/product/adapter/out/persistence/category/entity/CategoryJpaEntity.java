@@ -1,6 +1,7 @@
 package com.personal.marketnote.product.adapter.out.persistence.category.entity;
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseGeneralEntity;
+import com.personal.marketnote.product.domain.category.Category;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
@@ -27,6 +28,15 @@ public class CategoryJpaEntity extends BaseGeneralEntity {
                 .parentCategoryId(parentCategoryId)
                 .name(name)
                 .build();
+    }
+
+    public void updateFrom(Category category) {
+        parentCategoryId = category.getParentCategoryId();
+        name = category.getName();
+
+        if (category.isInactive()) {
+            deactivateEntity();
+        }
     }
 }
 

@@ -31,4 +31,12 @@ public class Category {
                 .status(status)
                 .build();
     }
+
+    public void delete() {
+        status = EntityStatus.INACTIVE;
+    }
+
+    public boolean isInactive() {
+        return status.isInactive();
+    }
 }
