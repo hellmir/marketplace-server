@@ -1,8 +1,10 @@
 package com.personal.marketnote.product.service.product;
 
 import com.personal.marketnote.common.application.UseCase;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.exception.ProductNotFoundException;
+import com.personal.marketnote.product.port.in.result.GetProductsResult;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
 import com.personal.marketnote.product.port.out.product.FindProductPort;
 import lombok.RequiredArgsConstructor;
@@ -20,5 +22,18 @@ public class GetProductService implements GetProductUseCase {
     public Product getProduct(Long id) {
         return findProductPort.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
+    }
+
+    @Override
+    public GetProductsResult getProducts(Long categoryId) {
+        if (FormatValidator.hasValue(categoryId)) {
+            return GetProductsResult.from(
+                    findProductPort.findAllActiveByCategoryId(categoryId)
+            );
+        }
+
+        return GetProductsResult.from(
+                findProductPort.findAllActive()
+        );
     }
 }

@@ -149,7 +149,7 @@ public class AuthenticationController {
      *
      * @param verifyCodeRequest 이메일 인증 코드 검증 요청
      * @Author 성효빈
-     * @Date 2025-01-01
+     * @Date 2026-01-01
      * @Description 이메일 인증 코드를 검증합니다.
      */
     @PostMapping("/verification")
