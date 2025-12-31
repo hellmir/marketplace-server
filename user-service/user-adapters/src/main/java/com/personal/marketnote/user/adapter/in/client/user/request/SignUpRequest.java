@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 
+import static com.personal.marketnote.common.domain.exception.ExceptionMessage.INVALID_EMAIL_EXCEPTION_MESSAGE;
+import static com.personal.marketnote.common.utility.RegularExpressionConstant.EMAIL_PATTERN;
 import static com.personal.marketnote.common.utility.RegularExpressionConstant.PHONE_NUMBER_PATTERN;
 
 // FIXME: 정규 표현식 재적용
@@ -16,7 +18,7 @@ public class SignUpRequest {
             requiredMode = Schema.RequiredMode.REQUIRED
     )
     @NotEmpty(message = "이메일 주소는 필수값입니다.")
-//    @Pattern(regexp = EMAIL_PATTERN, message = INVALID_EMAIL_EXCEPTION_MESSAGE)
+    @Pattern(regexp = EMAIL_PATTERN, message = INVALID_EMAIL_EXCEPTION_MESSAGE)
     private String email;
 
     @Schema(

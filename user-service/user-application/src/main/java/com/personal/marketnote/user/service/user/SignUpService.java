@@ -13,7 +13,7 @@ import com.personal.marketnote.user.port.in.command.SignUpCommand;
 import com.personal.marketnote.user.port.in.result.SignUpResult;
 import com.personal.marketnote.user.port.in.usecase.user.GetUserUseCase;
 import com.personal.marketnote.user.port.in.usecase.user.SignUpUseCase;
-import com.personal.marketnote.user.port.out.authentication.VerifyEmailVerificationCodePort;
+import com.personal.marketnote.user.port.out.authentication.VerifyCodePort;
 import com.personal.marketnote.user.port.out.user.*;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ public class SignUpService implements SignUpUseCase {
     private final FindTermsPort findTermsPort;
     private final PasswordEncoder passwordEncoder;
     private final UpdateUserPort updateUserPort;
-    private final VerifyEmailVerificationCodePort verifyEmailVerificationCodePort;
+    private final VerifyCodePort verifyCodePort;
     private final SaveLoginHistoryPort saveLoginHistoryPort;
 
     @Override
@@ -83,24 +83,27 @@ public class SignUpService implements SignUpUseCase {
 
         if (!authVendor.isNative() && findUserPort.existsByAuthVendorAndOidcId(authVendor, oidcId)) {
             throw new UserExistsException(
-                    String.format(OIDC_ID_ALREADY_EXISTS_EXCEPTION_MESSAGE, SECOND_ERROR_CODE, oidcId));
+                    String.format(OIDC_ID_ALREADY_EXISTS_EXCEPTION_MESSAGE, SECOND_ERROR_CODE, oidcId)
+            );
         }
 
         String nickname = signUpCommand.getNickname();
         if (findUserPort.existsByNickname(nickname)) {
             throw new UserExistsException(
-                    String.format(NICKNAME_ALREADY_EXISTS_EXCEPTION_MESSAGE, THIRD_ERROR_CODE, nickname));
+                    String.format(NICKNAME_ALREADY_EXISTS_EXCEPTION_MESSAGE, THIRD_ERROR_CODE, nickname)
+            );
         }
 
         String phoneNumber = signUpCommand.getPhoneNumber();
         if (signUpCommand.hasPhoneNumber() && findUserPort.existsByPhoneNumber(phoneNumber)) {
             throw new UserExistsException(
-                    String.format(PHONE_NUMBER_ALREADY_EXISTS_EXCEPTION_MESSAGE, FOURTH_ERROR_CODE, phoneNumber));
+                    String.format(PHONE_NUMBER_ALREADY_EXISTS_EXCEPTION_MESSAGE, FOURTH_ERROR_CODE, phoneNumber)
+            );
         }
 
         // 이메일 인증 코드 검증
         String email = signUpCommand.getEmail();
-        if (!verifyEmailVerificationCodePort.verifyAndConsume(email, signUpCommand.getVerificationCode())) {
+        if (!verifyCodePort.verify(email, signUpCommand.getVerificationCode())) {
             throw new InvalidVerificationCodeException(FIFTH_ERROR_CODE, email);
         }
     }

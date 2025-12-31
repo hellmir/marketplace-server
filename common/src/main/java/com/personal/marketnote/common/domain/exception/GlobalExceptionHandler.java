@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.mail.MailException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -277,8 +278,24 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    private ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException e) {
+    private ResponseEntity<ErrorResponse> handleMailException(IllegalStateException e) {
         httpStatus = HttpStatus.CONFLICT;
+        initializeMessage(e.getMessage());
+
+        log.info(LOG_INFO_MESSAGE, e.getMessage(), e);
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .statusCode(httpStatus.value())
+                .timestamp(LocalDateTime.now())
+                .code(code)
+                .message(message)
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
+    }
+
+    @ExceptionHandler(MailException.class)
+    private ResponseEntity<ErrorResponse> handleMailException(MailException e) {
+        httpStatus = HttpStatus.BAD_GATEWAY;
         initializeMessage(e.getMessage());
 
         log.info(LOG_INFO_MESSAGE, e.getMessage(), e);

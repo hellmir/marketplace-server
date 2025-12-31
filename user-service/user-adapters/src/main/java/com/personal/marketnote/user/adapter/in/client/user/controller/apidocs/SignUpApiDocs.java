@@ -125,6 +125,21 @@ import java.lang.annotation.*;
                         )
                 ),
                 @ApiResponse(
+                        responseCode = "401",
+                        description = "인증 코드 검증 실패",
+                        content = @Content(
+                                examples = @ExampleObject("""
+                                        {
+                                          "statusCode": 401,
+                                          "code": "ERR05",
+                                          "timestamp": "2025-12-282T09:23:22.091551",
+                                          "content": null,
+                                          "message": "이메일 인증 코드가 유효하지 않거나 만료되었습니다. 전송된 이메일 주소: example@example.com"
+                                        }
+                                        """)
+                        )
+                ),
+                @ApiResponse(
                         responseCode = "403",
                         description = "비활성화된 계정",
                         content = @Content(

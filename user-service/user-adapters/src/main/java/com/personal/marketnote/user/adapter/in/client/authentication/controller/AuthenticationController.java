@@ -5,16 +5,25 @@ import com.personal.marketnote.common.domain.exception.token.UnsupportedCodeExce
 import com.personal.marketnote.user.adapter.in.client.authentication.controller.apidocs.Oauth2LoginApiDocs;
 import com.personal.marketnote.user.adapter.in.client.authentication.controller.apidocs.RefreshAccessTokenApiDocs;
 import com.personal.marketnote.user.adapter.in.client.authentication.controller.apidocs.SendEmailVerificationApiDocs;
+import com.personal.marketnote.user.adapter.in.client.authentication.controller.apidocs.ValidateVerificationCodeApiDocs;
 import com.personal.marketnote.user.adapter.in.client.authentication.request.OAuth2LoginRequest;
 import com.personal.marketnote.user.adapter.in.client.authentication.request.RefreshAccessTokenRequest;
 import com.personal.marketnote.user.adapter.in.client.authentication.response.OAuth2LoginResponse;
 import com.personal.marketnote.user.adapter.in.client.authentication.response.RefreshedAccessTokenResponse;
 import com.personal.marketnote.user.adapter.in.client.authentication.response.WebBasedTokenRefreshResponse;
+import com.personal.marketnote.user.adapter.in.client.authentication.response.verifyCodeResponse;
+import com.personal.marketnote.user.adapter.in.client.user.mapper.UserRequestToCommandMapper;
+import com.personal.marketnote.user.adapter.in.client.user.request.verifyCodeRequest;
 import com.personal.marketnote.user.adapter.out.vendor.authentication.WebBasedAuthenticationServiceAdapter;
+import com.personal.marketnote.user.port.in.result.VerifyCodeResult;
 import com.personal.marketnote.user.port.in.usecase.authentication.SendEmailVerificationUseCase;
+import com.personal.marketnote.user.port.in.usecase.authentication.VerifyCodeUseCase;
 import com.personal.marketnote.user.security.token.dto.GrantedTokenInfo;
+import com.personal.marketnote.user.security.token.vendor.AuthVendor;
+import com.personal.marketnote.user.utility.jwt.JwtUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +31,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
 import static com.personal.marketnote.common.domain.exception.ExceptionMessage.INVALID_EMAIL_EXCEPTION_MESSAGE;
@@ -45,6 +56,8 @@ import static com.personal.marketnote.common.utility.RegularExpressionConstant.E
 public class AuthenticationController {
     private final WebBasedAuthenticationServiceAdapter authServiceAdapter;
     private final SendEmailVerificationUseCase sendEmailVerificationUseCase;
+    private final VerifyCodeUseCase verifyCodeUseCase;
+    private final JwtUtil jwtUtil;
 
     /**
      * OAuth2 로그인
@@ -126,6 +139,40 @@ public class AuthenticationController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "이메일 인증 요청 전송 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 이메일 인증 코드 검증
+     *
+     * @param verifyCodeRequest 이메일 인증 코드 검증 요청
+     * @Author 성효빈
+     * @Date 2025-01-01
+     * @Description 이메일 인증 코드를 검증합니다.
+     */
+    @PostMapping("/verification")
+    @ValidateVerificationCodeApiDocs
+    public ResponseEntity<BaseResponse<verifyCodeResponse>> verifyCode(
+            @Valid @RequestBody verifyCodeRequest verifyCodeRequest
+    ) {
+        VerifyCodeResult result = verifyCodeUseCase.verifyCode(
+                UserRequestToCommandMapper.mapToCommand(verifyCodeRequest)
+        );
+
+        List<String> roleIds = List.of(result.roleId());
+        Long id = result.id();
+        String subject = String.valueOf(result.id());
+        String accessToken = jwtUtil.generateAccessToken(subject, id, roleIds, AuthVendor.NATIVE);
+        String refreshToken = jwtUtil.generateRefreshToken(subject, id, roleIds, AuthVendor.NATIVE);
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        verifyCodeResponse.of(accessToken, refreshToken),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "이메일 인증 코드 검증 성공"
                 ),
                 HttpStatus.OK
         );

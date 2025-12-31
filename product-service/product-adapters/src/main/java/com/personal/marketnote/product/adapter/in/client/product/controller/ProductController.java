@@ -3,15 +3,19 @@ package com.personal.marketnote.product.adapter.in.client.product.controller;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.AuthorityValidator;
 import com.personal.marketnote.common.utility.ElementExtractor;
+import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.GetProductsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductCategoriesApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductCategoriesRequest;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductRequest;
+import com.personal.marketnote.product.adapter.in.client.product.response.GetProductsResponse;
 import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductCategoriesResponse;
 import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductResponse;
+import com.personal.marketnote.product.port.in.result.GetProductsResult;
 import com.personal.marketnote.product.port.in.result.RegisterProductCategoriesResult;
 import com.personal.marketnote.product.port.in.result.RegisterProductResult;
+import com.personal.marketnote.product.port.in.usecase.product.GetProductsUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterProductCategoriesUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterProductUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,53 +37,59 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER
 @Tag(name = "상품 API", description = "상품 관련 API")
 @RequiredArgsConstructor
 @Slf4j
-@PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
 public class ProductController {
     private final RegisterProductUseCase registerProductUseCase;
     private final RegisterProductCategoriesUseCase registerProductCategoriesUseCase;
+    private final GetProductsUseCase getProductsUseCase;
 
     @PostMapping
+    @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
     @RegisterProductApiDocs
     public ResponseEntity<BaseResponse<RegisterProductResponse>> registerProduct(
-            @Valid @RequestBody RegisterProductRequest request
-    ) {
+            @Valid @RequestBody RegisterProductRequest request) {
         RegisterProductResult result = registerProductUseCase.registerProduct(
-                ProductRequestToCommandMapper.mapToCommand(request)
-        );
+                ProductRequestToCommandMapper.mapToCommand(request));
 
         return new ResponseEntity<>(
                 BaseResponse.of(
                         RegisterProductResponse.from(result),
                         HttpStatus.CREATED,
                         DEFAULT_SUCCESS_CODE,
-                        "상품 등록 성공"
-                ),
-                HttpStatus.CREATED
-        );
+                        "상품 등록 성공"),
+                HttpStatus.CREATED);
     }
 
     @PutMapping("{productId}/categories")
+    @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
     @RegisterProductCategoriesApiDocs
     public ResponseEntity<BaseResponse<RegisterProductCategoriesResponse>> registerProductCategories(
             @PathVariable("productId") Long productId,
             @Valid @RequestBody RegisterProductCategoriesRequest request,
-            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
-    ) {
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
         RegisterProductCategoriesResult result = registerProductCategoriesUseCase.registerProductCategories(
                 ElementExtractor.extractUserId(principal),
                 AuthorityValidator.hasAdminRole(principal),
-                ProductRequestToCommandMapper.mapToCommand(productId, request)
-        );
+                ProductRequestToCommandMapper.mapToCommand(productId, request));
 
         return ResponseEntity.ok(
                 BaseResponse.of(
                         RegisterProductCategoriesResponse.from(result),
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
-                        "상품 카테고리 등록 성공"
-                )
-        );
+                        "상품 카테고리 등록 성공"));
+    }
+
+    @GetMapping
+    @GetProductsApiDocs
+    public ResponseEntity<BaseResponse<GetProductsResponse>> getProducts(
+            @RequestParam(value = "categoryId", required = false) Long categoryId) {
+        GetProductsResult result = getProductsUseCase.getProducts(categoryId);
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        GetProductsResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "상품 목록 조회 성공"));
     }
 }
-
-

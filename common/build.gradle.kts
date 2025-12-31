@@ -59,6 +59,9 @@ dependencies {
     // 스웨거 API 문서 생성
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
 
+    // SMTP 서버 통신 관련
+    implementation("org.springframework:spring-context-support")
+
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

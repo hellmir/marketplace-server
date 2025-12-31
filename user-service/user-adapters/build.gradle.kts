@@ -87,6 +87,7 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test") // Spring Security 테스트 지원
     testRuntimeOnly("org.junit.platform:junit-platform-launcher") // JUnit 테스트 런처
     testImplementation("org.awaitility:awaitility:4.2.0") // 비동기,스케줄링 테스트 지원
+
     // 🔹 추가 라이브러리
     // dotenv
     implementation("io.github.cdimascio:dotenv-java:$dotenvVersion")
