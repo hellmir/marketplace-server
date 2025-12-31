@@ -13,7 +13,6 @@ import com.personal.marketnote.product.port.out.category.SaveCategoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.personal.marketnote.common.domain.exception.ExceptionCode.FIRST_ERROR_CODE;
 import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
 
 @UseCase
@@ -34,7 +33,6 @@ public class RegisterCategoryService implements RegisterCategoryUseCase {
         ) {
             throw new CategoryNotFoundException(
                     "%s::존재하지 않는 상위 카테고리 ID입니다. 전송된 상위 카테고리 ID: %d",
-                    FIRST_ERROR_CODE,
                     parentCategoryId
             );
         }

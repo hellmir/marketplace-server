@@ -1,15 +1,18 @@
 package com.personal.marketnote.product.adapter.in.client.category.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
+import com.personal.marketnote.product.adapter.in.client.category.controller.apidocs.DeleteCategoryApiDocs;
 import com.personal.marketnote.product.adapter.in.client.category.controller.apidocs.GetCategoriesApiDocs;
 import com.personal.marketnote.product.adapter.in.client.category.controller.apidocs.RegisterCategoryApiDocs;
 import com.personal.marketnote.product.adapter.in.client.category.request.RegisterCategoryRequest;
 import com.personal.marketnote.product.adapter.in.client.category.response.GetCategoriesResponse;
 import com.personal.marketnote.product.adapter.in.client.category.response.RegisterCategoryResponse;
 import com.personal.marketnote.product.adapter.in.client.product.mapper.CategoryRequestToCommandMapper;
+import com.personal.marketnote.product.port.in.command.DeleteCategoryCommand;
 import com.personal.marketnote.product.port.in.result.GetCategoriesResult;
 import com.personal.marketnote.product.port.in.result.RegisterCategoryResult;
-import com.personal.marketnote.product.port.in.usecase.category.GetCategoriesUseCase;
+import com.personal.marketnote.product.port.in.usecase.category.DeleteCategoryUseCase;
+import com.personal.marketnote.product.port.in.usecase.category.GetCategoryUseCase;
 import com.personal.marketnote.product.port.in.usecase.category.RegisterCategoryUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +31,9 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 @RequiredArgsConstructor
 @Slf4j
 public class CategoryController {
-    private final GetCategoriesUseCase getCategoriesUseCase;
+    private final GetCategoryUseCase getCategoryUseCase;
     private final RegisterCategoryUseCase registerCategoryUseCase;
+    private final DeleteCategoryUseCase deleteCategoryUseCase;
 
     @PostMapping
     @PreAuthorize(ADMIN_POINTCUT)
@@ -57,7 +61,7 @@ public class CategoryController {
     public ResponseEntity<BaseResponse<GetCategoriesResponse>> getCategories(
             @RequestParam(value = "parentId", required = false) Long parentCategoryId
     ) {
-        GetCategoriesResult result = getCategoriesUseCase.getCategoriesByParentId(parentCategoryId);
+        GetCategoriesResult result = getCategoryUseCase.getCategoriesByParentId(parentCategoryId);
 
         return ResponseEntity.ok(
                 BaseResponse.of(
@@ -65,6 +69,25 @@ public class CategoryController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "카테고리 목록 조회 성공"
+                )
+        );
+    }
+
+    @DeleteMapping("/{categoryId}")
+    @PreAuthorize(ADMIN_POINTCUT)
+    @DeleteCategoryApiDocs
+    public ResponseEntity<BaseResponse<Void>> deleteCategory(
+            @PathVariable("categoryId") Long categoryId
+    ) {
+        deleteCategoryUseCase.deleteCategory(
+                DeleteCategoryCommand.of(categoryId)
+        );
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "카테고리 삭제 성공"
                 )
         );
     }

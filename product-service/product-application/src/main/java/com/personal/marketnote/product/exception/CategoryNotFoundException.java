@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class CategoryNotFoundException extends EntityNotFoundException {
-    public CategoryNotFoundException(String message, String code, Long parentCategoryId) {
-        super(String.format(message, code, parentCategoryId));
+    public CategoryNotFoundException(String message, Long parentCategoryId) {
+        super(String.format(message, parentCategoryId));
     }
 }
