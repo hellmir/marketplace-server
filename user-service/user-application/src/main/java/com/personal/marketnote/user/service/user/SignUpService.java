@@ -41,6 +41,42 @@ public class SignUpService implements SignUpUseCase {
 
     @Override
     public SignUpResult signUp(SignUpCommand signUpCommand, AuthVendor authVendor, String oidcId, String ipAddress) {
+        validate(signUpCommand, authVendor, oidcId);
+
+        String email = signUpCommand.getEmail();
+        String password = signUpCommand.getPassword();
+
+        // 이메일 가입 정보가 있는 경우 기존 회원 엔티티에 통합
+        if (findUserPort.existsByEmail(email)) {
+            User signedUpUser = addLoginAccountInfo(email, password, authVendor, oidcId, ipAddress);
+
+            return SignUpResult.from(signedUpUser, false);
+        }
+
+        List<Terms> terms = findTermsPort.findAll();
+        String referenceCode = RandomCodeGenerator.generateReferenceCode();
+
+        User signedUpUser = saveUserPort.save(
+                User.from(
+                        authVendor,
+                        oidcId,
+                        signUpCommand.getNickname(),
+                        email,
+                        password,
+                        passwordEncoder,
+                        signUpCommand.getFullName(),
+                        signUpCommand.getPhoneNumber(),
+                        terms,
+                        referenceCode
+                )
+        );
+
+        saveLoginHistoryPort.saveLoginHistory(LoginHistory.of(signedUpUser, authVendor, ipAddress));
+
+        return SignUpResult.from(signedUpUser, true);
+    }
+
+    private void validate(SignUpCommand signUpCommand, AuthVendor authVendor, String oidcId) {
         if (authVendor.isNative() && !signUpCommand.hasPassword()) {
             throw new PasswordNoValueException(FIRST_ERROR_CODE);
         }
@@ -62,55 +98,33 @@ public class SignUpService implements SignUpUseCase {
                     String.format(PHONE_NUMBER_ALREADY_EXISTS_EXCEPTION_MESSAGE, FOURTH_ERROR_CODE, phoneNumber));
         }
 
-        String email = signUpCommand.getEmail();
-
         // 이메일 인증 코드 검증
+        String email = signUpCommand.getEmail();
         if (!verifyEmailVerificationCodePort.verifyAndConsume(email, signUpCommand.getVerificationCode())) {
             throw new InvalidVerificationCodeException(FIFTH_ERROR_CODE, email);
         }
+    }
 
-        // 이메일 가입 정보가 있는 경우 기존 회원 엔티티에 통합
-        if (findUserPort.existsByEmail(email)) {
-            User signedUpUser = getUserUseCase.getAllStatusUser(email);
+    private User addLoginAccountInfo(
+            String email, String password, AuthVendor authVendor, String oidcId, String ipAddress
+    ) {
+        User signedUpUser = getUserUseCase.getAllStatusUser(email);
 
-            // 탈퇴 회원인 경우 재활성화
-            if (signedUpUser.isWithdrawn()) {
-                signedUpUser.cancelWithdrawal();
-                signedUpUser.activate();
-            }
-
-            // 계정 활성화 여부 검증
-            if (signedUpUser.isActive()) {
-                signedUpUser.addLoginAccountInfo(authVendor, oidcId, signUpCommand.getPassword(), passwordEncoder);
-                updateUserPort.update(signedUpUser);
-                saveLoginHistoryPort.saveLoginHistory(LoginHistory.of(signedUpUser, authVendor, ipAddress));
-
-                return SignUpResult.from(signedUpUser, false);
-            }
-
-            throw new UserNotActiveException(SIXTH_ERROR_CODE, email);
+        // 탈퇴 회원인 경우 재활성화
+        if (signedUpUser.isWithdrawn()) {
+            signedUpUser.cancelWithdrawal();
+            signedUpUser.activate();
         }
 
-        List<Terms> terms = findTermsPort.findAll();
-        String referenceCode = RandomCodeGenerator.generateReferenceCode();
+        // 계정 활성화 여부 검증
+        if (signedUpUser.isActive()) {
+            signedUpUser.addLoginAccountInfo(authVendor, oidcId, password, passwordEncoder);
+            updateUserPort.update(signedUpUser);
+            saveLoginHistoryPort.saveLoginHistory(LoginHistory.of(signedUpUser, authVendor, ipAddress));
 
-        User signedUpUser = saveUserPort.save(
-                User.from(
-                        authVendor,
-                        oidcId,
-                        signUpCommand.getNickname(),
-                        signUpCommand.getEmail(),
-                        signUpCommand.getPassword(),
-                        passwordEncoder,
-                        signUpCommand.getFullName(),
-                        signUpCommand.getPhoneNumber(),
-                        terms,
-                        referenceCode
-                )
-        );
+            return signedUpUser;
+        }
 
-        saveLoginHistoryPort.saveLoginHistory(LoginHistory.of(signedUpUser, authVendor, ipAddress));
-
-        return SignUpResult.from(signedUpUser, true);
+        throw new UserNotActiveException(SIXTH_ERROR_CODE, email);
     }
 }
