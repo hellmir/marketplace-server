@@ -1,0 +1,50 @@
+package com.personal.marketnote.product.service.category;
+
+import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
+import com.personal.marketnote.common.application.UseCase;
+import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.product.domain.category.Category;
+import com.personal.marketnote.product.exception.CategoryNotFoundException;
+import com.personal.marketnote.product.port.in.command.RegisterCategoryCommand;
+import com.personal.marketnote.product.port.in.result.RegisterCategoryResult;
+import com.personal.marketnote.product.port.in.usecase.category.RegisterCategoryUseCase;
+import com.personal.marketnote.product.port.out.category.FindCategoryPort;
+import com.personal.marketnote.product.port.out.category.SaveCategoryPort;
+import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
+
+import static com.personal.marketnote.common.domain.exception.ExceptionCode.FIRST_ERROR_CODE;
+import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
+
+@UseCase
+@RequiredArgsConstructor
+@Transactional(isolation = READ_UNCOMMITTED)
+public class RegisterCategoryService implements RegisterCategoryUseCase {
+    private final SaveCategoryPort saveCategoryPort;
+    private final FindCategoryPort findCategoryPort;
+
+    @Override
+    public RegisterCategoryResult registerCategory(RegisterCategoryCommand command) {
+        Long parentCategoryId = command.parentCategoryId();
+        String name = command.name();
+
+        if (
+                FormatValidator.hasValue(parentCategoryId)
+                        && findCategoryPort.findAllActiveByIds(java.util.List.of(parentCategoryId)).isEmpty()
+        ) {
+            throw new CategoryNotFoundException(
+                    "%s::존재하지 않는 상위 카테고리 ID입니다. 전송된 상위 카테고리 ID: %d",
+                    FIRST_ERROR_CODE,
+                    parentCategoryId
+            );
+        }
+
+        Category savedCategory = saveCategoryPort.save(
+                Category.of(parentCategoryId, name, EntityStatus.ACTIVE)
+        );
+
+        return RegisterCategoryResult.from(savedCategory);
+    }
+}
+
+
