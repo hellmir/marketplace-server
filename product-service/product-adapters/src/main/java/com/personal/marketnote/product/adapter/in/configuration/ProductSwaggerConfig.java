@@ -31,6 +31,7 @@ public class ProductSwaggerConfig {
     private String serverOrigin;
 
     private static final List<String> TAGS_ORDER = List.of(
+            "카테고리 API",
             "상품 API"
     );
 
