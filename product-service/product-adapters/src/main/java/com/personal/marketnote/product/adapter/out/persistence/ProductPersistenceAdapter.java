@@ -6,12 +6,13 @@ import com.personal.marketnote.product.adapter.out.persistence.product.entity.Pr
 import com.personal.marketnote.product.adapter.out.persistence.product.repository.ProductJpaRepository;
 import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.port.out.product.FindProductPort;
+import com.personal.marketnote.product.port.out.product.FindProductsPort;
 import com.personal.marketnote.product.port.out.product.SaveProductPort;
 import lombok.RequiredArgsConstructor;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class ProductPersistenceAdapter implements SaveProductPort, FindProductPort {
+public class ProductPersistenceAdapter implements SaveProductPort, FindProductPort, FindProductsPort {
     private final ProductJpaRepository productJpaRepository;
 
     @Override
@@ -30,9 +31,21 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
     @Override
     public java.util.Optional<Product> findById(Long productId) {
         return ProductJpaEntityToDomainMapper.mapToDomain(
-                productJpaRepository.findById(productId).orElse(null)
-        );
+                productJpaRepository.findById(productId).orElse(null));
+    }
+
+    @Override
+    public java.util.List<com.personal.marketnote.product.domain.product.Product> findAllActive() {
+        return productJpaRepository.findAllByStatusOrderByOrderNumAsc(
+                        com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE).stream()
+                .map(entity -> ProductJpaEntityToDomainMapper.mapToDomain(entity).get())
+                .toList();
+    }
+
+    @Override
+    public java.util.List<com.personal.marketnote.product.domain.product.Product> findAllActiveByCategoryId(Long categoryId) {
+        return productJpaRepository.findAllActiveByCategoryId(categoryId).stream()
+                .map(entity -> ProductJpaEntityToDomainMapper.mapToDomain(entity).get())
+                .toList();
     }
 }
-
-

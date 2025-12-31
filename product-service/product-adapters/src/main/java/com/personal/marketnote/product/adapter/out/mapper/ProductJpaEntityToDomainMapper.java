@@ -1,6 +1,5 @@
 package com.personal.marketnote.product.adapter.out.mapper;
 
-import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
 import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
 import com.personal.marketnote.product.domain.product.Product;
 
@@ -17,7 +16,7 @@ public class ProductJpaEntityToDomainMapper {
                                 productJpaEntity.getDetail(),
                                 productJpaEntity.getSales(),
                                 productJpaEntity.getOrderNum(),
-                                EntityStatus.ACTIVE
+                                productJpaEntity.getStatus()
                         )
                 );
     }

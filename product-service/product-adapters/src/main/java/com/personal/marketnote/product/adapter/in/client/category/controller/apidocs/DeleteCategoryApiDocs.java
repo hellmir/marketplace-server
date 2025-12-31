@@ -48,7 +48,7 @@ import java.lang.annotation.*;
                 | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
                 | code | string | 응답 코드 | "SUC01" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "ERR01" / "ERR02" |
                 | timestamp | string(datetime) | 응답 일시 | "2025-12-31T16:30:14.004058" |
-                | content | object | 응답 본문 | { ... } |
+                | content | object | 응답 본문 | null |
                 | message | string | 처리 결과 | "카테고리 삭제 성공" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
