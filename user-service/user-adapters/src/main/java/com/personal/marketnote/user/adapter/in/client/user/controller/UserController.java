@@ -94,14 +94,20 @@ public class UserController {
         String accessToken = jwtUtil.generateAccessToken(subject, id, roleIds, authVendor);
         String refreshToken = jwtUtil.generateRefreshToken(subject, id, roleIds, authVendor);
 
+        HttpStatus httpStatus = HttpStatus.CREATED;
+        boolean isNewUser = signUpResult.isNewUser();
+        if (isNewUser) {
+            httpStatus = HttpStatus.OK;
+        }
+
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        SignUpResponse.of(accessToken, refreshToken, signUpResult.isNewUser()),
-                        HttpStatus.CREATED,
+                        SignUpResponse.of(accessToken, refreshToken, isNewUser),
+                        httpStatus,
                         DEFAULT_SUCCESS_CODE,
                         "회원 가입 성공"
                 ),
-                HttpStatus.CREATED
+                httpStatus
         );
     }
 

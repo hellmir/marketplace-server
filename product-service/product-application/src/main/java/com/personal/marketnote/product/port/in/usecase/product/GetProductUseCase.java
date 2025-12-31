@@ -1,6 +1,7 @@
 package com.personal.marketnote.product.port.in.usecase.product;
 
 import com.personal.marketnote.product.domain.product.Product;
+import com.personal.marketnote.product.port.in.result.GetProductsResult;
 
 public interface GetProductUseCase {
     /**
@@ -11,4 +12,6 @@ public interface GetProductUseCase {
      * @Description 상품을 조회합니다.
      */
     Product getProduct(Long id);
+
+    GetProductsResult getProducts(Long categoryId);
 }

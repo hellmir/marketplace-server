@@ -15,7 +15,7 @@ import com.personal.marketnote.product.adapter.in.client.product.response.Regist
 import com.personal.marketnote.product.port.in.result.GetProductsResult;
 import com.personal.marketnote.product.port.in.result.RegisterProductCategoriesResult;
 import com.personal.marketnote.product.port.in.result.RegisterProductResult;
-import com.personal.marketnote.product.port.in.usecase.product.GetProductsUseCase;
+import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterProductCategoriesUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterProductUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,7 +40,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER
 public class ProductController {
     private final RegisterProductUseCase registerProductUseCase;
     private final RegisterProductCategoriesUseCase registerProductCategoriesUseCase;
-    private final GetProductsUseCase getProductsUseCase;
+    private final GetProductUseCase getProductUseCase;
 
     @PostMapping
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
@@ -55,8 +55,10 @@ public class ProductController {
                         RegisterProductResponse.from(result),
                         HttpStatus.CREATED,
                         DEFAULT_SUCCESS_CODE,
-                        "상품 등록 성공"),
-                HttpStatus.CREATED);
+                        "상품 등록 성공"
+                ),
+                HttpStatus.CREATED
+        );
     }
 
     @PutMapping("{productId}/categories")
@@ -76,20 +78,24 @@ public class ProductController {
                         RegisterProductCategoriesResponse.from(result),
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
-                        "상품 카테고리 등록 성공"));
+                        "상품 카테고리 등록 성공"
+                )
+        );
     }
 
     @GetMapping
     @GetProductsApiDocs
     public ResponseEntity<BaseResponse<GetProductsResponse>> getProducts(
             @RequestParam(value = "categoryId", required = false) Long categoryId) {
-        GetProductsResult result = getProductsUseCase.getProducts(categoryId);
+        GetProductsResult result = getProductUseCase.getProducts(categoryId);
 
         return ResponseEntity.ok(
                 BaseResponse.of(
                         GetProductsResponse.from(result),
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
-                        "상품 목록 조회 성공"));
+                        "상품 목록 조회 성공"
+                )
+        );
     }
 }

@@ -16,7 +16,7 @@ import java.lang.annotation.*;
 @Operation(
         summary = "이메일 인증 코드 검증",
         description = """
-                작성일자: 2025-01-01
+                작성일자: 2026-01-01
                 
                 작성자: 성효빈
                 
@@ -42,7 +42,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 201: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
                 | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "NOT_FOUND" / "CONFLICT" / "ERR01" / "ERR02" |
-                | timestamp | string(datetime) | 응답 일시 | "2025-01-01T12:12:30.013" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-01-01T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
                 | message | string | 처리 결과 | "이메일 인증 코드 검증 성공" |
                 
@@ -77,7 +77,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2025-01-01T12:12:30.013",
+                                          "timestamp": "2026-01-01T12:12:30.013",
                                           "content": {
                                             "accessToken": "f8310f8asohvh80scvh0zio3hr31d",
                                             "refreshToken": "f8310f8asohvh80scvh0zio3hr31d"
@@ -95,7 +95,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 401,
                                           "code": "ERR01",
-                                          "timestamp": "2025-01-01T09:23:22.091551",
+                                          "timestamp": "2026-01-01T09:23:22.091551",
                                           "content": null,
                                           "message": "이메일 인증 코드가 유효하지 않거나 만료되었습니다. 전송된 이메일 주소: example@example.com"
                                         }
@@ -110,7 +110,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 404,
                                           "code": "NOT_FOUND",
-                                          "timestamp": "2025-01-01T09:23:22.091551",
+                                          "timestamp": "2026-01-01T09:23:22.091551",
                                           "content": null,
                                           "message": "존재하지 않는 회원입니다. 전송된 회원 이메일 주소: example@example.com"
                                         }
@@ -125,7 +125,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 403,
                                           "code": "ERR02",
-                                          "timestamp": "2025-01-01T09:23:22.091551",
+                                          "timestamp": "2026-01-01T09:23:22.091551",
                                           "content": null,
                                           "message": "비활성화된 계정입니다. 전송된 이메일 주소: example@example.com"
                                         }

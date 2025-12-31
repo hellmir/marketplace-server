@@ -33,8 +33,8 @@ import java.lang.annotation.*;
         | **키** | **타입** | **설명** | **필수 여부** | **예시** |
         | --- | --- | --- | --- | --- |
         | sellerId | number | 판매자 회원 ID | Y | 1 |
-        | name | string | 상품명 | Y | "건강기능식품1" |
-        | detail | string | 상품 설명 | N | "건강기능식품1 설명" |
+        | name | string | 상품명 | Y | "파우더커피1" |
+        | detail | string | 상품 설명 | N | "파우더커피1 설명" |
         
         ---
         
@@ -63,8 +63,8 @@ import java.lang.annotation.*;
                         examples = @ExampleObject("""
                                 {
                                     "sellerId": 1,
-                                    "name": "건강기능식품1",
-                                    "detail": "건강기능식품1 설명"
+                                    "name": "파우더커피1",
+                                    "detail": "파우더커피1 설명"
                                 }
                                 """)
                 )
