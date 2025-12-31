@@ -21,6 +21,13 @@ public class CategoryJpaEntity extends BaseGeneralEntity {
 
     @Column(name = "name", nullable = false, length = 127)
     private String name;
+
+    public static CategoryJpaEntity of(Long parentCategoryId, String name) {
+        return CategoryJpaEntity.builder()
+                .parentCategoryId(parentCategoryId)
+                .name(name)
+                .build();
+    }
 }
 
 

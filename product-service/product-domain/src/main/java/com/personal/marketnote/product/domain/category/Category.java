@@ -11,9 +11,17 @@ import lombok.Getter;
 @Getter
 public class Category {
     private Long id;
-    private Long parentCategoryId; // null이면 루트
+    private Long parentCategoryId;
     private String name;
     private EntityStatus status;
+
+    public static Category of(Long parentCategoryId, String name, EntityStatus status) {
+        return Category.builder()
+                .parentCategoryId(parentCategoryId)
+                .name(name)
+                .status(status)
+                .build();
+    }
 
     public static Category of(Long id, Long parentCategoryId, String name, EntityStatus status) {
         return Category.builder()
