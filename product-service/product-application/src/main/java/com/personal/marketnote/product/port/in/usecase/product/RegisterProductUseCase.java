@@ -6,5 +6,3 @@ import com.personal.marketnote.product.port.in.result.RegisterProductResult;
 public interface RegisterProductUseCase {
     RegisterProductResult registerProduct(RegisterProductCommand command);
 }
-
-

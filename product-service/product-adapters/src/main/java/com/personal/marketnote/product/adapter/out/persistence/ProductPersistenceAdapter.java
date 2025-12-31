@@ -23,6 +23,11 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
     }
 
     @Override
+    public boolean existsByIdAndSellerId(Long productId, Long sellerId) {
+        return productJpaRepository.existsByIdAndSellerId(productId, sellerId);
+    }
+
+    @Override
     public java.util.Optional<Product> findById(Long productId) {
         return ProductJpaEntityToDomainMapper.mapToDomain(
                 productJpaRepository.findById(productId).orElse(null)

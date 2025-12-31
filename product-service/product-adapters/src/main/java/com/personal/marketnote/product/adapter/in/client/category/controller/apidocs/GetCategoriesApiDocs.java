@@ -24,27 +24,25 @@ import java.lang.annotation.*;
         
         - parentId를 전송하지 않는 경우 최상위 카테고리 목록을 반환합니다.
         
-        - 활성(ACTIVE) 상태만 반환됩니다.
-        
         ---
         
         ## Request
         
         | **키** | **타입** | **설명** | **필수 여부** | **예시** |
         | --- | --- | --- | --- | --- |
-        | parentId | number | 상위 카테고리 ID (null이면 루트) | N | 1 |
+        | parentId | number | 상위 카테고리 ID | N | 1 |
         
         ---
         
         ## Response
         
-        | **키** | **타입** | **설명** |
-        | --- | --- | --- |
-        | statusCode | number | 상태 코드 |
-        | code | string | 응답 코드 |
-        | timestamp | string(datetime) | 응답 일시 |
-        | content | object | 응답 본문 |
-        | message | string | 처리 결과 |
+        | **키** | **타입** | **설명** | **예시** |
+        | --- | --- | --- | --- |
+        | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
+        | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" |
+        | timestamp | string(datetime) | 응답 일시 | "2025-12-31T11:10:54.208185" |
+        | content | object | 응답 본문 | { ... } |
+        | message | string | 처리 결과 | "카테고리 목록 조회 성공" |
         
         ---
         
