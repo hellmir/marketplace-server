@@ -3,7 +3,7 @@ package com.personal.marketnote.product.adapter.out.persistence;
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.adapter.out.mapper.ProductJpaEntityToDomainMapper;
-import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
+import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaGeneralEntity;
 import com.personal.marketnote.product.adapter.out.persistence.product.repository.ProductJpaRepository;
 import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.domain.product.ProductSearchTarget;
@@ -23,7 +23,7 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
 
     @Override
     public Product save(Product product) {
-        ProductJpaEntity savedEntity = productJpaRepository.save(ProductJpaEntity.from(product));
+        ProductJpaGeneralEntity savedEntity = productJpaRepository.save(ProductJpaGeneralEntity.from(product));
         savedEntity.setIdToOrderNum();
 
         return ProductJpaEntityToDomainMapper.mapToDomain(savedEntity).get();
@@ -65,7 +65,7 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
         boolean isAsc = isAsc(pageable);
         String searchPattern = generateSearchPattern(searchKeyword);
 
-        List<ProductJpaEntity> entities = findEntities(
+        List<ProductJpaGeneralEntity> entities = findEntities(
                 isAsc,
                 cursor,
                 pageable,
@@ -91,7 +91,7 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
         boolean isAsc = isAsc(pageable);
         String searchPattern = generateSearchPattern(searchKeyword);
 
-        List<ProductJpaEntity> entities = findCategorizedEntities(
+        List<ProductJpaGeneralEntity> entities = findCategorizedEntities(
                 isAsc,
                 categoryId,
                 cursor,
@@ -114,7 +114,7 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
                 .orElse(true);
     }
 
-    private List<ProductJpaEntity> findEntities(
+    private List<ProductJpaGeneralEntity> findEntities(
             boolean isAsc,
             Long cursor,
             Pageable pageable,
@@ -141,7 +141,7 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
         );
     }
 
-    private List<ProductJpaEntity> findCategorizedEntities(
+    private List<ProductJpaGeneralEntity> findCategorizedEntities(
             boolean isAsc,
             Long categoryId,
             Long cursor,

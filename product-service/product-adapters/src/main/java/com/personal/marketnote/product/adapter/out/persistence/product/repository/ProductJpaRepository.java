@@ -1,6 +1,6 @@
 package com.personal.marketnote.product.adapter.out.persistence.product.repository;
 
-import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
+import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaGeneralEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -8,12 +8,12 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Long> {
+public interface ProductJpaRepository extends JpaRepository<ProductJpaGeneralEntity, Long> {
     boolean existsByIdAndSellerId(Long productId, Long sellerId);
 
     @Query("""
             SELECT p
-            FROM ProductJpaEntity p
+            FROM ProductJpaGeneralEntity p
             WHERE 1 = 1
               AND EXISTS (
                 SELECT 1
@@ -24,11 +24,11 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
               )
             ORDER BY p.orderNum ASC
             """)
-    List<ProductJpaEntity> findAllByCategoryIdOrderByOrderNumAsc(@Param("categoryId") Long categoryId);
+    List<ProductJpaGeneralEntity> findAllByCategoryIdOrderByOrderNumAsc(@Param("categoryId") Long categoryId);
 
     @Query("""
             SELECT p
-            FROM ProductJpaEntity p
+            FROM ProductJpaGeneralEntity p
             WHERE 1 = 1
               AND p.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
               AND (
@@ -50,7 +50,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
                 CASE WHEN :sortProperty = 'accumulatedPoint' THEN p.orderNum END ASC,
                 p.orderNum ASC
             """)
-    List<ProductJpaEntity> findAllActiveByCursorAsc(
+    List<ProductJpaGeneralEntity> findAllActiveByCursorAsc(
             @Param("cursor") Long cursor,
             @Param("pageable") Pageable pageable,
             @Param("sortProperty") String sortProperty,
@@ -59,7 +59,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
 
     @Query("""
             SELECT p
-            FROM ProductJpaEntity p
+            FROM ProductJpaGeneralEntity p
             WHERE 1 = 1
               AND p.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
               AND (
@@ -81,7 +81,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
                 CASE WHEN :sortProperty = 'accumulatedPoint' THEN p.orderNum END DESC,
                 p.orderNum DESC
             """)
-    List<ProductJpaEntity> findAllActiveByCursorDesc(
+    List<ProductJpaGeneralEntity> findAllActiveByCursorDesc(
             @Param("cursor") Long cursor,
             @Param("pageable") Pageable pageable,
             @Param("sortProperty") String sortProperty,
@@ -91,7 +91,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
 
     @Query("""
             SELECT p
-            FROM ProductJpaEntity p
+            FROM ProductJpaGeneralEntity p
             WHERE 1 = 1
               AND p.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
               AND EXISTS (
@@ -120,7 +120,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
                 CASE WHEN :sortProperty = 'accumulatedPoint' THEN p.orderNum END ASC,
                 p.orderNum ASC
             """)
-    List<ProductJpaEntity> findAllActiveByCategoryIdCursorAsc(
+    List<ProductJpaGeneralEntity> findAllActiveByCategoryIdCursorAsc(
             @Param("categoryId") Long categoryId,
             @Param("cursor") Long cursor,
             @Param("pageable") Pageable pageable,
@@ -130,7 +130,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
 
     @Query("""
             SELECT p
-            FROM ProductJpaEntity p
+            FROM ProductJpaGeneralEntity p
             WHERE 1 = 1
               AND p.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
               AND EXISTS (
@@ -159,7 +159,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
                 CASE WHEN :sortProperty = 'accumulatedPoint' THEN p.orderNum END DESC,
                 p.orderNum DESC
             """)
-    List<ProductJpaEntity> findAllActiveByCategoryIdCursorDesc(
+    List<ProductJpaGeneralEntity> findAllActiveByCategoryIdCursorDesc(
             @Param("categoryId") Long categoryId,
             @Param("cursor") Long cursor,
             @Param("pageable") Pageable pageable,
@@ -169,7 +169,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
 
     @Query("""
             SELECT COUNT(p)
-            FROM ProductJpaEntity p
+            FROM ProductJpaGeneralEntity p
             WHERE 1 = 1
               AND p.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
               AND (
@@ -183,7 +183,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
 
     @Query("""
             SELECT COUNT(p)
-            FROM ProductJpaEntity p
+            FROM ProductJpaGeneralEntity p
             WHERE 1 = 1
               AND p.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
               AND EXISTS (

@@ -1,6 +1,6 @@
 package com.personal.marketnote.product.adapter.in.client.product.controller.apidocs;
 
-import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductOptionsRequest;
+import com.personal.marketnote.product.adapter.in.client.product.request.UpsertProductOptionsRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -67,7 +67,7 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
-                | id | number | 새로 생성된 옵션 카테고리 ID | 20 |
+                | optionCategoryId | number | 새로 생성된 옵션 카테고리 ID | 20 |
                 | optionIds | array<number> | 새로 생성된 옵션 ID 목록 | [200,201] |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
@@ -80,7 +80,7 @@ import java.lang.annotation.*;
                         schema = @Schema(type = "number", example = "1")
                 ),
                 @Parameter(
-                        name = "optionCategoryId",
+                        name = "id",
                         in = ParameterIn.PATH,
                         required = true,
                         description = "수정할 옵션 카테고리 ID",
@@ -90,7 +90,7 @@ import java.lang.annotation.*;
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                 required = true,
                 content = @Content(
-                        schema = @Schema(implementation = RegisterProductOptionsRequest.class),
+                        schema = @Schema(implementation = UpsertProductOptionsRequest.class),
                         examples = @ExampleObject("""
                                 {
                                   "categoryName": "수량",
@@ -114,7 +114,7 @@ import java.lang.annotation.*;
                                           "code": "SUC01",
                                           "timestamp": "2026-01-01T17:32:49.097185",
                                           "content": {
-                                            "id": 20,
+                                            "optionCategoryId": 20,
                                             "optionIds": [200,201]
                                           },
                                           "message": "상품 옵션 수정 성공"

@@ -55,7 +55,7 @@ public class UpdateProductOptionsService implements UpdateProductOptionsUseCase 
         ProductOptionCategory savedCategory = saveProductOptionsPort.save(
                 ProductCommandToDomainMapper.mapToDomain(
                         product,
-                        com.personal.marketnote.product.port.in.command.RegisterProductOptionsCommand.of(
+                        RegisterProductOptionsCommand.of(
                                 productId,
                                 command.categoryName(),
                                 optionItems

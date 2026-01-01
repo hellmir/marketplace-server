@@ -1,6 +1,6 @@
 package com.personal.marketnote.product.adapter.out.persistence.product.entity;
 
-import com.personal.marketnote.common.adapter.out.persistence.audit.BaseOrderedEntity;
+import com.personal.marketnote.common.adapter.out.persistence.audit.BaseOrderedGeneralEntity;
 import com.personal.marketnote.product.domain.product.Product;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-public class ProductJpaEntity extends BaseOrderedEntity {
+public class ProductJpaGeneralEntity extends BaseOrderedGeneralEntity {
     @Column(name = "seller_id", nullable = false)
     private Long sellerId;
 
@@ -41,8 +41,8 @@ public class ProductJpaEntity extends BaseOrderedEntity {
     @Column(name = "popularity", nullable = false, columnDefinition = "BIGINT DEFAULT 0")
     private Long popularity;
 
-    public static ProductJpaEntity from(Product product) {
-        return ProductJpaEntity.builder()
+    public static ProductJpaGeneralEntity from(Product product) {
+        return ProductJpaGeneralEntity.builder()
                 .sellerId(product.getSellerId())
                 .name(product.getName())
                 .brandName(product.getBrandName())

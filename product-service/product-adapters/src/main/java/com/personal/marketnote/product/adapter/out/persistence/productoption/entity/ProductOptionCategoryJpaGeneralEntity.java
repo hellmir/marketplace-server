@@ -1,7 +1,7 @@
 package com.personal.marketnote.product.adapter.out.persistence.productoption.entity;
 
-import com.personal.marketnote.common.adapter.out.persistence.audit.BaseOrderedEntity;
-import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
+import com.personal.marketnote.common.adapter.out.persistence.audit.BaseOrderedGeneralEntity;
+import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaGeneralEntity;
 import com.personal.marketnote.product.domain.product.ProductOptionCategory;
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,27 +18,27 @@ import static jakarta.persistence.CascadeType.PERSIST;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-public class ProductOptionCategoryJpaEntity extends BaseOrderedEntity {
+public class ProductOptionCategoryJpaGeneralEntity extends BaseOrderedGeneralEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(name = "fk_product_option_category_product"))
-    private ProductJpaEntity productJpaEntity;
+    private ProductJpaGeneralEntity productJpaEntity;
 
     @OneToMany(mappedBy = "productOptionCategoryJpaEntity", cascade = {PERSIST, MERGE}, orphanRemoval = true)
-    private List<ProductOptionJpaEntity> productOptionJpaEntities = new ArrayList<>();
+    private List<ProductOptionJpaGeneralEntity> productOptionJpaEntities = new ArrayList<>();
 
     @Column(name = "name", nullable = false, length = 255)
     private String name;
 
-    public static ProductOptionCategoryJpaEntity from(ProductOptionCategory category,
-                                                      ProductJpaEntity productJpaEntity) {
-        ProductOptionCategoryJpaEntity productOptionCategoryJpaEntity = ProductOptionCategoryJpaEntity.builder()
+    public static ProductOptionCategoryJpaGeneralEntity from(ProductOptionCategory category,
+                                                             ProductJpaGeneralEntity productJpaEntity) {
+        ProductOptionCategoryJpaGeneralEntity productOptionCategoryJpaEntity = ProductOptionCategoryJpaGeneralEntity.builder()
                 .productJpaEntity(productJpaEntity)
                 .name(category.getName())
                 .build();
 
-        List<ProductOptionJpaEntity> productOptionJpaEntities = category.getOptions()
+        List<ProductOptionJpaGeneralEntity> productOptionJpaEntities = category.getOptions()
                 .stream()
-                .map(option -> ProductOptionJpaEntity.from(productOptionCategoryJpaEntity, option))
+                .map(option -> ProductOptionJpaGeneralEntity.from(productOptionCategoryJpaEntity, option))
                 .toList();
         productOptionCategoryJpaEntity.productOptionJpaEntities = productOptionJpaEntities;
 
@@ -47,6 +47,6 @@ public class ProductOptionCategoryJpaEntity extends BaseOrderedEntity {
 
     public void addOrderNum() {
         setIdToOrderNum();
-        productOptionJpaEntities.forEach(ProductOptionJpaEntity::setIdToOrderNum);
+        productOptionJpaEntities.forEach(ProductOptionJpaGeneralEntity::setIdToOrderNum);
     }
 }

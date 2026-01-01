@@ -1,6 +1,6 @@
 package com.personal.marketnote.product.adapter.out.persistence.productoption.entity;
 
-import com.personal.marketnote.common.adapter.out.persistence.audit.BaseOrderedEntity;
+import com.personal.marketnote.common.adapter.out.persistence.audit.BaseOrderedGeneralEntity;
 import com.personal.marketnote.product.domain.product.ProductOption;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,10 +11,10 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-public class ProductOptionJpaEntity extends BaseOrderedEntity {
+public class ProductOptionJpaGeneralEntity extends BaseOrderedGeneralEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_option_category_id", nullable = false, foreignKey = @ForeignKey(name = "fk_product_option_product_option_category"))
-    private ProductOptionCategoryJpaEntity productOptionCategoryJpaEntity;
+    private ProductOptionCategoryJpaGeneralEntity productOptionCategoryJpaEntity;
 
     @Column(name = "content", nullable = false, length = 511)
     private String content;
@@ -25,8 +25,8 @@ public class ProductOptionJpaEntity extends BaseOrderedEntity {
     @Column(name = "accumulated_point")
     private Long accumulatedPoint;
 
-    public static ProductOptionJpaEntity of(ProductOptionCategoryJpaEntity productOptionCategoryJpaEntity, String content, Long price, Long accumulatedPoint) {
-        return ProductOptionJpaEntity.builder()
+    public static ProductOptionJpaGeneralEntity of(ProductOptionCategoryJpaGeneralEntity productOptionCategoryJpaEntity, String content, Long price, Long accumulatedPoint) {
+        return ProductOptionJpaGeneralEntity.builder()
                 .productOptionCategoryJpaEntity(productOptionCategoryJpaEntity)
                 .content(content)
                 .price(price)
@@ -34,10 +34,10 @@ public class ProductOptionJpaEntity extends BaseOrderedEntity {
                 .build();
     }
 
-    public static ProductOptionJpaEntity from(
-            ProductOptionCategoryJpaEntity productOptionCategoryJpaEntity, ProductOption option
+    public static ProductOptionJpaGeneralEntity from(
+            ProductOptionCategoryJpaGeneralEntity productOptionCategoryJpaEntity, ProductOption option
     ) {
-        return ProductOptionJpaEntity.builder()
+        return ProductOptionJpaGeneralEntity.builder()
                 .productOptionCategoryJpaEntity(productOptionCategoryJpaEntity)
                 .content(option.getContent())
                 .price(option.getPrice())

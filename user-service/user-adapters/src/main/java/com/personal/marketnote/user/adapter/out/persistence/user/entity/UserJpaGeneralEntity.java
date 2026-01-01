@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.personal.marketnote.common.adapter.out.persistence.audit.BaseOrderedEntity;
+import com.personal.marketnote.common.adapter.out.persistence.audit.BaseOrderedGeneralEntity;
 import com.personal.marketnote.user.adapter.out.persistence.authentication.entity.RoleJpaEntity;
 import com.personal.marketnote.user.adapter.out.persistence.user.repository.TermsJpaRepository;
 import com.personal.marketnote.user.domain.user.User;
@@ -26,7 +26,7 @@ import static jakarta.persistence.CascadeType.PERSIST;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-public class UserJpaEntity extends BaseOrderedEntity {
+public class UserJpaGeneralEntity extends BaseOrderedGeneralEntity {
     @Column(name = "nickname", nullable = false, unique = true, length = 31)
     private String nickname;
 
@@ -68,8 +68,8 @@ public class UserJpaEntity extends BaseOrderedEntity {
     @Column(name = "withdrawn_yn", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean withdrawalYn;
 
-    public static UserJpaEntity from(User user, TermsJpaRepository termsJpaRepository) {
-        UserJpaEntity userJpaEntity = UserJpaEntity.builder()
+    public static UserJpaGeneralEntity from(User user, TermsJpaRepository termsJpaRepository) {
+        UserJpaGeneralEntity userJpaEntity = UserJpaGeneralEntity.builder()
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .password(user.getPassword())
@@ -100,8 +100,8 @@ public class UserJpaEntity extends BaseOrderedEntity {
         return userJpaEntity;
     }
 
-    public static UserJpaEntity from(User user) {
-        UserJpaEntity userJpaEntity = UserJpaEntity.builder()
+    public static UserJpaGeneralEntity from(User user) {
+        UserJpaGeneralEntity userJpaEntity = UserJpaGeneralEntity.builder()
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .password(user.getPassword())
