@@ -6,9 +6,11 @@ import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.GetProductsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductCategoriesApiDocs;
+import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.UpdateProductApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductCategoriesRequest;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductRequest;
+import com.personal.marketnote.product.adapter.in.client.product.request.UpdateProductRequest;
 import com.personal.marketnote.product.adapter.in.client.product.response.GetProductsResponse;
 import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductCategoriesResponse;
 import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductResponse;
@@ -20,6 +22,7 @@ import com.personal.marketnote.product.port.in.result.RegisterProductResult;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterProductCategoriesUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterProductUseCase;
+import com.personal.marketnote.product.port.in.usecase.product.UpdateProductUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +51,17 @@ public class ProductController {
     private final RegisterProductUseCase registerProductUseCase;
     private final RegisterProductCategoriesUseCase registerProductCategoriesUseCase;
     private final GetProductUseCase getProductUseCase;
+    private final UpdateProductUseCase updateProductUseCase;
 
+    /**
+     * (판매자/관리자) 상품 등록
+     *
+     * @param request 상품 등록 요청
+     * @return 상품 등록 응답
+     * @Author 성효빈
+     * @Date 2025-12-30
+     * @Description 상품을 등록합니다.
+     */
     @PostMapping
     @PreAuthorize(ADMIN_OR_SELLER_PRINCIPAL_POINTCUT)
     @RegisterProductApiDocs
@@ -111,6 +124,40 @@ public class ProductController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "상품 목록 조회 성공"
+                )
+        );
+    }
+
+    /**
+     * (판매자/관리자) 상품 정보 수정
+     *
+     * @param productId 상품 ID
+     * @param request   상품 정보 수정 요청
+     * @return 상품 정보 수정 응답
+     * @Author 성효빈
+     * @Date 2026-01-01
+     * @Description 상품 정보를 수정합니다.
+     */
+    @PutMapping("{productId}")
+    @PreAuthorize(ADMIN_OR_SELLER_PRINCIPAL_POINTCUT)
+    @UpdateProductApiDocs
+    public ResponseEntity<BaseResponse<Void>> updateProduct(
+            @PathVariable("productId") Long productId,
+            @Valid @RequestBody UpdateProductRequest request,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        updateProductUseCase.update(
+                ElementExtractor.extractUserId(principal),
+                AuthorityValidator.hasAdminRole(principal),
+                ProductRequestToCommandMapper.mapToCommand(productId, request)
+        );
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        null,
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "상품 정보 수정 성공"
                 )
         );
     }

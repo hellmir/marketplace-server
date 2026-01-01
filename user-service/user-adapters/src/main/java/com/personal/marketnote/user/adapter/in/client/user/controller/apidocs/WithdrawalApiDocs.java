@@ -33,7 +33,6 @@ import java.lang.annotation.*;
                 
                  ## Request
                 
-                 - Header
                  | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                  | --- | --- | --- | --- | --- |
                  | X-Google-Access-Token | string | 구글 액세스 토큰(현재 구글 로그인 상태인 경우 함께 전송) | N | "ya29.a0Af..." |

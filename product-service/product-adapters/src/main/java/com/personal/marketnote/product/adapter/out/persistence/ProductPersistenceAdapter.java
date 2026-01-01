@@ -8,17 +8,20 @@ import com.personal.marketnote.product.adapter.out.persistence.product.repositor
 import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.domain.product.ProductSearchTarget;
 import com.personal.marketnote.product.domain.product.ProductSortProperty;
+import com.personal.marketnote.product.exception.ProductNotFoundException;
 import com.personal.marketnote.product.port.out.product.FindProductPort;
 import com.personal.marketnote.product.port.out.product.SaveProductPort;
+import com.personal.marketnote.product.port.out.product.UpdateProductPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.Optional;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class ProductPersistenceAdapter implements SaveProductPort, FindProductPort {
+public class ProductPersistenceAdapter implements SaveProductPort, FindProductPort, UpdateProductPort {
     private final ProductJpaRepository productJpaRepository;
 
     @Override
@@ -35,9 +38,9 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
     }
 
     @Override
-    public java.util.Optional<Product> findById(Long productId) {
+    public Optional<Product> findById(Long id) {
         return ProductJpaEntityToDomainMapper.mapToDomain(
-                productJpaRepository.findById(productId).orElse(null));
+                productJpaRepository.findById(id).orElse(null));
     }
 
     @Override
@@ -198,5 +201,16 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
         }
 
         return null;
+    }
+
+    @Override
+    public void update(Product product) throws ProductNotFoundException {
+        ProductJpaEntity entity = findEntityById(product.getId());
+        entity.updateFrom(product);
+    }
+
+    private ProductJpaEntity findEntityById(Long id) throws ProductNotFoundException {
+        return productJpaRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
     }
 }

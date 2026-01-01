@@ -143,7 +143,7 @@ public class UserPersistenceAdapter
     }
 
     @Override
-    public void update(User user) {
+    public void update(User user) throws UserNotFoundException {
         UserJpaGeneralEntity userJpaEntity = findEntityById(user.getId());
         userJpaEntity.updateFrom(user);
     }
@@ -177,7 +177,7 @@ public class UserPersistenceAdapter
         return new PageImpl<>(histories, pageable, page.getTotalElements());
     }
 
-    private UserJpaGeneralEntity findEntityById(Long id) {
+    private UserJpaGeneralEntity findEntityById(Long id) throws UserNotFoundException {
         return userJpaRepository.findAllStatusUserById(id).orElseThrow(
                 () -> new UserNotFoundException(String.format(USER_ID_NOT_FOUND_EXCEPTION_MESSAGE, id))
         );

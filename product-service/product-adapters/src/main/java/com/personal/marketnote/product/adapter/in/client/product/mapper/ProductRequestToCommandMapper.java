@@ -6,6 +6,7 @@ import com.personal.marketnote.product.adapter.in.client.product.request.UpsertP
 import com.personal.marketnote.product.port.in.command.RegisterProductCategoriesCommand;
 import com.personal.marketnote.product.port.in.command.RegisterProductCommand;
 import com.personal.marketnote.product.port.in.command.RegisterProductOptionsCommand;
+import com.personal.marketnote.product.port.in.command.UpdateProductCommand;
 
 public class ProductRequestToCommandMapper {
     public static RegisterProductCommand mapToCommand(RegisterProductRequest registerProductRequest) {
@@ -42,5 +43,16 @@ public class ProductRequestToCommandMapper {
                 .toList();
         return com.personal.marketnote.product.port.in.command.UpdateProductOptionsCommand.of(
                 productId, optionCategoryId, request.getCategoryName(), optionItems);
+    }
+
+    public static UpdateProductCommand mapToCommand(
+            Long productId, com.personal.marketnote.product.adapter.in.client.product.request.UpdateProductRequest request
+    ) {
+        return UpdateProductCommand.of(
+                productId,
+                request.getName(),
+                request.getBrandName(),
+                request.getDetail()
+        );
     }
 }
