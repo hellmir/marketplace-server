@@ -13,7 +13,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Operation(summary = "(판매자) 상품 등록", description = """
+@Operation(summary = "(판매자/관리자) 상품 등록", description = """
         작성일자: 2025-12-30
         
         작성자: 성효빈
@@ -34,6 +34,7 @@ import java.lang.annotation.*;
         | --- | --- | --- | --- | --- |
         | sellerId | number | 판매자 회원 ID | Y | 1 |
         | name | string | 상품명 | Y | "파우더커피1" |
+        | brandName | string | 브랜드명 | N | "마켓노트샵" |
         | detail | string | 상품 설명 | N | "파우더커피1 설명" |
         
         ---
@@ -64,6 +65,7 @@ import java.lang.annotation.*;
                                 {
                                     "sellerId": 1,
                                     "name": "파우더커피1",
+                                    "brandName": "마켓노트샵",
                                     "detail": "파우더커피1 설명"
                                 }
                                 """)

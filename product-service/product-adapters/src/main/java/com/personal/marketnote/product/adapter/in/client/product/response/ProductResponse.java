@@ -13,7 +13,6 @@ public class ProductResponse {
     private Long id;
     private Long sellerId;
     private String name;
-    private String detail;
     private Integer sales;
     private Long orderNum;
     private String status;
@@ -23,7 +22,6 @@ public class ProductResponse {
                 .id(result.id())
                 .sellerId(result.sellerId())
                 .name(result.name())
-                .detail(result.detail())
                 .sales(result.sales())
                 .orderNum(result.orderNum())
                 .status(result.status())

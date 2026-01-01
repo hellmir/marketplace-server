@@ -244,9 +244,9 @@ public class User {
     public String getKakaoOidcId() {
         return userOauth2Vendors.stream()
                 .filter(UserOauth2Vendor::isKakao)
-                .map(UserOauth2Vendor::getOidcId)
                 .findFirst()
-                .orElse(null);
+                .get()
+                .getOidcId();
     }
 
     public void removeKakaoOidcId() {

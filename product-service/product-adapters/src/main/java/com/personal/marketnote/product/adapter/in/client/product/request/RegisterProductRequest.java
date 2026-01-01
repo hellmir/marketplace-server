@@ -27,6 +27,13 @@ public class RegisterProductRequest {
     private String name;
 
     @Schema(
+            name = "brandName",
+            description = "브랜드명",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED
+    )
+    private String brandName;
+
+    @Schema(
             name = "detail",
             description = "상품 설명",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED
