@@ -6,17 +6,22 @@ import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.GetProductsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductCategoriesApiDocs;
+import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductOptionsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductCategoriesRequest;
+import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductOptionsRequest;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductRequest;
 import com.personal.marketnote.product.adapter.in.client.product.response.GetProductsResponse;
 import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductCategoriesResponse;
+import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductOptionsResponse;
 import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductResponse;
 import com.personal.marketnote.product.port.in.result.GetProductsResult;
 import com.personal.marketnote.product.port.in.result.RegisterProductCategoriesResult;
+import com.personal.marketnote.product.port.in.result.RegisterProductOptionsResult;
 import com.personal.marketnote.product.port.in.result.RegisterProductResult;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterProductCategoriesUseCase;
+import com.personal.marketnote.product.port.in.usecase.product.RegisterProductOptionsUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterProductUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,6 +36,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
 import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER_POINTCUT;
+import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER_PRINCIPAL_POINTCUT;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -40,15 +46,18 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER
 public class ProductController {
     private final RegisterProductUseCase registerProductUseCase;
     private final RegisterProductCategoriesUseCase registerProductCategoriesUseCase;
+    private final RegisterProductOptionsUseCase registerProductOptionsUseCase;
     private final GetProductUseCase getProductUseCase;
 
     @PostMapping
-    @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
+    @PreAuthorize(ADMIN_OR_SELLER_PRINCIPAL_POINTCUT)
     @RegisterProductApiDocs
     public ResponseEntity<BaseResponse<RegisterProductResponse>> registerProduct(
-            @Valid @RequestBody RegisterProductRequest request) {
+            @Valid @RequestBody RegisterProductRequest request
+    ) {
         RegisterProductResult result = registerProductUseCase.registerProduct(
-                ProductRequestToCommandMapper.mapToCommand(request));
+                ProductRequestToCommandMapper.mapToCommand(request)
+        );
 
         return new ResponseEntity<>(
                 BaseResponse.of(
@@ -61,17 +70,37 @@ public class ProductController {
         );
     }
 
+    @GetMapping
+    @GetProductsApiDocs
+    public ResponseEntity<BaseResponse<GetProductsResponse>> getProducts(
+            @RequestParam(value = "categoryId", required = false) Long categoryId
+    ) {
+        GetProductsResult result = getProductUseCase.getProducts(categoryId);
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        GetProductsResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "상품 목록 조회 성공"
+                )
+        );
+    }
+
     @PutMapping("{productId}/categories")
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
     @RegisterProductCategoriesApiDocs
     public ResponseEntity<BaseResponse<RegisterProductCategoriesResponse>> registerProductCategories(
             @PathVariable("productId") Long productId,
             @Valid @RequestBody RegisterProductCategoriesRequest request,
-            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
         RegisterProductCategoriesResult result = registerProductCategoriesUseCase.registerProductCategories(
                 ElementExtractor.extractUserId(principal),
                 AuthorityValidator.hasAdminRole(principal),
-                ProductRequestToCommandMapper.mapToCommand(productId, request));
+                ProductRequestToCommandMapper.mapToCommand(productId, request
+                )
+        );
 
         return ResponseEntity.ok(
                 BaseResponse.of(
@@ -83,19 +112,28 @@ public class ProductController {
         );
     }
 
-    @GetMapping
-    @GetProductsApiDocs
-    public ResponseEntity<BaseResponse<GetProductsResponse>> getProducts(
-            @RequestParam(value = "categoryId", required = false) Long categoryId) {
-        GetProductsResult result = getProductUseCase.getProducts(categoryId);
+    @PostMapping("{productId}/options")
+    @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
+    @RegisterProductOptionsApiDocs
+    public ResponseEntity<BaseResponse<RegisterProductOptionsResponse>> registerProductOptionCategories(
+            @PathVariable("productId") Long productId,
+            @Valid @RequestBody RegisterProductOptionsRequest request,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        RegisterProductOptionsResult result = registerProductOptionsUseCase.registerProductOptions(
+                ElementExtractor.extractUserId(principal),
+                AuthorityValidator.hasAdminRole(principal),
+                ProductRequestToCommandMapper.mapToCommand(productId, request)
+        );
 
-        return ResponseEntity.ok(
+        return new ResponseEntity<>(
                 BaseResponse.of(
-                        GetProductsResponse.from(result),
-                        HttpStatus.OK,
+                        RegisterProductOptionsResponse.from(result),
+                        HttpStatus.CREATED,
                         DEFAULT_SUCCESS_CODE,
-                        "상품 목록 조회 성공"
-                )
+                        "상품 옵션 등록 성공"
+                ),
+                HttpStatus.CREATED
         );
     }
 }

@@ -6,51 +6,43 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-public class Product {
+public class ProductOptionCategory {
     private Long id;
-    private Long sellerId;
+    private Product product;
     private String name;
-    private String brandName;
-    private String detail;
-    private Integer sales;
+    private List<ProductOption> options;
     private Long orderNum;
     private EntityStatus status;
 
-    public static Product of(Long sellerId, String name, String brandName, String detail) {
-        return Product.builder()
-                .sellerId(sellerId)
+    public static ProductOptionCategory of(Product product, String name, List<ProductOption> options) {
+        return ProductOptionCategory.builder()
+                .product(product)
                 .name(name)
-                .brandName(brandName)
-                .detail(detail)
-                .sales(0)
+                .options(options)
                 .status(EntityStatus.ACTIVE)
                 .build();
     }
 
-    public static Product of(
+    public static ProductOptionCategory of(
             Long id,
-            Long sellerId,
+            Product product,
             String name,
-            String brandName,
-            String detail,
-            Integer sales,
+            List<ProductOption> options,
             Long orderNum,
             EntityStatus status
     ) {
-        return Product.builder()
+        return ProductOptionCategory.builder()
                 .id(id)
-                .sellerId(sellerId)
+                .product(product)
                 .name(name)
-                .brandName(brandName)
-                .detail(detail)
-                .sales(sales)
+                .options(options)
                 .orderNum(orderNum)
                 .status(status)
                 .build();
     }
 }
-
-

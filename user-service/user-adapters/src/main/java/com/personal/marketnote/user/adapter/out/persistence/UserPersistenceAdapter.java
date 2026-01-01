@@ -40,7 +40,7 @@ public class UserPersistenceAdapter
         UserJpaEntity savedEntity = userJpaRepository.save(UserJpaEntity.from(user, termsJpaRepository));
         savedEntity.setIdToOrderNum();
 
-        return UserJpaEntityToDomainMapper.mapToDomain(savedEntity).get();
+        return UserJpaEntityToDomainMapper.mapToDomain(savedEntity).orElse(null);
     }
 
     @Override

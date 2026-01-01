@@ -20,6 +20,9 @@ public class ProductJpaEntity extends BaseOrderedEntity {
     @Column(name = "name", nullable = false, length = 255)
     private String name;
 
+    @Column(name = "brand_name", length = 255)
+    private String brandName;
+
     @Column(name = "detail", length = 1023)
     private String detail;
 
@@ -30,6 +33,7 @@ public class ProductJpaEntity extends BaseOrderedEntity {
         return ProductJpaEntity.builder()
                 .sellerId(product.getSellerId())
                 .name(product.getName())
+                .brandName(product.getBrandName())
                 .detail(product.getDetail())
                 .sales(product.getSales())
                 .build();

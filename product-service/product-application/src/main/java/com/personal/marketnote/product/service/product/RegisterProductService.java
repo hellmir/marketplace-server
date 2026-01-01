@@ -23,6 +23,7 @@ public class RegisterProductService implements RegisterProductUseCase {
                 Product.of(
                         command.sellerId(),
                         command.name(),
+                        command.brandName(),
                         command.detail()
                 )
         );
