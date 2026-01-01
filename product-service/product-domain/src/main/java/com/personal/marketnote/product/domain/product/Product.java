@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
@@ -25,11 +27,12 @@ public class Product {
     private Long viewCount;
     private Long popularity;
     private boolean findAllOptionsYn;
+    private List<ProductTag> productTags;
     private Long orderNum;
     private EntityStatus status;
 
     public static Product of(
-            Long sellerId, String name, String brandName, String detail, boolean isFindAllOptions
+            Long sellerId, String name, String brandName, String detail, boolean isFindAllOptions, List<String> tags
     ) {
         return Product.builder()
                 .sellerId(sellerId)
@@ -37,14 +40,19 @@ public class Product {
                 .brandName(brandName)
                 .detail(detail)
                 .findAllOptionsYn(isFindAllOptions)
-                .status(com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE)
+                .productTags(
+                        tags.stream()
+                                .map(ProductTag::of)
+                                .collect(Collectors.toList())
+                )
+                .status(EntityStatus.ACTIVE)
                 .build();
     }
 
     public static Product of(
             Long id, Long sellerId, String name, String brandName, String detail, Long price, Long discountPrice,
             BigDecimal discountRate, Long accumulatedPoint, Integer sales, Long viewCount, Long popularity,
-            boolean findAllOptionsYn, Long orderNum, EntityStatus status
+            boolean findAllOptionsYn, List<ProductTag> productTags, Long orderNum, EntityStatus status
     ) {
         return Product.builder()
                 .id(id)
@@ -60,16 +68,20 @@ public class Product {
                 .viewCount(viewCount)
                 .popularity(popularity)
                 .findAllOptionsYn(findAllOptionsYn)
+                .productTags(productTags)
                 .orderNum(orderNum)
                 .status(status)
                 .build();
     }
 
-    public void update(String name, String brandName, String detail, boolean isFindAllOptions) {
+    public void update(String name, String brandName, String detail, boolean isFindAllOptions, List<String> tags) {
         this.name = name;
         this.brandName = brandName;
         this.detail = detail;
         findAllOptionsYn = isFindAllOptions;
+        productTags = tags.stream()
+                .map(tag -> ProductTag.of(id, tag))
+                .toList();
     }
 }
 

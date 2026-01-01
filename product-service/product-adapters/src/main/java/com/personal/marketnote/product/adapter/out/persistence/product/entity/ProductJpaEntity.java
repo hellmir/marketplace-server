@@ -4,6 +4,7 @@ import com.personal.marketnote.common.adapter.out.persistence.audit.BaseOrderedG
 import com.personal.marketnote.product.domain.product.Product;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -11,6 +12,11 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Formula;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
 
 @Entity
 @Table(name = "product")
@@ -57,20 +63,44 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
     @Column(name = "find_all_options_yn", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean findAllOptionsYn;
 
+    @OneToMany(mappedBy = "productJpaEntity", cascade = {PERSIST, MERGE}, orphanRemoval = true)
+    private List<ProductTagJpaEntity> productTagJpaEntities;
+
     public static ProductJpaEntity from(Product product) {
-        return ProductJpaEntity.builder()
+        ProductJpaEntity productJpaEntity = ProductJpaEntity.builder()
                 .sellerId(product.getSellerId())
                 .name(product.getName())
                 .brandName(product.getBrandName())
                 .detail(product.getDetail())
                 .findAllOptionsYn(product.isFindAllOptionsYn())
                 .build();
+
+        productJpaEntity.productTagJpaEntities = (
+                product.getProductTags()
+                        .stream()
+                        .map(tag -> ProductTagJpaEntity.from(productJpaEntity, tag))
+                        .collect(Collectors.toList())
+        );
+
+        return productJpaEntity;
     }
 
     public void updateFrom(Product product) {
-        this.name = product.getName();
-        this.brandName = product.getBrandName();
-        this.detail = product.getDetail();
-        this.findAllOptionsYn = product.isFindAllOptionsYn();
+        name = product.getName();
+        brandName = product.getBrandName();
+        detail = product.getDetail();
+        findAllOptionsYn = product.isFindAllOptionsYn();
+
+        // orphanRemoval = true 컬렉션은 "재할당" 금지. 기존 컬렉션을 mutate 하라.
+        if (productTagJpaEntities == null) {
+            productTagJpaEntities = new java.util.ArrayList<>();
+        } else {
+            productTagJpaEntities.clear();
+        }
+        if (product.getProductTags() != null) {
+            for (var tag : product.getProductTags()) {
+                productTagJpaEntities.add(ProductTagJpaEntity.from(this, tag));
+            }
+        }
     }
 }

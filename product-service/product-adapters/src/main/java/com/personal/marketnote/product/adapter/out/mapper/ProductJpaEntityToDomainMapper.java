@@ -2,11 +2,13 @@ package com.personal.marketnote.product.adapter.out.mapper;
 
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
+import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductTagJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionCategoryJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionJpaEntity;
 import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.domain.product.ProductOption;
 import com.personal.marketnote.product.domain.product.ProductOptionCategory;
+import com.personal.marketnote.product.domain.product.ProductTag;
 
 import java.util.Optional;
 
@@ -28,6 +30,11 @@ public class ProductJpaEntityToDomainMapper {
                                 productJpaEntity.getViewCount(),
                                 productJpaEntity.getPopularity(),
                                 productJpaEntity.isFindAllOptionsYn(),
+                                productJpaEntity.getProductTagJpaEntities().stream()
+                                        .map(ProductJpaEntityToDomainMapper::mapToDomain)
+                                        .filter(Optional::isPresent)
+                                        .map(Optional::get)
+                                        .toList(),
                                 productJpaEntity.getOrderNum(),
                                 productJpaEntity.getStatus()
                         )
@@ -113,5 +120,16 @@ public class ProductJpaEntityToDomainMapper {
                                 entity.getStatus()
                         )
                 );
+    }
+
+    private static Optional<ProductTag> mapToDomain(ProductTagJpaEntity productTagJpaEntity) {
+        return Optional.ofNullable(productTagJpaEntity)
+                .map(entity -> ProductTag.of(
+                        entity.getId(),
+                        entity.getProductJpaEntity().getId(),
+                        entity.getName(),
+                        entity.getOrderNum(),
+                        entity.getStatus()
+                ));
     }
 }

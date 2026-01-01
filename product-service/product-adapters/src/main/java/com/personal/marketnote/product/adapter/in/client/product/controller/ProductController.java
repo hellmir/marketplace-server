@@ -124,24 +124,24 @@ public class ProductController {
     /**
      * (판매자/관리자) 상품 정보 수정
      *
-     * @param productId 상품 ID
-     * @param request   상품 정보 수정 요청
+     * @param id      상품 ID
+     * @param request 상품 정보 수정 요청
      * @Author 성효빈
      * @Date 2026-01-01
      * @Description 상품 정보를 수정합니다.
      */
-    @PutMapping("{productId}")
+    @PutMapping("/{id}")
     @PreAuthorize(ADMIN_OR_SELLER_PRINCIPAL_POINTCUT)
     @UpdateProductApiDocs
     public ResponseEntity<BaseResponse<Void>> updateProduct(
-            @PathVariable("productId") Long productId,
+            @PathVariable("id") Long id,
             @Valid @RequestBody UpdateProductRequest request,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
         updateProductUseCase.update(
                 ElementExtractor.extractUserId(principal),
                 AuthorityValidator.hasAdminRole(principal),
-                ProductRequestToCommandMapper.mapToCommand(productId, request)
+                ProductRequestToCommandMapper.mapToCommand(id, request)
         );
 
         return ResponseEntity.ok(

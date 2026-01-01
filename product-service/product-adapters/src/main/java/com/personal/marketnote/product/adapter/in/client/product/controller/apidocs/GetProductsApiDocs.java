@@ -54,7 +54,7 @@ import java.lang.annotation.*;
         | **키** | **타입** | **설명** | **예시** |
         | --- | --- | --- | --- |
         | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
-        | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" |
+        | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
         | timestamp | string(datetime) | 응답 일시 | "2026-01-01T10:37:32.320824" |
         | content | object | 응답 본문 | { ... } |
         | message | string | 처리 결과 | "상품 목록 조회 성공" |
@@ -85,10 +85,21 @@ import java.lang.annotation.*;
         | discountRate | number | 할인율(%, 최대 소수점 1자리) | 20 |
         | accumulatedPoint | number | 구매 시 적립 포인트 | 1000 |
         | sales | number | 판매량 | 0 |
+        | productTags | array | 상품 태그 목록 | [ ... ] |
         | orderNum | number | 정렬 순서 | 1 |
         | status | string | 상태 | "ACTIVE" |
         
         ---
+        
+        ### Response > content > products > productTags
+        
+        | **키** | **타입** | **설명** | **예시** |
+        | --- | --- | --- | --- |
+        | id | number | 상품 태그 ID | 1 |
+        | productId | number | 상품 ID | 10 |
+        | name | string | 상품 태그명 | "루테인" |
+        | orderNum | number | 정렬 순서 | 1 |
+        | status | string | 상태 | "ACTIVE" |
         """, security = {
         @SecurityRequirement(name = "bearer")
 },
@@ -164,63 +175,127 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-01T16:48:31.596892",
+                                          "timestamp": "2026-01-01T17:59:49.771654",
                                           "content": {
                                             "products": {
-                                              "totalElements": null,
+                                              "totalElements": 12,
                                               "hasNext": true,
-                                              "nextCursor": 19,
+                                              "nextCursor": 21,
                                               "items": [
                                                 {
-                                                  "id": 19,
+                                                  "id": 28,
                                                   "sellerId": 1,
-                                                  "name": "스프링노트1 (1박스 / 30개입)",
+                                                  "name": "스프링노트1",
                                                   "brandName": "노트왕",
-                                                  "price": 92000,
-                                                  "discountPrice": 84000,
-                                                  "discountRate": 17.8,
-                                                  "accumulatedPoint": 7400,
+                                                  "price": 10000,
+                                                  "discountPrice": 9000,
+                                                  "discountRate": 10,
+                                                  "accumulatedPoint": 1000,
                                                   "sales": 0,
-                                                  "orderNum": 19,
+                                                  "productTags": [
+                                                    {
+                                                      "id": 7,
+                                                      "productId": 28,
+                                                      "name": "루테인",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    },
+                                                    {
+                                                      "id": 8,
+                                                      "productId": 28,
+                                                      "name": "아스타잔틴",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    }
+                                                  ],
+                                                  "orderNum": 28,
                                                   "status": "ACTIVE"
                                                 },
                                                 {
-                                                  "id": 19,
+                                                  "id": 27,
                                                   "sellerId": 1,
-                                                  "name": "스프링노트1 (1박스 / 60개입)",
-                                                  "brandName": "노트왕",
-                                                  "price": 102000,
-                                                  "discountPrice": 94000,
-                                                  "discountRate": 17.8,
-                                                  "accumulatedPoint": 12400,
+                                                  "name": "건기식2",
+                                                  "brandName": "글로",
+                                                  "price": 20000,
+                                                  "discountPrice": 18000,
+                                                  "discountRate": 10,
+                                                  "accumulatedPoint": 2000,
                                                   "sales": 0,
-                                                  "orderNum": 19,
+                                                  "productTags": [
+                                                    {
+                                                      "id": 7,
+                                                      "productId": 28,
+                                                      "name": "루테인",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    },
+                                                    {
+                                                      "id": 8,
+                                                      "productId": 28,
+                                                      "name": "아스타잔틴",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    }
+                                                  ],
+                                                  "orderNum": 27,
                                                   "status": "ACTIVE"
                                                 },
                                                 {
-                                                  "id": 19,
+                                                  "id": 26,
                                                   "sellerId": 1,
-                                                  "name": "스프링노트1 (3박스 / 30개입)",
-                                                  "brandName": "노트왕",
-                                                  "price": 154000,
-                                                  "discountPrice": 146000,
-                                                  "discountRate": 17.8,
-                                                  "accumulatedPoint": 8200,
+                                                  "name": "건기식",
+                                                  "brandName": "글로",
+                                                  "price": 10000,
+                                                  "discountPrice": 9000,
+                                                  "discountRate": 10,
+                                                  "accumulatedPoint": 1000,
                                                   "sales": 0,
-                                                  "orderNum": 19,
+                                                  "productTags": [
+                                                    {
+                                                      "id": 7,
+                                                      "productId": 28,
+                                                      "name": "루테인",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    },
+                                                    {
+                                                      "id": 8,
+                                                      "productId": 28,
+                                                      "name": "아스타잔틴",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    }
+                                                  ],
+                                                  "orderNum": 26,
                                                   "status": "ACTIVE"
                                                 },
                                                 {
-                                                  "id": 19,
-                                                  "sellerId": 1,
-                                                  "name": "스프링노트1 (3박스 / 60개입)",
+                                                  "id": 21,
+                                                  "sellerId": 12,
+                                                  "name": "스프링노트1",
                                                   "brandName": "노트왕",
-                                                  "price": 164000,
-                                                  "discountPrice": 156000,
+                                                  "price": 45000,
+                                                  "discountPrice": 37000,
                                                   "discountRate": 17.8,
-                                                  "accumulatedPoint": 13200,
+                                                  "accumulatedPoint": 1200,
                                                   "sales": 0,
-                                                  "orderNum": 19,
+                                                  "productTags": [
+                                                    {
+                                                      "id": 7,
+                                                      "productId": 28,
+                                                      "name": "루테인",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    },
+                                                    {
+                                                      "id": 8,
+                                                      "productId": 28,
+                                                      "name": "아스타잔틴",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    }
+                                                  ],
+                                                  "orderNum": 21,
                                                   "status": "ACTIVE"
                                                 }
                                               ]

@@ -39,6 +39,8 @@ import java.lang.annotation.*;
         | price | number | 상품 기본 판매 가격(원) | Y | 100000 |
         | discountPrice | number | 상품 할인 가격(원) | N | 90000 |
         | accumulatedPoint | number | 구매 시 적립 포인트 | Y | 1000 |
+        | isFindAllOptions | boolean | 상품 목록 조회 시 옵션마다 개별 상품으로 조회 여부 | Y | true |
+        | tags | array<string> | 상품 태그 목록 | Y | ["루테인", "아스타잔틴"] |
         ---
         
         ## Response
@@ -71,7 +73,9 @@ import java.lang.annotation.*;
                                     "detail": "스프링노트1 설명",
                                     "price": 10000,
                                     "discountPrice": 9000,
-                                    "accumulatedPoint": 1000
+                                    "accumulatedPoint": 1000,
+                                    "isFindAllOptions": true,
+                                    "tags": ["루테인", "아스타잔틴"]
                                 }
                                 """)
                 )

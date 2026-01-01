@@ -2,11 +2,9 @@ package com.personal.marketnote.product.adapter.in.client.product.mapper;
 
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductCategoriesRequest;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductRequest;
+import com.personal.marketnote.product.adapter.in.client.product.request.UpdateProductRequest;
 import com.personal.marketnote.product.adapter.in.client.product.request.UpsertProductOptionsRequest;
-import com.personal.marketnote.product.port.in.command.RegisterProductCategoriesCommand;
-import com.personal.marketnote.product.port.in.command.RegisterProductCommand;
-import com.personal.marketnote.product.port.in.command.RegisterProductOptionsCommand;
-import com.personal.marketnote.product.port.in.command.UpdateProductCommand;
+import com.personal.marketnote.product.port.in.command.*;
 
 public class ProductRequestToCommandMapper {
     public static RegisterProductCommand mapToCommand(RegisterProductRequest registerProductRequest) {
@@ -18,7 +16,8 @@ public class ProductRequestToCommandMapper {
                 registerProductRequest.getPrice(),
                 registerProductRequest.getDiscountPrice(),
                 registerProductRequest.getAccumulatedPoint(),
-                registerProductRequest.isFindAllOptions()
+                registerProductRequest.getIsFindAllOptions(),
+                registerProductRequest.getTags()
         );
     }
 
@@ -38,25 +37,27 @@ public class ProductRequestToCommandMapper {
         return RegisterProductOptionsCommand.of(productId, request.getCategoryName(), optionItems);
     }
 
-    public static com.personal.marketnote.product.port.in.command.UpdateProductOptionsCommand mapToUpdateCommand(
+    public static UpdateProductOptionsCommand mapToUpdateCommand(
             Long productId, Long optionCategoryId, UpsertProductOptionsRequest request) {
         java.util.List<RegisterProductOptionsCommand.OptionItem> optionItems = request.getOptions().stream()
                 .map(o -> new RegisterProductOptionsCommand.OptionItem(
                         o.getContent(), o.getPrice(), o.getAccumulatedPoint()))
                 .toList();
-        return com.personal.marketnote.product.port.in.command.UpdateProductOptionsCommand.of(
-                productId, optionCategoryId, request.getCategoryName(), optionItems);
+        return UpdateProductOptionsCommand.of(
+                productId, optionCategoryId, request.getCategoryName(), optionItems
+        );
     }
 
     public static UpdateProductCommand mapToCommand(
-            Long productId, com.personal.marketnote.product.adapter.in.client.product.request.UpdateProductRequest request
+            Long id, UpdateProductRequest request
     ) {
         return UpdateProductCommand.of(
-                productId,
+                id,
                 request.getName(),
                 request.getBrandName(),
                 request.getDetail(),
-                request.getIsFindAllOptions()
+                request.getIsFindAllOptions(),
+                request.getTags()
         );
     }
 }
