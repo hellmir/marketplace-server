@@ -1,28 +1,40 @@
 package com.personal.marketnote.product.adapter.in.client.category.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
+import com.personal.marketnote.common.utility.AuthorityValidator;
+import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.product.adapter.in.client.category.controller.apidocs.DeleteCategoryApiDocs;
 import com.personal.marketnote.product.adapter.in.client.category.controller.apidocs.GetCategoriesApiDocs;
 import com.personal.marketnote.product.adapter.in.client.category.controller.apidocs.RegisterCategoryApiDocs;
 import com.personal.marketnote.product.adapter.in.client.category.request.RegisterCategoryRequest;
 import com.personal.marketnote.product.adapter.in.client.category.response.GetCategoriesResponse;
 import com.personal.marketnote.product.adapter.in.client.category.response.RegisterCategoryResponse;
+import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductCategoriesApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.mapper.CategoryRequestToCommandMapper;
+import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
+import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductCategoriesRequest;
+import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductCategoriesResponse;
 import com.personal.marketnote.product.port.in.command.DeleteCategoryCommand;
 import com.personal.marketnote.product.port.in.result.GetCategoriesResult;
 import com.personal.marketnote.product.port.in.result.RegisterCategoryResult;
+import com.personal.marketnote.product.port.in.result.RegisterProductCategoriesResult;
 import com.personal.marketnote.product.port.in.usecase.category.DeleteCategoryUseCase;
 import com.personal.marketnote.product.port.in.usecase.category.GetCategoryUseCase;
 import com.personal.marketnote.product.port.in.usecase.category.RegisterCategoryUseCase;
+import com.personal.marketnote.product.port.in.usecase.product.RegisterProductCategoriesUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
+import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER_POINTCUT;
 import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 
 @RestController
@@ -31,10 +43,20 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 @RequiredArgsConstructor
 @Slf4j
 public class CategoryController {
-    private final GetCategoryUseCase getCategoryUseCase;
     private final RegisterCategoryUseCase registerCategoryUseCase;
+    private final RegisterProductCategoriesUseCase registerProductCategoriesUseCase;
+    private final GetCategoryUseCase getCategoryUseCase;
     private final DeleteCategoryUseCase deleteCategoryUseCase;
 
+    /**
+     * 카테고리 등록
+     *
+     * @param request 카테고리 등록 요청
+     * @return 카테고리 등록 응답 {@link RegisterCategoryResponse}
+     * @Author 성효빈
+     * @Date 2026-01-01
+     * @Description 카테고리를 등록합니다.
+     */
     @PostMapping
     @PreAuthorize(ADMIN_POINTCUT)
     @RegisterCategoryApiDocs
@@ -56,6 +78,15 @@ public class CategoryController {
         );
     }
 
+    /**
+     * 카테고리 목록 조회
+     *
+     * @param parentCategoryId 상위 카테고리 ID
+     * @return 카테고리 목록 조회 응답 {@link GetCategoriesResponse}
+     * @Author 성효빈
+     * @Date 2026-01-01
+     * @Description 카테고리 목록을 조회합니다.
+     */
     @GetMapping
     @GetCategoriesApiDocs
     public ResponseEntity<BaseResponse<GetCategoriesResponse>> getCategories(
@@ -73,6 +104,15 @@ public class CategoryController {
         );
     }
 
+    /**
+     * 카테고리 삭제
+     *
+     * @param categoryId 카테고리 ID
+     * @return 카테고리 삭제 응답
+     * @Author 성효빈
+     * @Date 2026-01-01
+     * @Description 카테고리를 삭제합니다.
+     */
     @DeleteMapping("/{categoryId}")
     @PreAuthorize(ADMIN_POINTCUT)
     @DeleteCategoryApiDocs
@@ -88,6 +128,41 @@ public class CategoryController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "카테고리 삭제 성공"
+                )
+        );
+    }
+
+    /**
+     * 상품 카테고리 등록
+     *
+     * @param productId 상품 ID
+     * @param request   상품 카테고리 등록 요청
+     * @return 상품 카테고리 등록 응답 {@link RegisterProductCategoriesResponse}
+     * @Author 성효빈
+     * @Date 2026-01-01
+     * @Description 상품 카테고리를 등록합니다.
+     */
+    @PutMapping("{productId}/categories")
+    @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
+    @RegisterProductCategoriesApiDocs
+    public ResponseEntity<BaseResponse<RegisterProductCategoriesResponse>> registerProductCategories(
+            @PathVariable("productId") Long productId,
+            @Valid @RequestBody RegisterProductCategoriesRequest request,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        RegisterProductCategoriesResult result = registerProductCategoriesUseCase.registerProductCategories(
+                ElementExtractor.extractUserId(principal),
+                AuthorityValidator.hasAdminRole(principal),
+                ProductRequestToCommandMapper.mapToCommand(productId, request
+                )
+        );
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        RegisterProductCategoriesResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "상품 카테고리 등록 성공"
                 )
         );
     }
