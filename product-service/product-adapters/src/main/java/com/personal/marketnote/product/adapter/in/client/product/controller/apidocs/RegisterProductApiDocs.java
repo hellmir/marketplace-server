@@ -33,9 +33,9 @@ import java.lang.annotation.*;
         | **키** | **타입** | **설명** | **필수 여부** | **예시** |
         | --- | --- | --- | --- | --- |
         | sellerId | number | 판매자 회원 ID | Y | 1 |
-        | name | string | 상품명 | Y | "파우더커피1" |
-        | brandName | string | 브랜드명 | N | "마켓노트샵" |
-        | detail | string | 상품 설명 | N | "파우더커피1 설명" |
+        | name | string | 상품명 | Y | "스프링노트1" |
+        | brandName | string | 브랜드명 | N | "노트왕" |
+        | detail | string | 상품 설명 | N | "스프링노트1 설명" |
         
         ---
         
@@ -64,9 +64,9 @@ import java.lang.annotation.*;
                         examples = @ExampleObject("""
                                 {
                                     "sellerId": 1,
-                                    "name": "파우더커피1",
-                                    "brandName": "마켓노트샵",
-                                    "detail": "파우더커피1 설명"
+                                    "name": "스프링노트1",
+                                    "brandName": "노트왕",
+                                    "detail": "스프링노트1 설명"
                                 }
                                 """)
                 )

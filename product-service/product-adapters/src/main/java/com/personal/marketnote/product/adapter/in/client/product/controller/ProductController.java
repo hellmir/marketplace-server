@@ -6,22 +6,17 @@ import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.GetProductsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductCategoriesApiDocs;
-import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductOptionsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductCategoriesRequest;
-import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductOptionsRequest;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductRequest;
 import com.personal.marketnote.product.adapter.in.client.product.response.GetProductsResponse;
 import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductCategoriesResponse;
-import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductOptionsResponse;
 import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductResponse;
 import com.personal.marketnote.product.port.in.result.GetProductsResult;
 import com.personal.marketnote.product.port.in.result.RegisterProductCategoriesResult;
-import com.personal.marketnote.product.port.in.result.RegisterProductOptionsResult;
 import com.personal.marketnote.product.port.in.result.RegisterProductResult;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterProductCategoriesUseCase;
-import com.personal.marketnote.product.port.in.usecase.product.RegisterProductOptionsUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterProductUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -46,7 +41,6 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER
 public class ProductController {
     private final RegisterProductUseCase registerProductUseCase;
     private final RegisterProductCategoriesUseCase registerProductCategoriesUseCase;
-    private final RegisterProductOptionsUseCase registerProductOptionsUseCase;
     private final GetProductUseCase getProductUseCase;
 
     @PostMapping
@@ -109,31 +103,6 @@ public class ProductController {
                         DEFAULT_SUCCESS_CODE,
                         "상품 카테고리 등록 성공"
                 )
-        );
-    }
-
-    @PostMapping("{productId}/options")
-    @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
-    @RegisterProductOptionsApiDocs
-    public ResponseEntity<BaseResponse<RegisterProductOptionsResponse>> registerProductOptionCategories(
-            @PathVariable("productId") Long productId,
-            @Valid @RequestBody RegisterProductOptionsRequest request,
-            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
-    ) {
-        RegisterProductOptionsResult result = registerProductOptionsUseCase.registerProductOptions(
-                ElementExtractor.extractUserId(principal),
-                AuthorityValidator.hasAdminRole(principal),
-                ProductRequestToCommandMapper.mapToCommand(productId, request)
-        );
-
-        return new ResponseEntity<>(
-                BaseResponse.of(
-                        RegisterProductOptionsResponse.from(result),
-                        HttpStatus.CREATED,
-                        DEFAULT_SUCCESS_CODE,
-                        "상품 옵션 등록 성공"
-                ),
-                HttpStatus.CREATED
         );
     }
 }

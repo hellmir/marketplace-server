@@ -1,6 +1,7 @@
 package com.personal.marketnote.user.adapter.in.client.user.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionMessage.INVALID_EMAIL_EXCEPTION_MESSAGE;
@@ -21,7 +22,7 @@ public class UpdateUserInfoRequest {
             description = "이메일 주소",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
-//    @Pattern(regexp = EMAIL_PATTERN, message = INVALID_EMAIL_EXCEPTION_MESSAGE)
+    @Pattern(regexp = EMAIL_PATTERN, message = INVALID_EMAIL_EXCEPTION_MESSAGE)
     private String email;
 
     @Schema(
@@ -29,7 +30,7 @@ public class UpdateUserInfoRequest {
             description = "닉네임",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
-//    @Pattern(regexp = NICKNAME_PATTERN, message = "닉네임은 한글만 가능하며, 6글자 이하여야 합니다.")
+    @Pattern(regexp = NICKNAME_PATTERN, message = "닉네임은 한글만 가능하며, 6글자 이하여야 합니다.")
     private String nickname;
 
     @Schema(
@@ -37,7 +38,7 @@ public class UpdateUserInfoRequest {
             description = "전화번호",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
-//    @Pattern(regexp = PHONE_NUMBER_PATTERN, message = "전화번호 형식이 올바르지 않습니다.")
+    @Pattern(regexp = PHONE_NUMBER_PATTERN, message = "전화번호 형식이 올바르지 않습니다.")
     private String phoneNumber;
 
     @Schema(

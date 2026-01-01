@@ -13,13 +13,13 @@ import java.util.stream.Collectors;
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
 public class GetProductsResponse {
-    private List<ProductResponse> products;
+    private List<ProductItemResponse> products;
 
     public static GetProductsResponse from(GetProductsResult result) {
         return GetProductsResponse.builder()
                 .products(
                         result.products().stream()
-                                .map(ProductResponse::from)
+                                .map(ProductItemResponse::from)
                                 .collect(Collectors.toList())
                 )
                 .build();
