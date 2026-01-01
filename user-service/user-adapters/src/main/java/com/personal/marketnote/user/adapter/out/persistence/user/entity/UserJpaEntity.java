@@ -12,6 +12,7 @@ import com.personal.marketnote.user.domain.user.UserOauth2Vendor;
 import com.personal.marketnote.user.domain.user.UserTerms;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,7 +27,7 @@ import static jakarta.persistence.CascadeType.PERSIST;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-public class UserJpaGeneralEntity extends BaseOrderedGeneralEntity {
+public class UserJpaEntity extends BaseOrderedGeneralEntity {
     @Column(name = "nickname", nullable = false, unique = true, length = 31)
     private String nickname;
 
@@ -60,6 +61,12 @@ public class UserJpaGeneralEntity extends BaseOrderedGeneralEntity {
     @OrderBy("termsJpaEntity.id ASC")
     private List<UserTermsJpaEntity> userTermsJpaEntities;
 
+    @CreatedDate
+    @Column(name = "signed_up_at", nullable = false)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDateTime signedUpAt;
+
     @Column(name = "last_logged_in_at", nullable = false)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -68,8 +75,8 @@ public class UserJpaGeneralEntity extends BaseOrderedGeneralEntity {
     @Column(name = "withdrawn_yn", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean withdrawalYn;
 
-    public static UserJpaGeneralEntity from(User user, TermsJpaRepository termsJpaRepository) {
-        UserJpaGeneralEntity userJpaEntity = UserJpaGeneralEntity.builder()
+    public static UserJpaEntity from(User user, TermsJpaRepository termsJpaRepository) {
+        UserJpaEntity userJpaEntity = UserJpaEntity.builder()
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .password(user.getPassword())
@@ -100,8 +107,8 @@ public class UserJpaGeneralEntity extends BaseOrderedGeneralEntity {
         return userJpaEntity;
     }
 
-    public static UserJpaGeneralEntity from(User user) {
-        UserJpaGeneralEntity userJpaEntity = UserJpaGeneralEntity.builder()
+    public static UserJpaEntity from(User user) {
+        UserJpaEntity userJpaEntity = UserJpaEntity.builder()
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .password(user.getPassword())
@@ -129,6 +136,7 @@ public class UserJpaGeneralEntity extends BaseOrderedGeneralEntity {
         phoneNumber = user.getPhoneNumber();
         referredUserCode = user.getReferredUserCode();
         roleJpaEntity = RoleJpaEntity.from(user.getRole());
+        signedUpAt = user.getSignedUpAt();
         lastLoggedInAt = user.getLastLoggedInAt();
         withdrawalYn = user.isWithdrawn();
 

@@ -18,7 +18,7 @@ public class LoginHistoryJpaEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private UserJpaGeneralEntity userJpaEntity;
+    private UserJpaEntity userJpaEntity;
 
     @Enumerated(EnumType.STRING)
     private AuthVendor authVendor;
@@ -26,7 +26,7 @@ public class LoginHistoryJpaEntity extends BaseEntity {
     @Column(name = "ip_address")
     private String ipAddress;
 
-    public static LoginHistoryJpaEntity of(UserJpaGeneralEntity userJpaEntity, AuthVendor authVendor, String ipAddress) {
+    public static LoginHistoryJpaEntity of(UserJpaEntity userJpaEntity, AuthVendor authVendor, String ipAddress) {
         return LoginHistoryJpaEntity.builder()
                 .userJpaEntity(userJpaEntity)
                 .authVendor(authVendor)

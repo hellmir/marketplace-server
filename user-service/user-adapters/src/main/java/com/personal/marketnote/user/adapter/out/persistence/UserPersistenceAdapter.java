@@ -3,7 +3,7 @@ package com.personal.marketnote.user.adapter.out.persistence;
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
 import com.personal.marketnote.user.adapter.out.mapper.UserJpaEntityToDomainMapper;
 import com.personal.marketnote.user.adapter.out.persistence.user.entity.LoginHistoryJpaEntity;
-import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserJpaGeneralEntity;
+import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserJpaEntity;
 import com.personal.marketnote.user.adapter.out.persistence.user.repository.LoginHistoryJpaRepository;
 import com.personal.marketnote.user.adapter.out.persistence.user.repository.TermsJpaRepository;
 import com.personal.marketnote.user.adapter.out.persistence.user.repository.UserJpaRepository;
@@ -37,7 +37,7 @@ public class UserPersistenceAdapter
 
     @Override
     public User save(User user) {
-        UserJpaGeneralEntity savedEntity = userJpaRepository.save(UserJpaGeneralEntity.from(user, termsJpaRepository));
+        UserJpaEntity savedEntity = userJpaRepository.save(UserJpaEntity.from(user, termsJpaRepository));
         savedEntity.setIdToOrderNum();
 
         return UserJpaEntityToDomainMapper.mapToDomain(savedEntity).orElse(null);
@@ -119,7 +119,7 @@ public class UserPersistenceAdapter
         boolean byPhone = searchTarget == UserSearchTarget.PHONE_NUMBER;
         boolean byRefCode = searchTarget == UserSearchTarget.REFERENCE_CODE;
 
-        Page<UserJpaGeneralEntity> userJpaEntityPage = userJpaRepository.findAllStatusUsersByPage(
+        Page<UserJpaEntity> userJpaEntityPage = userJpaRepository.findAllStatusUsersByPage(
                 pageable, byId, byNickname, byEmail, byPhone, byRefCode, searchKeyword
         );
 
@@ -144,14 +144,14 @@ public class UserPersistenceAdapter
 
     @Override
     public void update(User user) throws UserNotFoundException {
-        UserJpaGeneralEntity userJpaEntity = findEntityById(user.getId());
+        UserJpaEntity userJpaEntity = findEntityById(user.getId());
         userJpaEntity.updateFrom(user);
     }
 
     @Override
     public void saveLoginHistory(LoginHistory loginHistory) {
         Long userId = loginHistory.getUser().getId();
-        UserJpaGeneralEntity userRef = userJpaRepository.getReferenceById(userId);
+        UserJpaEntity userRef = userJpaRepository.getReferenceById(userId);
         userRef.updateLoginTime();
         LoginHistoryJpaEntity entity = LoginHistoryJpaEntity.of(
                 userRef, loginHistory.getAuthVendor(), loginHistory.getIpAddress()
@@ -177,7 +177,7 @@ public class UserPersistenceAdapter
         return new PageImpl<>(histories, pageable, page.getTotalElements());
     }
 
-    private UserJpaGeneralEntity findEntityById(Long id) throws UserNotFoundException {
+    private UserJpaEntity findEntityById(Long id) throws UserNotFoundException {
         return userJpaRepository.findAllStatusUserById(id).orElseThrow(
                 () -> new UserNotFoundException(String.format(USER_ID_NOT_FOUND_EXCEPTION_MESSAGE, id))
         );

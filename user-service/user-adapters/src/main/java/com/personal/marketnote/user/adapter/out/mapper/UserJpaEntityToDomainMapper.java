@@ -2,7 +2,7 @@ package com.personal.marketnote.user.adapter.out.mapper;
 
 import com.personal.marketnote.user.adapter.out.persistence.authentication.entity.RoleJpaEntity;
 import com.personal.marketnote.user.adapter.out.persistence.user.entity.TermsJpaEntity;
-import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserJpaGeneralEntity;
+import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserJpaEntity;
 import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserOauth2VendorJpaEntity;
 import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserTermsJpaEntity;
 import com.personal.marketnote.user.domain.authentication.Role;
@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class UserJpaEntityToDomainMapper {
-    public static Optional<User> mapToDomain(UserJpaGeneralEntity userJpaEntity) {
+    public static Optional<User> mapToDomain(UserJpaEntity userJpaEntity) {
         return Optional.ofNullable(userJpaEntity)
                 .map(entity -> {
                     Role role = mapToDomain(entity.getRoleJpaEntity()).get();
@@ -36,6 +36,7 @@ public class UserJpaEntityToDomainMapper {
                             role,
                             vendors,
                             userTerms,
+                            entity.getSignedUpAt(),
                             entity.getLastLoggedInAt(),
                             entity.getStatus(),
                             entity.getWithdrawalYn(),

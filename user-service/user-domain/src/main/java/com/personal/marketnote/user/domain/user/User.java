@@ -34,6 +34,7 @@ public class User {
     private Role role;
     private List<UserOauth2Vendor> userOauth2Vendors;
     private List<UserTerms> userTerms;
+    private LocalDateTime signedUpAt;
     private LocalDateTime lastLoggedInAt;
     private EntityStatus status;
     private boolean withdrawalYn;
@@ -108,6 +109,7 @@ public class User {
             Role role,
             List<UserOauth2Vendor> userOauth2Vendors,
             List<UserTerms> userTerms,
+            LocalDateTime signedUpAt,
             LocalDateTime lastLoggedInAt,
             EntityStatus status,
             boolean withdrawalYn,
@@ -125,6 +127,7 @@ public class User {
                 .role(role)
                 .userOauth2Vendors(userOauth2Vendors)
                 .userTerms(userTerms)
+                .signedUpAt(signedUpAt)
                 .lastLoggedInAt(lastLoggedInAt)
                 .status(status)
                 .withdrawalYn(withdrawalYn)
@@ -236,6 +239,7 @@ public class User {
 
     public void cancelWithdrawal() {
         withdrawalYn = false;
+        signedUpAt = LocalDateTime.now();
     }
 
     public boolean isWithdrawn() {
