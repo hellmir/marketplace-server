@@ -40,4 +40,8 @@ public class UserTerms {
     public boolean isRequiredTermsAgreed() {
         return !terms.isRequired() || agreementYn;
     }
+
+    public void disagree() {
+        agreementYn = false;
+    }
 }
