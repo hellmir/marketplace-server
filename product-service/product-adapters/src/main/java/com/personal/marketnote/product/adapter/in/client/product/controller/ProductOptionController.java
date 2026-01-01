@@ -4,11 +4,13 @@ import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.AuthorityValidator;
 import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductOptionsApiDocs;
+import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.UpdateProductOptionsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductOptionsRequest;
-import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductOptionsResponse;
-import com.personal.marketnote.product.port.in.result.RegisterProductOptionsResult;
+import com.personal.marketnote.product.adapter.in.client.product.response.UpsertProductOptionsResponse;
+import com.personal.marketnote.product.port.in.result.UpsertProductOptionsResult;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterProductOptionsUseCase;
+import com.personal.marketnote.product.port.in.usecase.product.UpdateProductOptionsUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,16 +32,17 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER
 @Slf4j
 public class ProductOptionController {
     private final RegisterProductOptionsUseCase registerProductOptionsUseCase;
+    private final UpdateProductOptionsUseCase updateProductOptionsUseCase;
 
     @PostMapping("/option-categories")
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
     @RegisterProductOptionsApiDocs
-    public ResponseEntity<BaseResponse<RegisterProductOptionsResponse>> registerProductOptionCategories(
+    public ResponseEntity<BaseResponse<UpsertProductOptionsResponse>> registerProductOptionCategories(
             @PathVariable("productId") Long productId,
             @Valid @RequestBody RegisterProductOptionsRequest request,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
-        RegisterProductOptionsResult result = registerProductOptionsUseCase.registerProductOptions(
+        UpsertProductOptionsResult result = registerProductOptionsUseCase.registerProductOptions(
                 ElementExtractor.extractUserId(principal),
                 AuthorityValidator.hasAdminRole(principal),
                 ProductRequestToCommandMapper.mapToCommand(productId, request)
@@ -47,12 +50,37 @@ public class ProductOptionController {
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        RegisterProductOptionsResponse.from(result),
+                        UpsertProductOptionsResponse.from(result),
                         HttpStatus.CREATED,
                         DEFAULT_SUCCESS_CODE,
                         "상품 카테고리 및 옵션 목록 등록 성공"
                 ),
                 HttpStatus.CREATED
+        );
+    }
+
+    @PutMapping("/option-categories/{optionCategoryId}")
+    @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
+    @UpdateProductOptionsApiDocs
+    public ResponseEntity<BaseResponse<UpsertProductOptionsResponse>> updateProductOptionCategories(
+            @PathVariable("productId") Long productId,
+            @PathVariable("optionCategoryId") Long optionCategoryId,
+            @Valid @RequestBody RegisterProductOptionsRequest request,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        UpsertProductOptionsResult result = updateProductOptionsUseCase.updateProductOptions(
+                ElementExtractor.extractUserId(principal),
+                AuthorityValidator.hasAdminRole(principal),
+                ProductRequestToCommandMapper.mapToUpdateCommand(productId, optionCategoryId, request)
+        );
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        UpsertProductOptionsResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "상품 옵션 카테고리 수정 성공"
+                )
         );
     }
 }

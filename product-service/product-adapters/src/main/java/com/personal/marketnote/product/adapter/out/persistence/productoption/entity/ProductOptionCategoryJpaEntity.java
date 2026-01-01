@@ -9,6 +9,9 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+
 @Entity
 @Table(name = "product_option_category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,16 +20,17 @@ import java.util.List;
 @Getter
 public class ProductOptionCategoryJpaEntity extends BaseOrderedEntity {
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", insertable = false, updatable = false)
+    @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(name = "fk_product_option_category_product"))
     private ProductJpaEntity productJpaEntity;
 
-    @OneToMany(mappedBy = "productOptionCategoryJpaEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "productOptionCategoryJpaEntity", cascade = {PERSIST, MERGE}, orphanRemoval = true)
     private List<ProductOptionJpaEntity> productOptionJpaEntities = new ArrayList<>();
 
     @Column(name = "name", nullable = false, length = 255)
     private String name;
 
-    public static ProductOptionCategoryJpaEntity from(ProductOptionCategory category, ProductJpaEntity productJpaEntity) {
+    public static ProductOptionCategoryJpaEntity from(ProductOptionCategory category,
+                                                      ProductJpaEntity productJpaEntity) {
         ProductOptionCategoryJpaEntity productOptionCategoryJpaEntity = ProductOptionCategoryJpaEntity.builder()
                 .productJpaEntity(productJpaEntity)
                 .name(category.getName())
