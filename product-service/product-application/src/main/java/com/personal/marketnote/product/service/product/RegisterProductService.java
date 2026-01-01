@@ -2,8 +2,10 @@ package com.personal.marketnote.product.service.product;
 
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.product.domain.product.Product;
+import com.personal.marketnote.product.port.in.command.RegisterPricePolicyCommand;
 import com.personal.marketnote.product.port.in.command.RegisterProductCommand;
 import com.personal.marketnote.product.port.in.result.RegisterProductResult;
+import com.personal.marketnote.product.port.in.usecase.product.RegisterPricePolicyUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterProductUseCase;
 import com.personal.marketnote.product.port.out.product.SaveProductPort;
 import lombok.RequiredArgsConstructor;
@@ -15,19 +17,25 @@ import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMIT
 @RequiredArgsConstructor
 @Transactional(isolation = READ_UNCOMMITTED)
 public class RegisterProductService implements RegisterProductUseCase {
+    private final RegisterPricePolicyUseCase registerPricePolicyUseCase;
     private final SaveProductPort saveProductPort;
 
     @Override
-    public RegisterProductResult registerProduct(RegisterProductCommand command) {
+    public RegisterProductResult registerProduct(RegisterProductCommand registerProductCommand) {
+        Long sellerId = registerProductCommand.sellerId();
+
         Product savedProduct = saveProductPort.save(
                 Product.of(
-                        command.sellerId(),
-                        command.name(),
-                        command.brandName(),
-                        command.detail(),
-                        command.price(),
-                        command.accumulatedPoint()
+                        sellerId,
+                        registerProductCommand.name(),
+                        registerProductCommand.brandName(),
+                        registerProductCommand.detail(),
+                        registerProductCommand.isFindAllOptions()
                 )
+        );
+
+        registerPricePolicyUseCase.registerPricePolicy(
+                sellerId, false, RegisterPricePolicyCommand.from(savedProduct.getId(), registerProductCommand)
         );
 
         return RegisterProductResult.from(savedProduct);

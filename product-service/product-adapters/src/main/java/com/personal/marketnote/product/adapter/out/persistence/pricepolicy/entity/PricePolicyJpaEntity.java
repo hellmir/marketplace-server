@@ -22,8 +22,8 @@ public class PricePolicyJpaEntity extends BaseGeneralEntity {
     @Column(name = "price", nullable = false)
     private Long price;
 
-    @Column(name = "current_price", nullable = false)
-    private Long currentPrice;
+    @Column(name = "discount_price", nullable = false)
+    private Long discountPrice;
 
     // start_at, end_at removed per latest spec
 
@@ -40,7 +40,7 @@ public class PricePolicyJpaEntity extends BaseGeneralEntity {
         return PricePolicyJpaEntity.builder()
                 .productJpaEntity(productRef)
                 .price(pricePolicy.getPrice())
-                .currentPrice(pricePolicy.getCurrentPrice())
+                .discountPrice(pricePolicy.getDiscountPrice())
                 .accumulationRate(pricePolicy.getAccumulationRate())
                 .accumulatedPoint(pricePolicy.getAccumulatedPoint())
                 .discountRate(pricePolicy.getDiscountRate())

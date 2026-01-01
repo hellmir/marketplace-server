@@ -11,10 +11,10 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-public class ProductOptionJpaGeneralEntity extends BaseOrderedGeneralEntity {
+public class ProductOptionJpaEntity extends BaseOrderedGeneralEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_option_category_id", nullable = false, foreignKey = @ForeignKey(name = "fk_product_option_product_option_category"))
-    private ProductOptionCategoryJpaGeneralEntity productOptionCategoryJpaEntity;
+    private ProductOptionCategoryJpaEntity productOptionCategoryJpaEntity;
 
     @Column(name = "content", nullable = false, length = 511)
     private String content;
@@ -25,8 +25,8 @@ public class ProductOptionJpaGeneralEntity extends BaseOrderedGeneralEntity {
     @Column(name = "accumulated_point")
     private Long accumulatedPoint;
 
-    public static ProductOptionJpaGeneralEntity of(ProductOptionCategoryJpaGeneralEntity productOptionCategoryJpaEntity, String content, Long price, Long accumulatedPoint) {
-        return ProductOptionJpaGeneralEntity.builder()
+    public static ProductOptionJpaEntity of(ProductOptionCategoryJpaEntity productOptionCategoryJpaEntity, String content, Long price, Long accumulatedPoint) {
+        return ProductOptionJpaEntity.builder()
                 .productOptionCategoryJpaEntity(productOptionCategoryJpaEntity)
                 .content(content)
                 .price(price)
@@ -34,10 +34,10 @@ public class ProductOptionJpaGeneralEntity extends BaseOrderedGeneralEntity {
                 .build();
     }
 
-    public static ProductOptionJpaGeneralEntity from(
-            ProductOptionCategoryJpaGeneralEntity productOptionCategoryJpaEntity, ProductOption option
+    public static ProductOptionJpaEntity from(
+            ProductOptionCategoryJpaEntity productOptionCategoryJpaEntity, ProductOption option
     ) {
-        return ProductOptionJpaGeneralEntity.builder()
+        return ProductOptionJpaEntity.builder()
                 .productOptionCategoryJpaEntity(productOptionCategoryJpaEntity)
                 .content(option.getContent())
                 .price(option.getPrice())

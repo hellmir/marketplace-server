@@ -49,11 +49,23 @@ public class RegisterProductRequest {
     private Long price;
 
     @Schema(
+            name = "discountPrice",
+            description = "상품 할인 판매 가격(원)",
+            requiredMode = Schema.RequiredMode.REQUIRED
+    )
+    private Long discountPrice;
+
+    @Schema(
             name = "accumulatedPoint",
             description = "상품 적립 포인트(원)",
             requiredMode = Schema.RequiredMode.REQUIRED
     )
     private Long accumulatedPoint;
+
+    @Schema(
+            name = "isFindAllOptions",
+            description = "상품 목록 조회 시 옵션마다 개별 상품으로 조회 여부",
+            requiredMode = Schema.RequiredMode.REQUIRED
+    )
+    private boolean isFindAllOptions;
 }
-
-

@@ -43,7 +43,7 @@ public class PricePolicyController {
                 RegisterPricePolicyCommand.of(
                         productId,
                         request.getPrice(),
-                        request.getCurrentPrice(),
+                        request.getDiscountPrice(),
                         request.getAccumulatedPoint()
                 )
         );

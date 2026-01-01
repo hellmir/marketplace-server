@@ -12,7 +12,7 @@ public class RegisterPricePolicyRequest {
 
     @Schema(description = "현재 판매가", requiredMode = Schema.RequiredMode.REQUIRED, example = "37000")
     @NotNull
-    private Long currentPrice;
+    private Long discountPrice;
 
     @Schema(description = "적립 포인트", example = "1200")
     @NotNull

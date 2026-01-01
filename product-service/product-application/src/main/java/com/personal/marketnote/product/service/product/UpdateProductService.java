@@ -30,7 +30,7 @@ public class UpdateProductService implements UpdateProductUseCase {
         }
 
         Product product = getProductUseCase.getProduct(productId);
-        product.update(command.name(), command.brandName(), command.detail());
+        product.update(command.name(), command.brandName(), command.detail(), command.isFindAllOptions());
 
         updateProductPort.update(product);
     }

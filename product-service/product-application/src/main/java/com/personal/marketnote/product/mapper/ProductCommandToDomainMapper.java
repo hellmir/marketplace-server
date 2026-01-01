@@ -35,25 +35,25 @@ public class ProductCommandToDomainMapper {
             Product product, RegisterPricePolicyCommand command
     ) {
         java.math.BigDecimal price = java.math.BigDecimal.valueOf(command.price());
-        java.math.BigDecimal currentPrice = java.math.BigDecimal.valueOf(command.currentPrice());
+        java.math.BigDecimal discountPrice = java.math.BigDecimal.valueOf(command.discountPrice());
         java.math.BigDecimal hundred = new java.math.BigDecimal("100");
 
-        // discountRate = (price - currentPrice) / price * 100
-        java.math.BigDecimal discountRate = price.subtract(currentPrice)
+        // discountRate = (price - discountPrice) / price * 100
+        java.math.BigDecimal discountRate = price.subtract(discountPrice)
                 .divide(price, 3, java.math.RoundingMode.HALF_UP)
                 .multiply(hundred)
                 .setScale(1, java.math.RoundingMode.HALF_UP);
 
-        // accumulationRate = accumulatedPoint / price * 100
+        // accumulationRate = accumulatedPoint / discountPrice * 100
         java.math.BigDecimal accumulationRate = java.math.BigDecimal.valueOf(command.accumulatedPoint())
-                .divide(price, 3, java.math.RoundingMode.HALF_UP)
+                .divide(discountPrice, 3, java.math.RoundingMode.HALF_UP)
                 .multiply(hundred)
                 .setScale(1, java.math.RoundingMode.HALF_UP);
 
-        return com.personal.marketnote.product.domain.product.PricePolicy.of(
+        return PricePolicy.of(
                 product,
                 command.price(),
-                command.currentPrice(),
+                command.discountPrice(),
                 accumulationRate,
                 command.accumulatedPoint(),
                 discountRate);

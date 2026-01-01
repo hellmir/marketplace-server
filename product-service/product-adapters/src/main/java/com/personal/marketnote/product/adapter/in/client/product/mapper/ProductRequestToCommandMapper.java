@@ -16,7 +16,10 @@ public class ProductRequestToCommandMapper {
                 registerProductRequest.getBrandName(),
                 registerProductRequest.getDetail(),
                 registerProductRequest.getPrice(),
-                registerProductRequest.getAccumulatedPoint());
+                registerProductRequest.getDiscountPrice(),
+                registerProductRequest.getAccumulatedPoint(),
+                registerProductRequest.isFindAllOptions()
+        );
     }
 
     public static RegisterProductCategoriesCommand mapToCommand(
@@ -52,7 +55,8 @@ public class ProductRequestToCommandMapper {
                 productId,
                 request.getName(),
                 request.getBrandName(),
-                request.getDetail()
+                request.getDetail(),
+                request.isFindAllOptions()
         );
     }
 }

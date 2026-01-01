@@ -40,7 +40,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- | --- |
                 | productId (path) | number | 상품 ID | Y | 1 |
                 | price | number | 정가 | Y | 45000 |
-                | currentPrice | number | 현재 판매가 | Y | 37000 |
+                | discountPrice | number | 할인 판매가 | Y | 37000 |
                 | accumulatedPoint | number | 적립 포인트 | Y | 1200 |
                 
                 ---
@@ -78,7 +78,7 @@ import java.lang.annotation.*;
                         examples = @ExampleObject("""
                                 {
                                   "price": 45000,
-                                  "currentPrice": 37000,
+                                  "discountPrice": 37000,
                                   "accumulatedPoint": 1200
                                 }
                                 """)

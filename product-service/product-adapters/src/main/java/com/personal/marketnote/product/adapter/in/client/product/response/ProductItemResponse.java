@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.math.BigDecimal;
+
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
@@ -14,7 +16,9 @@ public class ProductItemResponse {
     private Long sellerId;
     private String name;
     private String brandName;
-    private Long currentPrice;
+    private Long price;
+    private Long discountPrice;
+    private BigDecimal discountRate;
     private Long accumulatedPoint;
     private Integer sales;
     private Long orderNum;
@@ -26,7 +30,9 @@ public class ProductItemResponse {
                 .sellerId(result.sellerId())
                 .name(result.name())
                 .brandName(result.brandName())
-                .currentPrice(result.currentPrice())
+                .price(result.price())
+                .discountPrice(result.discountPrice())
+                .discountRate(result.discountRate())
                 .accumulatedPoint(result.accumulatedPoint())
                 .sales(result.sales())
                 .orderNum(result.orderNum())

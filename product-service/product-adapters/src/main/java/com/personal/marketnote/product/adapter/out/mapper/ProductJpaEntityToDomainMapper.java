@@ -2,8 +2,8 @@ package com.personal.marketnote.product.adapter.out.mapper;
 
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
-import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionCategoryJpaGeneralEntity;
-import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionJpaGeneralEntity;
+import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionCategoryJpaEntity;
+import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionJpaEntity;
 import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.domain.product.ProductOption;
 import com.personal.marketnote.product.domain.product.ProductOptionCategory;
@@ -20,11 +20,14 @@ public class ProductJpaEntityToDomainMapper {
                                 productJpaEntity.getName(),
                                 productJpaEntity.getBrandName(),
                                 productJpaEntity.getDetail(),
-                                productJpaEntity.getCurrentPrice(),
+                                productJpaEntity.getPrice(),
+                                productJpaEntity.getDiscountPrice(),
+                                productJpaEntity.getDiscountRate(),
                                 productJpaEntity.getAccumulatedPoint(),
                                 productJpaEntity.getSales(),
                                 productJpaEntity.getViewCount(),
                                 productJpaEntity.getPopularity(),
+                                productJpaEntity.isFindAllOptionsYn(),
                                 productJpaEntity.getOrderNum(),
                                 productJpaEntity.getStatus()
                         )
@@ -32,7 +35,7 @@ public class ProductJpaEntityToDomainMapper {
     }
 
     public static Optional<ProductOptionCategory> mapToDomain(
-            ProductOptionCategoryJpaGeneralEntity productOptionCategoryJpaEntity) {
+            ProductOptionCategoryJpaEntity productOptionCategoryJpaEntity) {
         return Optional.ofNullable(productOptionCategoryJpaEntity)
                 .map(entity -> {
                     Product product = ProductJpaEntityToDomainMapper
@@ -64,10 +67,10 @@ public class ProductJpaEntityToDomainMapper {
                 });
     }
 
-    public static Optional<ProductOption> mapToDomain(ProductOptionJpaGeneralEntity productOptionJpaEntity) {
+    public static Optional<ProductOption> mapToDomain(ProductOptionJpaEntity productOptionJpaEntity) {
         return Optional.ofNullable(productOptionJpaEntity)
                 .map(entity -> {
-                    ProductOptionCategoryJpaGeneralEntity categoryEntity = entity
+                    ProductOptionCategoryJpaEntity categoryEntity = entity
                             .getProductOptionCategoryJpaEntity();
                     Product product = FormatValidator.hasValue(categoryEntity)
                             ? ProductJpaEntityToDomainMapper
@@ -97,7 +100,7 @@ public class ProductJpaEntityToDomainMapper {
     }
 
     private static Optional<ProductOption> mapToDomain(
-            ProductOptionJpaGeneralEntity productOptionJpaEntity,
+            ProductOptionJpaEntity productOptionJpaEntity,
             ProductOptionCategory shallowCategory) {
         return Optional.ofNullable(productOptionJpaEntity)
                 .map(
