@@ -37,7 +37,7 @@ public class UpdateUserService implements UpdateUserUseCase {
 
     private void updateTarget(boolean isAdmin, UpdateUserInfoCommand updateUserInfoCommand, User user) {
         if (isAdmin && updateUserInfoCommand.hasIsActive()) {
-            user.updateStatus(updateUserInfoCommand.isActive());
+            user.updateStatus(updateUserInfoCommand.getIsActive());
             return;
         }
 

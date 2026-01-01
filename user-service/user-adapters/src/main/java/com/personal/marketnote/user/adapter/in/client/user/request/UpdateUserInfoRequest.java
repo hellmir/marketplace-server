@@ -1,7 +1,10 @@
 package com.personal.marketnote.user.adapter.in.client.user.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
+
+import static com.personal.marketnote.common.utility.RegularExpressionConstant.NICKNAME_PATTERN;
 
 // FIXME: 정규 표현식 재적용
 @Getter
@@ -26,7 +29,7 @@ public class UpdateUserInfoRequest {
             description = "닉네임",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
-//    @Pattern(regexp = NICKNAME_PATTERN, message = "닉네임은 한글만 가능하며, 6글자 이하여야 합니다.")
+    @Pattern(regexp = NICKNAME_PATTERN, message = "닉네임은 한글만 가능하며, 6글자 이하여야 합니다.")
     private String nickname;
 
     @Schema(
