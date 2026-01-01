@@ -1,20 +1,19 @@
-package com.personal.marketnote.user.domain.user;
+package com.personal.marketnote.product.domain.product;
 
 import com.personal.marketnote.common.utility.FormatConverter;
 import lombok.Getter;
 
 @Getter
-public enum SortProperty {
+public enum ProductSortProperty {
     ORDER_NUM("정렬 순서"),
-    ID("회원 기본키"),
-    NICKNAME("닉네임"),
-    EMAIL("이메일 주소"),
-    PHONE_NUMBER("전화번호");
+    ACCUMULATED_POINT("적립금"),
+    POPULARITY("인기도"),
+    CURRENT_PRICE("가격");
 
     private final String description;
     private final String camelCaseValue;
 
-    SortProperty(String description) {
+    ProductSortProperty(String description) {
         this.description = description;
         camelCaseValue = FormatConverter.snakeToCamel(this.name());
     }

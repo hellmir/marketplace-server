@@ -40,6 +40,20 @@ public class RegisterProductRequest {
     )
     @NotBlank(message = "상품 설명은 필수값입니다.")
     private String detail;
+
+    @Schema(
+            name = "price",
+            description = "상품 기본 판매 가격(원)",
+            requiredMode = Schema.RequiredMode.REQUIRED
+    )
+    private Long price;
+
+    @Schema(
+            name = "accumulatedPoint",
+            description = "상품 적립 포인트(원)",
+            requiredMode = Schema.RequiredMode.REQUIRED
+    )
+    private Long accumulatedPoint;
 }
 
 

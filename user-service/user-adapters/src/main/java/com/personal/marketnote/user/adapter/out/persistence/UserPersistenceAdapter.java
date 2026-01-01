@@ -8,9 +8,9 @@ import com.personal.marketnote.user.adapter.out.persistence.user.repository.Logi
 import com.personal.marketnote.user.adapter.out.persistence.user.repository.TermsJpaRepository;
 import com.personal.marketnote.user.adapter.out.persistence.user.repository.UserJpaRepository;
 import com.personal.marketnote.user.domain.user.LoginHistory;
-import com.personal.marketnote.user.domain.user.SearchTarget;
 import com.personal.marketnote.user.domain.user.Terms;
 import com.personal.marketnote.user.domain.user.User;
+import com.personal.marketnote.user.domain.user.UserSearchTarget;
 import com.personal.marketnote.user.exception.UserNotFoundException;
 import com.personal.marketnote.user.port.out.user.*;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
@@ -112,12 +112,12 @@ public class UserPersistenceAdapter
     }
 
     @Override
-    public Page<User> findAllStatusUsersByPage(Pageable pageable, SearchTarget searchTarget, String searchKeyword) {
-        boolean byId = searchTarget == SearchTarget.ID;
-        boolean byNickname = searchTarget == SearchTarget.NICKNAME;
-        boolean byEmail = searchTarget == SearchTarget.EMAIL;
-        boolean byPhone = searchTarget == SearchTarget.PHONE_NUMBER;
-        boolean byRefCode = searchTarget == SearchTarget.REFERENCE_CODE;
+    public Page<User> findAllStatusUsersByPage(Pageable pageable, UserSearchTarget searchTarget, String searchKeyword) {
+        boolean byId = searchTarget == UserSearchTarget.ID;
+        boolean byNickname = searchTarget == UserSearchTarget.NICKNAME;
+        boolean byEmail = searchTarget == UserSearchTarget.EMAIL;
+        boolean byPhone = searchTarget == UserSearchTarget.PHONE_NUMBER;
+        boolean byRefCode = searchTarget == UserSearchTarget.REFERENCE_CODE;
 
         Page<UserJpaEntity> userJpaEntityPage = userJpaRepository.findAllStatusUsersByPage(
                 pageable, byId, byNickname, byEmail, byPhone, byRefCode, searchKeyword

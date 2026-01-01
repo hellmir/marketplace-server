@@ -37,7 +37,7 @@ import java.lang.annotation.*;
         | pageSize | number | 페이지 크기 | N | default: 10 |
         | pageNumber | number | 페이지 번호(1부터) | N | default: 1 |
         | sortDirection | string | 정렬 방향 | N | default: "DESC" |
-        | sortProperty | string | 정렬 속성 | N | default: "ID" |
+        | userSortProperty | string | 정렬 속성 | N | default: "ID" |
         
         ---
         
@@ -105,7 +105,7 @@ import java.lang.annotation.*;
                 schema = @Schema(type = "string", example = "DESC")
         ),
         @Parameter(
-                name = "sortProperty",
+                name = "userSortProperty",
                 in = ParameterIn.QUERY,
                 required = false,
                 description = "정렬 속성",

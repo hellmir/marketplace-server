@@ -1,13 +1,18 @@
 package com.personal.marketnote.product.adapter.out.persistence;
 
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.adapter.out.mapper.ProductJpaEntityToDomainMapper;
 import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.product.repository.ProductJpaRepository;
 import com.personal.marketnote.product.domain.product.Product;
+import com.personal.marketnote.product.domain.product.ProductSearchTarget;
+import com.personal.marketnote.product.domain.product.ProductSortProperty;
 import com.personal.marketnote.product.port.out.product.FindProductPort;
 import com.personal.marketnote.product.port.out.product.SaveProductPort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -43,14 +48,6 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
     }
 
     @Override
-    public List<Product> findAllActive() {
-        return productJpaRepository.findAllByStatusOrderByOrderNumAsc(
-                        com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE).stream()
-                .map(entity -> ProductJpaEntityToDomainMapper.mapToDomain(entity).get())
-                .toList();
-    }
-
-    @Override
     public List<Product> findAllByCategoryId(Long categoryId) {
         return productJpaRepository.findAllByCategoryIdOrderByOrderNumAsc(categoryId).stream()
                 .map(entity -> ProductJpaEntityToDomainMapper.mapToDomain(entity).get())
@@ -58,9 +55,148 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
     }
 
     @Override
-    public List<Product> findAllActiveByCategoryId(Long categoryId) {
-        return productJpaRepository.findAllActiveByCategoryId(categoryId).stream()
-                .map(entity -> ProductJpaEntityToDomainMapper.mapToDomain(entity).get())
+    public List<Product> findAllActive(
+            Long cursor,
+            Pageable pageable,
+            ProductSortProperty sortProperty,
+            ProductSearchTarget searchTarget,
+            String searchKeyword
+    ) {
+        boolean isAsc = isAsc(pageable);
+        String searchPattern = generateSearchPattern(searchKeyword);
+
+        List<ProductJpaEntity> entities = findEntities(
+                isAsc,
+                cursor,
+                pageable,
+                sortProperty,
+                searchTarget,
+                searchPattern
+        );
+
+        return entities.stream()
+                .map(entity -> ProductJpaEntityToDomainMapper.mapToDomain(entity).orElse(null))
                 .toList();
+    }
+
+    @Override
+    public List<Product> findAllActiveByCategoryId(
+            Long categoryId,
+            Long cursor,
+            Pageable pageable,
+            ProductSortProperty sortProperty,
+            ProductSearchTarget searchTarget,
+            String searchKeyword
+    ) {
+        boolean isAsc = isAsc(pageable);
+        String searchPattern = generateSearchPattern(searchKeyword);
+
+        List<ProductJpaEntity> entities = findCategorizedEntities(
+                isAsc,
+                categoryId,
+                cursor,
+                pageable,
+                sortProperty,
+                searchTarget,
+                searchPattern
+        );
+
+        return entities.stream()
+                .map(entity -> ProductJpaEntityToDomainMapper.mapToDomain(entity).orElse(null))
+                .toList();
+    }
+
+    private boolean isAsc(Pageable pageable) {
+        return pageable.getSort()
+                .stream()
+                .findFirst()
+                .map(Sort.Order::isAscending)
+                .orElse(true);
+    }
+
+    private List<ProductJpaEntity> findEntities(
+            boolean isAsc,
+            Long cursor,
+            Pageable pageable,
+            ProductSortProperty sortProperty,
+            ProductSearchTarget searchTarget,
+            String searchPattern
+    ) {
+        if (isAsc) {
+            return productJpaRepository.findAllActiveByCursorAsc(
+                    cursor,
+                    pageable,
+                    sortProperty.getCamelCaseValue(),
+                    searchTarget.getCamelCaseValue(),
+                    searchPattern
+            );
+        }
+
+        return productJpaRepository.findAllActiveByCursorDesc(
+                cursor,
+                pageable,
+                sortProperty.getCamelCaseValue(),
+                searchTarget.getCamelCaseValue(),
+                searchPattern
+        );
+    }
+
+    private List<ProductJpaEntity> findCategorizedEntities(
+            boolean isAsc,
+            Long categoryId,
+            Long cursor,
+            Pageable pageable,
+            ProductSortProperty sortProperty,
+            ProductSearchTarget searchTarget,
+            String searchPattern
+    ) {
+        if (isAsc) {
+            return productJpaRepository.findAllActiveByCategoryIdCursorAsc(
+                    categoryId,
+                    cursor,
+                    pageable,
+                    sortProperty.getCamelCaseValue(),
+                    searchTarget.getCamelCaseValue(),
+                    searchPattern
+            );
+        }
+
+        return productJpaRepository.findAllActiveByCategoryIdCursorDesc(
+                categoryId,
+                cursor,
+                pageable,
+                sortProperty.getCamelCaseValue(),
+                searchTarget.getCamelCaseValue(),
+                searchPattern
+        );
+    }
+
+    @Override
+    public long countActive(ProductSearchTarget searchTarget, String searchKeyword) {
+        String searchPattern = generateSearchPattern(searchKeyword);
+
+        return productJpaRepository.countActive(
+                searchTarget.getCamelCaseValue(),
+                searchPattern
+        );
+    }
+
+    @Override
+    public long countActiveByCategoryId(Long categoryId, ProductSearchTarget searchTarget, String searchKeyword) {
+        String searchPattern = generateSearchPattern(searchKeyword);
+
+        return productJpaRepository.countActiveByCategoryId(
+                categoryId,
+                searchTarget.getCamelCaseValue(),
+                searchPattern
+        );
+    }
+
+    private String generateSearchPattern(String searchKeyword) {
+        if (FormatValidator.hasValue(searchKeyword)) {
+            return "%" + searchKeyword + "%";
+        }
+
+        return null;
     }
 }

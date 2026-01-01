@@ -1,9 +1,9 @@
 package com.personal.marketnote.user.service.user;
 
 import com.personal.marketnote.common.application.UseCase;
-import com.personal.marketnote.user.domain.user.SearchTarget;
-import com.personal.marketnote.user.domain.user.SortProperty;
 import com.personal.marketnote.user.domain.user.User;
+import com.personal.marketnote.user.domain.user.UserSearchTarget;
+import com.personal.marketnote.user.domain.user.UserSortProperty;
 import com.personal.marketnote.user.exception.UserNotFoundException;
 import com.personal.marketnote.user.port.in.result.GetUserInfoResult;
 import com.personal.marketnote.user.port.in.result.GetUserResult;
@@ -73,10 +73,12 @@ public class GetUserService implements GetUserUseCase {
     @Override
     public Page<GetUserResult> getAllStatusUsers(
             int pageSize, int pageNumber,
-            Sort.Direction sortDirection, SortProperty sortProperty,
-            SearchTarget searchTarget, String searchKeyword
+            Sort.Direction sortDirection, UserSortProperty sortProperty,
+            UserSearchTarget searchTarget, String searchKeyword
     ) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortDirection, sortProperty.getCamelCaseValue()));
+        Pageable pageable = PageRequest.of(
+                pageNumber, pageSize, Sort.by(sortDirection, sortProperty.getCamelCaseValue())
+        );
 
         return findUserPort.findAllStatusUsersByPage(pageable, searchTarget, searchKeyword)
                 .map(GetUserResult::from);

@@ -11,8 +11,8 @@ import com.personal.marketnote.user.adapter.in.client.user.response.GetLoginHist
 import com.personal.marketnote.user.adapter.in.client.user.response.GetUserInfoResponse;
 import com.personal.marketnote.user.adapter.in.client.user.response.GetUsersResponse;
 import com.personal.marketnote.user.domain.user.LoginHistorySortProperty;
-import com.personal.marketnote.user.domain.user.SearchTarget;
-import com.personal.marketnote.user.domain.user.SortProperty;
+import com.personal.marketnote.user.domain.user.UserSearchTarget;
+import com.personal.marketnote.user.domain.user.UserSortProperty;
 import com.personal.marketnote.user.port.in.usecase.user.GetLoginHistoryUseCase;
 import com.personal.marketnote.user.port.in.usecase.user.GetUserUseCase;
 import com.personal.marketnote.user.port.in.usecase.user.UpdateUserUseCase;
@@ -74,8 +74,8 @@ public class UserAdminController {
             @RequestParam(required = false, defaultValue = GET_USERS_DEFAULT_PAGE_SIZE) int pageSize,
             @RequestParam(required = false, defaultValue = DEFAULT_PAGE_NUMBER) int pageNumber,
             @RequestParam(required = false, defaultValue = "DESC") Sort.Direction sortDirection,
-            @RequestParam(required = false, defaultValue = "ORDER_NUM") SortProperty sortProperty,
-            @RequestParam(required = false, defaultValue = "EMAIL") SearchTarget searchTarget,
+            @RequestParam(required = false, defaultValue = "ORDER_NUM") UserSortProperty sortProperty,
+            @RequestParam(required = false, defaultValue = "EMAIL") UserSearchTarget searchTarget,
             @RequestParam(required = false) String searchKeyword
     ) {
         GetUsersResponse getUsersResponse = GetUsersResponse.from(

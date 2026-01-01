@@ -29,6 +29,10 @@ import java.lang.annotation.*;
         
         - categoryId 전송 시 해당 카테고리의 상품 목록을 반환합니다.
         
+        - 페이로드에 cursor 값이 없는 경우(첫 페이지): 총 상품 개수 반환 O
+        
+        - 페이로드에 cursor 값이 있는 경우(더 보기): 총 상품 개수 반환 X
+        
         ---
         
         ## Request
@@ -36,6 +40,12 @@ import java.lang.annotation.*;
         | **키** | **타입** | **설명** | **필수 여부** | **예시** |
         | --- | --- | --- | --- | --- |
         | categoryId | number | 카테고리 ID | N | 1001 |
+        | cursor | number | 커서(첫 페이지는 미전송 권장, ASC: 0, DESC: Long.MAX_VALUE) | N | 0 |
+        | page-size | number | 페이지 크기 | N | 4 |
+        | sortDirection | string | 정렬 방향(ASC, DESC) | N | DESC |
+        | sortProperty | string | 정렬 속성(ORDER_NUM, POPULARITY, CURRENT_PRICE, ACCUMULATED_POINT) | N | ORDER_NUM |
+        | searchTarget | string | 검색 대상(NAME, BRAND_NAME) | N | NAME |
+        | searchKeyword | string | 검색 키워드 | N | "노트왕" |
         
         ---
         
@@ -56,6 +66,9 @@ import java.lang.annotation.*;
         | **키** | **타입** | **설명** | **예시** |
         | --- | --- | --- | --- |
         | products | array | 상품 목록 | [ ... ] |
+        | nextCursor | number | 다음 페이지 요청 시 사용할 커서(더 없으면 null) | 18 |
+        | hasNext | boolean | 다음 페이지 존재 여부 | true |
+        | totalElements | number | 총 아이템 수 | 30 |
         
         ---
         
@@ -67,20 +80,76 @@ import java.lang.annotation.*;
         | sellerId | number | 판매자 ID | 10 |
         | name | string | 상품명 | "스프링노트1" |
         | brandName | string | 브랜드명 | "노트왕" |
+        | currentPrice | number | 기본 판매 가격(원) | 100000 |
+        | accumulatedPoint | number | 구매 시 적립 포인트 | 1000 |
         | sales | number | 판매량 | 0 |
         | orderNum | number | 정렬 순서 | 1 |
         | status | string | 상태 | "ACTIVE" |
         
         ---
-        
-        """,
-        security = {@SecurityRequirement(name = "bearer")},
+        """, security = {
+        @SecurityRequirement(name = "bearer")
+},
         parameters = {
                 @Parameter(
                         name = "categoryId",
                         in = ParameterIn.QUERY,
-                        description = "카테고리 ID",
-                        schema = @Schema(type = "number", example = "1001")
+                        description = "카테고리 ID(없는 경우 전체 조회)",
+                        schema = @Schema(type = "number")
+                ),
+                @Parameter(
+                        name = "cursor",
+                        in = ParameterIn.QUERY,
+                        description = "이전 페이지의 nextCursor 값, 전송하지 않는 경우 첫 데이터부터 조회",
+                        schema = @Schema(type = "number")
+                ),
+                @Parameter(
+                        name = "page-size",
+                        in = ParameterIn.QUERY,
+                        description = "페이지 크기",
+                        schema = @Schema(
+                                type = "number",
+                                example = "4",
+                                defaultValue = "4"
+                        )
+                ),
+                @Parameter(
+                        name = "sortDirection",
+                        in = ParameterIn.QUERY,
+                        description = "정렬 방향",
+                        schema = @Schema(
+                                type = "string",
+                                example = "DESC",
+                                allowableValues = {"ASC", "DESC"},
+                                defaultValue = "DESC"
+                        )
+                ),
+                @Parameter(
+                        name = "sortProperty",
+                        in = ParameterIn.QUERY,
+                        description = "정렬 속성",
+                        schema = @Schema(
+                                type = "string",
+                                example = "ORDER_NUM",
+                                allowableValues = {"ORDER_NUM", "POPULARITY", "CURRENT_PRICE", "ACCUMULATED_POINT"},
+                                defaultValue = "ORDER_NUM"
+                        )
+                ),
+                @Parameter(
+                        name = "searchTarget",
+                        in = ParameterIn.QUERY,
+                        description = "검색 대상",
+                        schema = @Schema(
+                                type = "string",
+                                allowableValues = {"NAME", "BRAND_NAME"},
+                                defaultValue = "NAME"
+                        )
+                ),
+                @Parameter(
+                        name = "searchKeyword",
+                        in = ParameterIn.QUERY,
+                        description = "검색 키워드(없는 경우 전체 조회)",
+                        schema = @Schema(type = "string")
                 )
         },
         responses = {
@@ -93,64 +162,59 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-01T10:56:37.657799",
+                                          "timestamp": "2026-01-01T15:02:49.167923",
                                           "content": {
-                                            "products": [
-                                              {
-                                                "id": 11,
-                                                "sellerId": 4,
-                                                "name": "스프링노트1",
-                                                "brandName": "노트왕",
-                                                "sales": 0,
-                                                "orderNum": 11,
-                                                "status": "ACTIVE"
-                                              },
-                                              {
-                                                "id": 13,
-                                                "sellerId": 1,
-                                                "name": "스프링노트2",
-                                                "brandName": "노트왕",
-                                                "sales": 0,
-                                                "orderNum": 13,
-                                                "status": "ACTIVE"
-                                              },
-                                              {
-                                                "id": 15,
-                                                "sellerId": 1,
-                                                "name": "스프링노트3",
-                                                "brandName": "노트왕",
-                                                "sales": 0,
-                                                "orderNum": 15,
-                                                "status": "ACTIVE"
-                                              },
-                                              {
-                                                "id": 16,
-                                                "sellerId": 1,
-                                                "name": "스프링노트4",
-                                                "brandName": "노트왕",
-                                                "sales": 0,
-                                                "orderNum": 16,
-                                                "status": "ACTIVE"
-                                              },
-                                              {
-                                                "id": 17,
-                                                "sellerId": 1,
-                                                "name": "스프링노트5",
-                                                "brandName": "노트왕",
-                                                "sales": 0,
-                                                "orderNum": 17,
-                                                "status": "ACTIVE"
-                                              },
-                                              {
-                                                "id": 18,
-                                                "sellerId": 1,
-                                                "name": "스프링노트6",
-                                                "brandName": "노트왕",
-                                                "sales": 0,
-                                                "orderNum": 18,
-                                                "status": "ACTIVE"
-                                              }
-                                            ]
+                                            "products": {
+                                              "totalElements": 9,
+                                              "hasNext": true,
+                                              "nextCursor": 18,
+                                              "items": [
+                                                {
+                                                  "id": 21,
+                                                  "sellerId": 12,
+                                                  "name": "스프링노트1",
+                                                  "brandName": "노트왕",
+                                                  "currentPrice": 20000,
+                                                  "accumulatedPoint": 2000,
+                                                  "sales": 0,
+                                                  "orderNum": 21,
+                                                  "status": "ACTIVE"
+                                                },
+                                                {
+                                                  "id": 20,
+                                                  "sellerId": 12,
+                                                  "name": "스프링노트1",
+                                                  "brandName": "노트킹",
+                                                  "currentPrice": 20000,
+                                                  "accumulatedPoint": 2000,
+                                                  "sales": 0,
+                                                  "orderNum": 20,
+                                                  "status": "ACTIVE"
+                                                },
+                                                {
+                                                  "id": 19,
+                                                  "sellerId": 1,
+                                                  "name": "스프링노트1",
+                                                  "brandName": "노트왕",
+                                                  "currentPrice": 20000,
+                                                  "accumulatedPoint": 2000,
+                                                  "sales": 0,
+                                                  "orderNum": 19,
+                                                  "status": "ACTIVE"
+                                                },
+                                                {
+                                                  "id": 18,
+                                                  "sellerId": 1,
+                                                  "name": "스프링노트6",
+                                                  "brandName": "노트킹",
+                                                  "currentPrice": 20000,
+                                                  "accumulatedPoint": 2000,
+                                                  "sales": 0,
+                                                  "orderNum": 18,
+                                                  "status": "ACTIVE"
+                                                }
+                                              ]
+                                            }
                                           },
                                           "message": "상품 목록 조회 성공"
                                         }

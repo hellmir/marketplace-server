@@ -26,8 +26,20 @@ public class ProductJpaEntity extends BaseOrderedEntity {
     @Column(name = "detail", length = 1023)
     private String detail;
 
+    @Column(name = "current_price", nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    private Long currentPrice;
+
+    @Column(name = "accumulated_point", nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    private Long accumulatedPoint;
+
     @Column(name = "sales", nullable = false, columnDefinition = "INT DEFAULT 0")
     private Integer sales;
+
+    @Column(name = "view_count", nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    private Long viewCount;
+
+    @Column(name = "popularity", nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    private Long popularity;
 
     public static ProductJpaEntity from(Product product) {
         return ProductJpaEntity.builder()
@@ -35,7 +47,11 @@ public class ProductJpaEntity extends BaseOrderedEntity {
                 .name(product.getName())
                 .brandName(product.getBrandName())
                 .detail(product.getDetail())
+                .currentPrice(product.getCurrentPrice())
+                .accumulatedPoint(product.getAccumulatedPoint())
                 .sales(product.getSales())
+                .viewCount(product.getViewCount())
+                .popularity(product.getPopularity())
                 .build();
     }
 }

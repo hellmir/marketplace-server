@@ -20,7 +20,11 @@ public class ProductJpaEntityToDomainMapper {
                                 productJpaEntity.getName(),
                                 productJpaEntity.getBrandName(),
                                 productJpaEntity.getDetail(),
+                                productJpaEntity.getCurrentPrice(),
+                                productJpaEntity.getAccumulatedPoint(),
                                 productJpaEntity.getSales(),
+                                productJpaEntity.getViewCount(),
+                                productJpaEntity.getPopularity(),
                                 productJpaEntity.getOrderNum(),
                                 productJpaEntity.getStatus()
                         )
@@ -37,7 +41,7 @@ public class ProductJpaEntityToDomainMapper {
                             entity.getId(),
                             product,
                             entity.getName(),
-                            null, // options 채우기 전에는 null로 둔다
+                            null,
                             entity.getOrderNum(),
                             entity.getStatus()
                     );

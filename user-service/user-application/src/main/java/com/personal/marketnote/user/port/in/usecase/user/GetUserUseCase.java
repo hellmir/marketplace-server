@@ -1,8 +1,8 @@
 package com.personal.marketnote.user.port.in.usecase.user;
 
-import com.personal.marketnote.user.domain.user.SearchTarget;
-import com.personal.marketnote.user.domain.user.SortProperty;
 import com.personal.marketnote.user.domain.user.User;
+import com.personal.marketnote.user.domain.user.UserSearchTarget;
+import com.personal.marketnote.user.domain.user.UserSortProperty;
 import com.personal.marketnote.user.port.in.result.GetUserInfoResult;
 import com.personal.marketnote.user.port.in.result.GetUserResult;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
@@ -78,8 +78,12 @@ public interface GetUserUseCase {
     GetUserInfoResult getAllStatusUserInfo(Long id);
 
     /**
-     * @param pageSize   페이지 크기
-     * @param pageNumber 페이지 번호
+     * @param pageSize      페이지 크기
+     * @param pageNumber    페이지 번호
+     * @param sortDirection 정렬 방향
+     * @param sortProperty  정렬 속성
+     * @param searchTarget  검색 대상
+     * @param searchKeyword 검색 키워드
      * @return 회원 목록 조회 결과 {@link List< GetUserResult >}
      * @Date 2025-12-29
      * @Author 성효빈
@@ -89,8 +93,8 @@ public interface GetUserUseCase {
             int pageSize,
             int pageNumber,
             Sort.Direction sortDirection,
-            SortProperty sortProperty,
-            SearchTarget searchTarget,
+            UserSortProperty sortProperty,
+            UserSearchTarget searchTarget,
             String searchKeyword
     );
 }

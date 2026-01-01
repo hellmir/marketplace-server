@@ -12,6 +12,8 @@ import com.personal.marketnote.product.adapter.in.client.product.request.Registe
 import com.personal.marketnote.product.adapter.in.client.product.response.GetProductsResponse;
 import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductCategoriesResponse;
 import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductResponse;
+import com.personal.marketnote.product.domain.product.ProductSearchTarget;
+import com.personal.marketnote.product.domain.product.ProductSortProperty;
 import com.personal.marketnote.product.port.in.result.GetProductsResult;
 import com.personal.marketnote.product.port.in.result.RegisterProductCategoriesResult;
 import com.personal.marketnote.product.port.in.result.RegisterProductResult;
@@ -22,6 +24,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
 import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER_POINTCUT;
 import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER_PRINCIPAL_POINTCUT;
+import static com.personal.marketnote.common.utility.NumberConstant.MINUS_ONE;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -39,6 +43,8 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER
 @RequiredArgsConstructor
 @Slf4j
 public class ProductController {
+    private static final String GET_PRODUCTS_DEFAULT_PAGE_SIZE = "4";
+
     private final RegisterProductUseCase registerProductUseCase;
     private final RegisterProductCategoriesUseCase registerProductCategoriesUseCase;
     private final GetProductUseCase getProductUseCase;
@@ -64,12 +70,40 @@ public class ProductController {
         );
     }
 
+    /**
+     * 상품 목록 조회
+     *
+     * @param cursor
+     * @param pageSize      페이지 크기
+     * @param sortDirection 정렬 방향
+     * @param sortProperty  정렬 속성
+     * @param searchTarget  검색 대상
+     * @param searchKeyword 검색 키워드
+     * @return 회원 목록 조회 응답 {@link GetProductsResponse}
+     * @Author 성효빈
+     * @Date 2025-12-31
+     * @Description 상품 목록을 조회합니다.
+     */
     @GetMapping
     @GetProductsApiDocs
     public ResponseEntity<BaseResponse<GetProductsResponse>> getProducts(
-            @RequestParam(value = "categoryId", required = false) Long categoryId
+            @RequestParam(value = "categoryId", required = false) Long categoryId,
+            @RequestParam(value = "cursor", required = false, defaultValue = MINUS_ONE) Long cursor,
+            @RequestParam(value = "page-size", defaultValue = GET_PRODUCTS_DEFAULT_PAGE_SIZE) int pageSize,
+            @RequestParam(required = false, defaultValue = "DESC") Sort.Direction sortDirection,
+            @RequestParam(required = false, defaultValue = "ORDER_NUM") ProductSortProperty sortProperty,
+            @RequestParam(required = false, defaultValue = "NAME") ProductSearchTarget searchTarget,
+            @RequestParam(required = false) String searchKeyword
     ) {
-        GetProductsResult result = getProductUseCase.getProducts(categoryId);
+        GetProductsResult result = getProductUseCase.getProducts(
+                categoryId,
+                cursor,
+                pageSize,
+                sortDirection,
+                sortProperty,
+                searchTarget,
+                searchKeyword
+        );
 
         return ResponseEntity.ok(
                 BaseResponse.of(

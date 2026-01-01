@@ -36,7 +36,8 @@ import java.lang.annotation.*;
         | name | string | 상품명 | Y | "스프링노트1" |
         | brandName | string | 브랜드명 | N | "노트왕" |
         | detail | string | 상품 설명 | N | "스프링노트1 설명" |
-        
+        | price | number | 상품 기본 판매 가격(원) | Y | 100000 |
+        | accumulatedPoint | number | 구매 시 적립 포인트 | Y | 1000 |
         ---
         
         ## Response
@@ -66,7 +67,9 @@ import java.lang.annotation.*;
                                     "sellerId": 1,
                                     "name": "스프링노트1",
                                     "brandName": "노트왕",
-                                    "detail": "스프링노트1 설명"
+                                    "detail": "스프링노트1 설명",
+                                    "price": 10000,
+                                    "accumulatedPoint": 1000
                                 }
                                 """)
                 )
