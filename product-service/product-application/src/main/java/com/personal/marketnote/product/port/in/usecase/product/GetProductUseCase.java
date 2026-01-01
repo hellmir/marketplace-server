@@ -1,7 +1,10 @@
 package com.personal.marketnote.product.port.in.usecase.product;
 
 import com.personal.marketnote.product.domain.product.Product;
+import com.personal.marketnote.product.domain.product.ProductSearchTarget;
+import com.personal.marketnote.product.domain.product.ProductSortProperty;
 import com.personal.marketnote.product.port.in.result.GetProductsResult;
+import org.springframework.data.domain.Sort;
 
 public interface GetProductUseCase {
     /**
@@ -13,5 +16,26 @@ public interface GetProductUseCase {
      */
     Product getProduct(Long id);
 
-    GetProductsResult getProducts(Long categoryId);
+    /**
+     * @param categoryId    카테고리 ID
+     * @param cursor        커서
+     * @param pageSize      페이지 크기
+     * @param sortDirection 정렬 방향
+     * @param sortProperty  정렬 속성
+     * @param searchTarget  검색 대상
+     * @param searchKeyword 검색 키워드
+     * @return 상품 목록 조회 결과 {@link GetProductsResult}
+     * @Date 2025-12-31
+     * @Author 성효빈
+     * @Description 상품 목록을 조회합니다.
+     */
+    GetProductsResult getProducts(
+            Long categoryId,
+            Long cursor,
+            int pageSize,
+            Sort.Direction sortDirection,
+            ProductSortProperty sortProperty,
+            ProductSearchTarget searchTarget,
+            String searchKeyword
+    );
 }

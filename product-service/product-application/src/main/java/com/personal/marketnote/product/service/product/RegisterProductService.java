@@ -24,7 +24,9 @@ public class RegisterProductService implements RegisterProductUseCase {
                         command.sellerId(),
                         command.name(),
                         command.brandName(),
-                        command.detail()
+                        command.detail(),
+                        command.price(),
+                        command.accumulatedPoint()
                 )
         );
 

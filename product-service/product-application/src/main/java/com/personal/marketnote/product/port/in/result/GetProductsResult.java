@@ -6,15 +6,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record GetProductsResult(
+        Long totalElements,
+        Long nextCursor,
+        boolean hasNext,
         List<ProductItemResult> products
 ) {
-    public static GetProductsResult from(List<Product> products) {
+    public static GetProductsResult from(
+            List<Product> products,
+            boolean hasNext,
+            Long nextCursor,
+            Long totalElements
+    ) {
         return new GetProductsResult(
+                totalElements,
+                nextCursor,
+                hasNext,
                 products.stream()
                         .map(ProductItemResult::from)
-                        .collect(Collectors.toList())
-        );
+                        .collect(Collectors.toList()));
     }
 }
-
-

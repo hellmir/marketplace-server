@@ -15,17 +15,24 @@ public class Product {
     private String name;
     private String brandName;
     private String detail;
+    private Long currentPrice;
+    private Long accumulatedPoint;
     private Integer sales;
+    private Long viewCount;
+    private Long popularity;
     private Long orderNum;
     private EntityStatus status;
 
-    public static Product of(Long sellerId, String name, String brandName, String detail) {
+    public static Product of(
+            Long sellerId, String name, String brandName, String detail, Long price, Long accumulatedPoint
+    ) {
         return Product.builder()
                 .sellerId(sellerId)
                 .name(name)
                 .brandName(brandName)
                 .detail(detail)
-                .sales(0)
+                .currentPrice(price)
+                .accumulatedPoint(accumulatedPoint)
                 .status(EntityStatus.ACTIVE)
                 .build();
     }
@@ -36,7 +43,11 @@ public class Product {
             String name,
             String brandName,
             String detail,
+            Long currentPrice,
+            Long accumulatedPoint,
             Integer sales,
+            Long viewCount,
+            Long popularity,
             Long orderNum,
             EntityStatus status
     ) {
@@ -46,7 +57,11 @@ public class Product {
                 .name(name)
                 .brandName(brandName)
                 .detail(detail)
+                .currentPrice(currentPrice)
+                .accumulatedPoint(accumulatedPoint)
                 .sales(sales)
+                .viewCount(viewCount)
+                .popularity(popularity)
                 .orderNum(orderNum)
                 .status(status)
                 .build();

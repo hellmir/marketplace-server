@@ -7,6 +7,8 @@ public record ProductItemResult(
         Long sellerId,
         String name,
         String brandName,
+        Long currentPrice,
+        Long accumulatedPoint,
         Integer sales,
         Long orderNum,
         String status
@@ -17,6 +19,8 @@ public record ProductItemResult(
                 product.getSellerId(),
                 product.getName(),
                 product.getBrandName(),
+                product.getCurrentPrice(),
+                product.getAccumulatedPoint(),
                 product.getSales(),
                 product.getOrderNum(),
                 product.getStatus().name()

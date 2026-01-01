@@ -14,6 +14,8 @@ public class ProductItemResponse {
     private Long sellerId;
     private String name;
     private String brandName;
+    private Long currentPrice;
+    private Long accumulatedPoint;
     private Integer sales;
     private Long orderNum;
     private String status;
@@ -24,6 +26,8 @@ public class ProductItemResponse {
                 .sellerId(result.sellerId())
                 .name(result.name())
                 .brandName(result.brandName())
+                .currentPrice(result.currentPrice())
+                .accumulatedPoint(result.accumulatedPoint())
                 .sales(result.sales())
                 .orderNum(result.orderNum())
                 .status(result.status())

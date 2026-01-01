@@ -1,7 +1,7 @@
 package com.personal.marketnote.user.port.out.user;
 
-import com.personal.marketnote.user.domain.user.SearchTarget;
 import com.personal.marketnote.user.domain.user.User;
+import com.personal.marketnote.user.domain.user.UserSearchTarget;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,5 +34,5 @@ public interface FindUserPort {
 
     List<User> findAllStatusUsers();
 
-    Page<User> findAllStatusUsersByPage(Pageable pageable, SearchTarget searchTarget, String searchKeyword);
+    Page<User> findAllStatusUsersByPage(Pageable pageable, UserSearchTarget searchTarget, String searchKeyword);
 }
