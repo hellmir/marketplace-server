@@ -15,8 +15,7 @@ public class ProductRequestToCommandMapper {
                 registerProductRequest.getBrandName(),
                 registerProductRequest.getDetail(),
                 registerProductRequest.getPrice(),
-                registerProductRequest.getAccumulatedPoint()
-        );
+                registerProductRequest.getAccumulatedPoint());
     }
 
     public static RegisterProductCategoriesCommand mapToCommand(
@@ -33,5 +32,15 @@ public class ProductRequestToCommandMapper {
                         o.getContent(), o.getPrice(), o.getAccumulatedPoint()))
                 .toList();
         return RegisterProductOptionsCommand.of(productId, request.getCategoryName(), optionItems);
+    }
+
+    public static com.personal.marketnote.product.port.in.command.UpdateProductOptionsCommand mapToUpdateCommand(
+            Long productId, Long optionCategoryId, RegisterProductOptionsRequest request) {
+        java.util.List<RegisterProductOptionsCommand.OptionItem> optionItems = request.getOptions().stream()
+                .map(o -> new RegisterProductOptionsCommand.OptionItem(
+                        o.getContent(), o.getPrice(), o.getAccumulatedPoint()))
+                .toList();
+        return com.personal.marketnote.product.port.in.command.UpdateProductOptionsCommand.of(
+                productId, optionCategoryId, request.getCategoryName(), optionItems);
     }
 }

@@ -8,10 +8,12 @@ import com.personal.marketnote.product.exception.NotProductOwnerException;
 import com.personal.marketnote.product.exception.OptionsNoValueException;
 import com.personal.marketnote.product.mapper.ProductCommandToDomainMapper;
 import com.personal.marketnote.product.port.in.command.RegisterProductOptionsCommand;
+import com.personal.marketnote.product.port.in.command.UpdateProductOptionsCommand;
 import com.personal.marketnote.product.port.in.result.UpsertProductOptionsResult;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
-import com.personal.marketnote.product.port.in.usecase.product.RegisterProductOptionsUseCase;
+import com.personal.marketnote.product.port.in.usecase.product.UpdateProductOptionsUseCase;
 import com.personal.marketnote.product.port.out.product.FindProductPort;
+import com.personal.marketnote.product.port.out.productoption.DeleteProductOptionCategoryPort;
 import com.personal.marketnote.product.port.out.productoption.SaveProductOptionsPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,14 +27,15 @@ import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMIT
 @UseCase
 @RequiredArgsConstructor
 @Transactional(isolation = READ_UNCOMMITTED)
-public class RegisterProductOptionsService implements RegisterProductOptionsUseCase {
+public class UpdateProductOptionsService implements UpdateProductOptionsUseCase {
     private final GetProductUseCase getProductUseCase;
     private final FindProductPort findProductPort;
     private final SaveProductOptionsPort saveProductOptionsPort;
+    private final DeleteProductOptionCategoryPort deleteProductOptionCategoryPort;
 
     @Override
-    public UpsertProductOptionsResult registerProductOptions(
-            Long userId, boolean isAdmin, RegisterProductOptionsCommand command
+    public UpsertProductOptionsResult updateProductOptions(
+            Long userId, boolean isAdmin, UpdateProductOptionsCommand command
     ) {
         Long productId = command.productId();
         if (!isAdmin && !findProductPort.existsByIdAndSellerId(productId, userId)) {
@@ -45,8 +48,19 @@ public class RegisterProductOptionsService implements RegisterProductOptionsUseC
             throw new OptionsNoValueException(SECOND_ERROR_CODE);
         }
 
+        // 기존 카테고리 삭제
+        deleteProductOptionCategoryPort.deleteById(command.optionCategoryId());
+
+        // 새 카테고리/옵션 저장
         ProductOptionCategory savedCategory = saveProductOptionsPort.save(
-                ProductCommandToDomainMapper.mapToDomain(product, command)
+                ProductCommandToDomainMapper.mapToDomain(
+                        product,
+                        com.personal.marketnote.product.port.in.command.RegisterProductOptionsCommand.of(
+                                productId,
+                                command.categoryName(),
+                                optionItems
+                        )
+                )
         );
 
         return UpsertProductOptionsResult.from(savedCategory);
