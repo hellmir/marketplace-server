@@ -1,12 +1,11 @@
 package com.personal.marketnote.product.adapter.out.persistence.productoption.entity;
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseOrderedGeneralEntity;
-import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaGeneralEntity;
+import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
 import com.personal.marketnote.product.domain.product.ProductOptionCategory;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.CascadeType.MERGE;
@@ -21,16 +20,16 @@ import static jakarta.persistence.CascadeType.PERSIST;
 public class ProductOptionCategoryJpaGeneralEntity extends BaseOrderedGeneralEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(name = "fk_product_option_category_product"))
-    private ProductJpaGeneralEntity productJpaEntity;
+    private ProductJpaEntity productJpaEntity;
 
     @OneToMany(mappedBy = "productOptionCategoryJpaEntity", cascade = {PERSIST, MERGE}, orphanRemoval = true)
-    private List<ProductOptionJpaGeneralEntity> productOptionJpaEntities = new ArrayList<>();
+    private List<ProductOptionJpaGeneralEntity> productOptionJpaEntities;
 
     @Column(name = "name", nullable = false, length = 255)
     private String name;
 
     public static ProductOptionCategoryJpaGeneralEntity from(ProductOptionCategory category,
-                                                             ProductJpaGeneralEntity productJpaEntity) {
+                                                             ProductJpaEntity productJpaEntity) {
         ProductOptionCategoryJpaGeneralEntity productOptionCategoryJpaEntity = ProductOptionCategoryJpaGeneralEntity.builder()
                 .productJpaEntity(productJpaEntity)
                 .name(category.getName())

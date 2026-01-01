@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
+import org.hibernate.annotations.Formula;
 
 @Entity
 @Table(name = "product")
@@ -13,7 +14,7 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-public class ProductJpaGeneralEntity extends BaseOrderedGeneralEntity {
+public class ProductJpaEntity extends BaseOrderedGeneralEntity {
     @Column(name = "seller_id", nullable = false)
     private Long sellerId;
 
@@ -26,10 +27,12 @@ public class ProductJpaGeneralEntity extends BaseOrderedGeneralEntity {
     @Column(name = "detail", length = 1023)
     private String detail;
 
-    @Column(name = "current_price", nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    // Latest current_price from price_policy_history (read-only)
+    @Formula("(SELECT pp.current_price FROM price_policy_history pp WHERE pp.product_id = id ORDER BY pp.id DESC LIMIT 1)")
     private Long currentPrice;
 
-    @Column(name = "accumulated_point", nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    // Latest accumulated_point from price_policy_history (read-only)
+    @Formula("(SELECT pp.accumulated_point FROM price_policy_history pp WHERE pp.product_id = id ORDER BY pp.id DESC LIMIT 1)")
     private Long accumulatedPoint;
 
     @Column(name = "sales", nullable = false, columnDefinition = "INT DEFAULT 0")
@@ -41,19 +44,15 @@ public class ProductJpaGeneralEntity extends BaseOrderedGeneralEntity {
     @Column(name = "popularity", nullable = false, columnDefinition = "BIGINT DEFAULT 0")
     private Long popularity;
 
-    public static ProductJpaGeneralEntity from(Product product) {
-        return ProductJpaGeneralEntity.builder()
+    public static ProductJpaEntity from(Product product) {
+        return ProductJpaEntity.builder()
                 .sellerId(product.getSellerId())
                 .name(product.getName())
                 .brandName(product.getBrandName())
                 .detail(product.getDetail())
-                .currentPrice(product.getCurrentPrice())
-                .accumulatedPoint(product.getAccumulatedPoint())
                 .sales(product.getSales())
                 .viewCount(product.getViewCount())
                 .popularity(product.getPopularity())
                 .build();
     }
 }
-
-
