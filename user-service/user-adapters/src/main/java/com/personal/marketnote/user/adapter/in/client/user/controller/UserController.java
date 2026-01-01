@@ -13,6 +13,7 @@ import com.personal.marketnote.user.adapter.in.client.user.request.UpdateUserInf
 import com.personal.marketnote.user.adapter.in.client.user.response.*;
 import com.personal.marketnote.user.port.in.result.SignInResult;
 import com.personal.marketnote.user.port.in.result.SignUpResult;
+import com.personal.marketnote.user.port.in.result.WithdrawResult;
 import com.personal.marketnote.user.port.in.usecase.user.*;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import com.personal.marketnote.user.utility.jwt.JwtUtil;
@@ -316,21 +317,24 @@ public class UserController {
      *
      * @param principal         사용자 인증 정보
      * @param googleAccessToken Google 액세스 토큰
+     * @return 회원 탈퇴 응답 {@link WithdrawResponse}
      * @Author 성효빈
      * @Date 2025-12-29
      * @Description 회원 탈퇴를 수행합니다.
      */
     @DeleteMapping
     @WithdrawalApiDocs
-    public ResponseEntity<BaseResponse<Void>> withdrawUser(
+    public ResponseEntity<BaseResponse<WithdrawResponse>> withdrawUser(
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal,
             @RequestHeader(value = "X-Google-Access-Token", required = false) String googleAccessToken
     ) {
-        withdrawUseCase.withdrawUser(ElementExtractor.extractUserId(principal), googleAccessToken);
+        WithdrawResult result = withdrawUseCase.withdrawUser(
+                ElementExtractor.extractUserId(principal), googleAccessToken
+        );
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        null,
+                        WithdrawResponse.from(result),
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "회원 탈퇴 성공"
