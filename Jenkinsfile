@@ -94,36 +94,81 @@ pipeline {
 			}
 		}
 
-		stage('Notify Start') {
-			steps {
-				withCredentials([
-					string(credentialsId: 'MARKETNOTE_SLACK_NOTIFICATION_CHANNEL', variable: 'SLACK_NOTIFICATION_CHANNEL')
-				]) {
-					script {
-						env.SLACK_NOTIFICATION_CHANNEL = SLACK_NOTIFICATION_CHANNEL
-						def branchName = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
-						def commitAuthor = sh(script: 'git log -1 --pretty=%an', returnStdout: true).trim()
-						def commitMessage = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
+        stage('Notify Start') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'MARKETNOTE_SLACK_NOTIFICATION_CHANNEL', variable: 'SLACK_NOTIFICATION_CHANNEL')
+                ]) {
+                    script {
+                        env.SLACK_NOTIFICATION_CHANNEL = SLACK_NOTIFICATION_CHANNEL
 
-						slackSend(
-							channel: "${env.SLACK_NOTIFICATION_CHANNEL}",
-							color:   "${env.SLACK_GENERAL_COLOR}",
-							message: "[QA] Start a build\n"
-							+ "SERVICE: ${env.SERVICE_NAME}\n"
-							+ "PROJECT_NAME: ${env.PROJECT_NAME}\n"
-							+ "VERSION: ${env.PROJECT_VERSION}\n"
-							+ "JOB_NAME: ${env.JOB_NAME}\n"
-							+ "BUILD_NUMBER: ${env.BUILD_NUMBER}\n"
-							+ "BUILD_URL: ${env.BUILD_URL}\n"
-							+ "BRANCH: ${branchName}\n"
-							+ "AUTHOR: ${commitAuthor}\n"
-							+ "COMMIT: ${env.GIT_COMMIT}\n"
-							+ "MESSAGE: ${commitMessage}"
-						)
-					}
-				}
-			}
-		}
+                        sh '''
+                          git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+                          git fetch --all --prune --tags || true
+                          git fetch --unshallow         || true
+                        '''
+
+                        def branchLabel = sh(
+                            script: '''
+                              if [ -n "$BRANCH_NAME" ]; then
+                                echo "$BRANCH_NAME"
+                                exit 0
+                              fi
+                              if [ -n "$CHANGE_ID" ] && [ -n "$CHANGE_BRANCH" ] && [ -n "$CHANGE_TARGET" ]; then
+                                echo "PR #$CHANGE_ID ($CHANGE_BRANCH -> $CHANGE_TARGET)"
+                                exit 0
+                              fi
+                              if [ -n "$GIT_BRANCH" ]; then
+                                echo "${GIT_BRANCH#origin/}"
+                                exit 0
+                              fi
+                              bn=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+                              if [ "$bn" != "HEAD" ] && [ -n "$bn" ]; then
+                                echo "$bn"
+                                exit 0
+                              fi
+                              guess=$(git for-each-ref --format="%(refname:short)" --contains HEAD refs/remotes/origin | sed "s#^origin/##" | head -n1)
+                              if [ -n "$guess" ]; then
+                                echo "$guess"
+                                exit 0
+                              fi
+                              tag=$(git describe --tags --exact-match 2>/dev/null || true)
+                              if [ -n "$tag" ]; then
+                                echo "tag: $tag"
+                                exit 0
+                              fi
+                              name=$(git name-rev --name-only HEAD 2>/dev/null | sed "s#remotes/origin/##;s#~[0-9]*##")
+                              if [ -n "$name" ] && [ "$name" != "undefined" ]; then
+                                echo "$name"
+                                exit 0
+                              fi
+                              git rev-parse --short HEAD
+                            ''',
+                            returnStdout: true
+                        ).trim()
+
+                        def commitAuthor  = sh(script: 'git log -1 --pretty=%an', returnStdout: true).trim()
+                        def commitMessage = sh(script: 'git log -1 --pretty=%B',  returnStdout: true).trim()
+
+                        slackSend(
+                            channel: "${env.SLACK_NOTIFICATION_CHANNEL}",
+                            color:   "${env.SLACK_GENERAL_COLOR}",
+                            message: "[QA] Start a build\n"
+                                + "SERVICE: ${env.SERVICE_NAME}\n"
+                                + "PROJECT_NAME: ${env.PROJECT_NAME}\n"
+                                + "VERSION: ${env.PROJECT_VERSION}\n"
+                                + "JOB_NAME: ${env.JOB_NAME}\n"
+                                + "BUILD_NUMBER: ${env.BUILD_NUMBER}\n"
+                                + "BUILD_URL: ${env.BUILD_URL}\n"
+                                + "BRANCH: ${branchLabel}\n"
+                                + "AUTHOR: ${commitAuthor}\n"
+                                + "COMMIT: ${env.GIT_COMMIT}\n"
+                                + "MESSAGE: ${commitMessage}"
+                        )
+                    }
+                }
+            }
+        }
 
 		stage('Test') {
 			steps {
@@ -395,6 +440,7 @@ pipeline {
 						string(credentialsId: 'MARKETNOTE_GOOGLE_CLIENT_SECRET',            variable: 'GOOGLE_CLIENT_SECRET'),
 						string(credentialsId: 'MARKETNOTE_KAKAO_CLIENT_ID',                 variable: 'KAKAO_CLIENT_ID'),
 						string(credentialsId: 'MARKETNOTE_KAKAO_CLIENT_SECRET',             variable: 'KAKAO_CLIENT_SECRET'),
+						string(credentialsId: 'MARKETNOTE_KAKAO_ADMIN_KEY',                 variable: 'KAKAO_ADMIN_KEY'),
 						string(credentialsId: 'MARKETNOTE_S3_ACCESS_KEY',                   variable: 'S3_ACCESS_KEY'),
 						string(credentialsId: 'MARKETNOTE_S3_SECRET_KEY',                   variable: 'S3_SECRET_KEY'),
 						string(credentialsId: 'MARKETNOTE_S3_BUCKET_NAME',                  variable: 'S3_BUCKET_NAME'),
@@ -452,6 +498,7 @@ pipeline {
 									[name: "GOOGLE_CLIENT_SECRET",           value: env.GOOGLE_CLIENT_SECRET],
 									[name: "KAKAO_CLIENT_ID",                value: env.KAKAO_CLIENT_ID],
 									[name: "KAKAO_CLIENT_SECRET",            value: env.KAKAO_CLIENT_SECRET],
+									[name: "KAKAO_ADMIN_KEY",                value: env.KAKAO_ADMIN_KEY],
 									[name: "S3_ACCESS_KEY",                  value: env.S3_ACCESS_KEY],
 									[name: "S3_SECRET_KEY",                  value: env.S3_SECRET_KEY],
 									[name: "S3_BUCKET_NAME",                 value: env.S3_BUCKET_NAME],
