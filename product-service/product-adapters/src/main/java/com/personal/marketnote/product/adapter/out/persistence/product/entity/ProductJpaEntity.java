@@ -55,4 +55,10 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
                 .popularity(product.getPopularity())
                 .build();
     }
+
+    public void updateFrom(Product product) {
+        this.name = product.getName();
+        this.brandName = product.getBrandName();
+        this.detail = product.getDetail();
+    }
 }

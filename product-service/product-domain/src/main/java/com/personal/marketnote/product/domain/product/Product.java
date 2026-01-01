@@ -66,6 +66,12 @@ public class Product {
                 .status(status)
                 .build();
     }
+
+    public void update(String name, String brandName, String detail) {
+        this.name = name;
+        this.brandName = brandName;
+        this.detail = detail;
+    }
 }
 
 
