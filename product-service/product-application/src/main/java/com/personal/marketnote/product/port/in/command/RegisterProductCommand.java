@@ -6,13 +6,16 @@ public record RegisterProductCommand(
         String brandName,
         String detail,
         Long price,
-        Long accumulatedPoint
+        Long discountPrice,
+        Long accumulatedPoint,
+        boolean isFindAllOptions
 ) {
     public static RegisterProductCommand of(
-            Long sellerId, String name, String brandName, String detail, Long price, Long accumulatedPoint
+            Long sellerId, String name, String brandName, String detail, Long price,
+            Long discountPrice, Long accumulatedPoint, boolean isFindAllOptions
     ) {
-        return new RegisterProductCommand(sellerId, name, brandName, detail, price, accumulatedPoint);
+        return new RegisterProductCommand(
+                sellerId, name, brandName, detail, price, discountPrice, accumulatedPoint, isFindAllOptions
+        );
     }
 }
-
-

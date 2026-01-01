@@ -29,6 +29,13 @@ public class UpdateProductRequest {
     )
     @Size(max = 1023, message = "상품 설명은 최대 1023자입니다.")
     private String detail;
+
+    @Schema(
+            name = "isFindAllOptions",
+            description = "상품 목록 조회 시 옵션마다 개별 상품으로 조회 여부",
+            requiredMode = Schema.RequiredMode.REQUIRED
+    )
+    private boolean isFindAllOptions;
 }
 
 

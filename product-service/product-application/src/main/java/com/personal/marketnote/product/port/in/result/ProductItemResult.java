@@ -2,12 +2,16 @@ package com.personal.marketnote.product.port.in.result;
 
 import com.personal.marketnote.product.domain.product.Product;
 
+import java.math.BigDecimal;
+
 public record ProductItemResult(
         Long id,
         Long sellerId,
         String name,
         String brandName,
-        Long currentPrice,
+        Long price,
+        Long discountPrice,
+        BigDecimal discountRate,
         Long accumulatedPoint,
         Integer sales,
         Long orderNum,
@@ -19,7 +23,9 @@ public record ProductItemResult(
                 product.getSellerId(),
                 product.getName(),
                 product.getBrandName(),
-                product.getCurrentPrice(),
+                product.getPrice(),
+                product.getDiscountPrice(),
+                product.getDiscountRate(),
                 product.getAccumulatedPoint(),
                 product.getSales(),
                 product.getOrderNum(),

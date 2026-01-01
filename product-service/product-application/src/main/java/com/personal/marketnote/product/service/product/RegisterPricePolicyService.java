@@ -26,15 +26,19 @@ public class RegisterPricePolicyService implements RegisterPricePolicyUseCase {
     private final SavePricePolicyPort savePricePolicyPort;
 
     @Override
-    public RegisterPricePolicyResult registerPricePolicy(Long userId, boolean isAdmin, RegisterPricePolicyCommand command) {
+    public RegisterPricePolicyResult registerPricePolicy(
+            Long userId, boolean isAdmin, RegisterPricePolicyCommand command
+    ) {
         Long productId = command.productId();
         if (!isAdmin && !findProductPort.existsByIdAndSellerId(productId, userId)) {
             throw new NotProductOwnerException(FIRST_ERROR_CODE, productId);
         }
+
         Product product = getProductUseCase.getProduct(productId);
 
         PricePolicy pricePolicy = ProductCommandToDomainMapper.mapToDomain(product, command);
         Long id = savePricePolicyPort.save(pricePolicy);
+
         return RegisterPricePolicyResult.of(id);
     }
 }

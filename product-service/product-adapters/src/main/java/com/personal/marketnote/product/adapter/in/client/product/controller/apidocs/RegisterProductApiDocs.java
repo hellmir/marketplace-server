@@ -37,6 +37,7 @@ import java.lang.annotation.*;
         | brandName | string | 브랜드명 | N | "노트왕" |
         | detail | string | 상품 설명 | N | "스프링노트1 설명" |
         | price | number | 상품 기본 판매 가격(원) | Y | 100000 |
+        | discountPrice | number | 상품 할인 가격(원) | N | 90000 |
         | accumulatedPoint | number | 구매 시 적립 포인트 | Y | 1000 |
         ---
         
@@ -69,6 +70,7 @@ import java.lang.annotation.*;
                                     "brandName": "노트왕",
                                     "detail": "스프링노트1 설명",
                                     "price": 10000,
+                                    "discountPrice": 9000,
                                     "accumulatedPoint": 1000
                                 }
                                 """)

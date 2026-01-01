@@ -80,7 +80,9 @@ import java.lang.annotation.*;
         | sellerId | number | 판매자 ID | 10 |
         | name | string | 상품명 | "스프링노트1" |
         | brandName | string | 브랜드명 | "노트왕" |
-        | currentPrice | number | 기본 판매 가격(원) | 100000 |
+        | price | number | 기본 판매 가격(원) | 100000 |
+        | discountPrice | number | 할인 판매 가격(원) | 80000 |
+        | discountRate | number | 할인율(%, 최대 소수점 1자리) | 20 |
         | accumulatedPoint | number | 구매 시 적립 포인트 | 1000 |
         | sales | number | 판매량 | 0 |
         | orderNum | number | 정렬 순서 | 1 |
@@ -162,55 +164,63 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-01T15:02:49.167923",
+                                          "timestamp": "2026-01-01T15:58:20.144581",
                                           "content": {
                                             "products": {
-                                              "totalElements": 9,
+                                              "totalElements": 11,
                                               "hasNext": true,
-                                              "nextCursor": 18,
+                                              "nextCursor": 20,
                                               "items": [
                                                 {
-                                                  "optionCategoryId": 21,
+                                                  "id": 27,
+                                                  "sellerId": 1,
+                                                  "name": "건기식2",
+                                                  "brandName": "글로",
+                                                  "price": 20000,
+                                                  "discountPrice": 18000,
+                                                  "discountRate": 10,
+                                                  "accumulatedPoint": 2000,
+                                                  "sales": 0,
+                                                  "orderNum": 27,
+                                                  "status": "ACTIVE"
+                                                },
+                                                {
+                                                  "id": 26,
+                                                  "sellerId": 1,
+                                                  "name": "건기식",
+                                                  "brandName": "글로",
+                                                  "price": 10000,
+                                                  "discountPrice": 9000,
+                                                  "discountRate": 10,
+                                                  "accumulatedPoint": 1000,
+                                                  "sales": 0,
+                                                  "orderNum": 26,
+                                                  "status": "ACTIVE"
+                                                },
+                                                {
+                                                  "id": 21,
                                                   "sellerId": 12,
                                                   "name": "스프링노트1",
                                                   "brandName": "노트왕",
-                                                  "currentPrice": 20000,
-                                                  "accumulatedPoint": 2000,
+                                                  "price": 45000,
+                                                  "discountPrice": 37000,
+                                                  "discountRate": 17.8,
+                                                  "accumulatedPoint": 1200,
                                                   "sales": 0,
                                                   "orderNum": 21,
                                                   "status": "ACTIVE"
                                                 },
                                                 {
-                                                  "optionCategoryId": 20,
+                                                  "id": 20,
                                                   "sellerId": 12,
-                                                  "name": "스프링노트1",
+                                                  "name": "스프링노트2",
                                                   "brandName": "노트킹",
-                                                  "currentPrice": 20000,
-                                                  "accumulatedPoint": 2000,
+                                                  "price": 45000,
+                                                  "discountPrice": 20000,
+                                                  "discountRate": 17.8,
+                                                  "accumulatedPoint": 1500,
                                                   "sales": 0,
                                                   "orderNum": 20,
-                                                  "status": "ACTIVE"
-                                                },
-                                                {
-                                                  "optionCategoryId": 19,
-                                                  "sellerId": 1,
-                                                  "name": "스프링노트1",
-                                                  "brandName": "노트왕",
-                                                  "currentPrice": 20000,
-                                                  "accumulatedPoint": 2000,
-                                                  "sales": 0,
-                                                  "orderNum": 19,
-                                                  "status": "ACTIVE"
-                                                },
-                                                {
-                                                  "optionCategoryId": 18,
-                                                  "sellerId": 1,
-                                                  "name": "스프링노트6",
-                                                  "brandName": "노트킹",
-                                                  "currentPrice": 20000,
-                                                  "accumulatedPoint": 2000,
-                                                  "sales": 0,
-                                                  "orderNum": 18,
                                                   "status": "ACTIVE"
                                                 }
                                               ]

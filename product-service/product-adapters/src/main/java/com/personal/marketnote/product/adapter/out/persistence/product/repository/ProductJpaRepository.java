@@ -56,9 +56,9 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
                               p.sales > (SELECT p2.sales FROM ProductJpaEntity p2 WHERE p2.id = :cursor)
                            OR (p.sales = (SELECT p2.sales FROM ProductJpaEntity p2 WHERE p2.id = :cursor) AND p.id > :cursor)
                         ))
-                     OR (:sortProperty = 'currentPrice' AND (
-                              COALESCE(pp.currentPrice, 0) > (
-                                  SELECT COALESCE(pp3.currentPrice, 0)
+                     OR (:sortProperty = 'discountPrice' AND (
+                              COALESCE(pp.discountPrice, 0) > (
+                                  SELECT COALESCE(pp3.discountPrice, 0)
                                   FROM com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity pp3
                                   WHERE pp3.productJpaEntity.id = :cursor
                                     AND pp3.id = (
@@ -67,8 +67,8 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
                                         WHERE pp4.productJpaEntity.id = :cursor
                                     )
                               )
-                           OR (COALESCE(pp.currentPrice, 0) = (
-                                  SELECT COALESCE(pp3.currentPrice, 0)
+                           OR (COALESCE(pp.discountPrice, 0) = (
+                                  SELECT COALESCE(pp3.discountPrice, 0)
                                   FROM com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity pp3
                                   WHERE pp3.productJpaEntity.id = :cursor
                                     AND pp3.id = (
@@ -105,7 +105,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
             ORDER BY
                 CASE WHEN :sortProperty = 'orderNum' THEN p.orderNum END ASC,
                 CASE WHEN :sortProperty = 'popularity' THEN p.sales END ASC,
-                CASE WHEN :sortProperty = 'currentPrice' THEN COALESCE(pp.currentPrice, 0) END ASC,
+                CASE WHEN :sortProperty = 'discountPrice' THEN COALESCE(pp.discountPrice, 0) END ASC,
                 CASE WHEN :sortProperty = 'accumulatedPoint' THEN COALESCE(pp.accumulatedPoint, 0) END ASC,
                 p.id ASC
             """)
@@ -146,9 +146,9 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
                               p.sales < (SELECT p2.sales FROM ProductJpaEntity p2 WHERE p2.id = :cursor)
                            OR (p.sales = (SELECT p2.sales FROM ProductJpaEntity p2 WHERE p2.id = :cursor) AND p.id < :cursor)
                         ))
-                     OR (:sortProperty = 'currentPrice' AND (
-                              COALESCE(pp.currentPrice, 0) < (
-                                  SELECT COALESCE(pp3.currentPrice, 0)
+                     OR (:sortProperty = 'discountPrice' AND (
+                              COALESCE(pp.discountPrice, 0) < (
+                                  SELECT COALESCE(pp3.discountPrice, 0)
                                   FROM com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity pp3
                                   WHERE pp3.productJpaEntity.id = :cursor
                                     AND pp3.id = (
@@ -157,8 +157,8 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
                                         WHERE pp4.productJpaEntity.id = :cursor
                                     )
                               )
-                           OR (COALESCE(pp.currentPrice, 0) = (
-                                  SELECT COALESCE(pp3.currentPrice, 0)
+                           OR (COALESCE(pp.discountPrice, 0) = (
+                                  SELECT COALESCE(pp3.discountPrice, 0)
                                   FROM com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity pp3
                                   WHERE pp3.productJpaEntity.id = :cursor
                                     AND pp3.id = (
@@ -195,7 +195,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
             ORDER BY
                 CASE WHEN :sortProperty = 'orderNum' THEN p.orderNum END DESC,
                 CASE WHEN :sortProperty = 'popularity' THEN p.sales END DESC,
-                CASE WHEN :sortProperty = 'currentPrice' THEN COALESCE(pp.currentPrice, 0) END DESC,
+                CASE WHEN :sortProperty = 'discountPrice' THEN COALESCE(pp.discountPrice, 0) END DESC,
                 CASE WHEN :sortProperty = 'accumulatedPoint' THEN COALESCE(pp.accumulatedPoint, 0) END DESC,
                 p.id DESC
             """)
@@ -243,9 +243,9 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
                               p.sales > (SELECT p2.sales FROM ProductJpaEntity p2 WHERE p2.id = :cursor)
                            OR (p.sales = (SELECT p2.sales FROM ProductJpaEntity p2 WHERE p2.id = :cursor) AND p.id > :cursor)
                         ))
-                     OR (:sortProperty = 'currentPrice' AND (
-                              COALESCE(pp.currentPrice, 0) > (
-                                  SELECT COALESCE(pp3.currentPrice, 0)
+                     OR (:sortProperty = 'discountPrice' AND (
+                              COALESCE(pp.discountPrice, 0) > (
+                                  SELECT COALESCE(pp3.discountPrice, 0)
                                   FROM com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity pp3
                                   WHERE pp3.productJpaEntity.id = :cursor
                                     AND pp3.id = (
@@ -254,8 +254,8 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
                                         WHERE pp4.productJpaEntity.id = :cursor
                                     )
                               )
-                           OR (COALESCE(pp.currentPrice, 0) = (
-                                  SELECT COALESCE(pp3.currentPrice, 0)
+                           OR (COALESCE(pp.discountPrice, 0) = (
+                                  SELECT COALESCE(pp3.discountPrice, 0)
                                   FROM com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity pp3
                                   WHERE pp3.productJpaEntity.id = :cursor
                                     AND pp3.id = (
@@ -292,7 +292,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
             ORDER BY
                 CASE WHEN :sortProperty = 'orderNum' THEN p.orderNum END ASC,
                 CASE WHEN :sortProperty = 'popularity' THEN p.sales END ASC,
-                CASE WHEN :sortProperty = 'currentPrice' THEN COALESCE(pp.currentPrice, 0) END ASC,
+                CASE WHEN :sortProperty = 'discountPrice' THEN COALESCE(pp.discountPrice, 0) END ASC,
                 CASE WHEN :sortProperty = 'accumulatedPoint' THEN COALESCE(pp.accumulatedPoint, 0) END ASC,
                 p.id ASC
             """)
@@ -341,9 +341,9 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
                               p.sales < (SELECT p2.sales FROM ProductJpaEntity p2 WHERE p2.id = :cursor)
                            OR (p.sales = (SELECT p2.sales FROM ProductJpaEntity p2 WHERE p2.id = :cursor) AND p.id < :cursor)
                         ))
-                     OR (:sortProperty = 'currentPrice' AND (
-                              COALESCE(pp.currentPrice, 0) < (
-                                  SELECT COALESCE(pp3.currentPrice, 0)
+                     OR (:sortProperty = 'discountPrice' AND (
+                              COALESCE(pp.discountPrice, 0) < (
+                                  SELECT COALESCE(pp3.discountPrice, 0)
                                   FROM com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity pp3
                                   WHERE pp3.productJpaEntity.id = :cursor
                                     AND pp3.id = (
@@ -352,8 +352,8 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
                                         WHERE pp4.productJpaEntity.id = :cursor
                                     )
                               )
-                           OR (COALESCE(pp.currentPrice, 0) = (
-                                  SELECT COALESCE(pp3.currentPrice, 0)
+                           OR (COALESCE(pp.discountPrice, 0) = (
+                                  SELECT COALESCE(pp3.discountPrice, 0)
                                   FROM com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity pp3
                                   WHERE pp3.productJpaEntity.id = :cursor
                                     AND pp3.id = (
@@ -390,7 +390,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
             ORDER BY
                 CASE WHEN :sortProperty = 'orderNum' THEN p.orderNum END DESC,
                 CASE WHEN :sortProperty = 'popularity' THEN p.sales END DESC,
-                CASE WHEN :sortProperty = 'currentPrice' THEN COALESCE(pp.currentPrice, 0) END DESC,
+                CASE WHEN :sortProperty = 'discountPrice' THEN COALESCE(pp.discountPrice, 0) END DESC,
                 CASE WHEN :sortProperty = 'accumulatedPoint' THEN COALESCE(pp.accumulatedPoint, 0) END DESC,
                 p.id DESC
             """)

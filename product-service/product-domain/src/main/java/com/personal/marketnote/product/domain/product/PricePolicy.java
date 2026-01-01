@@ -15,7 +15,7 @@ public class PricePolicy {
     private Long id;
     private Product product;
     private Long price;
-    private Long currentPrice;
+    private Long discountPrice;
     private BigDecimal accumulationRate;
     private Long accumulatedPoint;
     private BigDecimal discountRate;
@@ -24,7 +24,7 @@ public class PricePolicy {
     public static PricePolicy of(
             Product product,
             Long price,
-            Long currentPrice,
+            Long discountPrice,
             BigDecimal accumulationRate,
             Long accumulatedPoint,
             BigDecimal discountRate
@@ -32,7 +32,7 @@ public class PricePolicy {
         return PricePolicy.builder()
                 .product(product)
                 .price(price)
-                .currentPrice(currentPrice)
+                .discountPrice(discountPrice)
                 .accumulationRate(accumulationRate)
                 .accumulatedPoint(accumulatedPoint)
                 .discountRate(discountRate)

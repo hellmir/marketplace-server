@@ -4,7 +4,7 @@ import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
 import com.personal.marketnote.product.adapter.out.mapper.ProductJpaEntityToDomainMapper;
 import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.product.repository.ProductJpaRepository;
-import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionCategoryJpaGeneralEntity;
+import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionCategoryJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.repository.ProductOptionCategoryJpaRepository;
 import com.personal.marketnote.product.domain.product.ProductOptionCategory;
 import com.personal.marketnote.product.port.out.productoption.DeleteProductOptionCategoryPort;
@@ -23,8 +23,8 @@ public class ProductOptionPersistenceAdapter implements SaveProductOptionsPort, 
         ProductJpaEntity productRef = productJpaRepository.getReferenceById(
                 productOptionCategory.getProduct().getId());
 
-        ProductOptionCategoryJpaGeneralEntity savedCategory = productOptionCategoryJpaRepository.save(
-                ProductOptionCategoryJpaGeneralEntity.from(productOptionCategory, productRef));
+        ProductOptionCategoryJpaEntity savedCategory = productOptionCategoryJpaRepository.save(
+                ProductOptionCategoryJpaEntity.from(productOptionCategory, productRef));
         savedCategory.addOrderNum();
 
         return ProductJpaEntityToDomainMapper.mapToDomain(savedCategory).orElse(null);

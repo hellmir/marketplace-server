@@ -17,27 +17,27 @@ import static jakarta.persistence.CascadeType.PERSIST;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-public class ProductOptionCategoryJpaGeneralEntity extends BaseOrderedGeneralEntity {
+public class ProductOptionCategoryJpaEntity extends BaseOrderedGeneralEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(name = "fk_product_option_category_product"))
     private ProductJpaEntity productJpaEntity;
 
     @OneToMany(mappedBy = "productOptionCategoryJpaEntity", cascade = {PERSIST, MERGE}, orphanRemoval = true)
-    private List<ProductOptionJpaGeneralEntity> productOptionJpaEntities;
+    private List<ProductOptionJpaEntity> productOptionJpaEntities;
 
     @Column(name = "name", nullable = false, length = 255)
     private String name;
 
-    public static ProductOptionCategoryJpaGeneralEntity from(ProductOptionCategory category,
-                                                             ProductJpaEntity productJpaEntity) {
-        ProductOptionCategoryJpaGeneralEntity productOptionCategoryJpaEntity = ProductOptionCategoryJpaGeneralEntity.builder()
+    public static ProductOptionCategoryJpaEntity from(ProductOptionCategory category,
+                                                      ProductJpaEntity productJpaEntity) {
+        ProductOptionCategoryJpaEntity productOptionCategoryJpaEntity = ProductOptionCategoryJpaEntity.builder()
                 .productJpaEntity(productJpaEntity)
                 .name(category.getName())
                 .build();
 
-        List<ProductOptionJpaGeneralEntity> productOptionJpaEntities = category.getOptions()
+        List<ProductOptionJpaEntity> productOptionJpaEntities = category.getOptions()
                 .stream()
-                .map(option -> ProductOptionJpaGeneralEntity.from(productOptionCategoryJpaEntity, option))
+                .map(option -> ProductOptionJpaEntity.from(productOptionCategoryJpaEntity, option))
                 .toList();
         productOptionCategoryJpaEntity.productOptionJpaEntities = productOptionJpaEntities;
 
@@ -46,6 +46,6 @@ public class ProductOptionCategoryJpaGeneralEntity extends BaseOrderedGeneralEnt
 
     public void addOrderNum() {
         setIdToOrderNum();
-        productOptionJpaEntities.forEach(ProductOptionJpaGeneralEntity::setIdToOrderNum);
+        productOptionJpaEntities.forEach(ProductOptionJpaEntity::setIdToOrderNum);
     }
 }
