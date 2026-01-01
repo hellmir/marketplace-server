@@ -231,6 +231,7 @@ public class User {
     public void withdraw() {
         withdrawalYn = true;
         status = EntityStatus.INACTIVE;
+        userTerms.forEach(UserTerms::disagree);
     }
 
     public void cancelWithdrawal() {
