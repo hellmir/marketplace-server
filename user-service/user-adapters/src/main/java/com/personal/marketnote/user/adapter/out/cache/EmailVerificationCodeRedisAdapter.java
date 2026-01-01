@@ -12,8 +12,7 @@ import java.time.Duration;
 
 @Repository
 @RequiredArgsConstructor
-public class EmailVerificationCodeRedisAdapter
-        implements SaveEmailVerificationCodePort, VerifyCodePort {
+public class EmailVerificationCodeRedisAdapter implements SaveEmailVerificationCodePort, VerifyCodePort {
     private final StringRedisTemplate stringRedisTemplate;
 
     @Value("${verification.redis.prefix:email:verification:}")
