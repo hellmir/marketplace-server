@@ -33,6 +33,8 @@ import java.lang.annotation.*;
         
         - 페이로드에 cursor 값이 있는 경우(더 보기): 총 상품 개수 반환 X
         
+        - 옵션 별 상품 목록 조회 설정된 상품은 모든 옵션 카테고리 조합에 대해 개별 상품으로 조회됩니다.
+        
         ---
         
         ## Request
@@ -43,7 +45,7 @@ import java.lang.annotation.*;
         | cursor | number | 이전 페이지의 nextCursor 값, 전송하지 않는 경우 첫 데이터부터 조회 | N | -1 |
         | page-size | number | 페이지 크기 | N | 4 |
         | sortDirection | string | 정렬 방향(ASC, DESC) | N | DESC |
-        | sortProperty | string | 정렬 속성(ORDER_NUM, POPULARITY, CURRENT_PRICE, ACCUMULATED_POINT) | N | ORDER_NUM |
+        | sortProperty | string | 정렬 속성(ORDER_NUM, POPULARITY, DISCOUNT_PRICE, ACCUMULATED_POINT) | N | ORDER_NUM |
         | searchTarget | string | 검색 대상(NAME, BRAND_NAME) | N | NAME |
         | searchKeyword | string | 검색 키워드 | N | "노트왕" |
         
@@ -76,7 +78,7 @@ import java.lang.annotation.*;
         
         | **키** | **타입** | **설명** | **예시** |
         | --- | --- | --- | --- |
-        | optionCategoryId | number | 상품 ID | 1 |
+        | id | number | 상품 ID | 1 |
         | sellerId | number | 판매자 ID | 10 |
         | name | string | 상품명 | "스프링노트1" |
         | brandName | string | 브랜드명 | "노트왕" |
@@ -144,7 +146,7 @@ import java.lang.annotation.*;
                         schema = @Schema(
                                 type = "string",
                                 example = "ORDER_NUM",
-                                allowableValues = {"ORDER_NUM", "POPULARITY", "CURRENT_PRICE", "ACCUMULATED_POINT"},
+                                allowableValues = {"ORDER_NUM", "POPULARITY", "DISCOUNT_PRICE", "ACCUMULATED_POINT"},
                                 defaultValue = "ORDER_NUM"
                         )
                 ),
@@ -175,127 +177,67 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-01T17:59:49.771654",
+                                          "timestamp": "2026-01-01T10:34:29.332952183",
                                           "content": {
                                             "products": {
-                                              "totalElements": 12,
+                                              "totalElements": null,
                                               "hasNext": true,
-                                              "nextCursor": 21,
+                                              "nextCursor": 19,
                                               "items": [
                                                 {
-                                                  "id": 28,
-                                                  "sellerId": 1,
-                                                  "name": "스프링노트1",
-                                                  "brandName": "노트왕",
-                                                  "price": 10000,
-                                                  "discountPrice": 9000,
-                                                  "discountRate": 10,
-                                                  "accumulatedPoint": 1000,
-                                                  "sales": 0,
-                                                  "productTags": [
-                                                    {
-                                                      "id": 7,
-                                                      "productId": 28,
-                                                      "name": "루테인",
-                                                      "orderNum": null,
-                                                      "status": "ACTIVE"
-                                                    },
-                                                    {
-                                                      "id": 8,
-                                                      "productId": 28,
-                                                      "name": "아스타잔틴",
-                                                      "orderNum": null,
-                                                      "status": "ACTIVE"
-                                                    }
-                                                  ],
-                                                  "orderNum": 28,
-                                                  "status": "ACTIVE"
-                                                },
-                                                {
-                                                  "id": 27,
-                                                  "sellerId": 1,
-                                                  "name": "건기식2",
-                                                  "brandName": "글로",
-                                                  "price": 20000,
-                                                  "discountPrice": 18000,
-                                                  "discountRate": 10,
-                                                  "accumulatedPoint": 2000,
-                                                  "sales": 0,
-                                                  "productTags": [
-                                                    {
-                                                      "id": 7,
-                                                      "productId": 28,
-                                                      "name": "루테인",
-                                                      "orderNum": null,
-                                                      "status": "ACTIVE"
-                                                    },
-                                                    {
-                                                      "id": 8,
-                                                      "productId": 28,
-                                                      "name": "아스타잔틴",
-                                                      "orderNum": null,
-                                                      "status": "ACTIVE"
-                                                    }
-                                                  ],
-                                                  "orderNum": 27,
-                                                  "status": "ACTIVE"
-                                                },
-                                                {
-                                                  "id": 26,
-                                                  "sellerId": 1,
-                                                  "name": "건기식",
-                                                  "brandName": "글로",
-                                                  "price": 10000,
-                                                  "discountPrice": 9000,
-                                                  "discountRate": 10,
-                                                  "accumulatedPoint": 1000,
-                                                  "sales": 0,
-                                                  "productTags": [
-                                                    {
-                                                      "id": 7,
-                                                      "productId": 28,
-                                                      "name": "루테인",
-                                                      "orderNum": null,
-                                                      "status": "ACTIVE"
-                                                    },
-                                                    {
-                                                      "id": 8,
-                                                      "productId": 28,
-                                                      "name": "아스타잔틴",
-                                                      "orderNum": null,
-                                                      "status": "ACTIVE"
-                                                    }
-                                                  ],
-                                                  "orderNum": 26,
-                                                  "status": "ACTIVE"
-                                                },
-                                                {
-                                                  "id": 21,
+                                                  "id": 20,
                                                   "sellerId": 12,
-                                                  "name": "스프링노트1",
-                                                  "brandName": "노트왕",
+                                                  "name": "스프링노트2",
+                                                  "brandName": "노트킹",
                                                   "price": 45000,
-                                                  "discountPrice": 37000,
+                                                  "discountPrice": 20000,
                                                   "discountRate": 17.8,
-                                                  "accumulatedPoint": 1200,
+                                                  "accumulatedPoint": 1500,
                                                   "sales": 0,
-                                                  "productTags": [
-                                                    {
-                                                      "id": 7,
-                                                      "productId": 28,
-                                                      "name": "루테인",
-                                                      "orderNum": null,
-                                                      "status": "ACTIVE"
-                                                    },
-                                                    {
-                                                      "id": 8,
-                                                      "productId": 28,
-                                                      "name": "아스타잔틴",
-                                                      "orderNum": null,
-                                                      "status": "ACTIVE"
-                                                    }
-                                                  ],
-                                                  "orderNum": 21,
+                                                  "productTags": [],
+                                                  "orderNum": 20,
+                                                  "status": "ACTIVE"
+                                                },
+                                                {
+                                                  "id": 19,
+                                                  "sellerId": 1,
+                                                  "name": "스프링노트1 (1박스 / 30개입)",
+                                                  "brandName": "노트왕",
+                                                  "price": 92000,
+                                                  "discountPrice": 84000,
+                                                  "discountRate": 17.8,
+                                                  "accumulatedPoint": 7400,
+                                                  "sales": 0,
+                                                  "productTags": [],
+                                                  "orderNum": 19,
+                                                  "status": "ACTIVE"
+                                                },
+                                                {
+                                                  "id": 19,
+                                                  "sellerId": 1,
+                                                  "name": "스프링노트1 (1박스 / 60개입)",
+                                                  "brandName": "노트왕",
+                                                  "price": 102000,
+                                                  "discountPrice": 94000,
+                                                  "discountRate": 17.8,
+                                                  "accumulatedPoint": 12400,
+                                                  "sales": 0,
+                                                  "productTags": [],
+                                                  "orderNum": 19,
+                                                  "status": "ACTIVE"
+                                                },
+                                                {
+                                                  "id": 19,
+                                                  "sellerId": 1,
+                                                  "name": "스프링노트1 (3박스 / 30개입)",
+                                                  "brandName": "노트왕",
+                                                  "price": 154000,
+                                                  "discountPrice": 146000,
+                                                  "discountRate": 17.8,
+                                                  "accumulatedPoint": 8200,
+                                                  "sales": 0,
+                                                  "productTags": [],
+                                                  "orderNum": 19,
                                                   "status": "ACTIVE"
                                                 }
                                               ]

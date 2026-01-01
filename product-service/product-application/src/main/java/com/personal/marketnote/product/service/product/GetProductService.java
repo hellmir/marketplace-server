@@ -66,13 +66,13 @@ public class GetProductService implements GetProductUseCase {
         );
 
         // 옵션 조합 확장
-        List<ProductItemResult> expanded = expandProducts(products);
+        List<ProductItemResult> expandedProductItems = expandProducts(products);
 
-        // 무한 스크롤 페이지 설정(확장 후 기준)
-        boolean hasNext = expanded.size() > pageSize;
+        // 무한 스크롤 페이지 설정
+        boolean hasNext = expandedProductItems.size() > pageSize;
         List<ProductItemResult> pageItems = hasNext
-                ? expanded.subList(0, pageSize)
-                : expanded;
+                ? expandedProductItems.subList(0, pageSize)
+                : expandedProductItems;
 
         Long nextCursor = null;
         if (FormatValidator.hasValue(pageItems)) {
@@ -133,19 +133,25 @@ public class GetProductService implements GetProductUseCase {
                 results.add(ProductItemResult.from(product));
                 continue;
             }
-            List<ProductOptionCategory> categories =
-                    findProductOptionCategoryPort.findActiveWithOptionsByProductId(product.getId());
-            if (!FormatValidator.hasValue(categories) || categories.stream().anyMatch(c -> !FormatValidator.hasValue(c.getOptions()))) {
-                // 카테고리/옵션이 비어있으면 확장 불가, 기본만
+
+            List<ProductOptionCategory> categories
+                    = findProductOptionCategoryPort.findActiveWithOptionsByProductId(product.getId());
+
+            if (
+                    !FormatValidator.hasValue(categories)
+                            || categories.stream().anyMatch(c -> !FormatValidator.hasValue(c.getOptions()))
+            ) {
                 results.add(ProductItemResult.from(product));
                 continue;
             }
+
             List<List<ProductOption>> optionGroups = categories.stream()
                     .sorted(java.util.Comparator.comparing(ProductOptionCategory::getOrderNum))
                     .map(ProductOptionCategory::getOptions)
                     .toList();
+
             for (List<ProductOption> combo : cartesianProduct(optionGroups)) {
-                // 이름 조합: "기본명 (옵션1 / 옵션2 / ...)"
+                // 이름 조합: "기본 상품명 (옵션1 / 옵션2 / ...)"
                 String comboSuffix = combo.stream()
                         .map(ProductOption::getContent)
                         .reduce((a, b) -> a + " / " + b)
@@ -163,20 +169,19 @@ public class GetProductService implements GetProductUseCase {
                         .mapToLong(Long::longValue)
                         .sum();
 
-                Long variantPrice = product.getPrice() == null ? null : product.getPrice() + optionPriceSum;
-                Long variantDiscountPrice = product.getDiscountPrice() == null ? null : product.getDiscountPrice() + optionPriceSum;
-                Long variantAccumulatedPoint = product.getAccumulatedPoint() == null ? optionPointSum : product.getAccumulatedPoint() + optionPointSum;
-
-                results.add(ProductItemResult.from(
-                        product,
-                        variantName,
-                        variantPrice,
-                        variantDiscountPrice,
-                        product.getDiscountRate(),
-                        variantAccumulatedPoint
-                ));
+                results.add(
+                        ProductItemResult.from(
+                                product,
+                                variantName,
+                                product.getPrice() + optionPointSum,
+                                product.getDiscountPrice() + optionPriceSum,
+                                product.getDiscountRate(),
+                                product.getAccumulatedPoint() + optionPointSum
+                        )
+                );
             }
         }
+
         return results;
     }
 
