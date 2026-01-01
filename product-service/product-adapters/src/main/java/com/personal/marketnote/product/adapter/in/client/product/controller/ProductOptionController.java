@@ -4,13 +4,17 @@ import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.AuthorityValidator;
 import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.DeleteProductOptionsApiDocs;
+import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.GetProductOptionsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductOptionsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.UpdateProductOptionsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
 import com.personal.marketnote.product.adapter.in.client.product.request.UpsertProductOptionsRequest;
+import com.personal.marketnote.product.adapter.in.client.product.response.GetProductOptionsResponse;
 import com.personal.marketnote.product.adapter.in.client.product.response.UpsertProductOptionsResponse;
+import com.personal.marketnote.product.port.in.result.GetProductOptionsResult;
 import com.personal.marketnote.product.port.in.result.UpsertProductOptionsResult;
 import com.personal.marketnote.product.port.in.usecase.product.DeleteProductOptionsUseCase;
+import com.personal.marketnote.product.port.in.usecase.product.GetProductOptionsUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterProductOptionsUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.UpdateProductOptionsUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,10 +37,21 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER
 @RequiredArgsConstructor
 @Slf4j
 public class ProductOptionController {
+    private final GetProductOptionsUseCase getProductOptionsUseCase;
     private final RegisterProductOptionsUseCase registerProductOptionsUseCase;
     private final UpdateProductOptionsUseCase updateProductOptionsUseCase;
     private final DeleteProductOptionsUseCase deleteProductOptionsUseCase;
 
+    /**
+     * 상품 옵션 카테고리 등록
+     *
+     * @param productId 상품 ID
+     * @param request   상품 옵션 카테고리 등록 요청
+     * @return 상품 옵션 카테고리 등록 응답 {@link UpsertProductOptionsResponse}
+     * @Author 성효빈
+     * @Date 2026-01-01
+     * @Description 상품 옵션 카테고리를 등록합니다.
+     */
     @PostMapping("/option-categories")
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
     @RegisterProductOptionsApiDocs
@@ -48,8 +63,7 @@ public class ProductOptionController {
         UpsertProductOptionsResult result = registerProductOptionsUseCase.registerProductOptions(
                 ElementExtractor.extractUserId(principal),
                 AuthorityValidator.hasAdminRole(principal),
-                ProductRequestToCommandMapper.mapToCommand(productId, request)
-        );
+                ProductRequestToCommandMapper.mapToCommand(productId, request));
 
         return new ResponseEntity<>(
                 BaseResponse.of(
@@ -62,6 +76,43 @@ public class ProductOptionController {
         );
     }
 
+    /**
+     * 상품 옵션 카테고리 및 옵션 목록 조회
+     *
+     * @param productId 상품 ID
+     * @return 옵션 카테고리 및 옵션 목록 응답 {@link GetProductOptionsResponse}
+     * @Author 성효빈
+     * @Date 2026-01-01
+     * @Description 특정 상품의 옵션 카테고리 및 하위 옵션 목록을 조회합니다.
+     */
+    @GetMapping("/option-categories")
+    @GetProductOptionsApiDocs
+    public ResponseEntity<BaseResponse<GetProductOptionsResponse>> getProductOptions(
+            @PathVariable("productId") Long productId
+    ) {
+        GetProductOptionsResult result = getProductOptionsUseCase.getProductOptions(productId);
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        GetProductOptionsResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "상품 옵션 카테고리 및 옵션 목록 조회 성공"
+                )
+        );
+    }
+
+    /**
+     * 상품 옵션 카테고리 수정
+     *
+     * @param productId 상품 ID
+     * @param id        상품 옵션 카테고리 ID
+     * @param request   상품 옵션 카테고리 수정 요청
+     * @return 상품 옵션 카테고리 수정 응답 {@link UpsertProductOptionsResponse}
+     * @Author 성효빈
+     * @Date 2026-01-01
+     * @Description 상품 옵션 카테고리를 수정합니다.
+     */
     @PutMapping("/option-categories/{id}")
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
     @UpdateProductOptionsApiDocs
@@ -87,6 +138,16 @@ public class ProductOptionController {
         );
     }
 
+    /**
+     * 상품 옵션 카테고리 삭제
+     *
+     * @param productId 상품 ID
+     * @param id        상품 옵션 카테고리 ID
+     * @return 상품 옵션 카테고리 삭제 응답
+     * @Author 성효빈
+     * @Date 2026-01-01
+     * @Description 상품 옵션 카테고리를 삭제합니다.
+     */
     @DeleteMapping("/option-categories/{id}")
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
     @DeleteProductOptionsApiDocs

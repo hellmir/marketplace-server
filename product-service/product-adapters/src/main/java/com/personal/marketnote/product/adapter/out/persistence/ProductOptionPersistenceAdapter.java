@@ -8,12 +8,13 @@ import com.personal.marketnote.product.adapter.out.persistence.productoption.ent
 import com.personal.marketnote.product.adapter.out.persistence.productoption.repository.ProductOptionCategoryJpaRepository;
 import com.personal.marketnote.product.domain.product.ProductOptionCategory;
 import com.personal.marketnote.product.port.out.productoption.DeleteProductOptionCategoryPort;
+import com.personal.marketnote.product.port.out.productoption.FindProductOptionCategoryPort;
 import com.personal.marketnote.product.port.out.productoption.SaveProductOptionsPort;
 import lombok.RequiredArgsConstructor;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class ProductOptionPersistenceAdapter implements SaveProductOptionsPort, DeleteProductOptionCategoryPort {
+public class ProductOptionPersistenceAdapter implements SaveProductOptionsPort, DeleteProductOptionCategoryPort, FindProductOptionCategoryPort {
     private final ProductJpaRepository productJpaRepository;
     private final ProductOptionCategoryJpaRepository productOptionCategoryJpaRepository;
 
@@ -32,5 +33,15 @@ public class ProductOptionPersistenceAdapter implements SaveProductOptionsPort, 
     @Override
     public void deleteById(Long id) {
         productOptionCategoryJpaRepository.deleteById(id);
+    }
+
+    @Override
+    public java.util.List<ProductOptionCategory> findActiveWithOptionsByProductId(Long productId) {
+        return productOptionCategoryJpaRepository.findActiveWithOptionsByProductId(productId)
+                .stream()
+                .map(ProductJpaEntityToDomainMapper::mapToDomain)
+                .filter(java.util.Optional::isPresent)
+                .map(java.util.Optional::get)
+                .toList();
     }
 }

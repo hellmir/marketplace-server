@@ -5,22 +5,17 @@ import com.personal.marketnote.common.utility.AuthorityValidator;
 import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.GetProductsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductApiDocs;
-import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductCategoriesApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.UpdateProductApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
-import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductCategoriesRequest;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductRequest;
 import com.personal.marketnote.product.adapter.in.client.product.request.UpdateProductRequest;
 import com.personal.marketnote.product.adapter.in.client.product.response.GetProductsResponse;
-import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductCategoriesResponse;
 import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductResponse;
 import com.personal.marketnote.product.domain.product.ProductSearchTarget;
 import com.personal.marketnote.product.domain.product.ProductSortProperty;
 import com.personal.marketnote.product.port.in.result.GetProductsResult;
-import com.personal.marketnote.product.port.in.result.RegisterProductCategoriesResult;
 import com.personal.marketnote.product.port.in.result.RegisterProductResult;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
-import com.personal.marketnote.product.port.in.usecase.product.RegisterProductCategoriesUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterProductUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.UpdateProductUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,7 +31,6 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
-import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER_POINTCUT;
 import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER_PRINCIPAL_POINTCUT;
 import static com.personal.marketnote.common.utility.NumberConstant.MINUS_ONE;
 
@@ -49,7 +43,6 @@ public class ProductController {
     private static final String GET_PRODUCTS_DEFAULT_PAGE_SIZE = "4";
 
     private final RegisterProductUseCase registerProductUseCase;
-    private final RegisterProductCategoriesUseCase registerProductCategoriesUseCase;
     private final GetProductUseCase getProductUseCase;
     private final UpdateProductUseCase updateProductUseCase;
 
@@ -57,7 +50,7 @@ public class ProductController {
      * (판매자/관리자) 상품 등록
      *
      * @param request 상품 등록 요청
-     * @return 상품 등록 응답
+     * @return 상품 등록 응답 {@link RegisterProductResponse}
      * @Author 성효빈
      * @Date 2025-12-30
      * @Description 상품을 등록합니다.
@@ -133,7 +126,6 @@ public class ProductController {
      *
      * @param productId 상품 ID
      * @param request   상품 정보 수정 요청
-     * @return 상품 정보 수정 응답
      * @Author 성효빈
      * @Date 2026-01-01
      * @Description 상품 정보를 수정합니다.
@@ -158,31 +150,6 @@ public class ProductController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "상품 정보 수정 성공"
-                )
-        );
-    }
-
-    @PutMapping("{productId}/categories")
-    @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
-    @RegisterProductCategoriesApiDocs
-    public ResponseEntity<BaseResponse<RegisterProductCategoriesResponse>> registerProductCategories(
-            @PathVariable("productId") Long productId,
-            @Valid @RequestBody RegisterProductCategoriesRequest request,
-            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
-    ) {
-        RegisterProductCategoriesResult result = registerProductCategoriesUseCase.registerProductCategories(
-                ElementExtractor.extractUserId(principal),
-                AuthorityValidator.hasAdminRole(principal),
-                ProductRequestToCommandMapper.mapToCommand(productId, request
-                )
-        );
-
-        return ResponseEntity.ok(
-                BaseResponse.of(
-                        RegisterProductCategoriesResponse.from(result),
-                        HttpStatus.OK,
-                        DEFAULT_SUCCESS_CODE,
-                        "상품 카테고리 등록 성공"
                 )
         );
     }

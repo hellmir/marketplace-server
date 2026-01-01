@@ -2,8 +2,24 @@ package com.personal.marketnote.product.adapter.out.persistence.productoption.re
 
 import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionCategoryJpaGeneralEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ProductOptionCategoryJpaRepository extends JpaRepository<ProductOptionCategoryJpaGeneralEntity, Long> {
+    @Query("""
+            SELECT DISTINCT c
+            FROM com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionCategoryJpaGeneralEntity c
+              JOIN FETCH c.productJpaEntity p
+              LEFT JOIN FETCH c.productOptionJpaEntities o
+            WHERE 1 = 1
+              AND p.id = :productId
+              AND c.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+              AND (o IS NULL OR o.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE)
+            ORDER BY c.orderNum ASC, o.orderNum ASC
+            """)
+    java.util.List<ProductOptionCategoryJpaGeneralEntity> findActiveWithOptionsByProductId(
+            @Param("productId") Long productId
+    );
 }
 
 
