@@ -17,7 +17,7 @@ import lombok.*;
 public class UserTermsJpaEntity extends BaseGeneralEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    private UserJpaGeneralEntity userJpaEntity;
+    private UserJpaEntity userJpaEntity;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "terms_id", nullable = false)
@@ -26,7 +26,7 @@ public class UserTermsJpaEntity extends BaseGeneralEntity {
     @Column(name = "agreement_yn", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean agreementYn;
 
-    public static UserTermsJpaEntity of(UserJpaGeneralEntity userJpaEntity, TermsJpaEntity termsJpaEntity, Boolean agreementYn) {
+    public static UserTermsJpaEntity of(UserJpaEntity userJpaEntity, TermsJpaEntity termsJpaEntity, Boolean agreementYn) {
         return UserTermsJpaEntity.builder()
                 .userJpaEntity(userJpaEntity)
                 .termsJpaEntity(termsJpaEntity)
@@ -34,7 +34,7 @@ public class UserTermsJpaEntity extends BaseGeneralEntity {
                 .build();
     }
 
-    public static UserTermsJpaEntity from(UserJpaGeneralEntity userJpaEntity, Terms terms) {
+    public static UserTermsJpaEntity from(UserJpaEntity userJpaEntity, Terms terms) {
         return UserTermsJpaEntity.builder()
                 .userJpaEntity(userJpaEntity)
                 .termsJpaEntity(TermsJpaEntity.from(terms))

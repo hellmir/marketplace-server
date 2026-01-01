@@ -71,6 +71,7 @@ import java.lang.annotation.*;
                 | phoneNumber | string | 전화번호 | "010-1234-5678" |
                 | referenceCode | string | 참조 코드 | "1234567890" |
                 | roleId | string | 역할 ID | "ROLE_BUYER" |
+                | signedUpAt | string(datetime) | 가입 일시 | "2025-12-29T10:19:52.558748" |
                 | lastLoggedInAt | string(datetime) | 마지막 로그인 일시 | "2025-12-29T10:19:52.558748" |
                 | status | string | 상태 | "ACTIVE" / "INACTIVE" / "DELETED" |
                 | isWithdrawn | boolean | 탈퇴 여부 | true / false |
@@ -141,6 +142,7 @@ import java.lang.annotation.*;
                                               "phoneNumber": null,
                                               "referenceCode": "H8W9R9",
                                               "roleId": "ROLE_BUYER",
+                                              "signedUpAt": "2025-12-28T15:59:59.132803",
                                               "lastLoggedInAt": "2025-12-28T16:23:26.964246",
                                               "status": "ACTIVE",
                                               "isWithdrawn": false,

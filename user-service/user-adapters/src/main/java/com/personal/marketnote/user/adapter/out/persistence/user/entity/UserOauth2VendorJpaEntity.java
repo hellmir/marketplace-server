@@ -15,7 +15,7 @@ import lombok.*;
 public class UserOauth2VendorJpaEntity extends BaseGeneralEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    private UserJpaGeneralEntity userJpaEntity;
+    private UserJpaEntity userJpaEntity;
 
     @Column(name = "auth_vendor", nullable = false, length = 15)
     @Enumerated(EnumType.STRING)
@@ -26,13 +26,13 @@ public class UserOauth2VendorJpaEntity extends BaseGeneralEntity {
 
     public static UserOauth2VendorJpaEntity from(UserOauth2Vendor userOauth2Vendor) {
         return UserOauth2VendorJpaEntity.builder()
-                .userJpaEntity(UserJpaGeneralEntity.from(userOauth2Vendor.getUser()))
+                .userJpaEntity(UserJpaEntity.from(userOauth2Vendor.getUser()))
                 .authVendor(userOauth2Vendor.getAuthVendor())
                 .oidcId(userOauth2Vendor.getOidcId())
                 .build();
     }
 
-    public static UserOauth2VendorJpaEntity of(UserJpaGeneralEntity parent, AuthVendor authVendor, String oidcId) {
+    public static UserOauth2VendorJpaEntity of(UserJpaEntity parent, AuthVendor authVendor, String oidcId) {
         return UserOauth2VendorJpaEntity.builder()
                 .userJpaEntity(parent)
                 .authVendor(authVendor)
@@ -40,7 +40,7 @@ public class UserOauth2VendorJpaEntity extends BaseGeneralEntity {
                 .build();
     }
 
-    public void updateFrom(UserJpaGeneralEntity userJpaEntity, UserOauth2Vendor userOauth2Vendor) {
+    public void updateFrom(UserJpaEntity userJpaEntity, UserOauth2Vendor userOauth2Vendor) {
         this.userJpaEntity = userJpaEntity;
         authVendor = userOauth2Vendor.getAuthVendor();
         oidcId = userOauth2Vendor.getOidcId();

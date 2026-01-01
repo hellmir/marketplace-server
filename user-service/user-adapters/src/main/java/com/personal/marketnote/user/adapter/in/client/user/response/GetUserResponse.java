@@ -17,6 +17,7 @@ public record GetUserResponse(
         String phoneNumber,
         String referenceCode,
         String roleId,
+        LocalDateTime signedUpAt,
         LocalDateTime lastLoggedInAt,
         String status,
         boolean isWithdrawn,
@@ -32,6 +33,7 @@ public record GetUserResponse(
                 .phoneNumber(getUserResult.phoneNumber())
                 .referenceCode(getUserResult.referenceCode())
                 .roleId(getUserResult.roleId())
+                .signedUpAt(getUserResult.signedUpAt())
                 .lastLoggedInAt(getUserResult.lastLoggedInAt())
                 .status(getUserResult.status())
                 .isWithdrawn(getUserResult.isWithdrawn())
