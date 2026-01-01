@@ -1,7 +1,7 @@
 package com.personal.marketnote.product.adapter.out.mapper;
 
 import com.personal.marketnote.common.utility.FormatValidator;
-import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaGeneralEntity;
+import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionCategoryJpaGeneralEntity;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionJpaGeneralEntity;
 import com.personal.marketnote.product.domain.product.Product;
@@ -11,7 +11,7 @@ import com.personal.marketnote.product.domain.product.ProductOptionCategory;
 import java.util.Optional;
 
 public class ProductJpaEntityToDomainMapper {
-    public static Optional<Product> mapToDomain(ProductJpaGeneralEntity productJpaEntity) {
+    public static Optional<Product> mapToDomain(ProductJpaEntity productJpaEntity) {
         return Optional.ofNullable(productJpaEntity)
                 .map(
                         entity -> Product.of(

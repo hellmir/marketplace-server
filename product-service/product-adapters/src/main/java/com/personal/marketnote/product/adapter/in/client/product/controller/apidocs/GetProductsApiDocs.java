@@ -40,7 +40,7 @@ import java.lang.annotation.*;
         | **키** | **타입** | **설명** | **필수 여부** | **예시** |
         | --- | --- | --- | --- | --- |
         | categoryId | number | 카테고리 ID | N | 1001 |
-        | cursor | number | 커서(첫 페이지는 미전송 권장, ASC: 0, DESC: Long.MAX_VALUE) | N | 0 |
+        | cursor | number | 이전 페이지의 nextCursor 값, 전송하지 않는 경우 첫 데이터부터 조회 | N | -1 |
         | page-size | number | 페이지 크기 | N | 4 |
         | sortDirection | string | 정렬 방향(ASC, DESC) | N | DESC |
         | sortProperty | string | 정렬 속성(ORDER_NUM, POPULARITY, CURRENT_PRICE, ACCUMULATED_POINT) | N | ORDER_NUM |
@@ -66,7 +66,7 @@ import java.lang.annotation.*;
         | **키** | **타입** | **설명** | **예시** |
         | --- | --- | --- | --- |
         | products | array | 상품 목록 | [ ... ] |
-        | nextCursor | number | 다음 페이지 요청 시 사용할 커서(더 없으면 null) | 18 |
+        | nextCursor | number | 현재 페이지에서 조회한 마지막 리소스의 식별자 | 18 |
         | hasNext | boolean | 다음 페이지 존재 여부 | true |
         | totalElements | number | 총 아이템 수 | 30 |
         

@@ -70,7 +70,7 @@ public class GetProductService implements GetProductUseCase {
 
         Long nextCursor = null;
         if (FormatValidator.hasValue(pageItems)) {
-            nextCursor = pageItems.get(pageItems.size() - 1).getOrderNum();
+            nextCursor = pageItems.get(pageItems.size() - 1).getId();
         }
 
         Long totalElements = null;

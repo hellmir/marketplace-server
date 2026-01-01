@@ -2,7 +2,7 @@ package com.personal.marketnote.product.adapter.out.persistence;
 
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
 import com.personal.marketnote.product.adapter.out.mapper.ProductJpaEntityToDomainMapper;
-import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaGeneralEntity;
+import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.product.repository.ProductJpaRepository;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionCategoryJpaGeneralEntity;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.repository.ProductOptionCategoryJpaRepository;
@@ -19,7 +19,7 @@ public class ProductOptionPersistenceAdapter implements SaveProductOptionsPort, 
 
     @Override
     public ProductOptionCategory save(ProductOptionCategory productOptionCategory) {
-        ProductJpaGeneralEntity productRef = productJpaRepository.getReferenceById(
+        ProductJpaEntity productRef = productJpaRepository.getReferenceById(
                 productOptionCategory.getProduct().getId());
 
         ProductOptionCategoryJpaGeneralEntity savedCategory = productOptionCategoryJpaRepository.save(
