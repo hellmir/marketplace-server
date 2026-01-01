@@ -5,10 +5,10 @@ public record UpdateProductCommand(
         String name,
         String brandName,
         String detail,
-        boolean isFindAllOptions
+        Boolean isFindAllOptions
 ) {
     public static UpdateProductCommand of(
-            Long productId, String name, String brandName, String detail, boolean isFindAllOptions
+            Long productId, String name, String brandName, String detail, Boolean isFindAllOptions
     ) {
         return new UpdateProductCommand(productId, name, brandName, detail, isFindAllOptions);
     }

@@ -25,4 +25,18 @@ public record GetProductsResult(
                         .map(ProductItemResult::from)
                         .collect(Collectors.toList()));
     }
+
+    public static GetProductsResult fromItems(
+            List<ProductItemResult> items,
+            boolean hasNext,
+            Long nextCursor,
+            Long totalElements
+    ) {
+        return new GetProductsResult(
+                totalElements,
+                nextCursor,
+                hasNext,
+                items
+        );
+    }
 }

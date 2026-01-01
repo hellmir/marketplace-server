@@ -32,6 +32,29 @@ public record ProductItemResult(
                 product.getStatus().name()
         );
     }
+
+    public static ProductItemResult ofVariant(
+            Product base,
+            String variantName,
+            Long price,
+            Long discountPrice,
+            BigDecimal discountRate,
+            Long accumulatedPoint
+    ) {
+        return new ProductItemResult(
+                base.getId(),
+                base.getSellerId(),
+                variantName,
+                base.getBrandName(),
+                price,
+                discountPrice,
+                discountRate,
+                accumulatedPoint,
+                base.getSales(),
+                base.getOrderNum(),
+                base.getStatus().name()
+        );
+    }
 }
 
 

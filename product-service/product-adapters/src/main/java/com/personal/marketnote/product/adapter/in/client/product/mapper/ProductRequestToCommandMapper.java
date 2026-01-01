@@ -56,7 +56,7 @@ public class ProductRequestToCommandMapper {
                 request.getName(),
                 request.getBrandName(),
                 request.getDetail(),
-                request.isFindAllOptions()
+                request.getIsFindAllOptions()
         );
     }
 }

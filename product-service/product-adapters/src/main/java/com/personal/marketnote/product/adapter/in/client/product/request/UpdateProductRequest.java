@@ -35,7 +35,7 @@ public class UpdateProductRequest {
             description = "상품 목록 조회 시 옵션마다 개별 상품으로 조회 여부",
             requiredMode = Schema.RequiredMode.REQUIRED
     )
-    private boolean isFindAllOptions;
+    private Boolean isFindAllOptions;
 }
 
 
