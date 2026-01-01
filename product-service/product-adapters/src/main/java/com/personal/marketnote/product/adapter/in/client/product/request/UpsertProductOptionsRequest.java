@@ -10,7 +10,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class RegisterProductOptionsRequest {
+public class UpsertProductOptionsRequest {
     @Schema(name = "categoryName", description = "옵션 카테고리명", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "옵션 카테고리명은 필수입니다.")
     private String categoryName;

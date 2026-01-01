@@ -8,7 +8,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(value = AuditingEntityListener.class)
 @MappedSuperclass
 @Getter
-public abstract class BaseOrderedEntity extends BaseGeneralEntity {
+public abstract class BaseOrderedGeneralEntity extends BaseGeneralEntity {
     private Long orderNum;
 
     public void setIdToOrderNum() {

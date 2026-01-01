@@ -1,6 +1,6 @@
 package com.personal.marketnote.user.adapter.out.persistence.user.repository;
 
-import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserJpaEntity;
+import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserJpaGeneralEntity;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,10 +11,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
+public interface UserJpaRepository extends JpaRepository<UserJpaGeneralEntity, Long> {
     @Query("""
             SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
-            FROM UserJpaEntity u
+            FROM UserJpaGeneralEntity u
             WHERE 1 = 1
                 AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
                 AND EXISTS (
@@ -30,7 +30,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
 
     @Query("""
             SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
-            FROM UserJpaEntity u
+            FROM UserJpaGeneralEntity u
             WHERE 1 = 1
                 AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
                 AND u.nickname = :nickname
@@ -39,7 +39,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
 
     @Query("""
             SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
-            FROM UserJpaEntity u
+            FROM UserJpaGeneralEntity u
             WHERE 1 = 1
                 AND u.email = :email
             """)
@@ -47,7 +47,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
 
     @Query("""
             SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
-            FROM UserJpaEntity u
+            FROM UserJpaGeneralEntity u
             WHERE 1 = 1
                 AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
               AND u.phoneNumber = :phoneNumber
@@ -56,7 +56,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
 
     @Query("""
             SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END
-            FROM UserJpaEntity u
+            FROM UserJpaGeneralEntity u
             WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
                 AND u.referenceCode = :referenceCode
             """)
@@ -64,16 +64,16 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
 
     @Query("""
             SELECT u
-            FROM UserJpaEntity u
+            FROM UserJpaGeneralEntity u
             WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
                 AND u.id = :id
             ORDER BY u.orderNum ASC
             """)
-    Optional<UserJpaEntity> findById(@Param("id") Long id);
+    Optional<UserJpaGeneralEntity> findById(@Param("id") Long id);
 
     @Query("""
             SELECT u
-            FROM UserJpaEntity u
+            FROM UserJpaGeneralEntity u
             WHERE 1 = 1
                 AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
               AND EXISTS (
@@ -85,56 +85,56 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
               )
             ORDER BY u.orderNum ASC
             """)
-    Optional<UserJpaEntity> findByAuthVendorAndOidcId(@Param("authVendor") AuthVendor authVendor,
-                                                      @Param("oidcId") String oidcId);
+    Optional<UserJpaGeneralEntity> findByAuthVendorAndOidcId(@Param("authVendor") AuthVendor authVendor,
+                                                             @Param("oidcId") String oidcId);
 
     @Query("""
             SELECT u
-            FROM UserJpaEntity u
+            FROM UserJpaGeneralEntity u
             WHERE 1 = 1
                 AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
                 AND u.phoneNumber = :phoneNumber
             ORDER BY u.orderNum ASC
             """)
-    Optional<UserJpaEntity> findByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+    Optional<UserJpaGeneralEntity> findByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 
     @Query("""
             SELECT u
-            FROM UserJpaEntity u
+            FROM UserJpaGeneralEntity u
             WHERE 1 = 1
                 AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
                 AND u.email = :email
             ORDER BY u.orderNum ASC
             """)
-    Optional<UserJpaEntity> findByEmail(@Param("email") String email);
+    Optional<UserJpaGeneralEntity> findByEmail(@Param("email") String email);
 
     @Query("""
             SELECT u
-            FROM UserJpaEntity u
+            FROM UserJpaGeneralEntity u
             WHERE 1 = 1
                 AND u.orderNum = :id
             """)
-    Optional<UserJpaEntity> findAllStatusUserById(@Param("id") Long id);
+    Optional<UserJpaGeneralEntity> findAllStatusUserById(@Param("id") Long id);
 
     @Query("""
             SELECT u
-            FROM UserJpaEntity u
+            FROM UserJpaGeneralEntity u
             WHERE 1 = 1
                 AND u.email = :email
             """)
-    Optional<UserJpaEntity> findAllStatusUserByEmail(@Param("email") String email);
+    Optional<UserJpaGeneralEntity> findAllStatusUserByEmail(@Param("email") String email);
 
     @Query("""
             SELECT u
-            FROM UserJpaEntity u
+            FROM UserJpaGeneralEntity u
             WHERE 1 = 1
             ORDER BY u.orderNum ASC
             """)
-    List<UserJpaEntity> findAllStatusUsers();
+    List<UserJpaGeneralEntity> findAllStatusUsers();
 
     @Query("""
             SELECT u
-            FROM UserJpaEntity u
+            FROM UserJpaGeneralEntity u
             WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
               AND (
                     :searchKeyword IS NULL
@@ -148,7 +148,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
                    )
               )
             """)
-    Page<UserJpaEntity> findAllStatusUsersByPage(
+    Page<UserJpaGeneralEntity> findAllStatusUsersByPage(
             Pageable pageable,
             @Param("byId") boolean byId,
             @Param("byNickname") boolean byNickname,

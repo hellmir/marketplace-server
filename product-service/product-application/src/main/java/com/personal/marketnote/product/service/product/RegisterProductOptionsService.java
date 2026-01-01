@@ -52,5 +52,3 @@ public class RegisterProductOptionsService implements RegisterProductOptionsUseC
         return UpsertProductOptionsResult.from(savedCategory);
     }
 }
-
-

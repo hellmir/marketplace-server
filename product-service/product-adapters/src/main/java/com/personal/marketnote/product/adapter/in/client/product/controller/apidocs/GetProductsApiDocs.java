@@ -76,7 +76,7 @@ import java.lang.annotation.*;
         
         | **키** | **타입** | **설명** | **예시** |
         | --- | --- | --- | --- |
-        | id | number | 상품 ID | 1 |
+        | optionCategoryId | number | 상품 ID | 1 |
         | sellerId | number | 판매자 ID | 10 |
         | name | string | 상품명 | "스프링노트1" |
         | brandName | string | 브랜드명 | "노트왕" |
@@ -170,7 +170,7 @@ import java.lang.annotation.*;
                                               "nextCursor": 18,
                                               "items": [
                                                 {
-                                                  "id": 21,
+                                                  "optionCategoryId": 21,
                                                   "sellerId": 12,
                                                   "name": "스프링노트1",
                                                   "brandName": "노트왕",
@@ -181,7 +181,7 @@ import java.lang.annotation.*;
                                                   "status": "ACTIVE"
                                                 },
                                                 {
-                                                  "id": 20,
+                                                  "optionCategoryId": 20,
                                                   "sellerId": 12,
                                                   "name": "스프링노트1",
                                                   "brandName": "노트킹",
@@ -192,7 +192,7 @@ import java.lang.annotation.*;
                                                   "status": "ACTIVE"
                                                 },
                                                 {
-                                                  "id": 19,
+                                                  "optionCategoryId": 19,
                                                   "sellerId": 1,
                                                   "name": "스프링노트1",
                                                   "brandName": "노트왕",
@@ -203,7 +203,7 @@ import java.lang.annotation.*;
                                                   "status": "ACTIVE"
                                                 },
                                                 {
-                                                  "id": 18,
+                                                  "optionCategoryId": 18,
                                                   "sellerId": 1,
                                                   "name": "스프링노트6",
                                                   "brandName": "노트킹",

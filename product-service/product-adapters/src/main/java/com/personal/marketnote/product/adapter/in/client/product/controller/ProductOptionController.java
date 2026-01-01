@@ -3,12 +3,14 @@ package com.personal.marketnote.product.adapter.in.client.product.controller;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.AuthorityValidator;
 import com.personal.marketnote.common.utility.ElementExtractor;
+import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.DeleteProductOptionsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductOptionsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.UpdateProductOptionsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
-import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductOptionsRequest;
+import com.personal.marketnote.product.adapter.in.client.product.request.UpsertProductOptionsRequest;
 import com.personal.marketnote.product.adapter.in.client.product.response.UpsertProductOptionsResponse;
 import com.personal.marketnote.product.port.in.result.UpsertProductOptionsResult;
+import com.personal.marketnote.product.port.in.usecase.product.DeleteProductOptionsUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterProductOptionsUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.UpdateProductOptionsUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,13 +35,14 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER
 public class ProductOptionController {
     private final RegisterProductOptionsUseCase registerProductOptionsUseCase;
     private final UpdateProductOptionsUseCase updateProductOptionsUseCase;
+    private final DeleteProductOptionsUseCase deleteProductOptionsUseCase;
 
     @PostMapping("/option-categories")
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
     @RegisterProductOptionsApiDocs
     public ResponseEntity<BaseResponse<UpsertProductOptionsResponse>> registerProductOptionCategories(
             @PathVariable("productId") Long productId,
-            @Valid @RequestBody RegisterProductOptionsRequest request,
+            @Valid @RequestBody UpsertProductOptionsRequest request,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
         UpsertProductOptionsResult result = registerProductOptionsUseCase.registerProductOptions(
@@ -59,19 +62,19 @@ public class ProductOptionController {
         );
     }
 
-    @PutMapping("/option-categories/{optionCategoryId}")
+    @PutMapping("/option-categories/{id}")
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
     @UpdateProductOptionsApiDocs
     public ResponseEntity<BaseResponse<UpsertProductOptionsResponse>> updateProductOptionCategories(
             @PathVariable("productId") Long productId,
-            @PathVariable("optionCategoryId") Long optionCategoryId,
-            @Valid @RequestBody RegisterProductOptionsRequest request,
+            @PathVariable("id") Long id,
+            @Valid @RequestBody UpsertProductOptionsRequest request,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
         UpsertProductOptionsResult result = updateProductOptionsUseCase.updateProductOptions(
                 ElementExtractor.extractUserId(principal),
                 AuthorityValidator.hasAdminRole(principal),
-                ProductRequestToCommandMapper.mapToUpdateCommand(productId, optionCategoryId, request)
+                ProductRequestToCommandMapper.mapToUpdateCommand(productId, id, request)
         );
 
         return ResponseEntity.ok(
@@ -80,6 +83,30 @@ public class ProductOptionController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "상품 옵션 카테고리 수정 성공"
+                )
+        );
+    }
+
+    @DeleteMapping("/option-categories/{id}")
+    @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
+    @DeleteProductOptionsApiDocs
+    public ResponseEntity<BaseResponse<Void>> deleteProductOptionCategories(
+            @PathVariable("productId") Long productId,
+            @PathVariable("id") Long id,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        deleteProductOptionsUseCase.deleteProductOptions(
+                ElementExtractor.extractUserId(principal),
+                AuthorityValidator.hasAdminRole(principal),
+                productId,
+                id
+        );
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "상품 옵션 삭제 성공"
                 )
         );
     }
