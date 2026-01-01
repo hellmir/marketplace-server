@@ -30,7 +30,8 @@ public class RegisterProductService implements RegisterProductUseCase {
                         registerProductCommand.name(),
                         registerProductCommand.brandName(),
                         registerProductCommand.detail(),
-                        registerProductCommand.isFindAllOptions()
+                        registerProductCommand.isFindAllOptions(),
+                        registerProductCommand.tags()
                 )
         );
 

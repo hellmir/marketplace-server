@@ -1,16 +1,19 @@
 package com.personal.marketnote.product.port.in.command;
 
+import java.util.List;
+
 public record UpdateProductCommand(
-        Long productId,
+        Long id,
         String name,
         String brandName,
         String detail,
-        Boolean isFindAllOptions
+        Boolean isFindAllOptions,
+        List<String> tags
 ) {
     public static UpdateProductCommand of(
-            Long productId, String name, String brandName, String detail, Boolean isFindAllOptions
+            Long id, String name, String brandName, String detail, Boolean isFindAllOptions, List<String> tags
     ) {
-        return new UpdateProductCommand(productId, name, brandName, detail, isFindAllOptions);
+        return new UpdateProductCommand(id, name, brandName, detail, isFindAllOptions, tags);
     }
 }
 

@@ -36,6 +36,7 @@ import java.lang.annotation.*;
         | brandName | string | 브랜드명 | N | "노트왕" |
         | detail | string | 상품 설명 | N | "스프링노트1 설명" |
         | isFindAllOptions | boolean | 상품 목록 조회 시 옵션마다 개별 상품으로 조회 여부 | N | true |
+        | tags | array<string> | 상품 태그 목록 | N | ["루테인", "아스타잔틴"] |
         ---
         
         ## Response
@@ -58,7 +59,8 @@ import java.lang.annotation.*;
                                   "name": "스프링노트1",
                                   "brandName": "노트왕",
                                   "detail": "스프링노트1 설명",
-                                  "isFindAllOptions": true
+                                  "isFindAllOptions": true,
+                                  "tags": ["루테인", "아스타잔틴"]
                                 }
                                 """)
                 )

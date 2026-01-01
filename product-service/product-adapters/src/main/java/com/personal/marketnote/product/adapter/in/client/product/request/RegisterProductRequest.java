@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 public class RegisterProductRequest {
     @Schema(
@@ -67,5 +69,12 @@ public class RegisterProductRequest {
             description = "상품 목록 조회 시 옵션마다 개별 상품으로 조회 여부",
             requiredMode = Schema.RequiredMode.REQUIRED
     )
-    private boolean isFindAllOptions;
+    private Boolean isFindAllOptions;
+
+    @Schema(
+            name = "tags",
+            description = "상품 태그 목록",
+            requiredMode = Schema.RequiredMode.REQUIRED
+    )
+    private List<String> tags;
 }

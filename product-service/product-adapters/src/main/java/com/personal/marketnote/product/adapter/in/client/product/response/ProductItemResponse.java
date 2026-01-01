@@ -1,5 +1,6 @@
 package com.personal.marketnote.product.adapter.in.client.product.response;
 
+import com.personal.marketnote.product.domain.product.ProductTag;
 import com.personal.marketnote.product.port.in.result.ProductItemResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
@@ -21,6 +23,7 @@ public class ProductItemResponse {
     private BigDecimal discountRate;
     private Long accumulatedPoint;
     private Integer sales;
+    private List<ProductTag> productTags;
     private Long orderNum;
     private String status;
 
@@ -35,6 +38,7 @@ public class ProductItemResponse {
                 .discountRate(result.discountRate())
                 .accumulatedPoint(result.accumulatedPoint())
                 .sales(result.sales())
+                .productTags(result.productTags())
                 .orderNum(result.orderNum())
                 .status(result.status())
                 .build();

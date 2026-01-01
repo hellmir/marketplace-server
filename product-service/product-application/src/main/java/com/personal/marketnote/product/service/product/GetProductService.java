@@ -167,7 +167,7 @@ public class GetProductService implements GetProductUseCase {
                 Long variantDiscountPrice = product.getDiscountPrice() == null ? null : product.getDiscountPrice() + optionPriceSum;
                 Long variantAccumulatedPoint = product.getAccumulatedPoint() == null ? optionPointSum : product.getAccumulatedPoint() + optionPointSum;
 
-                results.add(ProductItemResult.ofVariant(
+                results.add(ProductItemResult.from(
                         product,
                         variantName,
                         variantPrice,

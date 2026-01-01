@@ -24,13 +24,15 @@ public class UpdateProductService implements UpdateProductUseCase {
 
     @Override
     public void update(Long userId, boolean isAdmin, UpdateProductCommand command) {
-        Long productId = command.productId();
-        if (!isAdmin && !findProductPort.existsByIdAndSellerId(productId, userId)) {
-            throw new NotProductOwnerException(FIRST_ERROR_CODE, productId);
+        Long id = command.id();
+        if (!isAdmin && !findProductPort.existsByIdAndSellerId(id, userId)) {
+            throw new NotProductOwnerException(FIRST_ERROR_CODE, id);
         }
 
-        Product product = getProductUseCase.getProduct(productId);
-        product.update(command.name(), command.brandName(), command.detail(), command.isFindAllOptions());
+        Product product = getProductUseCase.getProduct(id);
+        product.update(
+                command.name(), command.brandName(), command.detail(), command.isFindAllOptions(), command.tags()
+        );
 
         updateProductPort.update(product);
     }
