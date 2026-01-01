@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.*;
 import static com.personal.marketnote.user.exception.ExceptionMessage.*;
@@ -48,9 +49,10 @@ public class SignUpService implements SignUpUseCase {
 
         // 이메일 가입 정보가 있는 경우 기존 회원 엔티티에 통합
         if (findUserPort.existsByEmail(email)) {
-            User signedUpUser = addLoginAccountInfo(email, password, authVendor, oidcId, ipAddress);
+            AtomicBoolean isNewUser = new AtomicBoolean(false);
+            User signedUpUser = addLoginAccountInfo(email, password, authVendor, oidcId, ipAddress, isNewUser);
 
-            return SignUpResult.from(signedUpUser, false);
+            return SignUpResult.from(signedUpUser, isNewUser.get());
         }
 
         List<Terms> terms = findTermsPort.findAll();
@@ -109,7 +111,7 @@ public class SignUpService implements SignUpUseCase {
     }
 
     private User addLoginAccountInfo(
-            String email, String password, AuthVendor authVendor, String oidcId, String ipAddress
+            String email, String password, AuthVendor authVendor, String oidcId, String ipAddress, AtomicBoolean isNewUser
     ) {
         User signedUpUser = getUserUseCase.getAllStatusUser(email);
 
@@ -117,6 +119,7 @@ public class SignUpService implements SignUpUseCase {
         if (signedUpUser.isWithdrawn()) {
             signedUpUser.cancelWithdrawal();
             signedUpUser.activate();
+            isNewUser.set(true);
         }
 
         // 계정 활성화 여부 검증
