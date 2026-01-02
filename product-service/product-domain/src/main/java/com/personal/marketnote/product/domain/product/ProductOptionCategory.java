@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
@@ -44,5 +45,13 @@ public class ProductOptionCategory {
                 .orderNum(orderNum)
                 .status(status)
                 .build();
+    }
+
+    public void applyOptedPrice(Set<String> selectedOptions, OptedProductAmount optedProductAmount) {
+        for (ProductOption option : getOptions()) {
+            if (selectedOptions.stream().anyMatch(s -> s.equalsIgnoreCase(option.getContent()))) {
+                optedProductAmount.addAmount(option.getPrice(), option.getAccumulatedPoint());
+            }
+        }
     }
 }

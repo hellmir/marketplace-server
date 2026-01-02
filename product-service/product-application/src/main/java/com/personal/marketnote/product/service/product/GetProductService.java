@@ -4,8 +4,7 @@ import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.product.*;
 import com.personal.marketnote.product.exception.ProductNotFoundException;
-import com.personal.marketnote.product.port.in.result.GetProductsResult;
-import com.personal.marketnote.product.port.in.result.ProductItemResult;
+import com.personal.marketnote.product.port.in.result.*;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
 import com.personal.marketnote.product.port.out.product.FindProductPort;
 import com.personal.marketnote.product.port.out.productoption.FindProductOptionCategoryPort;
@@ -15,8 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
@@ -31,6 +29,65 @@ public class GetProductService implements GetProductUseCase {
     public Product getProduct(Long id) {
         return findProductPort.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
+    }
+
+    @Override
+    public GetProductInfoWithOptionsResult getProductInfo(Long id, List<String> optionContents) {
+        Product product = getProduct(id);
+
+        Long basePrice = product.getPrice();
+        Long baseDiscountPrice = product.getDiscountPrice();
+        Long baseAccumulatedPoint = product.getAccumulatedPoint();
+
+        Set<String> selectedOptions = FormatValidator.hasValue(optionContents)
+                ? new HashSet<>(optionContents)
+                : Collections.emptySet();
+
+        List<ProductOptionCategory> categories
+                = findProductOptionCategoryPort.findActiveWithOptionsByProductId(product.getId());
+
+        OptedProductAmount optedProductAmount = new OptedProductAmount();
+
+        if (
+                product.isFindAllOptionsYn()
+                        && FormatValidator.hasValue(selectedOptions)
+                        && FormatValidator.hasValue(categories)
+        ) {
+            categories.forEach(
+                    category -> category.applyOptedPrice(selectedOptions, optedProductAmount)
+            );
+        }
+
+        Long totalPrice = optedProductAmount.getTotalOptionPrice();
+        Long totalPoint = optedProductAmount.getTotalOptionPoint();
+        Long adjustedPrice = safeAdd(basePrice, totalPrice);
+        Long baseForDiscount = (baseDiscountPrice != null ? baseDiscountPrice : basePrice);
+        Long adjustedDiscountPrice = safeAdd(baseForDiscount, totalPrice);
+
+        if (adjustedDiscountPrice > adjustedPrice) {
+            adjustedDiscountPrice = adjustedPrice;
+        }
+
+        Long adjustedAccumulatedPoint = safeAdd(baseAccumulatedPoint, totalPoint);
+
+        GetProductInfoResult info = GetProductInfoResult.fromAdjusted(
+                product, adjustedPrice, adjustedDiscountPrice, adjustedAccumulatedPoint
+        );
+
+        List<SelectableProductOptionCategoryItemResult> selectableCategories
+                = categories.stream()
+                .map(c -> SelectableProductOptionCategoryItemResult.from(c, selectedOptions))
+                .toList();
+
+        return GetProductInfoWithOptionsResult.of(info, selectableCategories);
+    }
+
+    private Long safeAdd(Long base, long add) {
+        if (FormatValidator.hasValue(base)) {
+            return base + add;
+        }
+
+        return add;
     }
 
     @Override
@@ -146,7 +203,7 @@ public class GetProductService implements GetProductUseCase {
             }
 
             List<List<ProductOption>> optionGroups = categories.stream()
-                    .sorted(java.util.Comparator.comparing(ProductOptionCategory::getOrderNum))
+                    .sorted(Comparator.comparing(ProductOptionCategory::getOrderNum))
                     .map(ProductOptionCategory::getOptions)
                     .toList();
 
@@ -160,12 +217,12 @@ public class GetProductService implements GetProductUseCase {
 
                 long optionPriceSum = combo.stream()
                         .map(ProductOption::getPrice)
-                        .filter(java.util.Objects::nonNull)
+                        .filter(Objects::nonNull)
                         .mapToLong(Long::longValue)
                         .sum();
                 long optionPointSum = combo.stream()
                         .map(ProductOption::getAccumulatedPoint)
-                        .filter(java.util.Objects::nonNull)
+                        .filter(Objects::nonNull)
                         .mapToLong(Long::longValue)
                         .sum();
 

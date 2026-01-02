@@ -1,0 +1,31 @@
+package com.personal.marketnote.product.adapter.in.client.product.response;
+
+import com.personal.marketnote.product.port.in.result.GetProductInfoResult;
+import com.personal.marketnote.product.port.in.result.GetProductInfoWithOptionsResult;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+
+import java.util.List;
+
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PRIVATE)
+@Getter
+public class GetProductInfoResponse {
+    private GetProductInfoResult productInfo;
+    private List<SelectableProductOptionCategoryResponse> categories;
+
+    public static GetProductInfoResponse from(GetProductInfoWithOptionsResult getProductInfoWithOptionsResult) {
+        return GetProductInfoResponse.builder()
+                .productInfo(getProductInfoWithOptionsResult.productInfo())
+                .categories(
+                        getProductInfoWithOptionsResult.categories().stream()
+                                .map(SelectableProductOptionCategoryResponse::from)
+                                .toList()
+                )
+                .build();
+    }
+}
+
+

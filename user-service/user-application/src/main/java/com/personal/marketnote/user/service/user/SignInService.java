@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.FIRST_ERROR_CODE;
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.SECOND_ERROR_CODE;
 import static com.personal.marketnote.user.exception.ExceptionMessage.LOGIN_FAILED_EXCEPTION_MESSAGE;
+import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
 @RequiredArgsConstructor
 @UseCase

@@ -19,6 +19,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort {
     public Long save(PricePolicy pricePolicy) {
         ProductJpaEntity productRef = productJpaRepository.getReferenceById(pricePolicy.getProduct().getId());
         PricePolicyJpaEntity saved = pricePolicyJpaRepository.save(PricePolicyJpaEntity.from(productRef, pricePolicy));
+
         return saved.getId();
     }
 }
