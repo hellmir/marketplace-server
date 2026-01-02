@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-public interface FindPricePolicyValuesPort {
+public interface FindPricePoliciesPort {
     record PricePolicyValues(Long price, Long discountPrice, Long accumulatedPoint, BigDecimal discountRate) {
     }
 

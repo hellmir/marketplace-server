@@ -3,8 +3,14 @@ package com.personal.marketnote.product.adapter.out.persistence.pricepolicy;
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
 import com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.pricepolicy.repository.PricePolicyJpaRepository;
+import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
+import com.personal.marketnote.product.adapter.out.persistence.product.repository.ProductJpaRepository;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.repository.ProductOptionPricePolicyJpaRepository;
-import com.personal.marketnote.product.port.out.pricepolicy.FindPricePolicyValuesPort;
+import com.personal.marketnote.product.domain.product.PricePolicy;
+import com.personal.marketnote.product.port.out.pricepolicy.DeletePricePolicyPort;
+import com.personal.marketnote.product.port.out.pricepolicy.FindPricePoliciesPort;
+import com.personal.marketnote.product.port.out.pricepolicy.FindPricePolicyPort;
+import com.personal.marketnote.product.port.out.pricepolicy.SavePricePolicyPort;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -12,9 +18,18 @@ import java.util.Optional;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class PricePolicyQueryPersistenceAdapter implements FindPricePolicyValuesPort {
+public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindPricePoliciesPort, DeletePricePolicyPort, FindPricePolicyPort {
+    private final ProductJpaRepository productJpaRepository;
     private final PricePolicyJpaRepository pricePolicyJpaRepository;
     private final ProductOptionPricePolicyJpaRepository productOptionPricePolicyJpaRepository;
+
+    @Override
+    public Long save(PricePolicy pricePolicy) {
+        ProductJpaEntity productRef = productJpaRepository.getReferenceById(pricePolicy.getProduct().getId());
+        PricePolicyJpaEntity saved = pricePolicyJpaRepository.save(PricePolicyJpaEntity.from(productRef, pricePolicy));
+
+        return saved.getId();
+    }
 
     @Override
     public Optional<PricePolicyValues> findByProductAndOptionIds(Long productId, List<Long> optionIds) {
@@ -37,6 +52,16 @@ public class PricePolicyQueryPersistenceAdapter implements FindPricePolicyValues
             ));
         }
         return Optional.empty();
+    }
+
+    @Override
+    public void deleteById(Long pricePolicyId) {
+        pricePolicyJpaRepository.deleteById(pricePolicyId);
+    }
+
+    @Override
+    public boolean existsByIdAndProductId(Long pricePolicyId, Long productId) {
+        return pricePolicyJpaRepository.existsByIdAndProductJpaEntity_Id(pricePolicyId, productId);
     }
 }
 
