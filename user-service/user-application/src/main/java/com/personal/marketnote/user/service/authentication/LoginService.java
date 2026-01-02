@@ -17,11 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
-
 @UseCase
 @RequiredArgsConstructor
-@Transactional(isolation = READ_UNCOMMITTED, timeout = 180)
+@Transactional(isolation = READ_COMMITTED, timeout = 180)
 public class LoginService implements LoginUseCase {
     private final TokenSupport tokenSupport;
     private final FindUserPort findUserPort;

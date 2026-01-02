@@ -13,11 +13,11 @@ import com.personal.marketnote.product.port.out.category.SaveCategoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
+import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
 @UseCase
 @RequiredArgsConstructor
-@Transactional(isolation = READ_UNCOMMITTED)
+@Transactional(isolation = READ_COMMITTED)
 public class RegisterCategoryService implements RegisterCategoryUseCase {
     private final SaveCategoryPort saveCategoryPort;
     private final FindCategoryPort findCategoryPort;

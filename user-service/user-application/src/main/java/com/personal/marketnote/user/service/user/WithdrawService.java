@@ -14,11 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
-
 @RequiredArgsConstructor
 @UseCase
-@Transactional(isolation = READ_UNCOMMITTED, timeout = 180)
+@Transactional(isolation = READ_COMMITTED, timeout = 180)
 public class WithdrawService implements WithdrawUseCase {
     private final GetUserUseCase getUserUseCase;
     private final UpdateUserPort updateUserPort;

@@ -174,77 +174,77 @@ import java.lang.annotation.*;
                         content = @Content(
                                 schema = @Schema(implementation = com.personal.marketnote.common.adapter.in.api.schema.StringResponseSchema.class),
                                 examples = @ExampleObject("""
-                                        {
-                                          "statusCode": 200,
-                                          "code": "SUC01",
-                                          "timestamp": "2026-01-01T10:34:29.332952183",
-                                          "content": {
-                                            "products": {
-                                              "totalElements": null,
-                                              "hasNext": true,
-                                              "nextCursor": 19,
-                                              "items": [
-                                                {
-                                                  "id": 20,
-                                                  "sellerId": 12,
-                                                  "name": "스프링노트2",
-                                                  "brandName": "노트킹",
-                                                  "price": 45000,
-                                                  "discountPrice": 20000,
-                                                  "discountRate": 17.8,
-                                                  "accumulatedPoint": 1500,
-                                                  "sales": 0,
-                                                  "productTags": [],
-                                                  "orderNum": 20,
-                                                  "status": "ACTIVE"
-                                                },
-                                                {
-                                                  "id": 19,
-                                                  "sellerId": 1,
-                                                  "name": "스프링노트1 (1박스 / 30개입)",
-                                                  "brandName": "노트왕",
-                                                  "price": 92000,
-                                                  "discountPrice": 84000,
-                                                  "discountRate": 17.8,
-                                                  "accumulatedPoint": 7400,
-                                                  "sales": 0,
-                                                  "productTags": [],
-                                                  "orderNum": 19,
-                                                  "status": "ACTIVE"
-                                                },
-                                                {
-                                                  "id": 19,
-                                                  "sellerId": 1,
-                                                  "name": "스프링노트1 (1박스 / 60개입)",
-                                                  "brandName": "노트왕",
-                                                  "price": 102000,
-                                                  "discountPrice": 94000,
-                                                  "discountRate": 17.8,
-                                                  "accumulatedPoint": 12400,
-                                                  "sales": 0,
-                                                  "productTags": [],
-                                                  "orderNum": 19,
-                                                  "status": "ACTIVE"
-                                                },
-                                                {
-                                                  "id": 19,
-                                                  "sellerId": 1,
-                                                  "name": "스프링노트1 (3박스 / 30개입)",
-                                                  "brandName": "노트왕",
-                                                  "price": 154000,
-                                                  "discountPrice": 146000,
-                                                  "discountRate": 17.8,
-                                                  "accumulatedPoint": 8200,
-                                                  "sales": 0,
-                                                  "productTags": [],
-                                                  "orderNum": 19,
-                                                  "status": "ACTIVE"
-                                                }
-                                              ]
-                                            }
-                                          },
-                                          "message": "상품 목록 조회 성공"
-                                        }
+                                                                                {
+                                                                                  "statusCode": 200,
+                                                                                  "code": "SUC01",
+                                                                                  "timestamp": "2026-01-01T10:34:29.332952183",
+                                                                                  "content": {
+                                                                                    "products": {
+                                                                                      "totalElements": null,
+                                                                                      "hasNext": true,
+                                                                                      "nextCursor": 19,
+                                                                                      "items": [
+                                                                                        {
+                                                                                          "id": 20,
+                                                                                          "sellerId": 12,
+                                                                                          "name": "스프링노트2",
+                                                                                          "brandName": "노트킹",
+                                                                                          "price": 45000,
+                                                                                          "discountPrice": 20000,
+                                                                                          "discountRate": 17.8,
+                                                                                          "accumulatedPoint": 1500,
+                                                                                          "sales": 0,
+                                                                                          "productTags": [],
+                                                                                          "orderNum": 20,
+                                                                                          "status": "ACTIVE"
+                                                                                        },
+                                                                                        {
+                                                                                          "id": 19,
+                                                                                          "sellerId": 1,
+                                                                                          "name": "스프링노트1 (1박스 / 30개입)",
+                                                                                          "brandName": "노트왕",
+                                                                                          "price": 92000,
+                                                                                          "discountPrice": 84000,
+                                                                                          "discountRate": 17.8,
+                                                                                          "accumulatedPoint": 7400,
+                                                                                          "sales": 0,
+                                                                                          "productTags": [],
+                                                                                          "orderNum": 19,
+                                                                                          "status": "ACTIVE"
+                                                                                        },
+                                                                                        {
+                                                                                          "id": 19,
+                                                                                          "sellerId": 1,
+                                                                                          "name": "스프링노트1 (1박스 / 60개입)",
+                                                                                          "brandName": "노트왕",
+                                                                                          "price": 102000,
+                                                                                          "discountPrice": 94000,
+                                                                                          "discountRate": 17.8,
+                                                                                          "accumulatedPoint": 12400,
+                                                                                          "sales": 0,
+                                                                                          "productTags": [],
+                                                                                          "orderNum": 19,
+                                                                                          "status": "ACTIVE"
+                                                                                        },
+                                                                                        {
+                                                                                          "id": 19,
+                                                                                          "sellerId": 1,
+                                                                                          "name": "스프링노트1 (3박스 / 30개입)",
+                                                                                          "brandName": "노트왕",
+                                                                                          "price": 154000,
+                                                                                          "discountPrice": 146000,
+                                                                                          "discountRate": 17.8,
+                                                                                          "accumulatedPoint": 8200,
+                                                                                          "sales": 0,
+                                                                                          "productTags": [],
+                                                                                          "orderNum": 19,
+                                        탭                                                  "status": "ACTIVE"
+                                                                                        }
+                                                                                      ]
+                                                                                    }
+                                                                                  },
+                                                                                  "message": "상품 목록 조회 성공"
+                                                                                }
                                         """)
                         )
                 ),

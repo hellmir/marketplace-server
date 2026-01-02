@@ -18,11 +18,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.personal.marketnote.user.exception.ExceptionMessage.*;
-import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
 
 @UseCase
 @RequiredArgsConstructor
-@Transactional(isolation = READ_UNCOMMITTED, readOnly = true)
+@Transactional(isolation = READ_COMMITTED, readOnly = true)
 public class GetUserService implements GetUserUseCase {
     private final FindUserPort findUserPort;
 

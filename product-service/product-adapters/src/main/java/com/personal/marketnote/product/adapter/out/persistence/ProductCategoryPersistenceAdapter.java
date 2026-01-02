@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
+import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
@@ -18,7 +18,7 @@ public class ProductCategoryPersistenceAdapter implements ReplaceProductCategori
     private final ProductCategoryJpaRepository productCategoryJpaRepository;
 
     @Override
-    @Transactional(isolation = READ_UNCOMMITTED)
+    @Transactional(isolation = READ_COMMITTED)
     public void replaceProductCategories(Long productId, List<Long> categoryIds) {
         productCategoryJpaRepository.deleteByProductId(productId);
         if (categoryIds == null || categoryIds.isEmpty()) {

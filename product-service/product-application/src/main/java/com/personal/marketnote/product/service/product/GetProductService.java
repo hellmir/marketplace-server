@@ -18,11 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
+import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
 @UseCase
 @RequiredArgsConstructor
-@Transactional(isolation = READ_UNCOMMITTED, readOnly = true)
+@Transactional(isolation = READ_COMMITTED, readOnly = true)
 public class GetProductService implements GetProductUseCase {
     private final FindProductPort findProductPort;
     private final FindProductOptionCategoryPort findProductOptionCategoryPort;
