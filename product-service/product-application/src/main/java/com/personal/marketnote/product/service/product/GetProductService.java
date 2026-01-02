@@ -6,6 +6,7 @@ import com.personal.marketnote.product.domain.product.*;
 import com.personal.marketnote.product.exception.ProductNotFoundException;
 import com.personal.marketnote.product.port.in.result.*;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
+import com.personal.marketnote.product.port.out.pricepolicy.FindPricePolicyValuesPort;
 import com.personal.marketnote.product.port.out.product.FindProductPort;
 import com.personal.marketnote.product.port.out.productoption.FindProductOptionCategoryPort;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 public class GetProductService implements GetProductUseCase {
     private final FindProductPort findProductPort;
     private final FindProductOptionCategoryPort findProductOptionCategoryPort;
+    private final FindPricePolicyValuesPort findPricePolicyValuesPort;
 
     @Override
     public Product getProduct(Long id) {
@@ -35,10 +37,6 @@ public class GetProductService implements GetProductUseCase {
     public GetProductInfoWithOptionsResult getProductInfo(Long id, List<String> optionContents) {
         Product product = getProduct(id);
 
-        Long basePrice = product.getPrice();
-        Long baseDiscountPrice = product.getDiscountPrice();
-        Long baseAccumulatedPoint = product.getAccumulatedPoint();
-
         Set<String> selectedOptions = FormatValidator.hasValue(optionContents)
                 ? new HashSet<>(optionContents)
                 : Collections.emptySet();
@@ -46,29 +44,28 @@ public class GetProductService implements GetProductUseCase {
         List<ProductOptionCategory> categories
                 = findProductOptionCategoryPort.findActiveWithOptionsByProductId(product.getId());
 
-        OptedProductAmount optedProductAmount = new OptedProductAmount();
-
-        if (
-                product.isFindAllOptionsYn()
-                        && FormatValidator.hasValue(selectedOptions)
-                        && FormatValidator.hasValue(categories)
-        ) {
-            categories.forEach(
-                    category -> category.applyOptedPrice(selectedOptions, optedProductAmount)
-            );
+        Long adjustedPrice = product.getPrice();
+        Long adjustedDiscountPrice = product.getDiscountPrice() != null ? product.getDiscountPrice() : product.getPrice();
+        Long adjustedAccumulatedPoint = product.getAccumulatedPoint();
+        if (product.isFindAllOptionsYn() && FormatValidator.hasValue(selectedOptions) && FormatValidator.hasValue(categories)) {
+            List<Long> selectedIds = new ArrayList<>();
+            for (ProductOptionCategory c : categories) {
+                for (ProductOption o : c.getOptions()) {
+                    if (selectedOptions.stream().anyMatch(s -> s.equalsIgnoreCase(o.getContent()))) {
+                        selectedIds.add(o.getId());
+                    }
+                }
+            }
+            if (FormatValidator.hasValue(selectedIds)) {
+                var pvOpt = findPricePolicyValuesPort.findByProductAndOptionIds(product.getId(), selectedIds);
+                if (pvOpt.isPresent()) {
+                    var pv = pvOpt.get();
+                    adjustedPrice = pv.price();
+                    adjustedDiscountPrice = pv.discountPrice();
+                    adjustedAccumulatedPoint = pv.accumulatedPoint();
+                }
+            }
         }
-
-        Long totalPrice = optedProductAmount.getTotalOptionPrice();
-        Long totalPoint = optedProductAmount.getTotalOptionPoint();
-        Long adjustedPrice = safeAdd(basePrice, totalPrice);
-        Long baseForDiscount = (baseDiscountPrice != null ? baseDiscountPrice : basePrice);
-        Long adjustedDiscountPrice = safeAdd(baseForDiscount, totalPrice);
-
-        if (adjustedDiscountPrice > adjustedPrice) {
-            adjustedDiscountPrice = adjustedPrice;
-        }
-
-        Long adjustedAccumulatedPoint = safeAdd(baseAccumulatedPoint, totalPoint);
 
         GetProductInfoResult info = GetProductInfoResult.fromAdjusted(
                 product, adjustedPrice, adjustedDiscountPrice, adjustedAccumulatedPoint
@@ -80,14 +77,6 @@ public class GetProductService implements GetProductUseCase {
                 .toList();
 
         return GetProductInfoWithOptionsResult.of(info, selectableCategories);
-    }
-
-    private Long safeAdd(Long base, long add) {
-        if (FormatValidator.hasValue(base)) {
-            return base + add;
-        }
-
-        return add;
     }
 
     @Override
@@ -215,27 +204,28 @@ public class GetProductService implements GetProductUseCase {
                         .orElse("");
                 String variantName = product.getName() + " (" + comboSuffix + ")";
 
-                long optionPriceSum = combo.stream()
-                        .map(ProductOption::getPrice)
-                        .filter(Objects::nonNull)
-                        .mapToLong(Long::longValue)
-                        .sum();
-                long optionPointSum = combo.stream()
-                        .map(ProductOption::getAccumulatedPoint)
-                        .filter(Objects::nonNull)
-                        .mapToLong(Long::longValue)
-                        .sum();
+                List<Long> optionIds = combo.stream().map(ProductOption::getId).toList();
+                var pvOpt = findPricePolicyValuesPort.findByProductAndOptionIds(product.getId(), optionIds);
+                Long variantPrice = product.getPrice();
+                Long variantDiscountPrice = product.getDiscountPrice();
+                java.math.BigDecimal variantDiscountRate = product.getDiscountRate();
+                Long variantAccumulatedPoint = product.getAccumulatedPoint();
+                if (pvOpt.isPresent()) {
+                    var pv = pvOpt.get();
+                    variantPrice = pv.price();
+                    variantDiscountPrice = pv.discountPrice();
+                    variantAccumulatedPoint = pv.accumulatedPoint();
+                    variantDiscountRate = pv.discountRate();
+                }
 
-                results.add(
-                        ProductItemResult.from(
-                                product,
-                                variantName,
-                                product.getPrice() + optionPointSum,
-                                product.getDiscountPrice() + optionPriceSum,
-                                product.getDiscountRate(),
-                                product.getAccumulatedPoint() + optionPointSum
-                        )
-                );
+                results.add(ProductItemResult.from(
+                        product,
+                        variantName,
+                        variantPrice,
+                        variantDiscountPrice,
+                        variantDiscountRate,
+                        variantAccumulatedPoint
+                ));
             }
         }
 

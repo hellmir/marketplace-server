@@ -1,7 +1,7 @@
 package com.personal.marketnote.product.adapter.in.client.product.controller.apidocs;
 
 import com.personal.marketnote.common.adapter.in.api.schema.StringResponseSchema;
-import com.personal.marketnote.product.adapter.in.client.product.request.UpsertProductOptionsRequest;
+import com.personal.marketnote.product.adapter.in.client.product.request.UpdateProductOptionsRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -29,7 +29,11 @@ import java.lang.annotation.*;
                 
                 - 상품 옵션 카테고리 및 하위 옵션 목록을 수정합니다.
                 
-                - 기존 옵션 카테고리 및 하위 옵션 목록 삭제 후, 생성된 튜플의 ID를 반환합니다.
+                - 옵션 ID와 내용을 전송하는 경우 해당 옵션의 내용을 수정합니다.
+                
+                - 옵션 내용만 전송하는 경우 생성합니다.
+                
+                - 옵션 ID가 전송되지 않은 옵션은 삭제합니다.
                 
                 - 상품 판매자 본인 또는 관리자만 가능합니다.
                 
@@ -49,8 +53,6 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
                 | content | string | 옵션 내용 | Y | "1박스" |
-                | price | number | 옵션 가격(원) | N | 37000 |
-                | accumulatedPoint | number | 적립 포인트 | N | 1200 |
                 
                 ---
                 
@@ -91,13 +93,13 @@ import java.lang.annotation.*;
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                 required = true,
                 content = @Content(
-                        schema = @Schema(implementation = UpsertProductOptionsRequest.class),
+                        schema = @Schema(implementation = UpdateProductOptionsRequest.class),
                         examples = @ExampleObject("""
                                 {
                                   "categoryName": "수량",
                                   "options": [
-                                    { "content": "1박스", "price": 37000, "accumulatedPoint": 1200 },
-                                    { "content": "3박스", "price": 99000, "accumulatedPoint": 1200 }
+                                    { "content": "1박스" },
+                                    { "content": "3박스" }
                                   ]
                                 }
                                 """)

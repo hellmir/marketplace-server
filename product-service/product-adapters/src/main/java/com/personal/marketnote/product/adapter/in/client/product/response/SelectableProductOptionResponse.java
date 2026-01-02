@@ -21,8 +21,8 @@ public class SelectableProductOptionResponse {
         return SelectableProductOptionResponse.builder()
                 .id(result.id())
                 .content(result.content())
-                .price(result.price())
-                .accumulatedPoint(result.accumulatedPoint())
+                .price(null)
+                .accumulatedPoint(null)
                 .status(result.status())
                 .isSelected(result.isSelected())
                 .build();

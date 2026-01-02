@@ -2,8 +2,8 @@ package com.personal.marketnote.product.adapter.in.client.product.mapper;
 
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductCategoriesRequest;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductRequest;
+import com.personal.marketnote.product.adapter.in.client.product.request.UpdateProductOptionsRequest;
 import com.personal.marketnote.product.adapter.in.client.product.request.UpdateProductRequest;
-import com.personal.marketnote.product.adapter.in.client.product.request.UpsertProductOptionsRequest;
 import com.personal.marketnote.product.port.in.command.*;
 
 import java.util.List;
@@ -31,19 +31,17 @@ public class ProductRequestToCommandMapper {
     }
 
     public static RegisterProductOptionsCommand mapToCommand(
-            Long productId, UpsertProductOptionsRequest request) {
+            Long productId, UpdateProductOptionsRequest request) {
         List<RegisterProductOptionsCommand.OptionItem> optionItems = request.getOptions().stream()
-                .map(o -> new RegisterProductOptionsCommand.OptionItem(
-                        o.getContent(), o.getPrice(), o.getAccumulatedPoint()))
+                .map(o -> new RegisterProductOptionsCommand.OptionItem(o.getContent()))
                 .toList();
         return RegisterProductOptionsCommand.of(productId, request.getCategoryName(), optionItems);
     }
 
     public static UpdateProductOptionsCommand mapToUpdateCommand(
-            Long productId, Long optionCategoryId, UpsertProductOptionsRequest request) {
+            Long productId, Long optionCategoryId, UpdateProductOptionsRequest request) {
         List<RegisterProductOptionsCommand.OptionItem> optionItems = request.getOptions().stream()
-                .map(o -> new RegisterProductOptionsCommand.OptionItem(
-                        o.getContent(), o.getPrice(), o.getAccumulatedPoint()))
+                .map(o -> new RegisterProductOptionsCommand.OptionItem(o.getContent()))
                 .toList();
         return UpdateProductOptionsCommand.of(
                 productId, optionCategoryId, request.getCategoryName(), optionItems

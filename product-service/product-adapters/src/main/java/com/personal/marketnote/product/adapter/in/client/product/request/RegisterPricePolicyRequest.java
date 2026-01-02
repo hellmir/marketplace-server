@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 public class RegisterPricePolicyRequest {
     @Schema(description = "정가", requiredMode = Schema.RequiredMode.REQUIRED, example = "45000")
@@ -18,7 +20,6 @@ public class RegisterPricePolicyRequest {
     @NotNull
     private Long accumulatedPoint;
 
-    // 할인율/적립율은 서버에서 계산
+    @Schema(description = "가격정책이 적용될 옵션 ID 목록(조합). 단일 카테고리일 경우 생략", example = "[3, 7]")
+    private List<Long> optionIds;
 }
-
-

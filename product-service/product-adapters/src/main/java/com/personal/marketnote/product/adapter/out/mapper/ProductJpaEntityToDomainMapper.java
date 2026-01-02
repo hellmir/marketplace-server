@@ -101,8 +101,6 @@ public class ProductJpaEntityToDomainMapper {
                             entity.getId(),
                             shallowCategory,
                             entity.getContent(),
-                            entity.getPrice(),
-                            entity.getAccumulatedPoint(),
                             entity.getStatus()
                     );
                 });
@@ -117,8 +115,6 @@ public class ProductJpaEntityToDomainMapper {
                                 entity.getId(),
                                 shallowCategory,
                                 entity.getContent(),
-                                entity.getPrice(),
-                                entity.getAccumulatedPoint(),
                                 entity.getStatus()
                         )
                 );

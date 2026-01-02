@@ -19,18 +19,12 @@ public class ProductOptionJpaEntity extends BaseOrderedGeneralEntity {
     @Column(name = "content", nullable = false, length = 511)
     private String content;
 
-    @Column(name = "price")
-    private Long price;
-
-    @Column(name = "accumulated_point")
-    private Long accumulatedPoint;
+    // price/accumulated_point moved to price policy; columns removed
 
     public static ProductOptionJpaEntity of(ProductOptionCategoryJpaEntity productOptionCategoryJpaEntity, String content, Long price, Long accumulatedPoint) {
         return ProductOptionJpaEntity.builder()
                 .productOptionCategoryJpaEntity(productOptionCategoryJpaEntity)
                 .content(content)
-                .price(price)
-                .accumulatedPoint(accumulatedPoint)
                 .build();
     }
 
@@ -40,8 +34,6 @@ public class ProductOptionJpaEntity extends BaseOrderedGeneralEntity {
         return ProductOptionJpaEntity.builder()
                 .productOptionCategoryJpaEntity(productOptionCategoryJpaEntity)
                 .content(option.getContent())
-                .price(option.getPrice())
-                .accumulatedPoint(option.getAccumulatedPoint())
                 .build();
     }
 }

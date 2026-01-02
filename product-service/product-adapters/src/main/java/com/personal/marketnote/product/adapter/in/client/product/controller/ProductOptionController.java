@@ -8,7 +8,7 @@ import com.personal.marketnote.product.adapter.in.client.product.controller.apid
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductOptionsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.UpdateProductOptionsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
-import com.personal.marketnote.product.adapter.in.client.product.request.UpsertProductOptionsRequest;
+import com.personal.marketnote.product.adapter.in.client.product.request.UpdateProductOptionsRequest;
 import com.personal.marketnote.product.adapter.in.client.product.response.GetProductOptionsResponse;
 import com.personal.marketnote.product.adapter.in.client.product.response.UpsertProductOptionsResponse;
 import com.personal.marketnote.product.port.in.result.GetProductOptionsResult;
@@ -57,7 +57,7 @@ public class ProductOptionController {
     @RegisterProductOptionsApiDocs
     public ResponseEntity<BaseResponse<UpsertProductOptionsResponse>> registerProductOptionCategories(
             @PathVariable("productId") Long productId,
-            @Valid @RequestBody UpsertProductOptionsRequest request,
+            @Valid @RequestBody UpdateProductOptionsRequest request,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
         UpsertProductOptionsResult result = registerProductOptionsUseCase.registerProductOptions(
@@ -119,7 +119,7 @@ public class ProductOptionController {
     public ResponseEntity<BaseResponse<UpsertProductOptionsResponse>> updateProductOptionCategories(
             @PathVariable("productId") Long productId,
             @PathVariable("id") Long id,
-            @Valid @RequestBody UpsertProductOptionsRequest request,
+            @Valid @RequestBody UpdateProductOptionsRequest request,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
         UpsertProductOptionsResult result = updateProductOptionsUseCase.updateProductOptions(
