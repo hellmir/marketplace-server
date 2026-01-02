@@ -12,7 +12,7 @@ public enum HttpCookieName {
     ACCESS_TOKEN("access_token"),
     PROFILE_IMAGE_URL("profile_image_url"),
     REFRESH_TOKEN("refresh_token"),
-    USER_ID("member_id");
+    USER_ID("user_id");
 
     private final String cookieName;
 }

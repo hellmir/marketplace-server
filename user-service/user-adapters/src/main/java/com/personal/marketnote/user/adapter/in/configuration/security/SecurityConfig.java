@@ -39,6 +39,7 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/users/sign-up").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/users/sign-in").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/users/sign-out").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/authentication/access-token/refresh").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/terms").permitAll()

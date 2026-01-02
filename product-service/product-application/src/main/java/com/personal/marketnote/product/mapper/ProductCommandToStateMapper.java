@@ -9,8 +9,8 @@ import com.personal.marketnote.product.port.in.command.RegisterProductOptionsCom
 
 import java.util.stream.Collectors;
 
-public class ProductCommandToDomainMapper {
-    public static ProductOptionCategory mapToDomain(
+public class ProductCommandToStateMapper {
+    public static ProductOptionCategory mapToState(
             Product product, RegisterProductOptionsCommand registerProductOptionsCommand
     ) {
         return ProductOptionCategory.of(
@@ -18,16 +18,20 @@ public class ProductCommandToDomainMapper {
                 registerProductOptionsCommand.categoryName(),
                 registerProductOptionsCommand.options()
                         .stream()
-                        .map(ProductCommandToDomainMapper::mapToDomain)
+                        .map(ProductCommandToStateMapper::mapToState)
                         .collect(Collectors.toList())
         );
     }
 
-    public static ProductOption mapToDomain(RegisterProductOptionsCommand.OptionItem optionItem) {
-        return ProductOption.of(optionItem.content());
+    public static ProductOption mapToState(RegisterProductOptionsCommand.OptionItem optionItem) {
+        return ProductOption.of(
+                optionItem.content(),
+                optionItem.price(),
+                optionItem.accumulatedPoint()
+        );
     }
 
-    public static PricePolicy mapToDomain(
+    public static PricePolicy mapToState(
             Product product, RegisterPricePolicyCommand command
     ) {
         java.math.BigDecimal price = java.math.BigDecimal.valueOf(command.price());
@@ -52,6 +56,7 @@ public class ProductCommandToDomainMapper {
                 command.discountPrice(),
                 accumulationRate,
                 command.accumulatedPoint(),
-                discountRate);
+                discountRate
+        );
     }
 }

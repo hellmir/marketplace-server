@@ -45,6 +45,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security") // Spring Security
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server") // OAuth 2.0 Resource server
     implementation("org.springframework.boot:spring-boot-starter-mail") // JavaMailSender
+    implementation("org.springframework.boot:spring-boot-starter-data-redis") // Redis template
 
     //querydsl 설정
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")

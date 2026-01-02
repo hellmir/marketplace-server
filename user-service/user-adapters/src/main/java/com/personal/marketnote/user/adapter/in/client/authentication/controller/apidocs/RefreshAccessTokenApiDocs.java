@@ -2,6 +2,8 @@ package com.personal.marketnote.user.adapter.in.client.authentication.controller
 
 import com.personal.marketnote.user.adapter.in.client.authentication.controller.schema.RefreshedAccessTokenResponseSchema;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -53,6 +55,12 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | accessToken | string | 신규 발급된 Access Token | "f8310f8asohvh80scvh0zio3hr31d" |
                 """,
+        parameters = @Parameter(
+                name = "refresh_token",
+                in = ParameterIn.COOKIE,
+                required = true,
+                description = "Refresh Token; HTTP-only"
+        ),
         responses = {
                 @ApiResponse(
                         responseCode = "201",
