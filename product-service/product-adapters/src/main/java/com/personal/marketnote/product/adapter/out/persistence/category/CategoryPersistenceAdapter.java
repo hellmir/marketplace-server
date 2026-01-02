@@ -1,4 +1,4 @@
-package com.personal.marketnote.product.adapter.out.persistence;
+package com.personal.marketnote.product.adapter.out.persistence.category;
 
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;

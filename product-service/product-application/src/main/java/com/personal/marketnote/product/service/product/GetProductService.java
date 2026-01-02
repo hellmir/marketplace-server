@@ -6,7 +6,7 @@ import com.personal.marketnote.product.domain.product.*;
 import com.personal.marketnote.product.exception.ProductNotFoundException;
 import com.personal.marketnote.product.port.in.result.*;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
-import com.personal.marketnote.product.port.out.pricepolicy.FindPricePolicyValuesPort;
+import com.personal.marketnote.product.port.out.pricepolicy.FindPricePoliciesPort;
 import com.personal.marketnote.product.port.out.product.FindProductPort;
 import com.personal.marketnote.product.port.out.productoption.FindProductOptionCategoryPort;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 public class GetProductService implements GetProductUseCase {
     private final FindProductPort findProductPort;
     private final FindProductOptionCategoryPort findProductOptionCategoryPort;
-    private final FindPricePolicyValuesPort findPricePolicyValuesPort;
+    private final FindPricePoliciesPort findPricePoliciesPort;
 
     @Override
     public Product getProduct(Long id) {
@@ -57,7 +57,7 @@ public class GetProductService implements GetProductUseCase {
                 }
             }
             if (FormatValidator.hasValue(selectedIds)) {
-                var pvOpt = findPricePolicyValuesPort.findByProductAndOptionIds(product.getId(), selectedIds);
+                var pvOpt = findPricePoliciesPort.findByProductAndOptionIds(product.getId(), selectedIds);
                 if (pvOpt.isPresent()) {
                     var pv = pvOpt.get();
                     adjustedPrice = pv.price();
@@ -205,7 +205,7 @@ public class GetProductService implements GetProductUseCase {
                 String variantName = product.getName() + " (" + comboSuffix + ")";
 
                 List<Long> optionIds = combo.stream().map(ProductOption::getId).toList();
-                var pvOpt = findPricePolicyValuesPort.findByProductAndOptionIds(product.getId(), optionIds);
+                var pvOpt = findPricePoliciesPort.findByProductAndOptionIds(product.getId(), optionIds);
                 Long variantPrice = product.getPrice();
                 Long variantDiscountPrice = product.getDiscountPrice();
                 java.math.BigDecimal variantDiscountRate = product.getDiscountRate();
