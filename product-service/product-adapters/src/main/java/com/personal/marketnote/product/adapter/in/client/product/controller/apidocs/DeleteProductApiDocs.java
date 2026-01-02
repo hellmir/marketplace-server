@@ -18,35 +18,35 @@ import java.lang.annotation.*;
 @Operation(
         summary = "(판매자/관리자) 상품 삭제",
         description = """
-                           작성일자: 2026-01-02
+                작성일자: 2026-01-02
                 
-                           작성자: 성효빈
+                작성자: 성효빈
                 
-                           ---
+                ---
                 
-                           ## Description
+                ## Description
                 
-                           - 상품을 삭제합니다.
+                - 상품을 삭제합니다.
                 
-                           - 판매자 본인 또는 관리자만 가능합니다.
+                - 판매자 본인 또는 관리자만 가능합니다.
                 
-                           ---
+                ---
                 
-                           ## Request
+                ## Request
                 
-                           | **키** | **타입** | **설명** | **필수 여부** | **예시** |
-                           | --- | --- | --- | --- | --- |
-                           | id | number | 삭제 대상 상품 ID | Y | 10001 |
+                | **키** | **타입** | **설명** | **필수 여부** | **예시** |
+                | --- | --- | --- | --- | --- |
+                | id | number | 삭제 대상 상품 ID | Y | 10001 |
                 
-                           ## Response
+                ## Response
                 
-                           | **키** | **타입** | **설명** | **예시** |
-                           | --- | --- | --- | --- |
-                           | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
-                           | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
-                           | timestamp | string(datetime) | 응답 일시 | "2026-01-02T10:37:32.320824" |
-                           | content | object | 응답 본문 | null |
-                           | message | string | 처리 결과 | "상품 삭제 성공" |
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
+                | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-01-02T10:37:32.320824" |
+                | content | object | 응답 본문 | null |
+                | message | string | 처리 결과 | "상품 삭제 성공" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         parameters = {

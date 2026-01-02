@@ -24,6 +24,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
@@ -179,8 +180,67 @@ public class ProductController {
     @GetProductInfoApiDocs
     public ResponseEntity<BaseResponse<GetProductInfoResponse>> getProductInfo(
             @PathVariable("id") Long id,
-            @RequestParam(value = "options", required = false) List<String> optionContents
+            @RequestParam(value = "options", required = false) List<String> optionContents,
+            @RequestParam(value = "optionIds", required = false) List<String> optionIds
     ) {
+        // normalize: allow "opt1,opt2" and also JSON-like ["opt1","opt2"]
+        if (optionContents != null && !optionContents.isEmpty()) {
+            List<String> flattened = new ArrayList<>();
+            for (String raw : optionContents) {
+                if (raw == null) continue;
+                String s = raw.trim();
+                // strip JSON-like brackets
+                if (s.startsWith("[") && s.endsWith("]")) {
+                    s = s.substring(1, s.length() - 1);
+                }
+                if (s.contains(",")) {
+                    for (String part : s.split(",")) {
+                        String v = part.trim();
+                        if (v.startsWith("\"") && v.endsWith("\"") && v.length() >= 2) {
+                            v = v.substring(1, v.length() - 1).trim();
+                        }
+                        if (!v.isEmpty()) flattened.add(v);
+                    }
+                } else {
+                    if (s.startsWith("\"") && s.endsWith("\"") && s.length() >= 2) {
+                        s = s.substring(1, s.length() - 1).trim();
+                    }
+                    if (!s.isEmpty()) flattened.add(s);
+                }
+            }
+            optionContents = flattened.isEmpty() ? optionContents : flattened;
+        }
+        if (optionIds != null && !optionIds.isEmpty()) {
+            List<String> flattenedIds = new ArrayList<>();
+            for (String raw : optionIds) {
+                if (raw == null) continue;
+                String s = raw.trim();
+                if (s.startsWith("[") && s.endsWith("]")) {
+                    s = s.substring(1, s.length() - 1);
+                }
+                if (s.contains(",")) {
+                    for (String part : s.split(",")) {
+                        String v = part.trim();
+                        if (v.startsWith("\"") && v.endsWith("\"") && v.length() >= 2) {
+                            v = v.substring(1, v.length() - 1).trim();
+                        }
+                        if (!v.isEmpty()) flattenedIds.add(v);
+                    }
+                } else {
+                    if (s.startsWith("\"") && s.endsWith("\"") && s.length() >= 2) {
+                        s = s.substring(1, s.length() - 1).trim();
+                    }
+                    if (!s.isEmpty()) flattenedIds.add(s);
+                }
+            }
+            if (!flattenedIds.isEmpty()) {
+                if (optionContents == null) {
+                    optionContents = flattenedIds;
+                } else {
+                    optionContents.addAll(flattenedIds);
+                }
+            }
+        }
         GetProductInfoWithOptionsResult getProductUseCaseProductInfo
                 = getProductUseCase.getProductInfo(id, optionContents);
 

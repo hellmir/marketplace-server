@@ -6,7 +6,7 @@ import com.personal.marketnote.product.domain.product.*;
 import com.personal.marketnote.product.exception.ProductNotFoundException;
 import com.personal.marketnote.product.port.in.result.*;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
-import com.personal.marketnote.product.port.out.pricepolicy.FindPricePoliciesPort;
+import com.personal.marketnote.product.port.out.pricepolicy.FindPricePolicyPort;
 import com.personal.marketnote.product.port.out.product.FindProductPort;
 import com.personal.marketnote.product.port.out.productoption.FindProductOptionCategoryPort;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 public class GetProductService implements GetProductUseCase {
     private final FindProductPort findProductPort;
     private final FindProductOptionCategoryPort findProductOptionCategoryPort;
-    private final FindPricePoliciesPort findPricePoliciesPort;
+    private final FindPricePolicyPort findPricePolicyPort;
 
     @Override
     public Product getProduct(Long id) {
@@ -48,21 +48,37 @@ public class GetProductService implements GetProductUseCase {
         Long adjustedDiscountPrice = product.getDiscountPrice() != null ? product.getDiscountPrice() : product.getPrice();
         Long adjustedAccumulatedPoint = product.getAccumulatedPoint();
         if (product.isFindAllOptionsYn() && FormatValidator.hasValue(selectedOptions) && FormatValidator.hasValue(categories)) {
+            // 지원: 옵션 이름 또는 옵션 ID 문자열 모두 허용
+            java.util.Set<Long> numericSelected = new java.util.HashSet<>();
+            for (String s : selectedOptions) {
+                if (s == null) continue;
+                String t = s.trim();
+                try {
+                    if (!t.isEmpty()) {
+                        numericSelected.add(Long.parseLong(t));
+                    }
+                } catch (NumberFormatException ignore) {
+                }
+            }
             List<Long> selectedIds = new ArrayList<>();
             for (ProductOptionCategory c : categories) {
                 for (ProductOption o : c.getOptions()) {
-                    if (selectedOptions.stream().anyMatch(s -> s.equalsIgnoreCase(o.getContent()))) {
+                    if (selectedOptions.stream().anyMatch(s -> s.equalsIgnoreCase(o.getContent()))
+                            || numericSelected.contains(o.getId())) {
                         selectedIds.add(o.getId());
                     }
                 }
             }
             if (FormatValidator.hasValue(selectedIds)) {
-                var pvOpt = findPricePoliciesPort.findByProductAndOptionIds(product.getId(), selectedIds);
+                var pvOpt = findPricePolicyPort.findByProductAndOptionIds(product.getId(), selectedIds);
                 if (pvOpt.isPresent()) {
                     var pv = pvOpt.get();
-                    adjustedPrice = pv.price();
-                    adjustedDiscountPrice = pv.discountPrice();
-                    adjustedAccumulatedPoint = pv.accumulatedPoint();
+                    adjustedPrice = pv.getPrice();
+                    adjustedDiscountPrice = pv.getDiscountPrice();
+                    adjustedAccumulatedPoint = pv.getAccumulatedPoint();
+                    if (adjustedDiscountPrice != null && adjustedPrice != null && adjustedDiscountPrice > adjustedPrice) {
+                        adjustedDiscountPrice = adjustedPrice;
+                    }
                 }
             }
         }
@@ -71,9 +87,30 @@ public class GetProductService implements GetProductUseCase {
                 product, adjustedPrice, adjustedDiscountPrice, adjustedAccumulatedPoint
         );
 
+        // 선택 플래그 표시: 숫자 ID로 받은 경우에도 content를 선택 처리
+        java.util.Set<String> selectedFlags = new java.util.HashSet<>(selectedOptions);
+        if (FormatValidator.hasValue(categories)) {
+            java.util.Set<Long> numericSelectedForFlags = new java.util.HashSet<>();
+            for (String s : selectedOptions) {
+                if (s == null) continue;
+                try {
+                    numericSelectedForFlags.add(Long.parseLong(s.trim()));
+                } catch (NumberFormatException ignore) {
+                }
+            }
+            if (!numericSelectedForFlags.isEmpty()) {
+                for (ProductOptionCategory c : categories) {
+                    for (ProductOption o : c.getOptions()) {
+                        if (numericSelectedForFlags.contains(o.getId())) {
+                            selectedFlags.add(o.getContent());
+                        }
+                    }
+                }
+            }
+        }
         List<SelectableProductOptionCategoryItemResult> selectableCategories
                 = categories.stream()
-                .map(c -> SelectableProductOptionCategoryItemResult.from(c, selectedOptions))
+                .map(c -> SelectableProductOptionCategoryItemResult.from(c, selectedFlags))
                 .toList();
 
         return GetProductInfoWithOptionsResult.of(info, selectableCategories);
@@ -205,17 +242,17 @@ public class GetProductService implements GetProductUseCase {
                 String variantName = product.getName() + " (" + comboSuffix + ")";
 
                 List<Long> optionIds = combo.stream().map(ProductOption::getId).toList();
-                var pvOpt = findPricePoliciesPort.findByProductAndOptionIds(product.getId(), optionIds);
+                var pvOpt = findPricePolicyPort.findByProductAndOptionIds(product.getId(), optionIds);
                 Long variantPrice = product.getPrice();
                 Long variantDiscountPrice = product.getDiscountPrice();
                 java.math.BigDecimal variantDiscountRate = product.getDiscountRate();
                 Long variantAccumulatedPoint = product.getAccumulatedPoint();
                 if (pvOpt.isPresent()) {
                     var pv = pvOpt.get();
-                    variantPrice = pv.price();
-                    variantDiscountPrice = pv.discountPrice();
-                    variantAccumulatedPoint = pv.accumulatedPoint();
-                    variantDiscountRate = pv.discountRate();
+                    variantPrice = pv.getPrice();
+                    variantDiscountPrice = pv.getDiscountPrice();
+                    variantAccumulatedPoint = pv.getAccumulatedPoint();
+                    variantDiscountRate = pv.getDiscountRate();
                 }
 
                 results.add(ProductItemResult.from(

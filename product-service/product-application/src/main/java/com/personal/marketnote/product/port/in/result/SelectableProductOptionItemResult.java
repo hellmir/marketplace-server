@@ -8,12 +8,12 @@ public record SelectableProductOptionItemResult(
         String status,
         boolean isSelected
 ) {
-    public static SelectableProductOptionItemResult from(ProductOption option, boolean selected) {
+    public static SelectableProductOptionItemResult from(ProductOption option, boolean isSelected) {
         return new SelectableProductOptionItemResult(
                 option.getId(),
                 option.getContent(),
                 option.getStatus().name(),
-                selected
+                isSelected
         );
     }
 }
