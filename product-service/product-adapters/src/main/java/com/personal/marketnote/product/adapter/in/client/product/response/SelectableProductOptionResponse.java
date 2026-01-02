@@ -15,7 +15,7 @@ public class SelectableProductOptionResponse {
     private Long price;
     private Long accumulatedPoint;
     private String status;
-    private boolean isSelected;
+    private Boolean isSelected;
 
     public static SelectableProductOptionResponse from(SelectableProductOptionItemResult result) {
         return SelectableProductOptionResponse.builder()

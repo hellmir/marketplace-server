@@ -28,6 +28,21 @@ public interface ProductOptionPricePolicyJpaRepository extends JpaRepository<Pro
             where popp.productOptionJpaEntity.id in :optionIds
             """)
     void deleteByOptionIds(@Param("optionIds") List<Long> optionIds);
+
+    @Query("""
+            select popp.id.productOptionId
+            from com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionPricePolicyJpaEntity popp
+            where popp.id.pricePolicyId = :pricePolicyId
+            """)
+    List<Long> findOptionIdsByPricePolicyId(@Param("pricePolicyId") Long pricePolicyId);
+
+    @Modifying
+    @Query("""
+            delete
+            from com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionPricePolicyJpaEntity popp
+            where popp.id.pricePolicyId = :pricePolicyId
+            """)
+    void deleteByPricePolicyId(@Param("pricePolicyId") Long pricePolicyId);
 }
 
 

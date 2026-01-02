@@ -125,95 +125,87 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-02T13:31:40.769065",
+                                          "timestamp": "2026-01-02T18:09:30.313213",
                                           "content": {
                                             "productInfo": {
-                                              "id": 19,
+                                              "id": 30,
                                               "sellerId": 1,
-                                              "name": "스프링노트1",
+                                              "name": "건기식테스트1",
                                               "brandName": "노트왕",
-                                              "detail": "스프링노트1 설명",
-                                              "price": 164000,
-                                              "discountPrice": 134800,
-                                              "discountRate": 17.8,
-                                              "accumulatedPoint": 13200,
+                                              "detail": "건기식테스트건기식테스트건기식테스트",
+                                              "price": 45000,
+                                              "discountPrice": 37000,
+                                              "discountRate": 33.3,
+                                              "accumulatedPoint": 1200,
                                               "sales": 0,
                                               "viewCount": 0,
                                               "popularity": 0,
                                               "findAllOptionsYn": true,
                                               "productTags": [
                                                 {
-                                                  "id": 9,
-                                                  "productId": 19,
+                                                  "id": 13,
+                                                  "productId": 30,
                                                   "name": "루테인",
                                                   "orderNum": null,
                                                   "status": "ACTIVE"
                                                 },
                                                 {
-                                                  "id": 10,
-                                                  "productId": 19,
+                                                  "id": 14,
+                                                  "productId": 30,
                                                   "name": "아스타잔틴",
                                                   "orderNum": null,
                                                   "status": "ACTIVE"
                                                 }
                                               ],
-                                              "orderNum": 19,
+                                              "orderNum": 30,
                                               "status": "ACTIVE"
                                             },
                                             "categories": [
                                               {
-                                                "id": 2,
+                                                "id": 4,
                                                 "name": "수량",
-                                                "orderNum": 2,
+                                                "orderNum": 4,
                                                 "status": "ACTIVE",
                                                 "options": [
                                                   {
-                                                    "id": 3,
+                                                    "id": 8,
                                                     "content": "1박스",
-                                                    "price": 37000,
-                                                    "accumulatedPoint": 1200,
+                                                    "price": null,
+                                                    "accumulatedPoint": null,
                                                     "status": "ACTIVE",
-                                                    "selected": false
+                                                    "isSelected": true
                                                   },
                                                   {
-                                                    "id": 4,
+                                                    "id": 9,
                                                     "content": "3박스",
-                                                    "price": 99000,
-                                                    "accumulatedPoint": 2000,
+                                                    "price": null,
+                                                    "accumulatedPoint": null,
                                                     "status": "ACTIVE",
-                                                    "selected": true
-                                                  },
-                                                  {
-                                                    "id": 5,
-                                                    "content": "5박스",
-                                                    "price": 110000,
-                                                    "accumulatedPoint": 3000,
-                                                    "status": "ACTIVE",
-                                                    "selected": false
+                                                    "isSelected": false
                                                   }
                                                 ]
                                               },
                                               {
-                                                "id": 3,
+                                                "id": 5,
                                                 "name": "개당 수량",
-                                                "orderNum": 3,
+                                                "orderNum": 5,
                                                 "status": "ACTIVE",
                                                 "options": [
                                                   {
-                                                    "id": 6,
+                                                    "id": 10,
                                                     "content": "30개입",
-                                                    "price": 10000,
-                                                    "accumulatedPoint": 5000,
+                                                    "price": null,
+                                                    "accumulatedPoint": null,
                                                     "status": "ACTIVE",
-                                                    "selected": false
+                                                    "isSelected": false
                                                   },
                                                   {
-                                                    "id": 7,
+                                                    "id": 11,
                                                     "content": "60개입",
-                                                    "price": 20000,
-                                                    "accumulatedPoint": 10000,
+                                                    "price": null,
+                                                    "accumulatedPoint": null,
                                                     "status": "ACTIVE",
-                                                    "selected": true
+                                                    "isSelected": true
                                                   }
                                                 ]
                                               }

@@ -4,12 +4,16 @@ import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.AuthorityValidator;
 import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.DeletePricePolicyApiDocs;
+import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.GetPricePoliciesApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterPricePolicyApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterPricePolicyRequest;
+import com.personal.marketnote.product.adapter.in.client.product.response.GetPricePoliciesResponse;
 import com.personal.marketnote.product.adapter.in.client.product.response.RegisterPricePolicyResponse;
 import com.personal.marketnote.product.port.in.command.RegisterPricePolicyCommand;
+import com.personal.marketnote.product.port.in.result.GetPricePoliciesResult;
 import com.personal.marketnote.product.port.in.result.RegisterPricePolicyResult;
 import com.personal.marketnote.product.port.in.usecase.product.DeletePricePolicyUseCase;
+import com.personal.marketnote.product.port.in.usecase.product.GetPricePoliciesUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterPricePolicyUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,6 +35,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER
 public class PricePolicyController {
     private final RegisterPricePolicyUseCase registerPricePolicyUseCase;
     private final DeletePricePolicyUseCase deletePricePolicyUseCase;
+    private final GetPricePoliciesUseCase getPricePoliciesUseCase;
 
     @PostMapping
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
@@ -83,6 +88,22 @@ public class PricePolicyController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "상품 가격 정책 삭제 성공"
+                )
+        );
+    }
+
+    @GetMapping
+    @GetPricePoliciesApiDocs
+    public ResponseEntity<BaseResponse<GetPricePoliciesResponse>> getPricePolicies(
+            @PathVariable("productId") Long productId
+    ) {
+        GetPricePoliciesResult result = getPricePoliciesUseCase.getPricePolicies(productId);
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        GetPricePoliciesResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "상품 가격 정책 목록 조회 성공"
                 )
         );
     }
