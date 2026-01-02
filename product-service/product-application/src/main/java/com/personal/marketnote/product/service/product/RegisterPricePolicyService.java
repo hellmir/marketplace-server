@@ -4,7 +4,7 @@ import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.product.domain.product.PricePolicy;
 import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.exception.NotProductOwnerException;
-import com.personal.marketnote.product.mapper.ProductCommandToDomainMapper;
+import com.personal.marketnote.product.mapper.ProductCommandToStateMapper;
 import com.personal.marketnote.product.port.in.command.RegisterPricePolicyCommand;
 import com.personal.marketnote.product.port.in.result.RegisterPricePolicyResult;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
@@ -37,7 +37,7 @@ public class RegisterPricePolicyService implements RegisterPricePolicyUseCase {
 
         Product product = getProductUseCase.getProduct(productId);
 
-        PricePolicy pricePolicy = ProductCommandToDomainMapper.mapToDomain(product, command);
+        PricePolicy pricePolicy = ProductCommandToStateMapper.mapToState(product, command);
         Long id = savePricePolicyPort.save(pricePolicy);
 
         if (command.optionIds() != null && !command.optionIds().isEmpty()) {

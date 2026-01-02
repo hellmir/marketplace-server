@@ -11,7 +11,7 @@ public interface SignUpUseCase {
      * @param oidcId        외부 인증 ID
      * @param ipAddress     클라이언트 IP 주소
      * @return 회원 가입 결과 {@link SignUpResult}
-     * @Author 성효입
+     * @Author 성효빈
      * @Date 2025-12-28
      * @Description 회원으로 가입합니다.
      */

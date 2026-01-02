@@ -22,13 +22,22 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
 import static com.personal.marketnote.common.security.token.utility.TokenConstant.ISS_CLAIM_KEY;
@@ -54,8 +63,13 @@ public class UserController {
     private final GetUserUseCase getUserUseCase;
     private final UpdateUserUseCase updateUserUseCase;
     private final RegisterReferredUserCodeUseCase registerReferredUserCodeUseCase;
+    private final SignOutUseCase signOutUseCase;
     private final WithdrawUseCase withdrawUseCase;
     private final JwtUtil jwtUtil;
+    private final StringRedisTemplate stringRedisTemplate;
+
+    @Value("${spring.jwt.refresh-token.ttl:1209600000}")
+    private Long refreshTokenTtlMillis;
 
     /**
      * 회원 가입
@@ -95,21 +109,37 @@ public class UserController {
         String accessToken = jwtUtil.generateAccessToken(subject, id, roleIds, authVendor);
         String refreshToken = jwtUtil.generateRefreshToken(subject, id, roleIds, authVendor);
 
+        String redisKey = "userId:" + id;
+        String refreshTokenValue = "r" + sha256Hex(refreshToken);
+        stringRedisTemplate.opsForValue()
+                .set(Objects.requireNonNull(redisKey), Objects.requireNonNull(refreshTokenValue),
+                        Objects.requireNonNull(refreshTokenTtlMillis), TimeUnit.MILLISECONDS);
+
         HttpStatus httpStatus = HttpStatus.CREATED;
         boolean isNewUser = signUpResult.isNewUser();
         if (isNewUser) {
             httpStatus = HttpStatus.OK;
         }
 
-        return new ResponseEntity<>(
-                BaseResponse.of(
-                        SignUpResponse.of(accessToken, refreshToken, isNewUser),
-                        httpStatus,
-                        DEFAULT_SUCCESS_CODE,
-                        "회원 가입 성공"
-                ),
-                httpStatus
-        );
+        // refreshToken을 httpOnly cookie로 이동
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite("Strict")
+                .build();
+
+        return ResponseEntity
+                .status(httpStatus)
+                .header("Set-Cookie", refreshTokenCookie.toString())
+                .body(
+                        BaseResponse.of(
+                                SignUpResponse.of(accessToken, refreshToken, isNewUser), // refreshToken은 null로 내려줌
+                                httpStatus,
+                                DEFAULT_SUCCESS_CODE,
+                                "회원 가입 성공"
+                        )
+                );
     }
 
     /**
@@ -145,7 +175,7 @@ public class UserController {
     /**
      * 회원 로그인
      *
-     * @param signInRequest 로그인 요청 요청
+     * @param signInRequest 로그인 요청
      * @param principal     사용자 인증 정보
      * @return 인증 토큰 응답 {@link AuthenticationTokenResponse}
      * @Author 성효빈
@@ -180,18 +210,50 @@ public class UserController {
         String accessToken = jwtUtil.generateAccessToken(subject, id, roleIds, authVendor);
         String refreshToken = jwtUtil.generateRefreshToken(subject, id, roleIds, authVendor);
 
-        return new ResponseEntity<>(
-                BaseResponse.of(
-                        SignInResponse.of(
-                                accessToken, refreshToken,
-                                signInResult.isRequiredTermsAgreed()
-                        ),
-                        HttpStatus.OK,
-                        DEFAULT_SUCCESS_CODE,
-                        "회원 로그인 성공"
-                ),
-                HttpStatus.OK
-        );
+        String redisKey = "refreshToken:" + id;
+        String refreshTokenValue = "r" + sha256Hex(refreshToken);
+        stringRedisTemplate.opsForValue()
+                .set(Objects.requireNonNull(redisKey), Objects.requireNonNull(refreshTokenValue),
+                        Objects.requireNonNull(refreshTokenTtlMillis), TimeUnit.MILLISECONDS);
+
+        HttpStatus httpStatus = HttpStatus.OK;
+
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite("Strict")
+                .build();
+
+        return ResponseEntity
+                .status(httpStatus)
+                .header("Set-Cookie", refreshTokenCookie.toString())
+                .body(
+                        BaseResponse.of(
+                                SignInResponse.of(accessToken, refreshToken, signInResult.isRequiredTermsAgreed()),
+                                HttpStatus.OK,
+                                DEFAULT_SUCCESS_CODE,
+                                "회원 로그인 성공"
+                        )
+                );
+    }
+
+    private String sha256Hex(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder(hash.length * 2);
+            for (byte b : hash) {
+                String hex = Integer.toHexString(b & 0xff);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 algorithm not available", e);
+        }
     }
 
     private String extractClientIp(HttpServletRequest request) {
@@ -289,25 +351,26 @@ public class UserController {
     /**
      * 회원 로그아웃
      *
-     * @param signOutRequest 로그아웃 요청
-     * @return 로그아웃 응답 {@link SignOutResponse}
      * @Author 성효빈
      * @Date 2025-12-28
      * @Description 로그아웃합니다.
      */
     @DeleteMapping("/sign-out")
     @SignOutApiDocs
-    public ResponseEntity<BaseResponse<SignOutResponse>> signOutUser(@Valid @RequestBody SignOutRequest signOutRequest) {
-        String accessToken = jwtUtil.revokeToken(signOutRequest.getAccessToken());
-        String refreshToken = jwtUtil.revokeToken(signOutRequest.getRefreshToken());
+    public ResponseEntity<BaseResponse<SignOutResponse>> signOutUser(
+            @Valid @RequestBody SignOutRequest signOutRequest,
+            @CookieValue(value = "refresh_token") String refreshToken
+    ) {
+        HttpHeaders httpHeaders = signOutUseCase.signOut(refreshToken);
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        SignOutResponse.of(accessToken, refreshToken),
+                        SignOutResponse.of("abc", "def"),
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "회원 로그아웃 성공"
                 ),
+                httpHeaders,
                 HttpStatus.OK
         );
     }

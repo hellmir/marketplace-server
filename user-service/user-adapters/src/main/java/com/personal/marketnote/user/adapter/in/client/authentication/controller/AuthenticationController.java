@@ -2,6 +2,7 @@ package com.personal.marketnote.user.adapter.in.client.authentication.controller
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.domain.exception.token.UnsupportedCodeException;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.adapter.in.client.authentication.controller.apidocs.Oauth2LoginApiDocs;
 import com.personal.marketnote.user.adapter.in.client.authentication.controller.apidocs.RefreshAccessTokenApiDocs;
 import com.personal.marketnote.user.adapter.in.client.authentication.controller.apidocs.SendEmailVerificationApiDocs;
@@ -21,6 +22,7 @@ import com.personal.marketnote.user.port.in.usecase.authentication.VerifyCodeUse
 import com.personal.marketnote.user.security.token.dto.GrantedTokenInfo;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import com.personal.marketnote.user.utility.jwt.JwtUtil;
+import com.personal.marketnote.user.utility.jwt.claims.TokenClaims;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -28,13 +30,18 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
+import static com.personal.marketnote.common.domain.exception.ExceptionCode.FIRST_ERROR_CODE;
 import static com.personal.marketnote.common.domain.exception.ExceptionMessage.INVALID_EMAIL_EXCEPTION_MESSAGE;
 import static com.personal.marketnote.common.utility.RegularExpressionConstant.EMAIL_PATTERN;
 
@@ -58,6 +65,7 @@ public class AuthenticationController {
     private final SendEmailVerificationUseCase sendEmailVerificationUseCase;
     private final VerifyCodeUseCase verifyCodeUseCase;
     private final JwtUtil jwtUtil;
+    private final StringRedisTemplate stringRedisTemplate;
 
     /**
      * OAuth2 로그인
@@ -97,11 +105,30 @@ public class AuthenticationController {
      */
     @RefreshAccessTokenApiDocs
     @PostMapping("/access-token/refresh")
-    public ResponseEntity<BaseResponse<RefreshedAccessTokenResponse>> accessToken(
+    public ResponseEntity<BaseResponse<RefreshedAccessTokenResponse>> refreshAccessToken(
+            @CookieValue(value = "refresh_token") String refreshToken,
             @RequestBody RefreshAccessTokenRequest refreshAccessTokenRequest
     ) {
-        WebBasedTokenRefreshResponse response
-                = authServiceAdapter.issueNewAccessToken(refreshAccessTokenRequest.getRefreshToken());
+        if (FormatValidator.hasValue(refreshAccessTokenRequest.getRefreshToken())) {
+            refreshToken = refreshAccessTokenRequest.getRefreshToken();
+        }
+
+        TokenClaims claims = jwtUtil.parseRefreshToken(refreshToken);
+        Long userId = claims.getUserId();
+
+        if (!FormatValidator.hasValue(userId)) {
+            return new ResponseEntity<>(respondError(), HttpStatus.UNAUTHORIZED);
+        }
+
+        String redisKey = "refreshToken:" + userId;
+        String expected = "r" + sha256Hex(refreshToken);
+        String stored = stringRedisTemplate.opsForValue().get(redisKey);
+
+        if (!FormatValidator.equals(expected, stored)) {
+            return new ResponseEntity<>(respondError(), HttpStatus.UNAUTHORIZED);
+        }
+
+        WebBasedTokenRefreshResponse response = authServiceAdapter.issueNewAccessToken(refreshToken);
 
         return new ResponseEntity<>(
                 BaseResponse.of(
@@ -113,6 +140,33 @@ public class AuthenticationController {
                 response.headers(),
                 HttpStatus.CREATED
         );
+    }
+
+    private BaseResponse respondError() {
+        return BaseResponse.of(
+                null,
+                HttpStatus.UNAUTHORIZED,
+                FIRST_ERROR_CODE,
+                "유효하지 않은 리프레시 토큰"
+        );
+    }
+
+    private String sha256Hex(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder(hash.length * 2);
+            for (byte b : hash) {
+                String hex = Integer.toHexString(b & 0xff);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 algorithm not available", e);
+        }
     }
 
     /**
