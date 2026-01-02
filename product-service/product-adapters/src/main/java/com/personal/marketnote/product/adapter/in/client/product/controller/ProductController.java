@@ -7,16 +7,10 @@ import com.personal.marketnote.product.adapter.in.client.product.controller.apid
 import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductRequest;
 import com.personal.marketnote.product.adapter.in.client.product.request.UpdateProductRequest;
-import com.personal.marketnote.product.adapter.in.client.product.response.GetProductSearchTargetsResponse;
-import com.personal.marketnote.product.adapter.in.client.product.response.GetProductSortPropertiesResponse;
-import com.personal.marketnote.product.adapter.in.client.product.response.GetProductsResponse;
-import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductResponse;
+import com.personal.marketnote.product.adapter.in.client.product.response.*;
 import com.personal.marketnote.product.domain.product.ProductSearchTarget;
 import com.personal.marketnote.product.domain.product.ProductSortProperty;
-import com.personal.marketnote.product.port.in.result.GetProductSearchTargetsResult;
-import com.personal.marketnote.product.port.in.result.GetProductSortPropertiesResult;
-import com.personal.marketnote.product.port.in.result.GetProductsResult;
-import com.personal.marketnote.product.port.in.result.RegisterProductResult;
+import com.personal.marketnote.product.port.in.result.*;
 import com.personal.marketnote.product.port.in.usecase.product.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -29,6 +23,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
 import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER_PRINCIPAL_POINTCUT;
@@ -165,6 +161,34 @@ public class ProductController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "상품 목록 조회 성공"
+                )
+        );
+    }
+
+    /**
+     * 상품 상세 정보 조회
+     *
+     * @param id 상품 ID
+     * @return 상품 상세 정보 조회 응답 {@link GetProductInfoResponse}
+     * @Author 성효빈
+     * @Date 2026-01-02
+     * @Description 상품 상세 정보를 조회합니다.
+     */
+    @GetMapping("/{id}")
+    @GetProductInfoApiDocs
+    public ResponseEntity<BaseResponse<GetProductInfoResponse>> getProductInfo(
+            @PathVariable("id") Long id,
+            @RequestParam(value = "options", required = false) List<String> optionContents
+    ) {
+        GetProductInfoWithOptionsResult getProductUseCaseProductInfo
+                = getProductUseCase.getProductInfo(id, optionContents);
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        GetProductInfoResponse.from(getProductUseCaseProductInfo),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "상품 상세 정보 조회 성공"
                 )
         );
     }

@@ -102,6 +102,36 @@ import java.lang.annotation.*;
                                         }
                                         """)
                         )
+                ),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "토큰 인증 실패",
+                        content = @Content(
+                                examples = @ExampleObject("""
+                                        {
+                                          "statusCode": 401,
+                                          "code": "UNAUTHORIZED",
+                                          "timestamp": "2025-12-31T12:00:00.000",
+                                          "content": null,
+                                          "message": "Invalid token"
+                                        }
+                                        """)
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "403",
+                        description = "토큰 인가 실패",
+                        content = @Content(
+                                examples = @ExampleObject("""
+                                        {
+                                          "statusCode": 403,
+                                          "code": "FORBIDDEN",
+                                          "timestamp": "2025-12-31T12:00:00.000",
+                                          "content": null,
+                                          "message": "Access Denied"
+                                        }
+                                        """)
+                        )
                 )
         }
 )

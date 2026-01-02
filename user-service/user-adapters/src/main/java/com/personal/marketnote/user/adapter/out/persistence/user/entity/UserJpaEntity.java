@@ -102,7 +102,7 @@ public class UserJpaEntity extends BaseOrderedGeneralEntity {
                             userJpaEntity, termsRef,
                             Boolean.TRUE.equals(ut.getAgreementYn()));
                 })
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
 
         return userJpaEntity;
     }

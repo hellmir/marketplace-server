@@ -12,6 +12,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Formula;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,16 +40,52 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
     @Column(name = "detail", length = 1023)
     private String detail;
 
-    @Formula("(SELECT pp.price FROM price_policy_history pp WHERE pp.product_id = id ORDER BY pp.id DESC LIMIT 1)")
+    @Formula("""
+            (
+            SELECT pp.price
+            FROM price_policy_history pp
+            WHERE 1 = 1
+            AND pp.status = 'ACTIVE'
+            AND pp.product_id = id
+            ORDER BY pp.id DESC LIMIT 1
+            )
+            """)
     private Long price;
 
-    @Formula("(SELECT pp.discount_price FROM price_policy_history pp WHERE pp.product_id = id ORDER BY pp.id DESC LIMIT 1)")
+    @Formula("""
+            (
+            SELECT pp.discount_price
+            FROM price_policy_history pp
+            WHERE 1 = 1
+            AND pp.status = 'ACTIVE'
+            AND pp.product_id = id
+            ORDER BY pp.id DESC LIMIT 1
+            )
+            """)
     private Long discountPrice;
 
-    @Formula("(SELECT pp.discount_rate FROM price_policy_history pp WHERE pp.product_id = id ORDER BY pp.id DESC LIMIT 1)")
+    @Formula("""
+            (
+            SELECT pp.discount_rate
+            FROM price_policy_history pp
+            WHERE 1 = 1
+            AND pp.status = 'ACTIVE'
+            AND pp.product_id = id
+            ORDER BY pp.id DESC LIMIT 1
+            )
+            """)
     private BigDecimal discountRate;
 
-    @Formula("(SELECT pp.accumulated_point FROM price_policy_history pp WHERE pp.product_id = id ORDER BY pp.id DESC LIMIT 1)")
+    @Formula("""
+            (
+            SELECT pp.accumulated_point
+            FROM price_policy_history pp
+            WHERE 1 = 1
+            AND pp.status = 'ACTIVE'
+            AND pp.product_id = id
+            ORDER BY pp.id DESC LIMIT 1
+            )
+            """)
     private Long accumulatedPoint;
 
     @Column(name = "sales", nullable = false, insertable = false, columnDefinition = "INT DEFAULT 0")
@@ -93,7 +130,7 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
 
         // orphanRemoval = true 컬렉션은 "재할당" 금지. 기존 컬렉션을 mutate 하라.
         if (productTagJpaEntities == null) {
-            productTagJpaEntities = new java.util.ArrayList<>();
+            productTagJpaEntities = new ArrayList<>();
         } else {
             productTagJpaEntities.clear();
         }

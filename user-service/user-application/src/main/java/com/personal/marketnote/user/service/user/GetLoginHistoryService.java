@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
+
 @UseCase
 @RequiredArgsConstructor
 @Transactional(isolation = READ_COMMITTED, readOnly = true)

@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.personal.marketnote.user.exception.ExceptionMessage.*;
+import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
 @UseCase
 @RequiredArgsConstructor

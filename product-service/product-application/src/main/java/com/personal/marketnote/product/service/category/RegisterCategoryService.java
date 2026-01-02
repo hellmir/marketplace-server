@@ -13,6 +13,8 @@ import com.personal.marketnote.product.port.out.category.SaveCategoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
 @UseCase
@@ -29,7 +31,7 @@ public class RegisterCategoryService implements RegisterCategoryUseCase {
 
         if (
                 FormatValidator.hasValue(parentCategoryId)
-                        && findCategoryPort.findAllActiveByIds(java.util.List.of(parentCategoryId)).isEmpty()
+                        && findCategoryPort.findAllActiveByIds(List.of(parentCategoryId)).isEmpty()
         ) {
             throw new CategoryNotFoundException(
                     "%s::존재하지 않는 상위 카테고리 ID입니다. 전송된 상위 카테고리 ID: %d",
