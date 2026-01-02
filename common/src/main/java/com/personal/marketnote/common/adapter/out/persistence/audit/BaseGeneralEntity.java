@@ -22,15 +22,15 @@ public abstract class BaseGeneralEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private EntityStatus status;
 
-    protected void hideEntity() {
-        status = EntityStatus.UNEXPOSED;
-    }
-
-    protected void activateEntity() {
+    protected void activate() {
         status = EntityStatus.ACTIVE;
     }
 
-    protected void deactivateEntity() {
+    protected void deactivate() {
         status = EntityStatus.INACTIVE;
+    }
+
+    protected void hide() {
+        status = EntityStatus.UNEXPOSED;
     }
 }

@@ -1,7 +1,9 @@
 package com.personal.marketnote.product.adapter.out.persistence.product.entity;
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseOrderedGeneralEntity;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.product.Product;
+import com.personal.marketnote.product.domain.product.ProductTag;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -43,7 +45,7 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
     @Formula("""
             (
             SELECT pp.price
-            FROM price_policy_history pp
+            FROM price_policy pp
             WHERE 1 = 1
             AND pp.status = 'ACTIVE'
             AND pp.product_id = id
@@ -55,7 +57,7 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
     @Formula("""
             (
             SELECT pp.discount_price
-            FROM price_policy_history pp
+            FROM price_policy pp
             WHERE 1 = 1
             AND pp.status = 'ACTIVE'
             AND pp.product_id = id
@@ -67,7 +69,7 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
     @Formula("""
             (
             SELECT pp.discount_rate
-            FROM price_policy_history pp
+            FROM price_policy pp
             WHERE 1 = 1
             AND pp.status = 'ACTIVE'
             AND pp.product_id = id
@@ -79,7 +81,7 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
     @Formula("""
             (
             SELECT pp.accumulated_point
-            FROM price_policy_history pp
+            FROM price_policy pp
             WHERE 1 = 1
             AND pp.status = 'ACTIVE'
             AND pp.product_id = id
@@ -101,7 +103,7 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
     private boolean findAllOptionsYn;
 
     @OneToMany(mappedBy = "productJpaEntity", cascade = {PERSIST, MERGE}, orphanRemoval = true)
-    private List<ProductTagJpaEntity> productTagJpaEntities;
+    private List<ProductTagJpaEntity> productTagJpaEntities = new ArrayList<>();
 
     public static ProductJpaEntity from(Product product) {
         ProductJpaEntity productJpaEntity = ProductJpaEntity.builder()
@@ -123,21 +125,31 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
     }
 
     public void updateFrom(Product product) {
+        updateActivation(product);
         name = product.getName();
         brandName = product.getBrandName();
         detail = product.getDetail();
         findAllOptionsYn = product.isFindAllOptionsYn();
 
-        // orphanRemoval = true 컬렉션은 "재할당" 금지. 기존 컬렉션을 mutate 하라.
-        if (productTagJpaEntities == null) {
-            productTagJpaEntities = new ArrayList<>();
-        } else {
-            productTagJpaEntities.clear();
-        }
-        if (product.getProductTags() != null) {
-            for (var tag : product.getProductTags()) {
+        productTagJpaEntities.clear();
+        if (FormatValidator.hasValue(product.getProductTags())) {
+            for (ProductTag tag : product.getProductTags()) {
                 productTagJpaEntities.add(ProductTagJpaEntity.from(this, tag));
             }
         }
+    }
+
+    private void updateActivation(Product product) {
+        if (product.isActive()) {
+            activate();
+            return;
+        }
+
+        if (product.isInactive()) {
+            deactivate();
+            return;
+        }
+
+        hide();
     }
 }

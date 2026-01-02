@@ -157,11 +157,16 @@ public class UserJpaEntity extends BaseOrderedGeneralEntity {
 
     private void updateActivation(User user) {
         if (user.isActive()) {
-            activateEntity();
+            activate();
             return;
         }
 
-        deactivateEntity();
+        if (user.isInactive()) {
+            deactivate();
+            return;
+        }
+
+        hide();
     }
 
     public void updateLoginTime() {

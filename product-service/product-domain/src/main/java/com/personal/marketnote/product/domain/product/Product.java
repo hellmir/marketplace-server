@@ -1,6 +1,7 @@
 package com.personal.marketnote.product.domain.product;
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
+import com.personal.marketnote.common.domain.BaseDomain;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-public class Product {
+public class Product extends BaseDomain {
     private Long id;
     private Long sellerId;
     private String name;
@@ -29,7 +30,6 @@ public class Product {
     private boolean findAllOptionsYn;
     private List<ProductTag> productTags;
     private Long orderNum;
-    private EntityStatus status;
 
     public static Product of(
             Long sellerId, String name, String brandName, String detail, boolean isFindAllOptions, List<String> tags
@@ -45,7 +45,6 @@ public class Product {
                                 .map(ProductTag::of)
                                 .collect(Collectors.toList())
                 )
-                .status(EntityStatus.ACTIVE)
                 .build();
     }
 
@@ -54,7 +53,7 @@ public class Product {
             BigDecimal discountRate, Long accumulatedPoint, Integer sales, Long viewCount, Long popularity,
             boolean findAllOptionsYn, List<ProductTag> productTags, Long orderNum, EntityStatus status
     ) {
-        return Product.builder()
+        Product product = Product.builder()
                 .id(id)
                 .sellerId(sellerId)
                 .name(name)
@@ -70,8 +69,20 @@ public class Product {
                 .findAllOptionsYn(findAllOptionsYn)
                 .productTags(productTags)
                 .orderNum(orderNum)
-                .status(status)
                 .build();
+
+        if (status.isActive()) {
+            product.activate();
+            return product;
+        }
+
+        if (status.isInactive()) {
+            product.deactivate();
+            return product;
+        }
+
+        product.hide();
+        return product;
     }
 
     public void update(String name, String brandName, String detail, boolean isFindAllOptions, List<String> tags) {
@@ -82,5 +93,13 @@ public class Product {
         productTags = tags.stream()
                 .map(tag -> ProductTag.of(id, tag))
                 .toList();
+    }
+
+    public boolean isActive() {
+        return status.isActive();
+    }
+
+    public void delete() {
+        status = EntityStatus.INACTIVE;
     }
 }

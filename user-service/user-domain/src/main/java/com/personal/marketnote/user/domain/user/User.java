@@ -1,6 +1,7 @@
 package com.personal.marketnote.user.domain.user;
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
+import com.personal.marketnote.common.domain.BaseDomain;
 import com.personal.marketnote.common.domain.exception.illegalstate.SameUpdateTargetException;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.domain.authentication.Role;
@@ -22,7 +23,7 @@ import static com.personal.marketnote.common.domain.exception.ExceptionCode.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-public class User {
+public class User extends BaseDomain {
     private Long id;
     private String nickname;
     private String email;
@@ -36,7 +37,6 @@ public class User {
     private List<UserTerms> userTerms;
     private LocalDateTime signedUpAt;
     private LocalDateTime lastLoggedInAt;
-    private EntityStatus status;
     private boolean withdrawalYn;
     private Long orderNum;
 
@@ -115,7 +115,7 @@ public class User {
             boolean withdrawalYn,
             Long orderNum
     ) {
-        return User.builder()
+        User user = User.builder()
                 .id(id)
                 .nickname(nickname)
                 .email(email)
@@ -129,10 +129,22 @@ public class User {
                 .userTerms(userTerms)
                 .signedUpAt(signedUpAt)
                 .lastLoggedInAt(lastLoggedInAt)
-                .status(status)
                 .withdrawalYn(withdrawalYn)
                 .orderNum(orderNum)
                 .build();
+
+        if (status.isActive()) {
+            user.activate();
+            return user;
+        }
+
+        if (status.isInactive()) {
+            user.deactivate();
+            return user;
+        }
+
+        user.hide();
+        return user;
     }
 
     public static User referenceOf(Long id) {
@@ -156,10 +168,6 @@ public class User {
 
     public boolean isValidPassword(PasswordEncoder passwordEncoder, String targetPassword) {
         return passwordEncoder.matches(targetPassword, password);
-    }
-
-    public void updateStatus(boolean isActive) {
-        status = EntityStatus.from(isActive);
     }
 
     public void updateEmail(String email) {
@@ -218,14 +226,6 @@ public class User {
         }
     }
 
-    public void activate() {
-        status = EntityStatus.ACTIVE;
-    }
-
-    public boolean isActive() {
-        return status.isActive();
-    }
-
     public boolean isRequiredTermsAgreed() {
         return userTerms.stream()
                 .allMatch(UserTerms::isRequiredTermsAgreed);
@@ -233,12 +233,13 @@ public class User {
 
     public void withdraw() {
         withdrawalYn = true;
-        status = EntityStatus.INACTIVE;
+        deactivate();
         userTerms.forEach(UserTerms::disagree);
     }
 
     public void cancelWithdrawal() {
         withdrawalYn = false;
+        activate();
         signedUpAt = LocalDateTime.now();
     }
 

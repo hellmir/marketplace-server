@@ -16,71 +16,57 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "(판매자/관리자) 상품 옵션 카테고리 및 하위 옵션 목록 삭제",
+        summary = "(판매자/관리자) 상품 삭제",
         description = """
-                작성일자: 2026-01-01
+                           작성일자: 2026-01-02
                 
-                작성자: 성효빈
+                           작성자: 성효빈
                 
-                ---
+                           ---
                 
-                ## Description
+                           ## Description
                 
-                - 옵션 카테고리 및 하위 옵션들을 삭제합니다.
+                           - 상품을 삭제합니다.
                 
-                - 상품 판매자 본인 또는 관리자만 가능합니다.
+                           - 판매자 본인 또는 관리자만 가능합니다.
                 
-                ---
+                           ---
                 
-                ## Request
+                           ## Request
                 
-                | **키** | **타입** | **설명** | **필수 여부** | **예시** |
-                | --- | --- | --- | --- | --- |
-                | productId (path) | number | 상품 ID | Y | 1 |
-                | optionCategoryId (path) | number | 삭제할 옵션 카테고리 ID | Y | 10 |
+                           | **키** | **타입** | **설명** | **필수 여부** | **예시** |
+                           | --- | --- | --- | --- | --- |
+                           | id | number | 삭제 대상 상품 ID | Y | 10001 |
                 
-                ---
+                           ## Response
                 
-                ## Response
-                
-                | **키** | **타입** | **설명** | **예시** |
-                | --- | --- | --- | --- |
-                | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
-                | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
-                | timestamp | string(datetime) | 응답 일시 | "2026-01-01T10:00:00.000" |
-                | content | object | 응답 본문 | null |
-                | message | string | 처리 결과 | "상품 옵션 삭제 성공" |
+                           | **키** | **타입** | **설명** | **예시** |
+                           | --- | --- | --- | --- |
+                           | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
+                           | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
+                           | timestamp | string(datetime) | 응답 일시 | "2026-01-02T10:37:32.320824" |
+                           | content | object | 응답 본문 | null |
+                           | message | string | 처리 결과 | "상품 삭제 성공" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         parameters = {
-                @Parameter(
-                        name = "productId",
-                        in = ParameterIn.PATH,
-                        required = true,
-                        description = "상품 ID",
-                        schema = @Schema(type = "number", example = "1")
-                ),
-                @Parameter(
-                        name = "id",
-                        in = ParameterIn.PATH,
-                        required = true,
-                        description = "삭제할 옵션 카테고리 ID",
-                        schema = @Schema(type = "number", example = "10")
-                )
+                @Parameter(name = "id", in = ParameterIn.PATH, required = true,
+                        description = "삭제 대상 상품 ID",
+                        schema = @Schema(type = "number", example = "1"))
         },
         responses = {
                 @ApiResponse(
                         responseCode = "200",
-                        description = "삭제 성공",
+                        description = "OK",
                         content = @Content(
                                 schema = @Schema(implementation = StringResponseSchema.class),
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-01T17:32:49.097185",
+                                          "timestamp": "2026-01-02T10:37:32.320824",
                                           "content": null,
-                                          "message": "상품 옵션 삭제 성공"
+                                          "message": "상품 삭제 성공"
                                         }
                                         """)
                         )
@@ -117,7 +103,7 @@ import java.lang.annotation.*;
                 )
         }
 )
-public @interface DeleteProductOptionsApiDocs {
+public @interface DeleteProductApiDocs {
 }
 
 

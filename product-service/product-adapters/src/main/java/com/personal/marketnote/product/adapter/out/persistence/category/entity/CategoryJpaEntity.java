@@ -35,7 +35,7 @@ public class CategoryJpaEntity extends BaseGeneralEntity {
         name = category.getName();
 
         if (category.isInactive()) {
-            deactivateEntity();
+            deactivate();
         }
     }
 }

@@ -43,6 +43,7 @@ public class ProductController {
     private final GetProductSearchTargetsUseCase getProductSearchTargetsUseCase;
     private final GetProductUseCase getProductUseCase;
     private final UpdateProductUseCase updateProductUseCase;
+    private final DeleteProductUseCase deleteProductUseCase;
 
     /**
      * (판매자/관리자) 상품 등록
@@ -225,4 +226,35 @@ public class ProductController {
                 )
         );
     }
+
+    /**
+     * (판매자/관리자) 상품 삭제 (논리 삭제)
+     *
+     * @param id 상품 ID
+     * @Author 성효빈
+     * @Date 2026-01-02
+     * @Description 상품을 논리적으로 삭제합니다.
+     */
+    @DeleteMapping("/{id}")
+    @PreAuthorize(ADMIN_OR_SELLER_PRINCIPAL_POINTCUT)
+    @DeleteProductApiDocs
+    public ResponseEntity<BaseResponse<Void>> deleteProduct(
+            @PathVariable("id") Long id,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        deleteProductUseCase.delete(
+                ElementExtractor.extractUserId(principal),
+                AuthorityValidator.hasAdminRole(principal),
+                com.personal.marketnote.product.port.in.command.DeleteProductCommand.of(id)
+        );
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "상품 삭제 성공"
+                )
+        );
+    }
+
 }
