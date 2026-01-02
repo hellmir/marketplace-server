@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Operation(summary = "상품 정렬 속성 목록 조회", description = """
+@Operation(summary = "상품 검색 대상 목록 조회", description = """
         작성일자: 2026-01-02
         
         작성자: 성효빈
@@ -21,7 +21,7 @@ import java.lang.annotation.*;
         
         ## Description
         
-        상품 정렬 속성 목록을 조회합니다.
+        상품 검색 대상 목록을 조회합니다.
         
         ---
         
@@ -38,7 +38,7 @@ import java.lang.annotation.*;
         | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
         | timestamp | string(datetime) | 응답 일시 | "2026-01-02T10:37:32.320824" |
         | content | object | 응답 본문 | { ... } |
-        | message | string | 처리 결과 | "상품 정렬 속성 목록 조회 성공" |
+        | message | string | 처리 결과 | "상품 검색 대상 목록 조회 성공" |
         
         ---
         
@@ -46,16 +46,16 @@ import java.lang.annotation.*;
         
         | **키** | **타입** | **설명** | **예시** |
         | --- | --- | --- | --- |
-        | properties | array | 상품 정렬 속성 목록 | [ ... ] |
+        | targets | array | 상품 검색 대상 목록 | [ ... ] |
         
         ---
         
-        ### Response > content > properties
+        ### Response > content > targets
         
         | **키** | **타입** | **설명** | **예시** |
         | --- | --- | --- | --- |
-        | name | string | 정렬 속성 이름 | "ORDER_NUM" |
-        | description | string | 정렬 속성 설명 | "정렬 순서" |
+        | name | string | 검색 대상 이름 | "NAME" |
+        | description | string | 검색 대상 설명 | "상품명" |
         """, security = {
         @SecurityRequirement(name = "bearer")
 },
@@ -71,26 +71,18 @@ import java.lang.annotation.*;
                                           "code": "SUC01",
                                           "timestamp": "2026-01-02T10:54:07.722551",
                                           "content": {
-                                            "properties": [
+                                            "targets": [
                                               {
-                                                "name": "ORDER_NUM",
-                                                "description": "정렬 순서"
+                                                "name": "NAME",
+                                                "description": "상품명"
                                               },
                                               {
-                                                "name": "ACCUMULATED_POINT",
-                                                "description": "적립금"
-                                              },
-                                              {
-                                                "name": "POPULARITY",
-                                                "description": "인기도"
-                                              },
-                                              {
-                                                "name": "DISCOUNT_PRICE",
-                                                "description": "할인 가격"
+                                                "name": "BRAND_NAME",
+                                                "description": "브랜드명"
                                               }
                                             ]
                                           },
-                                          "message": "상품 정렬 속성 목록 조회 성공"
+                                          "message": "상품 검색 대상 목록 조회 성공"
                                         }
                                         """)
                         )
@@ -126,5 +118,7 @@ import java.lang.annotation.*;
                         )
                 )
         })
-public @interface GetProductSortPropertiesApiDocs {
+public @interface GetProductSearchTargetsApiDocs {
 }
+
+

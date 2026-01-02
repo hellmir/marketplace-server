@@ -35,5 +35,3 @@ public interface LoginHistoryJpaRepository extends JpaRepository<LoginHistoryJpa
             @Param("searchKeyword") String searchKeyword
     );
 }
-
-

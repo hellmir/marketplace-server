@@ -8,5 +8,3 @@ public interface RegisterProductOptionsUseCase {
             Long userId, boolean isAdmin, RegisterProductOptionsCommand command
     );
 }
-
-

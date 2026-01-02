@@ -22,5 +22,3 @@ public interface GetCategoryUseCase {
      */
     GetCategoriesResult getCategoriesByParentId(Long parentCategoryId);
 }
-
-

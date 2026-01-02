@@ -5,5 +5,3 @@ import com.personal.marketnote.product.domain.product.Product;
 public interface SaveProductPort {
     Product save(Product product);
 }
-
-

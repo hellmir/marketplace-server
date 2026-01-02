@@ -44,5 +44,3 @@ public class RegisterCategoryService implements RegisterCategoryUseCase {
         return RegisterCategoryResult.from(savedCategory);
     }
 }
-
-

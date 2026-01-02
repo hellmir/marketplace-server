@@ -42,5 +42,3 @@ public class RegisterProductService implements RegisterProductUseCase {
         return RegisterProductResult.from(savedProduct);
     }
 }
-
-

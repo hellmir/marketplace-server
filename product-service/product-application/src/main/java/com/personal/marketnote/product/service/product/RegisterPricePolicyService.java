@@ -42,5 +42,3 @@ public class RegisterPricePolicyService implements RegisterPricePolicyUseCase {
         return RegisterPricePolicyResult.of(id);
     }
 }
-
-

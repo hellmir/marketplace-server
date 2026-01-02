@@ -3,6 +3,7 @@ package com.personal.marketnote.user.adapter.in.client.user.mapper;
 import com.personal.marketnote.user.adapter.in.client.user.request.SignInRequest;
 import com.personal.marketnote.user.adapter.in.client.user.request.SignUpRequest;
 import com.personal.marketnote.user.adapter.in.client.user.request.UpdateUserInfoRequest;
+import com.personal.marketnote.user.adapter.in.client.user.request.VerifyCodeRequest;
 import com.personal.marketnote.user.adapter.in.client.user.request.verifyCodeRequest;
 import com.personal.marketnote.user.port.in.command.SignInCommand;
 import com.personal.marketnote.user.port.in.command.SignUpCommand;
@@ -36,10 +37,10 @@ public class UserRequestToCommandMapper {
     }
 
     public static VerifyCodeCommand mapToCommand(
-            verifyCodeRequest verifyCodeRequest
+            VerifyCodeRequest verifyCodeRequest
     ) {
         return VerifyCodeCommand.of(
-                verifyCodeRequest.getEmail(),
+                com.personal.marketnote.user.adapter.in.client.user.request.verifyCodeRequest.getEmail(),
                 verifyCodeRequest.getVerificationCode()
         );
     }

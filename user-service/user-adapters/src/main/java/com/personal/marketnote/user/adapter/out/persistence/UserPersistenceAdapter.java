@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.personal.marketnote.user.exception.ExceptionMessage.USER_ID_NOT_FOUND_EXCEPTION_MESSAGE;
+import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
 @PersistenceAdapter
 @RequiredArgsConstructor

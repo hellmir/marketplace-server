@@ -5,5 +5,3 @@ public record RegisterPricePolicyResult(Long id) {
         return new RegisterPricePolicyResult(id);
     }
 }
-
-

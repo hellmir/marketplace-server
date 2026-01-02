@@ -66,5 +66,3 @@ public class UpdateProductOptionsService implements UpdateProductOptionsUseCase 
         return UpsertProductOptionsResult.from(savedCategory);
     }
 }
-
-

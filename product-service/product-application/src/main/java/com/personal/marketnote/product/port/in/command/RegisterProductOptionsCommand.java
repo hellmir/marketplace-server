@@ -18,5 +18,3 @@ public record RegisterProductOptionsCommand(
     ) {
     }
 }
-
-

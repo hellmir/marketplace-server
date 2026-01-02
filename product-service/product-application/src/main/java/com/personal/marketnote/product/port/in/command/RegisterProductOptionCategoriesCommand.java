@@ -16,5 +16,3 @@ public record RegisterProductOptionCategoriesCommand(
     public record OptionItem(String content, Long price, Long accumulatedPoint) {
     }
 }
-
-

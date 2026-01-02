@@ -16,5 +16,3 @@ public record UpdateProductCommand(
         return new UpdateProductCommand(id, name, brandName, detail, isFindAllOptions, tags);
     }
 }
-
-

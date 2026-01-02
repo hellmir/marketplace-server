@@ -100,4 +100,3 @@ public interface FindProductPort {
      */
     long countActiveByCategoryId(Long categoryId, ProductSearchTarget searchTarget, String searchKeyword);
 }
-

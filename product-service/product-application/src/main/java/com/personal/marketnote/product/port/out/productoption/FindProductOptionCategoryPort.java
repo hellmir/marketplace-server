@@ -11,5 +11,3 @@ public interface FindProductOptionCategoryPort {
      */
     List<ProductOptionCategory> findActiveWithOptionsByProductId(Long productId);
 }
-
-
