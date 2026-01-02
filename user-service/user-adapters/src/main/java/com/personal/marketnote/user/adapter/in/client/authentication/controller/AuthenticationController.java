@@ -13,7 +13,7 @@ import com.personal.marketnote.user.adapter.in.client.authentication.response.Re
 import com.personal.marketnote.user.adapter.in.client.authentication.response.WebBasedTokenRefreshResponse;
 import com.personal.marketnote.user.adapter.in.client.authentication.response.verifyCodeResponse;
 import com.personal.marketnote.user.adapter.in.client.user.mapper.UserRequestToCommandMapper;
-import com.personal.marketnote.user.adapter.in.client.user.request.verifyCodeRequest;
+import com.personal.marketnote.user.adapter.in.client.user.request.VerifyCodeRequest;
 import com.personal.marketnote.user.adapter.out.vendor.authentication.WebBasedAuthenticationServiceAdapter;
 import com.personal.marketnote.user.port.in.result.VerifyCodeResult;
 import com.personal.marketnote.user.port.in.usecase.authentication.SendEmailVerificationUseCase;
@@ -155,7 +155,7 @@ public class AuthenticationController {
     @PostMapping("/verification")
     @ValidateVerificationCodeApiDocs
     public ResponseEntity<BaseResponse<verifyCodeResponse>> verifyCode(
-            @Valid @RequestBody verifyCodeRequest verifyCodeRequest
+            @Valid @RequestBody VerifyCodeRequest verifyCodeRequest
     ) {
         VerifyCodeResult result = verifyCodeUseCase.verifyCode(
                 UserRequestToCommandMapper.mapToCommand(verifyCodeRequest)

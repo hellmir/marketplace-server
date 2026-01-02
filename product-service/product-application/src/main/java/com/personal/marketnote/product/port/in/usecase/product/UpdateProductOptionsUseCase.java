@@ -8,5 +8,3 @@ public interface UpdateProductOptionsUseCase {
             Long userId, boolean isAdmin, UpdateProductOptionsCommand command
     );
 }
-
-

@@ -5,5 +5,3 @@ public interface DeleteProductOptionsUseCase {
             Long userId, boolean isAdmin, Long productId, Long optionCategoryId
     );
 }
-
-

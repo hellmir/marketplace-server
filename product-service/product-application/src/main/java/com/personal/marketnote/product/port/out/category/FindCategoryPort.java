@@ -16,5 +16,3 @@ public interface FindCategoryPort {
 
     boolean existsChildren(Long categoryId);
 }
-
-

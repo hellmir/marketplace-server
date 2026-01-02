@@ -49,5 +49,3 @@ public class DeleteCategoryService implements DeleteCategoryUseCase {
         updateCategoryPort.update(category);
     }
 }
-
-

@@ -12,5 +12,3 @@ public interface GetProductOptionsUseCase {
      */
     GetProductOptionsResult getProductOptions(Long productId);
 }
-
-

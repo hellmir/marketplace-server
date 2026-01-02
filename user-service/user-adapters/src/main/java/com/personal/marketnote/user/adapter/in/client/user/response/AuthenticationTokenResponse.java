@@ -8,4 +8,3 @@ public record AuthenticationTokenResponse(
         return new AuthenticationTokenResponse(accessToken, refreshToken);
     }
 }
-

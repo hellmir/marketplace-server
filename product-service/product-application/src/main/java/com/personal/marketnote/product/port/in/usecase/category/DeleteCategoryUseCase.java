@@ -11,5 +11,3 @@ public interface DeleteCategoryUseCase {
      */
     void deleteCategory(DeleteCategoryCommand command);
 }
-
-

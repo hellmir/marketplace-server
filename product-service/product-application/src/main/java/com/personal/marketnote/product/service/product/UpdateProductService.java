@@ -37,5 +37,3 @@ public class UpdateProductService implements UpdateProductUseCase {
         updateProductPort.update(product);
     }
 }
-
-

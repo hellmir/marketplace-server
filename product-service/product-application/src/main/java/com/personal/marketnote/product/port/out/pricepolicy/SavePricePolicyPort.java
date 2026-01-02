@@ -5,5 +5,3 @@ import com.personal.marketnote.product.domain.product.PricePolicy;
 public interface SavePricePolicyPort {
     Long save(PricePolicy pricePolicy);
 }
-
-

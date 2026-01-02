@@ -17,5 +17,3 @@ public record UpdateProductOptionsCommand(
         return new UpdateProductOptionsCommand(productId, optionCategoryId, categoryName, options);
     }
 }
-
-

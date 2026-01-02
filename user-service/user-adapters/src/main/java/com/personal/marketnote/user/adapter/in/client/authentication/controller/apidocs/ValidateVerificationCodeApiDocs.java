@@ -1,6 +1,6 @@
 package com.personal.marketnote.user.adapter.in.client.authentication.controller.apidocs;
 
-import com.personal.marketnote.user.adapter.in.client.user.request.verifyCodeRequest;
+import com.personal.marketnote.user.adapter.in.client.user.request.VerifyCodeRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -59,7 +59,7 @@ import java.lang.annotation.*;
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                 required = true,
                 content = @Content(
-                        schema = @Schema(implementation = verifyCodeRequest.class),
+                        schema = @Schema(implementation = VerifyCodeRequest.class),
                         examples = @ExampleObject("""
                                 {
                                     "email": "example@example.com",

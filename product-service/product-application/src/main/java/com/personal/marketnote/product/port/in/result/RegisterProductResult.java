@@ -9,5 +9,3 @@ public record RegisterProductResult(
         return new RegisterProductResult(product.getId());
     }
 }
-
-

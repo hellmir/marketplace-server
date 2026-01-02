@@ -8,5 +8,3 @@ public record RegisterCategoryCommand(
         return new RegisterCategoryCommand(parentCategoryId, name);
     }
 }
-
-

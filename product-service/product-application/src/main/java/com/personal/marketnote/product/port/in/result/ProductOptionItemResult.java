@@ -19,5 +19,3 @@ public record ProductOptionItemResult(
         );
     }
 }
-
-

@@ -5,5 +5,3 @@ public record DeleteCategoryCommand(Long categoryId) {
         return new DeleteCategoryCommand(categoryId);
     }
 }
-
-

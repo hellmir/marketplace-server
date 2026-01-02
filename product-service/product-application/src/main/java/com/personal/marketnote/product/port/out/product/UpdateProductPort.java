@@ -6,5 +6,3 @@ import com.personal.marketnote.product.exception.ProductNotFoundException;
 public interface UpdateProductPort {
     void update(Product product) throws ProductNotFoundException;
 }
-
-

@@ -8,5 +8,3 @@ public interface RegisterPricePolicyUseCase {
             Long userId, boolean isAdmin, RegisterPricePolicyCommand command
     );
 }
-
-

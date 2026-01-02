@@ -1,0 +1,17 @@
+package com.personal.marketnote.product.adapter.in.client.product.response;
+
+import com.personal.marketnote.product.port.in.result.ProductSearchTargetItemResult;
+
+public record ProductSearchTargetItemResponse(
+        String name,
+        String description
+) {
+    public static ProductSearchTargetItemResponse from(ProductSearchTargetItemResult result) {
+        return new ProductSearchTargetItemResponse(
+                result.name(),
+                result.description()
+        );
+    }
+}
+
+

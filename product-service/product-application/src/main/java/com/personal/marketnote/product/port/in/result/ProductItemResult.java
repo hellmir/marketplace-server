@@ -61,5 +61,3 @@ public record ProductItemResult(
         );
     }
 }
-
-

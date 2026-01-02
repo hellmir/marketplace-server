@@ -26,5 +26,3 @@ public class GetProductOptionsService implements GetProductOptionsUseCase {
         return GetProductOptionsResult.from(categories);
     }
 }
-
-

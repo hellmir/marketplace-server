@@ -31,5 +31,3 @@ public class GetCategoryService implements GetCategoryUseCase {
         return GetCategoriesResult.from(categories);
     }
 }
-
-
