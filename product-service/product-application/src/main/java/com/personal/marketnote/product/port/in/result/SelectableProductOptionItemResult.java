@@ -5,8 +5,6 @@ import com.personal.marketnote.product.domain.product.ProductOption;
 public record SelectableProductOptionItemResult(
         Long id,
         String content,
-        Long price,
-        Long accumulatedPoint,
         String status,
         boolean isSelected
 ) {
@@ -14,8 +12,6 @@ public record SelectableProductOptionItemResult(
         return new SelectableProductOptionItemResult(
                 option.getId(),
                 option.getContent(),
-                option.getPrice(),
-                option.getAccumulatedPoint(),
                 option.getStatus().name(),
                 selected
         );

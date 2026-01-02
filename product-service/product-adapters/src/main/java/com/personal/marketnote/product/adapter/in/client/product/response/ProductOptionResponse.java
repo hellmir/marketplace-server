@@ -12,16 +12,12 @@ import lombok.Getter;
 public class ProductOptionResponse {
     private Long id;
     private String content;
-    private Long price;
-    private Long accumulatedPoint;
     private String status;
 
     public static ProductOptionResponse from(ProductOptionItemResult result) {
         return ProductOptionResponse.builder()
                 .id(result.id())
                 .content(result.content())
-                .price(result.price())
-                .accumulatedPoint(result.accumulatedPoint())
                 .status(result.status())
                 .build();
     }

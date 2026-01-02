@@ -4,16 +4,18 @@ public record RegisterPricePolicyCommand(
         Long productId,
         Long price,
         Long discountPrice,
-        Long accumulatedPoint
+        Long accumulatedPoint,
+        java.util.List<Long> optionIds
 ) {
     public static RegisterPricePolicyCommand of(
             Long productId,
             Long price,
             Long discountPrice,
-            Long accumulatedPoint
+            Long accumulatedPoint,
+            java.util.List<Long> optionIds
     ) {
         return new RegisterPricePolicyCommand(
-                productId, price, discountPrice, accumulatedPoint
+                productId, price, discountPrice, accumulatedPoint, optionIds
         );
     }
 
@@ -22,7 +24,8 @@ public record RegisterPricePolicyCommand(
                 productId,
                 registerProductCommand.price(),
                 registerProductCommand.discountPrice(),
-                registerProductCommand.accumulatedPoint()
+                registerProductCommand.accumulatedPoint(),
+                null
         );
     }
 }

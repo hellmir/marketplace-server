@@ -49,6 +49,11 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
             WHERE 1 = 1
             AND pp.status = 'ACTIVE'
             AND pp.product_id = id
+            AND NOT EXISTS (
+                SELECT 1
+                FROM product_option_price_policy popp
+                WHERE popp.price_policy_id = pp.id
+            )
             ORDER BY pp.id DESC LIMIT 1
             )
             """)
@@ -61,6 +66,11 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
             WHERE 1 = 1
             AND pp.status = 'ACTIVE'
             AND pp.product_id = id
+            AND NOT EXISTS (
+                SELECT 1
+                FROM product_option_price_policy popp
+                WHERE popp.price_policy_id = pp.id
+            )
             ORDER BY pp.id DESC LIMIT 1
             )
             """)
@@ -73,6 +83,11 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
             WHERE 1 = 1
             AND pp.status = 'ACTIVE'
             AND pp.product_id = id
+            AND NOT EXISTS (
+                SELECT 1
+                FROM product_option_price_policy popp
+                WHERE popp.price_policy_id = pp.id
+            )
             ORDER BY pp.id DESC LIMIT 1
             )
             """)
@@ -85,6 +100,11 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
             WHERE 1 = 1
             AND pp.status = 'ACTIVE'
             AND pp.product_id = id
+            AND NOT EXISTS (
+                SELECT 1
+                FROM product_option_price_policy popp
+                WHERE popp.price_policy_id = pp.id
+            )
             ORDER BY pp.id DESC LIMIT 1
             )
             """)

@@ -24,11 +24,7 @@ public class ProductCommandToDomainMapper {
     }
 
     public static ProductOption mapToDomain(RegisterProductOptionsCommand.OptionItem optionItem) {
-        return ProductOption.of(
-                optionItem.content(),
-                optionItem.price(),
-                optionItem.accumulatedPoint()
-        );
+        return ProductOption.of(optionItem.content());
     }
 
     public static PricePolicy mapToDomain(

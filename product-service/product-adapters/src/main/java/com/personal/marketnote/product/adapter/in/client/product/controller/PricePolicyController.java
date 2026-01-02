@@ -44,7 +44,8 @@ public class PricePolicyController {
                         productId,
                         request.getPrice(),
                         request.getDiscountPrice(),
-                        request.getAccumulatedPoint()
+                        request.getAccumulatedPoint(),
+                        request.getOptionIds()
                 )
         );
 

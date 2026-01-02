@@ -1,7 +1,7 @@
 package com.personal.marketnote.product.adapter.in.client.product.controller.apidocs;
 
 import com.personal.marketnote.common.adapter.in.api.schema.StringResponseSchema;
-import com.personal.marketnote.product.adapter.in.client.product.request.UpsertProductOptionsRequest;
+import com.personal.marketnote.product.adapter.in.client.product.request.UpdateProductOptionsRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -48,8 +48,6 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
                 | content | string | 옵션 내용 | Y | "1박스" |
-                | price | number | 옵션 가격(원) | N | 37000 |
-                | accumulatedPoint | number | 적립 포인트 | N | 1200 |
                 
                 ---
                 
@@ -83,13 +81,13 @@ import java.lang.annotation.*;
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                 required = true,
                 content = @Content(
-                        schema = @Schema(implementation = UpsertProductOptionsRequest.class),
+                        schema = @Schema(implementation = UpdateProductOptionsRequest.class),
                         examples = @ExampleObject("""
                                 {
                                   "categoryName": "수량",
                                   "options": [
-                                    { "content": "1박스", "price": 37000, "accumulatedPoint": 1200 },
-                                    { "content": "3박스", "price": 99000, "accumulatedPoint": 1200 }
+                                    { "content": "1박스" },
+                                    { "content": "3박스" }
                                   ]
                                 }
                                 """)

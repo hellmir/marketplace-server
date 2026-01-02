@@ -31,6 +31,10 @@ import java.lang.annotation.*;
                 
                 - 상품 목록/정보 조회 시 마지막에 등록한 가격 정책이 적용됩니다.
                 
+                - 옵션이 적용된 가격 정책은 해당 옵션 또는 옵션 조합에만 적용됩니다.
+                
+                - 가격 정책이 설정되지 않은 옵션 또는 옵션 조합은 기본 가격 정책이 적용됩니다.
+                
                 - 상품 판매자 본인 또는 관리자만 가능합니다.
                 
                 ---
@@ -43,6 +47,7 @@ import java.lang.annotation.*;
                 | price | number | 정가 | Y | 45000 |
                 | discountPrice | number | 할인 판매가 | Y | 37000 |
                 | accumulatedPoint | number | 적립 포인트 | Y | 1200 |
+                | optionIds | array<number> | 가격 정책이 적용될 옵션 ID 목록(단일 또는 조합) | N | [3, 7] |
                 
                 ---
                 
@@ -80,7 +85,8 @@ import java.lang.annotation.*;
                                 {
                                   "price": 45000,
                                   "discountPrice": 37000,
-                                  "accumulatedPoint": 1200
+                                  "accumulatedPoint": 1200,
+                                  "optionIds": [3, 7]
                                 }
                                 """)
                 )

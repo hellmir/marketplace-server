@@ -24,6 +24,7 @@ public class RegisterPricePolicyService implements RegisterPricePolicyUseCase {
     private final GetProductUseCase getProductUseCase;
     private final FindProductPort findProductPort;
     private final SavePricePolicyPort savePricePolicyPort;
+    private final com.personal.marketnote.product.port.out.productoption.UpdateOptionPricePolicyPort updateOptionPricePolicyPort;
 
     @Override
     public RegisterPricePolicyResult registerPricePolicy(
@@ -38,6 +39,10 @@ public class RegisterPricePolicyService implements RegisterPricePolicyUseCase {
 
         PricePolicy pricePolicy = ProductCommandToDomainMapper.mapToDomain(product, command);
         Long id = savePricePolicyPort.save(pricePolicy);
+
+        if (command.optionIds() != null && !command.optionIds().isEmpty()) {
+            updateOptionPricePolicyPort.assignPricePolicyToOptions(id, command.optionIds());
+        }
 
         return RegisterPricePolicyResult.of(id);
     }
