@@ -12,11 +12,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.FIRST_ERROR_CODE;
-import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
+import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
 @UseCase
 @RequiredArgsConstructor
-@Transactional(isolation = READ_UNCOMMITTED)
+@Transactional(isolation = READ_COMMITTED)
 public class UpdateProductService implements UpdateProductUseCase {
     private final GetProductUseCase getProductUseCase;
     private final FindProductPort findProductPort;

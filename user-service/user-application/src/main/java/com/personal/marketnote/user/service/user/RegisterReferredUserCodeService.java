@@ -12,11 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.FIRST_ERROR_CODE;
 import static com.personal.marketnote.user.exception.ExceptionMessage.USER_ID_NOT_FOUND_EXCEPTION_MESSAGE;
 import static com.personal.marketnote.user.exception.ExceptionMessage.USER_REFERENCE_CODE_NOT_FOUND_EXCEPTION_MESSAGE;
-import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
 
 @RequiredArgsConstructor
 @UseCase
-@Transactional(isolation = READ_UNCOMMITTED)
+@Transactional(isolation = READ_COMMITTED)
 public class RegisterReferredUserCodeService implements RegisterReferredUserCodeUseCase {
     private final FindUserPort findUserPort;
     private final UpdateUserPort updateUserPort;

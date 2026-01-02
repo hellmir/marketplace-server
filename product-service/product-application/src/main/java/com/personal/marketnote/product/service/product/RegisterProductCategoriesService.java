@@ -19,11 +19,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.FIRST_ERROR_CODE;
-import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
+import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
 @UseCase
 @RequiredArgsConstructor
-@Transactional(isolation = READ_UNCOMMITTED)
+@Transactional(isolation = READ_COMMITTED)
 public class RegisterProductCategoriesService implements RegisterProductCategoriesUseCase {
     private final GetProductUseCase getProductUseCase;
     private final FindProductPort findProductPort;

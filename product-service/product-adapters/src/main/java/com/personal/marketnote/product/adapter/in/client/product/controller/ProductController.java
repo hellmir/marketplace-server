@@ -3,18 +3,22 @@ package com.personal.marketnote.product.adapter.in.client.product.controller;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.AuthorityValidator;
 import com.personal.marketnote.common.utility.ElementExtractor;
+import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.GetProductSortPropertiesApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.GetProductsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.UpdateProductApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductRequest;
 import com.personal.marketnote.product.adapter.in.client.product.request.UpdateProductRequest;
+import com.personal.marketnote.product.adapter.in.client.product.response.GetProductSortPropertiesResponse;
 import com.personal.marketnote.product.adapter.in.client.product.response.GetProductsResponse;
 import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductResponse;
 import com.personal.marketnote.product.domain.product.ProductSearchTarget;
 import com.personal.marketnote.product.domain.product.ProductSortProperty;
+import com.personal.marketnote.product.port.in.result.GetProductSortPropertiesResult;
 import com.personal.marketnote.product.port.in.result.GetProductsResult;
 import com.personal.marketnote.product.port.in.result.RegisterProductResult;
+import com.personal.marketnote.product.port.in.usecase.product.GetProductSortPropertiesUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterProductUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.UpdateProductUseCase;
@@ -43,6 +47,7 @@ public class ProductController {
     private static final String GET_PRODUCTS_DEFAULT_PAGE_SIZE = "4";
 
     private final RegisterProductUseCase registerProductUseCase;
+    private final GetProductSortPropertiesUseCase getProductSortPropertiesUseCase;
     private final GetProductUseCase getProductUseCase;
     private final UpdateProductUseCase updateProductUseCase;
 
@@ -73,6 +78,29 @@ public class ProductController {
                         "상품 등록 성공"
                 ),
                 HttpStatus.CREATED
+        );
+    }
+
+    /**
+     * 상품 정렬 속성 목록 조회
+     *
+     * @return 상품 정렬 속성 목록 조회 응답 {@link GetProductSortPropertiesResponse}
+     * @Author 성효빈
+     * @Date 2026-01-02
+     * @Description 상품 정렬 속성 목록을 조회합니다.
+     */
+    @GetMapping("/sort-properties")
+    @GetProductSortPropertiesApiDocs
+    public ResponseEntity<BaseResponse<GetProductSortPropertiesResponse>> getProductSortProperties() {
+        GetProductSortPropertiesResult result = getProductSortPropertiesUseCase.getProductSortProperties();
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        GetProductSortPropertiesResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "상품 정렬 속성 목록 조회 성공"
+                )
         );
     }
 

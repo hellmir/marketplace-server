@@ -11,11 +11,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.personal.marketnote.user.exception.ExceptionMessage.USER_ID_NOT_FOUND_EXCEPTION_MESSAGE;
-import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
 
 @UseCase
 @RequiredArgsConstructor
-@Transactional(isolation = READ_UNCOMMITTED, readOnly = true)
+@Transactional(isolation = READ_COMMITTED, readOnly = true)
 public class GetTermsService implements GetTermsUseCase {
     private final FindTermsPort findTermsPort;
     private final FindUserPort findUserPort;

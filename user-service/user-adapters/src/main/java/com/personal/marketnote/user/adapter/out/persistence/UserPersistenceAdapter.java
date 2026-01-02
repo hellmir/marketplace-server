@@ -25,7 +25,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.personal.marketnote.user.exception.ExceptionMessage.USER_ID_NOT_FOUND_EXCEPTION_MESSAGE;
-import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
@@ -69,13 +68,13 @@ public class UserPersistenceAdapter
     }
 
     @Override
-    @Transactional(isolation = READ_UNCOMMITTED, readOnly = true, timeout = 120)
+    @Transactional(isolation = READ_COMMITTED, readOnly = true, timeout = 120)
     public Optional<User> findById(Long id) {
         return UserJpaEntityToDomainMapper.mapToDomain(userJpaRepository.findById(id).orElse(null));
     }
 
     @Override
-    @Transactional(isolation = READ_UNCOMMITTED, readOnly = true, timeout = 120)
+    @Transactional(isolation = READ_COMMITTED, readOnly = true, timeout = 120)
     public Optional<User> findByAuthVendorAndOidcId(AuthVendor authVendor, String oidcId) {
         return UserJpaEntityToDomainMapper.mapToDomain(
                 userJpaRepository.findByAuthVendorAndOidcId(authVendor, oidcId).orElse(null)

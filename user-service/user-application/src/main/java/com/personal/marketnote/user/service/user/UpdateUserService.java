@@ -15,11 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.*;
 import static com.personal.marketnote.user.exception.ExceptionMessage.*;
-import static org.springframework.transaction.annotation.Isolation.READ_UNCOMMITTED;
 
 @RequiredArgsConstructor
 @UseCase
-@Transactional(isolation = READ_UNCOMMITTED, timeout = 180)
+@Transactional(isolation = READ_COMMITTED, timeout = 180)
 public class UpdateUserService implements UpdateUserUseCase {
     private final GetUserUseCase getUserUseCase;
     private final FindUserPort findUserPort;
