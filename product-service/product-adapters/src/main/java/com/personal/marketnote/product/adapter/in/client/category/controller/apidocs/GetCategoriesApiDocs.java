@@ -1,5 +1,6 @@
 package com.personal.marketnote.product.adapter.in.client.category.controller.apidocs;
 
+import com.personal.marketnote.common.adapter.in.api.schema.StringResponseSchema;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -65,7 +66,7 @@ import java.lang.annotation.*;
                 | status | string | 상태 | "ACTIVE" |
                 """,
         responses = {
-                @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = com.personal.marketnote.common.adapter.in.api.schema.StringResponseSchema.class), examples = {
+                @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = StringResponseSchema.class), examples = {
                         @ExampleObject(name = "성공", value = """
                                 {
                                   "statusCode": 200,

@@ -3,8 +3,11 @@ package com.personal.marketnote.product.port.in.usecase.product;
 import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.domain.product.ProductSearchTarget;
 import com.personal.marketnote.product.domain.product.ProductSortProperty;
+import com.personal.marketnote.product.port.in.result.GetProductInfoWithOptionsResult;
 import com.personal.marketnote.product.port.in.result.GetProductsResult;
 import org.springframework.data.domain.Sort;
+
+import java.util.List;
 
 public interface GetProductUseCase {
     /**
@@ -15,6 +18,13 @@ public interface GetProductUseCase {
      * @Description 상품을 조회합니다.
      */
     Product getProduct(Long id);
+
+    /**
+     * @param id             상품 ID
+     * @param optionContents 선택할 옵션명 목록 (선택)
+     * @return 상품 상세 정보 + 옵션 카테고리/옵션(선택 상태 포함)
+     */
+    GetProductInfoWithOptionsResult getProductInfo(Long id, List<String> optionContents);
 
     /**
      * @param categoryId    카테고리 ID

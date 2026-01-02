@@ -4,7 +4,6 @@ import com.personal.marketnote.user.adapter.in.client.user.request.SignInRequest
 import com.personal.marketnote.user.adapter.in.client.user.request.SignUpRequest;
 import com.personal.marketnote.user.adapter.in.client.user.request.UpdateUserInfoRequest;
 import com.personal.marketnote.user.adapter.in.client.user.request.VerifyCodeRequest;
-import com.personal.marketnote.user.adapter.in.client.user.request.verifyCodeRequest;
 import com.personal.marketnote.user.port.in.command.SignInCommand;
 import com.personal.marketnote.user.port.in.command.SignUpCommand;
 import com.personal.marketnote.user.port.in.command.UpdateUserInfoCommand;
@@ -40,7 +39,7 @@ public class UserRequestToCommandMapper {
             VerifyCodeRequest verifyCodeRequest
     ) {
         return VerifyCodeCommand.of(
-                com.personal.marketnote.user.adapter.in.client.user.request.verifyCodeRequest.getEmail(),
+                verifyCodeRequest.getEmail(),
                 verifyCodeRequest.getVerificationCode()
         );
     }

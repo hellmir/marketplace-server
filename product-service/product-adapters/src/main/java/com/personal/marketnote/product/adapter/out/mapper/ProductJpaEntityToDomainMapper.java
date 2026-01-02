@@ -10,6 +10,7 @@ import com.personal.marketnote.product.domain.product.ProductOption;
 import com.personal.marketnote.product.domain.product.ProductOptionCategory;
 import com.personal.marketnote.product.domain.product.ProductTag;
 
+import java.util.List;
 import java.util.Optional;
 
 public class ProductJpaEntityToDomainMapper {
@@ -42,7 +43,8 @@ public class ProductJpaEntityToDomainMapper {
     }
 
     public static Optional<ProductOptionCategory> mapToDomain(
-            ProductOptionCategoryJpaEntity productOptionCategoryJpaEntity) {
+            ProductOptionCategoryJpaEntity productOptionCategoryJpaEntity
+    ) {
         return Optional.ofNullable(productOptionCategoryJpaEntity)
                 .map(entity -> {
                     Product product = ProductJpaEntityToDomainMapper
@@ -56,7 +58,7 @@ public class ProductJpaEntityToDomainMapper {
                             entity.getStatus()
                     );
 
-                    java.util.List<ProductOption> options = entity.getProductOptionJpaEntities()
+                    List<ProductOption> options = entity.getProductOptionJpaEntities()
                             .stream()
                             .map(optEntity -> mapToDomain(optEntity, shallowCategory))
                             .filter(Optional::isPresent)

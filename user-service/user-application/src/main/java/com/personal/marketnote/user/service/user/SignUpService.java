@@ -118,7 +118,6 @@ public class SignUpService implements SignUpUseCase {
         // 탈퇴 회원인 경우 재활성화
         if (signedUpUser.isWithdrawn()) {
             signedUpUser.cancelWithdrawal();
-            signedUpUser.activate();
             isNewUser.set(true);
         }
 

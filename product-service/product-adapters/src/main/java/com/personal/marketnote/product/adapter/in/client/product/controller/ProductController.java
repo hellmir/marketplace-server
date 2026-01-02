@@ -7,16 +7,10 @@ import com.personal.marketnote.product.adapter.in.client.product.controller.apid
 import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductRequest;
 import com.personal.marketnote.product.adapter.in.client.product.request.UpdateProductRequest;
-import com.personal.marketnote.product.adapter.in.client.product.response.GetProductSearchTargetsResponse;
-import com.personal.marketnote.product.adapter.in.client.product.response.GetProductSortPropertiesResponse;
-import com.personal.marketnote.product.adapter.in.client.product.response.GetProductsResponse;
-import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductResponse;
+import com.personal.marketnote.product.adapter.in.client.product.response.*;
 import com.personal.marketnote.product.domain.product.ProductSearchTarget;
 import com.personal.marketnote.product.domain.product.ProductSortProperty;
-import com.personal.marketnote.product.port.in.result.GetProductSearchTargetsResult;
-import com.personal.marketnote.product.port.in.result.GetProductSortPropertiesResult;
-import com.personal.marketnote.product.port.in.result.GetProductsResult;
-import com.personal.marketnote.product.port.in.result.RegisterProductResult;
+import com.personal.marketnote.product.port.in.result.*;
 import com.personal.marketnote.product.port.in.usecase.product.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -29,6 +23,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
 import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER_PRINCIPAL_POINTCUT;
@@ -47,6 +43,7 @@ public class ProductController {
     private final GetProductSearchTargetsUseCase getProductSearchTargetsUseCase;
     private final GetProductUseCase getProductUseCase;
     private final UpdateProductUseCase updateProductUseCase;
+    private final DeleteProductUseCase deleteProductUseCase;
 
     /**
      * (판매자/관리자) 상품 등록
@@ -170,6 +167,34 @@ public class ProductController {
     }
 
     /**
+     * 상품 상세 정보 조회
+     *
+     * @param id 상품 ID
+     * @return 상품 상세 정보 조회 응답 {@link GetProductInfoResponse}
+     * @Author 성효빈
+     * @Date 2026-01-02
+     * @Description 상품 상세 정보를 조회합니다.
+     */
+    @GetMapping("/{id}")
+    @GetProductInfoApiDocs
+    public ResponseEntity<BaseResponse<GetProductInfoResponse>> getProductInfo(
+            @PathVariable("id") Long id,
+            @RequestParam(value = "options", required = false) List<String> optionContents
+    ) {
+        GetProductInfoWithOptionsResult getProductUseCaseProductInfo
+                = getProductUseCase.getProductInfo(id, optionContents);
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        GetProductInfoResponse.from(getProductUseCaseProductInfo),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "상품 상세 정보 조회 성공"
+                )
+        );
+    }
+
+    /**
      * (판매자/관리자) 상품 정보 수정
      *
      * @param id      상품 ID
@@ -201,4 +226,35 @@ public class ProductController {
                 )
         );
     }
+
+    /**
+     * (판매자/관리자) 상품 삭제 (논리 삭제)
+     *
+     * @param id 상품 ID
+     * @Author 성효빈
+     * @Date 2026-01-02
+     * @Description 상품을 논리적으로 삭제합니다.
+     */
+    @DeleteMapping("/{id}")
+    @PreAuthorize(ADMIN_OR_SELLER_PRINCIPAL_POINTCUT)
+    @DeleteProductApiDocs
+    public ResponseEntity<BaseResponse<Void>> deleteProduct(
+            @PathVariable("id") Long id,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        deleteProductUseCase.delete(
+                ElementExtractor.extractUserId(principal),
+                AuthorityValidator.hasAdminRole(principal),
+                com.personal.marketnote.product.port.in.command.DeleteProductCommand.of(id)
+        );
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "상품 삭제 성공"
+                )
+        );
+    }
+
 }

@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
+
 @UseCase
 @RequiredArgsConstructor
 @Transactional(isolation = READ_COMMITTED, timeout = 180)

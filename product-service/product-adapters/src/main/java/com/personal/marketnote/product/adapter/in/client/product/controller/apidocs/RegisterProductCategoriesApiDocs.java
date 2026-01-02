@@ -1,5 +1,6 @@
 package com.personal.marketnote.product.adapter.in.client.product.controller.apidocs;
 
+import com.personal.marketnote.common.adapter.in.api.schema.StringResponseSchema;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductCategoriesRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -86,7 +87,7 @@ import java.lang.annotation.*;
                         responseCode = "200",
                         description = "OK",
                         content = @Content(
-                                schema = @Schema(implementation = com.personal.marketnote.common.adapter.in.api.schema.StringResponseSchema.class),
+                                schema = @Schema(implementation = StringResponseSchema.class),
                                 examples = {
                                         @ExampleObject(name = "성공", value = """
                                                 {
@@ -152,7 +153,7 @@ import java.lang.annotation.*;
                         responseCode = "400",
                         description = "상품 소유자가 아님",
                         content = @Content(
-                                schema = @Schema(implementation = com.personal.marketnote.common.adapter.in.api.schema.StringResponseSchema.class),
+                                schema = @Schema(implementation = StringResponseSchema.class),
                                 examples = @ExampleObject("""
                                         {
                                             "statusCode": 400,

@@ -9,7 +9,7 @@ import static com.personal.marketnote.common.domain.exception.ExceptionMessage.I
 import static com.personal.marketnote.common.utility.RegularExpressionConstant.EMAIL_PATTERN;
 
 @Getter
-public class verifyCodeRequest {
+public class VerifyCodeRequest {
     @Schema(
             name = "email",
             description = "이메일 주소",

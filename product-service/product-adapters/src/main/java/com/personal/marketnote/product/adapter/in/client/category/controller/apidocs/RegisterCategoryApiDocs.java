@@ -1,5 +1,6 @@
 package com.personal.marketnote.product.adapter.in.client.category.controller.apidocs;
 
+import com.personal.marketnote.common.adapter.in.api.schema.StringResponseSchema;
 import com.personal.marketnote.product.adapter.in.client.category.request.RegisterCategoryRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -79,7 +80,7 @@ import java.lang.annotation.*;
                         responseCode = "201",
                         description = "Created",
                         content = @Content(
-                                schema = @Schema(implementation = com.personal.marketnote.common.adapter.in.api.schema.StringResponseSchema.class),
+                                schema = @Schema(implementation = StringResponseSchema.class),
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 201,

@@ -12,6 +12,9 @@ import com.personal.marketnote.product.port.out.productoption.FindProductOptionC
 import com.personal.marketnote.product.port.out.productoption.SaveProductOptionsPort;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+import java.util.Optional;
+
 @PersistenceAdapter
 @RequiredArgsConstructor
 public class ProductOptionPersistenceAdapter implements SaveProductOptionsPort, DeleteProductOptionCategoryPort, FindProductOptionCategoryPort {
@@ -36,12 +39,12 @@ public class ProductOptionPersistenceAdapter implements SaveProductOptionsPort, 
     }
 
     @Override
-    public java.util.List<ProductOptionCategory> findActiveWithOptionsByProductId(Long productId) {
+    public List<ProductOptionCategory> findActiveWithOptionsByProductId(Long productId) {
         return productOptionCategoryJpaRepository.findActiveWithOptionsByProductId(productId)
                 .stream()
                 .map(ProductJpaEntityToDomainMapper::mapToDomain)
-                .filter(java.util.Optional::isPresent)
-                .map(java.util.Optional::get)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .toList();
     }
 }

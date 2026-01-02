@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
+
 @RequiredArgsConstructor
 @UseCase
 @Transactional(isolation = READ_COMMITTED, timeout = 180)

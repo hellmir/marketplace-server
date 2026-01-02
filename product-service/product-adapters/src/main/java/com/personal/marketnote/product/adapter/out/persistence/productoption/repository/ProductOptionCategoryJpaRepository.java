@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface ProductOptionCategoryJpaRepository extends JpaRepository<ProductOptionCategoryJpaEntity, Long> {
     @Query("""
             SELECT DISTINCT c
@@ -17,7 +19,7 @@ public interface ProductOptionCategoryJpaRepository extends JpaRepository<Produc
               AND (o IS NULL OR o.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE)
             ORDER BY c.orderNum ASC, o.orderNum ASC
             """)
-    java.util.List<ProductOptionCategoryJpaEntity> findActiveWithOptionsByProductId(
+    List<ProductOptionCategoryJpaEntity> findActiveWithOptionsByProductId(
             @Param("productId") Long productId
     );
 }

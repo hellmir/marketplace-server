@@ -102,7 +102,7 @@ public class UserJpaEntity extends BaseOrderedGeneralEntity {
                             userJpaEntity, termsRef,
                             Boolean.TRUE.equals(ut.getAgreementYn()));
                 })
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
 
         return userJpaEntity;
     }
@@ -157,11 +157,16 @@ public class UserJpaEntity extends BaseOrderedGeneralEntity {
 
     private void updateActivation(User user) {
         if (user.isActive()) {
-            activateEntity();
+            activate();
             return;
         }
 
-        deactivateEntity();
+        if (user.isInactive()) {
+            deactivate();
+            return;
+        }
+
+        hide();
     }
 
     public void updateLoginTime() {
