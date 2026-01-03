@@ -8,6 +8,7 @@ import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +16,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
+@EntityListeners(value = AuditingEntityListener.class)
 @Table(name = "resized_file")
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

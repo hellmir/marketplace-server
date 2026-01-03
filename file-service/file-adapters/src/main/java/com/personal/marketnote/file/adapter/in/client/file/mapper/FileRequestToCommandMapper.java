@@ -10,11 +10,25 @@ import java.util.List;
 
 public class FileRequestToCommandMapper {
     public static AddFilesCommand mapToCommand(AddFilesRequest addFilesRequest) {
+        List<MultipartFile> files = addFilesRequest.getFile();
+        List<String> sorts = addFilesRequest.getSort();
+        List<String> extensions = addFilesRequest.getExtension();
+        List<String> names = addFilesRequest.getName();
+
+        java.util.List<AddFileCommand> fileInfo = new java.util.ArrayList<>(files == null ? 0 : files.size());
+        if (files != null) {
+            for (int i = 0; i < files.size(); i++) {
+                fileInfo.add(AddFileCommand.builder()
+                        .file(files.get(i))
+                        .sort(getOrNull(sorts, i))
+                        .extension(getOrNull(extensions, i))
+                        .name(getOrNull(names, i))
+                        .build());
+            }
+        }
+
         return AddFilesCommand.builder()
-                .fileInfo(addFilesRequest.getFileInfo().stream()
-                        .map(FileRequestToCommandMapper::mapToCommand)
-                        .toList()
-                )
+                .fileInfo(fileInfo)
                 .ownerType(addFilesRequest.getOwnerType())
                 .ownerId(addFilesRequest.getOwnerId())
                 .build();

@@ -6,6 +6,7 @@ import com.personal.marketnote.file.adapter.out.persistence.file.entity.ResizedF
 import com.personal.marketnote.file.adapter.out.persistence.file.repository.FileJpaRepository;
 import com.personal.marketnote.file.adapter.out.persistence.file.repository.ResizedFileJpaRepository;
 import com.personal.marketnote.file.domain.file.ResizedFile;
+import com.personal.marketnote.file.port.out.resized.FindResizedFilesPort;
 import com.personal.marketnote.file.port.out.resized.SaveResizedFilesPort;
 import lombok.RequiredArgsConstructor;
 
@@ -14,7 +15,7 @@ import java.util.List;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class ResizedFilePersistenceAdapter implements SaveResizedFilesPort {
+public class ResizedFilePersistenceAdapter implements SaveResizedFilesPort, FindResizedFilesPort {
     private final FileJpaRepository fileJpaRepository;
     private final ResizedFileJpaRepository resizedFileJpaRepository;
 
@@ -29,6 +30,21 @@ public class ResizedFilePersistenceAdapter implements SaveResizedFilesPort {
             toSave.add(ResizedFileJpaEntity.of(fileRef, f.getSize()));
         }
         resizedFileJpaRepository.saveAll(toSave);
+    }
+
+    @Override
+    public List<ResizedFile> findByFileIds(List<Long> fileIds) {
+        if (fileIds == null || fileIds.isEmpty()) {
+            return List.of();
+        }
+        return resizedFileJpaRepository.findAllByFile_IdIn(fileIds).stream()
+                .map(e -> ResizedFile.of(
+                        e.getId(),
+                        e.getFile().getId(),
+                        e.getSize(),
+                        e.getCreatedAt(),
+                        e.getStatus()
+                )).toList();
     }
 }
 
