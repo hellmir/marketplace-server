@@ -6,7 +6,7 @@ import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.domain.product.ProductOptionCategory;
 import com.personal.marketnote.product.exception.NotProductOwnerException;
 import com.personal.marketnote.product.exception.OptionsNoValueException;
-import com.personal.marketnote.product.mapper.ProductCommandToStateMapper;
+import com.personal.marketnote.product.mapper.ProductCommandToDomainMapper;
 import com.personal.marketnote.product.port.in.command.RegisterProductOptionsCommand;
 import com.personal.marketnote.product.port.in.result.UpsertProductOptionsResult;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
@@ -46,7 +46,7 @@ public class RegisterProductOptionsService implements RegisterProductOptionsUseC
         }
 
         ProductOptionCategory savedCategory = saveProductOptionsPort.save(
-                ProductCommandToStateMapper.mapToState(product, command)
+                ProductCommandToDomainMapper.mapToDomain(product, command)
         );
 
         return UpsertProductOptionsResult.from(savedCategory);

@@ -1,0 +1,42 @@
+package com.personal.marketnote.file.adapter.in.client.file.request;
+
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+
+import java.util.List;
+
+@Getter
+public class AddFilesRequest {
+    @ArraySchema(
+            arraySchema = @Schema(
+                    name = "fileInfo",
+                    description = "파일 정보 목록",
+                    requiredMode = Schema.RequiredMode.REQUIRED
+            ),
+            schema = @Schema(implementation = AddFileRequest.class)
+    )
+    private List<AddFileRequest> fileInfo;
+
+    @Schema(
+            name = "ownerType",
+            description = "소유자 타입",
+            requiredMode = Schema.RequiredMode.REQUIRED
+    )
+    @NotBlank(message = "소유자 타입은 필수값입니다.")
+    private String ownerType;
+
+    @Schema(
+            name = "ownerId",
+            description = "소유자 ID",
+            requiredMode = Schema.RequiredMode.REQUIRED
+    )
+    @NotNull(message = "소유자 ID는 필수값입니다.")
+    @Min(value = 1, message = "소유자 ID는 1 이상이어야 합니다.")
+    @Max(value = Long.MAX_VALUE, message = "소유자 ID는 정수형 최대값을 초과할 수 없습니다.")
+    private Long ownerId;
+}

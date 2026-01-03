@@ -1,0 +1,49 @@
+package com.personal.marketnote.file.adapter.out.persistence.file;
+
+import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
+import com.personal.marketnote.file.adapter.out.persistence.file.entity.FileJpaEntity;
+import com.personal.marketnote.file.adapter.out.persistence.file.repository.FileJpaRepository;
+import com.personal.marketnote.file.domain.file.FileDomain;
+import com.personal.marketnote.file.port.out.file.SaveFilesPort;
+import lombok.RequiredArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@PersistenceAdapter
+@RequiredArgsConstructor
+public class FilePersistenceAdapter implements SaveFilesPort {
+    private final FileJpaRepository fileJpaRepository;
+
+    @Override
+    public List<FileDomain> saveAll(List<FileDomain> fileDomains, List<String> s3Urls) {
+        if (fileDomains == null || fileDomains.isEmpty()) {
+            return List.of();
+        }
+        if (s3Urls == null || s3Urls.size() != fileDomains.size()) {
+            throw new IllegalArgumentException("s3Urls size must match fileDomains size");
+        }
+
+        List<FileJpaEntity> toSave = new ArrayList<>(fileDomains.size());
+        for (int i = 0; i < fileDomains.size(); i++) {
+            toSave.add(FileJpaEntity.from(fileDomains.get(i), s3Urls.get(i)));
+        }
+
+        List<FileJpaEntity> savedList = fileJpaRepository.saveAll(toSave);
+        return savedList.stream()
+                .map(e -> FileDomain.of(
+                        e.getId(),
+                        e.getOwnerType(),
+                        e.getOwnerId(),
+                        e.getSort(),
+                        e.getExtension(),
+                        e.getName(),
+                        e.getS3Url(),
+                        e.getCreatedAt(),
+                        e.getStatus()
+                ))
+                .toList();
+    }
+}
+
+
