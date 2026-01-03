@@ -24,4 +24,12 @@ public enum FileSort {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Invalid file sort: " + targetValue));
     }
+
+    public boolean isCatalogImage() {
+        return this == FileSort.PRODUCT_CATALOG_IMAGE;
+    }
+
+    public boolean isRepresentativeImage() {
+        return this == FileSort.PRODUCT_REPRESENTATIVE_IMAGE;
+    }
 }
