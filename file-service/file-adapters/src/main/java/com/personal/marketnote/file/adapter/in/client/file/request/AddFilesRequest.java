@@ -7,20 +7,55 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @Getter
+@Setter
+@NoArgsConstructor
 public class AddFilesRequest {
     @ArraySchema(
             arraySchema = @Schema(
-                    name = "fileInfo",
-                    description = "파일 정보 목록",
+                    name = "file",
+                    description = "업로드할 파일 목록",
                     requiredMode = Schema.RequiredMode.REQUIRED
             ),
-            schema = @Schema(implementation = AddFileRequest.class)
+            schema = @Schema(type = "string", format = "binary")
     )
-    private List<AddFileRequest> fileInfo;
+    private List<MultipartFile> file;
+
+    @ArraySchema(
+            arraySchema = @Schema(
+                    name = "sort",
+                    description = "파일 종류 목록",
+                    requiredMode = Schema.RequiredMode.REQUIRED
+            ),
+            schema = @Schema(type = "string", example = "PRODUCT_CATALOG_IMAGE")
+    )
+    private List<String> sort;
+
+    @ArraySchema(
+            arraySchema = @Schema(
+                    name = "extension",
+                    description = "파일 확장자 목록",
+                    requiredMode = Schema.RequiredMode.NOT_REQUIRED
+            ),
+            schema = @Schema(type = "string", example = "jpg")
+    )
+    private List<String> extension;
+
+    @ArraySchema(
+            arraySchema = @Schema(
+                    name = "name",
+                    description = "파일명 목록",
+                    requiredMode = Schema.RequiredMode.NOT_REQUIRED
+            ),
+            schema = @Schema(type = "string", example = "스프링노트1")
+    )
+    private List<String> name;
 
     @Schema(
             name = "ownerType",
