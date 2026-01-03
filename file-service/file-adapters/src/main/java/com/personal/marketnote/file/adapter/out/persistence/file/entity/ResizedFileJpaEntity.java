@@ -34,6 +34,9 @@ public class ResizedFileJpaEntity {
     @Column(name = "size", nullable = false, length = 255)
     private String size;
 
+    @Column(name = "s3_url", nullable = false, length = 1024)
+    private String s3Url;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -48,6 +51,15 @@ public class ResizedFileJpaEntity {
         return ResizedFileJpaEntity.builder()
                 .file(file)
                 .size(size)
+                .status(EntityStatus.ACTIVE)
+                .build();
+    }
+
+    public static ResizedFileJpaEntity of(FileJpaEntity file, String size, String s3Url) {
+        return ResizedFileJpaEntity.builder()
+                .file(file)
+                .size(size)
+                .s3Url(s3Url)
                 .status(EntityStatus.ACTIVE)
                 .build();
     }

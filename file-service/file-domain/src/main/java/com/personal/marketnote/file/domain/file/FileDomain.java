@@ -1,6 +1,8 @@
 package com.personal.marketnote.file.domain.file;
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
+import com.personal.marketnote.common.domain.file.FileSort;
+import com.personal.marketnote.common.domain.file.OwnerType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +23,7 @@ public class FileDomain {
     private String s3Url;
     private LocalDateTime createdAt;
     private EntityStatus status;
+    private Long orderNum;
 
     public static FileDomain of(
             String ownerType,
@@ -47,7 +50,8 @@ public class FileDomain {
             String name,
             String s3Url,
             LocalDateTime createdAt,
-            EntityStatus status
+            EntityStatus status,
+            Long orderNum
     ) {
         return FileDomain.builder()
                 .id(id)
@@ -59,6 +63,7 @@ public class FileDomain {
                 .s3Url(s3Url)
                 .createdAt(createdAt)
                 .status(status)
+                .orderNum(orderNum)
                 .build();
     }
 }

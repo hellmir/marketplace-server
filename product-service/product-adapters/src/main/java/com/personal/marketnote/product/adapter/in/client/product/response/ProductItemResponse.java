@@ -2,6 +2,7 @@ package com.personal.marketnote.product.adapter.in.client.product.response;
 
 import com.personal.marketnote.product.domain.product.ProductTag;
 import com.personal.marketnote.product.port.in.result.ProductItemResult;
+import com.personal.marketnote.product.port.out.file.dto.GetFilesResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +27,7 @@ public class ProductItemResponse {
     private List<ProductTag> productTags;
     private Long orderNum;
     private String status;
+    private CatalogImagesResponse catalogImages;
 
     public static ProductItemResponse from(ProductItemResult result) {
         return ProductItemResponse.builder()
@@ -41,7 +43,49 @@ public class ProductItemResponse {
                 .productTags(result.productTags())
                 .orderNum(result.orderNum())
                 .status(result.status())
+                .catalogImages(CatalogImagesResponse.from(result.catalogImages()))
                 .build();
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PRIVATE)
+    @Getter
+    public static class CatalogImagesResponse {
+        private List<CatalogImageItemResponse> files;
+
+        public static CatalogImagesResponse from(GetFilesResult dto) {
+            if (dto == null || dto.files() == null) {
+                return new CatalogImagesResponse(List.of());
+            }
+            return CatalogImagesResponse.builder()
+                    .files(dto.files().stream().map(CatalogImageItemResponse::from).toList())
+                    .build();
+        }
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PRIVATE)
+    @Getter
+    public static class CatalogImageItemResponse {
+        private Long id;
+        private String sort;
+        private String extension;
+        private String name;
+        private String s3Url;
+        private List<String> resizedS3Urls;
+        private Long orderNum;
+
+        public static CatalogImageItemResponse from(GetFilesResult.FileItem item) {
+            return CatalogImageItemResponse.builder()
+                    .id(item.id())
+                    .sort(item.sort())
+                    .extension(item.extension())
+                    .name(item.name())
+                    .s3Url(item.s3Url())
+                    .resizedS3Urls(item.resizedS3Urls())
+                    .orderNum(item.orderNum())
+                    .build();
+        }
     }
 }
 

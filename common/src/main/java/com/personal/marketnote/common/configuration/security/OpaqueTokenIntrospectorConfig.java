@@ -57,6 +57,7 @@ public class OpaqueTokenIntrospectorConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/users/sign-out").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/authentication/access-token/refresh").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/terms").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)

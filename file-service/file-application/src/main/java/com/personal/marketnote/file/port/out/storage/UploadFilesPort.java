@@ -1,6 +1,6 @@
 package com.personal.marketnote.file.port.out.storage;
 
-import com.personal.marketnote.file.domain.file.OwnerType;
+import com.personal.marketnote.common.domain.file.OwnerType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

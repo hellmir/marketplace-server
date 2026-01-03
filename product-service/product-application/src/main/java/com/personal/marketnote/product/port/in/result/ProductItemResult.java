@@ -2,6 +2,7 @@ package com.personal.marketnote.product.port.in.result;
 
 import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.domain.product.ProductTag;
+import com.personal.marketnote.product.port.out.file.dto.GetFilesResult;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,7 +19,8 @@ public record ProductItemResult(
         Integer sales,
         List<ProductTag> productTags,
         Long orderNum,
-        String status
+        String status,
+        GetFilesResult catalogImages
 ) {
     public static ProductItemResult from(Product product) {
         return new ProductItemResult(
@@ -33,7 +35,8 @@ public record ProductItemResult(
                 product.getSales(),
                 product.getProductTags(),
                 product.getOrderNum(),
-                product.getStatus().name()
+                product.getStatus().name(),
+                null
         );
     }
 
@@ -57,7 +60,26 @@ public record ProductItemResult(
                 product.getSales(),
                 product.getProductTags(),
                 product.getOrderNum(),
-                product.getStatus().name()
+                product.getStatus().name(),
+                null
+        );
+    }
+
+    public static ProductItemResult withCatalogImages(ProductItemResult base, GetFilesResult catalogImages) {
+        return new ProductItemResult(
+                base.id(),
+                base.sellerId(),
+                base.name(),
+                base.brandName(),
+                base.price(),
+                base.discountPrice(),
+                base.discountRate(),
+                base.accumulatedPoint(),
+                base.sales(),
+                base.productTags(),
+                base.orderNum(),
+                base.status(),
+                catalogImages
         );
     }
 }

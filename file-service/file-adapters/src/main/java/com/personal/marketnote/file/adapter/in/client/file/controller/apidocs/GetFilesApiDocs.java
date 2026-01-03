@@ -86,7 +86,7 @@ import java.lang.annotation.*;
                 | extension | string | 파일 확장자 | "jpg" |
                 | name | string | 파일명 | "스프링노트1" |
                 | s3Url | string | S3 URL | "https://bucket.s3.amazonaws.com/product/1/original.jpg" |
-                | resizedSizes | array | 리사이즈 크기 목록 | ["300x300", "500x500"] |
+                | resizedS3Urls | array | 리사이즈 이미지 S3 URL 목록 | ["https://bucket.s3.amazonaws.com/product/1/300x300_original.jpg", "https://bucket.s3.amazonaws.com/product/1/500x500_original.jpg"] |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         parameters = {
@@ -121,9 +121,9 @@ import java.lang.annotation.*;
                                                 "extension": "png",
                                                 "name": "스프링노트1",
                                                 "s3Url": "https://marketnote.s3.amazonaws.com/product/1/1763456309061_gungisick1.png",
-                                                "resizedSizes": [
-                                                  "300x300",
-                                                  "500x500"
+                                                "resizedS3Urls": [
+                                                  "https://marketnote.s3.amazonaws.com/product/1/1763456309061_gungisick1_300x300.png",
+                                                  "https://marketnote.s3.amazonaws.com/product/1/1763456309061_gungisick1_500x500.png"
                                                 ]
                                               },
                                               {
@@ -132,9 +132,9 @@ import java.lang.annotation.*;
                                                 "extension": "png",
                                                 "name": "스프링노트2",
                                                 "s3Url": "https://marketnote.s3.amazonaws.com/product/1/1763456845957_gungisick2.png",
-                                                "resizedSizes": [
-                                                  "300x300",
-                                                  "500x500"
+                                                "resizedS3Urls": [
+                                                  "https://marketnote.s3.amazonaws.com/product/1/1763456845957_gungisick2_300x300.png",
+                                                  "https://marketnote.s3.amazonaws.com/product/1/1763456845957_gungisick2_500x500.png"
                                                 ]
                                               }
                                             ]

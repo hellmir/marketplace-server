@@ -6,6 +6,8 @@ import com.personal.marketnote.product.domain.product.*;
 import com.personal.marketnote.product.exception.ProductNotFoundException;
 import com.personal.marketnote.product.port.in.result.*;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
+import com.personal.marketnote.product.port.out.file.FindProductCatalogImagePort;
+import com.personal.marketnote.product.port.out.file.dto.GetFilesResult;
 import com.personal.marketnote.product.port.out.pricepolicy.FindPricePolicyPort;
 import com.personal.marketnote.product.port.out.product.FindProductPort;
 import com.personal.marketnote.product.port.out.productoption.FindProductOptionCategoryPort;
@@ -16,6 +18,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
@@ -26,6 +31,7 @@ public class GetProductService implements GetProductUseCase {
     private final FindProductPort findProductPort;
     private final FindProductOptionCategoryPort findProductOptionCategoryPort;
     private final FindPricePolicyPort findPricePolicyPort;
+    private final FindProductCatalogImagePort findProductCatalogImagePort;
 
     @Override
     public Product getProduct(Long id) {
@@ -48,7 +54,6 @@ public class GetProductService implements GetProductUseCase {
         Long adjustedDiscountPrice = product.getDiscountPrice() != null ? product.getDiscountPrice() : product.getPrice();
         Long adjustedAccumulatedPoint = product.getAccumulatedPoint();
         if (product.isFindAllOptionsYn() && FormatValidator.hasValue(selectedOptions) && FormatValidator.hasValue(categories)) {
-            // 지원: 옵션 이름 또는 옵션 ID 문자열 모두 허용
             java.util.Set<Long> numericSelected = new java.util.HashSet<>();
             for (String s : selectedOptions) {
                 if (s == null) continue;
@@ -162,12 +167,26 @@ public class GetProductService implements GetProductUseCase {
             nextCursor = pageItems.get(pageItems.size() - 1).id();
         }
 
+        // 병렬로 상품 카탈로그 이미지 조회
+        Map<Long, GetFilesResult> productIdToImages = new ConcurrentHashMap<>();
+        List<CompletableFuture<Void>> futures = pageItems.stream()
+                .map(item -> CompletableFuture.runAsync(() -> {
+                    findProductCatalogImagePort.findCatalogImagesByProductId(item.id())
+                            .ifPresent(dto -> productIdToImages.put(item.id(), dto));
+                }))
+                .toList();
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        List<ProductItemResult> pageItemsWithImage = pageItems.stream()
+                .map(item -> ProductItemResult.withCatalogImages(item, productIdToImages.get(item.id())))
+                .collect(Collectors.toList());
+
         Long totalElements = null;
         if (isFirstPage) {
             totalElements = computeTotalElements(isCategorized, categoryId, searchTarget, searchKeyword);
         }
 
-        return GetProductsResult.fromItems(pageItems, hasNext, nextCursor, totalElements);
+        return GetProductsResult.fromItems(pageItemsWithImage, hasNext, nextCursor, totalElements);
     }
 
     private List<Product> getProducts(

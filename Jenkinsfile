@@ -473,6 +473,8 @@ pipeline {
 						string(credentialsId: 'MARKETNOTE_REDIS_PASSWORD',                  variable: 'REDIS_PASSWORD'),
 						string(credentialsId: 'MARKETNOTE_REDIS_HOST_NAME',                 variable: 'REDIS_HOST_NAME'),
 						string(credentialsId: 'MARKETNOTE_REDIS_EMAIL_VERIFICATION_PREFIX', variable: 'REDIS_EMAIL_VERIFICATION_PREFIX'),
+						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_SERVER_ORIGIN',   variable: 'FILE_SERVICE_SERVER_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_QA_JWT_ADMIN_ACCESS_TOKEN',       variable: 'JWT_ADMIN_ACCESS_TOKEN'),
 					]) {
 						sh '''
                   LG="$CLOUDWATCH_LOG_GROUP"
@@ -523,7 +525,9 @@ pipeline {
 									[name: "MAIL_VERIFICATION_TTL_MINUTES",  value: env.MAIL_VERIFICATION_TTL_MINUTES],
 									[name: "REDIS_HOST_NAME",                value: env.REDIS_HOST_NAME],
 									[name: "REDIS_PASSWORD",                 value: env.REDIS_PASSWORD],
-									[name: "REDIS_EMAIL_VERIFICATION_PREFIX",value: env.REDIS_EMAIL_VERIFICATION_PREFIX]
+									[name: "REDIS_EMAIL_VERIFICATION_PREFIX",value: env.REDIS_EMAIL_VERIFICATION_PREFIX],
+									[name: "FILE_SERVICE_SERVER_ORIGIN",     value: env.FILE_SERVICE_SERVER_ORIGIN],
+									[name: "JWT_ADMIN_ACCESS_TOKEN",         value: env.JWT_ADMIN_ACCESS_TOKEN],
 								],
 								logConfiguration: [
 									logDriver: "awslogs",

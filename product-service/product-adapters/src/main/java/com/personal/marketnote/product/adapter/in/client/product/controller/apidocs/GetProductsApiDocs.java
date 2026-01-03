@@ -175,77 +175,329 @@ import java.lang.annotation.*;
                         content = @Content(
                                 schema = @Schema(implementation = StringResponseSchema.class),
                                 examples = @ExampleObject("""
-                                                                                {
-                                                                                  "statusCode": 200,
-                                                                                  "code": "SUC01",
-                                                                                  "timestamp": "2026-01-01T10:34:29.332952183",
-                                                                                  "content": {
-                                                                                    "products": {
-                                                                                      "totalElements": null,
-                                                                                      "hasNext": true,
-                                                                                      "nextCursor": 19,
-                                                                                      "items": [
-                                                                                        {
-                                                                                          "id": 20,
-                                                                                          "sellerId": 12,
-                                                                                          "name": "스프링노트2",
-                                                                                          "brandName": "노트킹",
-                                                                                          "price": 45000,
-                                                                                          "discountPrice": 20000,
-                                                                                          "discountRate": 17.8,
-                                                                                          "accumulatedPoint": 1500,
-                                                                                          "sales": 0,
-                                                                                          "productTags": [],
-                                                                                          "orderNum": 20,
-                                                                                          "status": "ACTIVE"
-                                                                                        },
-                                                                                        {
-                                                                                          "id": 19,
-                                                                                          "sellerId": 1,
-                                                                                          "name": "스프링노트1 (1박스 / 30개입)",
-                                                                                          "brandName": "노트왕",
-                                                                                          "price": 92000,
-                                                                                          "discountPrice": 84000,
-                                                                                          "discountRate": 17.8,
-                                                                                          "accumulatedPoint": 7400,
-                                                                                          "sales": 0,
-                                                                                          "productTags": [],
-                                                                                          "orderNum": 19,
-                                                                                          "status": "ACTIVE"
-                                                                                        },
-                                                                                        {
-                                                                                          "id": 19,
-                                                                                          "sellerId": 1,
-                                                                                          "name": "스프링노트1 (1박스 / 60개입)",
-                                                                                          "brandName": "노트왕",
-                                                                                          "price": 102000,
-                                                                                          "discountPrice": 94000,
-                                                                                          "discountRate": 17.8,
-                                                                                          "accumulatedPoint": 12400,
-                                                                                          "sales": 0,
-                                                                                          "productTags": [],
-                                                                                          "orderNum": 19,
-                                                                                          "status": "ACTIVE"
-                                                                                        },
-                                                                                        {
-                                                                                          "id": 19,
-                                                                                          "sellerId": 1,
-                                                                                          "name": "스프링노트1 (3박스 / 30개입)",
-                                                                                          "brandName": "노트왕",
-                                                                                          "price": 154000,
-                                                                                          "discountPrice": 146000,
-                                                                                          "discountRate": 17.8,
-                                                                                          "accumulatedPoint": 8200,
-                                                                                          "sales": 0,
-                                                                                          "productTags": [],
-                                                                                          "orderNum": 19,
-                                        탭                                                  "status": "ACTIVE"
-                                                                                        }
-                                                                                      ]
-                                                                                    }
-                                                                                  },
-                                                                                  "message": "상품 목록 조회 성공"
-                                                                                }
+                                        {
+                                          "statusCode": 200,
+                                          "code": "SUC01",
+                                          "timestamp": "2026-01-04T11:44:56.772398",
+                                          "content": {
+                                            "products": {
+                                              "totalElements": 14,
+                                              "hasNext": true,
+                                              "nextCursor": 30,
+                                              "items": [
+                                                {
+                                                  "id": 30,
+                                                  "sellerId": 1,
+                                                  "name": "건기식테스트1 (1박스 / 30개입)",
+                                                  "brandName": "노트왕",
+                                                  "price": 40000,
+                                                  "discountPrice": 32000,
+                                                  "discountRate": 20,
+                                                  "accumulatedPoint": 800,
+                                                  "sales": 0,
+                                                  "productTags": [
+                                                    {
+                                                      "id": 13,
+                                                      "productId": 30,
+                                                      "name": "루테인",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    },
+                                                    {
+                                                      "id": 14,
+                                                      "productId": 30,
+                                                      "name": "아스타잔틴",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    }
+                                                  ],
+                                                  "orderNum": 30,
+                                                  "status": "ACTIVE",
+                                                  "catalogImages": {
+                                                    "files": [
+                                                      {
+                                                        "id": 12,
+                                                        "sort": "PRODUCT_CATALOG_IMAGE",
+                                                        "extension": "jpg",
+                                                        "name": "스프링노트1",
+                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517082648_grafana-icon.png",
+                                                        "resizedS3Urls": [
+                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517083251_grafana-icon_300x300.png"
+                                                        ],
+                                                        "orderNum": null
+                                                      },
+                                                      {
+                                                        "id": 14,
+                                                        "sort": "PRODUCT_CATALOG_IMAGE",
+                                                        "extension": "jpg",
+                                                        "name": "스프링노트1",
+                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517295839_grafana-icon.png",
+                                                        "resizedS3Urls": [
+                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517296419_grafana-icon_300x300.png"
+                                                        ],
+                                                        "orderNum": null
+                                                      },
+                                                      {
+                                                        "id": 16,
+                                                        "sort": "PRODUCT_CATALOG_IMAGE",
+                                                        "extension": "jpg",
+                                                        "name": "스프링노트1",
+                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517302521_grafana-icon.png",
+                                                        "resizedS3Urls": [
+                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517302838_grafana-icon_300x300.png"
+                                                        ],
+                                                        "orderNum": null
+                                                      },
+                                                      {
+                                                        "id": 18,
+                                                        "sort": "PRODUCT_CATALOG_IMAGE",
+                                                        "extension": "jpg",
+                                                        "name": "스프링노트1",
+                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517310521_grafana-icon.png",
+                                                        "resizedS3Urls": [
+                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517310821_grafana-icon_300x300.png"
+                                                        ],
+                                                        "orderNum": null
+                                                      }
+                                                    ]
+                                                  }
+                                                },
+                                                {
+                                                  "id": 30,
+                                                  "sellerId": 1,
+                                                  "name": "건기식테스트1 (1박스 / 60개입)",
+                                                  "brandName": "노트왕",
+                                                  "price": 45000,
+                                                  "discountPrice": 37000,
+                                                  "discountRate": 17.8,
+                                                  "accumulatedPoint": 1200,
+                                                  "sales": 0,
+                                                  "productTags": [
+                                                    {
+                                                      "id": 13,
+                                                      "productId": 30,
+                                                      "name": "루테인",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    },
+                                                    {
+                                                      "id": 14,
+                                                      "productId": 30,
+                                                      "name": "아스타잔틴",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    }
+                                                  ],
+                                                  "orderNum": 30,
+                                                  "status": "ACTIVE",
+                                                  "catalogImages": {
+                                                    "files": [
+                                                      {
+                                                        "id": 12,
+                                                        "sort": "PRODUCT_CATALOG_IMAGE",
+                                                        "extension": "jpg",
+                                                        "name": "스프링노트1",
+                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517082648_grafana-icon.png",
+                                                        "resizedS3Urls": [
+                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517083251_grafana-icon_300x300.png"
+                                                        ],
+                                                        "orderNum": null
+                                                      },
+                                                      {
+                                                        "id": 14,
+                                                        "sort": "PRODUCT_CATALOG_IMAGE",
+                                                        "extension": "jpg",
+                                                        "name": "스프링노트1",
+                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517295839_grafana-icon.png",
+                                                        "resizedS3Urls": [
+                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517296419_grafana-icon_300x300.png"
+                                                        ],
+                                                        "orderNum": null
+                                                      },
+                                                      {
+                                                        "id": 16,
+                                                        "sort": "PRODUCT_CATALOG_IMAGE",
+                                                        "extension": "jpg",
+                                                        "name": "스프링노트1",
+                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517302521_grafana-icon.png",
+                                                        "resizedS3Urls": [
+                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517302838_grafana-icon_300x300.png"
+                                                        ],
+                                                        "orderNum": null
+                                                      },
+                                                      {
+                                                        "id": 18,
+                                                        "sort": "PRODUCT_CATALOG_IMAGE",
+                                                        "extension": "jpg",
+                                                        "name": "스프링노트1",
+                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517310521_grafana-icon.png",
+                                                        "resizedS3Urls": [
+                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517310821_grafana-icon_300x300.png"
+                                                        ],
+                                                        "orderNum": null
+                                                      }
+                                                    ]
+                                                  }
+                                                },
+                                                {
+                                                  "id": 30,
+                                                  "sellerId": 1,
+                                                  "name": "건기식테스트1 (3박스 / 30개입)",
+                                                  "brandName": "노트왕",
+                                                  "price": 60000,
+                                                  "discountPrice": 40000,
+                                                  "discountRate": 33.3,
+                                                  "accumulatedPoint": 3000,
+                                                  "sales": 0,
+                                                  "productTags": [
+                                                    {
+                                                      "id": 13,
+                                                      "productId": 30,
+                                                      "name": "루테인",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    },
+                                                    {
+                                                      "id": 14,
+                                                      "productId": 30,
+                                                      "name": "아스타잔틴",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    }
+                                                  ],
+                                                  "orderNum": 30,
+                                                  "status": "ACTIVE",
+                                                  "catalogImages": {
+                                                    "files": [
+                                                      {
+                                                        "id": 12,
+                                                        "sort": "PRODUCT_CATALOG_IMAGE",
+                                                        "extension": "jpg",
+                                                        "name": "스프링노트1",
+                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517082648_grafana-icon.png",
+                                                        "resizedS3Urls": [
+                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517083251_grafana-icon_300x300.png"
+                                                        ],
+                                                        "orderNum": null
+                                                      },
+                                                      {
+                                                        "id": 14,
+                                                        "sort": "PRODUCT_CATALOG_IMAGE",
+                                                        "extension": "jpg",
+                                                        "name": "스프링노트1",
+                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517295839_grafana-icon.png",
+                                                        "resizedS3Urls": [
+                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517296419_grafana-icon_300x300.png"
+                                                        ],
+                                                        "orderNum": null
+                                                      },
+                                                      {
+                                                        "id": 16,
+                                                        "sort": "PRODUCT_CATALOG_IMAGE",
+                                                        "extension": "jpg",
+                                                        "name": "스프링노트1",
+                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517302521_grafana-icon.png",
+                                                        "resizedS3Urls": [
+                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517302838_grafana-icon_300x300.png"
+                                                        ],
+                                                        "orderNum": null
+                                                      },
+                                                      {
+                                                        "id": 18,
+                                                        "sort": "PRODUCT_CATALOG_IMAGE",
+                                                        "extension": "jpg",
+                                                        "name": "스프링노트1",
+                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517310521_grafana-icon.png",
+                                                        "resizedS3Urls": [
+                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517310821_grafana-icon_300x300.png"
+                                                        ],
+                                                        "orderNum": null
+                                                      }
+                                                    ]
+                                                  }
+                                                },
+                                                {
+                                                  "id": 30,
+                                                  "sellerId": 1,
+                                                  "name": "건기식테스트1 (3박스 / 60개입)",
+                                                  "brandName": "노트왕",
+                                                  "price": 50000,
+                                                  "discountPrice": 40000,
+                                                  "discountRate": 20,
+                                                  "accumulatedPoint": 2000,
+                                                  "sales": 0,
+                                                  "productTags": [
+                                                    {
+                                                      "id": 13,
+                                                      "productId": 30,
+                                                      "name": "루테인",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    },
+                                                    {
+                                                      "id": 14,
+                                                      "productId": 30,
+                                                      "name": "아스타잔틴",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    }
+                                                  ],
+                                                  "orderNum": 30,
+                                                  "status": "ACTIVE",
+                                                  "catalogImages": {
+                                                    "files": [
+                                                      {
+                                                        "id": 12,
+                                                        "sort": "PRODUCT_CATALOG_IMAGE",
+                                                        "extension": "jpg",
+                                                        "name": "스프링노트1",
+                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517082648_grafana-icon.png",
+                                                        "resizedS3Urls": [
+                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517083251_grafana-icon_300x300.png"
+                                                        ],
+                                                        "orderNum": 18
+                                                      },
+                                                      {
+                                                        "id": 14,
+                                                        "sort": "PRODUCT_CATALOG_IMAGE",
+                                                        "extension": "jpg",
+                                                        "name": "스프링노트1",
+                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517295839_grafana-icon.png",
+                                                        "resizedS3Urls": [
+                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517296419_grafana-icon_300x300.png"
+                                                        ],
+                                                        "orderNum": 16
+                                                      },
+                                                      {
+                                                        "id": 16,
+                                                        "sort": "PRODUCT_CATALOG_IMAGE",
+                                                        "extension": "jpg",
+                                                        "name": "스프링노트1",
+                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517302521_grafana-icon.png",
+                                                        "resizedS3Urls": [
+                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517302838_grafana-icon_300x300.png"
+                                                        ],
+                                                        "orderNum": 1
+                                                      },
+                                                      {
+                                                        "id": 18,
+                                                        "sort": "PRODUCT_CATALOG_IMAGE",
+                                                        "extension": "jpg",
+                                                        "name": "스프링노트1",
+                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517310521_grafana-icon.png",
+                                                        "resizedS3Urls": [
+                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517310821_grafana-icon_300x300.png"
+                                                        ],
+                                                        "orderNum": 18
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          },
+                                          "message": "상품 목록 조회 성공"
+                                        }
                                         """)
                         )
                 ),

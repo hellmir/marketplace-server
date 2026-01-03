@@ -4,6 +4,7 @@ spring:
 
   jwt:
     secret: ${JWT_SECRET_KEY:dev-secret-change-me}
+    admin-access-token: ${JWT_ADMIN_ACCESS_TOKEN:abc}
 
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -41,6 +42,8 @@ logging:
   level:
     org.springframework.security: ERROR
 
+file-service:
+  base-url: ${FILE_SERVICE_SERVER_ORIGIN:http://localhost:9000}
 management:
   endpoints:
     web:

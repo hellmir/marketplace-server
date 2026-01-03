@@ -1,10 +1,10 @@
 package com.personal.marketnote.file.adapter.out.persistence.file;
 
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
+import com.personal.marketnote.common.domain.file.OwnerType;
 import com.personal.marketnote.file.adapter.out.persistence.file.entity.FileJpaEntity;
 import com.personal.marketnote.file.adapter.out.persistence.file.repository.FileJpaRepository;
 import com.personal.marketnote.file.domain.file.FileDomain;
-import com.personal.marketnote.file.domain.file.OwnerType;
 import com.personal.marketnote.file.port.out.file.FindFilesPort;
 import com.personal.marketnote.file.port.out.file.SaveFilesPort;
 import lombok.RequiredArgsConstructor;
@@ -32,17 +32,20 @@ public class FilePersistenceAdapter implements SaveFilesPort, FindFilesPort {
         }
 
         List<FileJpaEntity> savedList = fileJpaRepository.saveAll(toSave);
+        savedList.forEach(FileJpaEntity::setIdToOrderNum);
+
         return savedList.stream()
-                .map(e -> FileDomain.of(
-                        e.getId(),
-                        e.getOwnerType(),
-                        e.getOwnerId(),
-                        e.getSort(),
-                        e.getExtension(),
-                        e.getName(),
-                        e.getS3Url(),
-                        e.getCreatedAt(),
-                        e.getStatus()
+                .map(entity -> FileDomain.of(
+                        entity.getId(),
+                        entity.getOwnerType(),
+                        entity.getOwnerId(),
+                        entity.getSort(),
+                        entity.getExtension(),
+                        entity.getName(),
+                        entity.getS3Url(),
+                        entity.getCreatedAt(),
+                        entity.getStatus(),
+                        entity.getOrderNum()
                 ))
                 .toList();
     }
@@ -50,33 +53,35 @@ public class FilePersistenceAdapter implements SaveFilesPort, FindFilesPort {
     @Override
     public List<FileDomain> findByOwner(OwnerType ownerType, Long ownerId) {
         return fileJpaRepository.findAllByOwnerTypeAndOwnerIdOrderByIdAsc(ownerType, ownerId).stream()
-                .map(e -> FileDomain.of(
-                        e.getId(),
-                        e.getOwnerType(),
-                        e.getOwnerId(),
-                        e.getSort(),
-                        e.getExtension(),
-                        e.getName(),
-                        e.getS3Url(),
-                        e.getCreatedAt(),
-                        e.getStatus()
+                .map(entity -> FileDomain.of(
+                        entity.getId(),
+                        entity.getOwnerType(),
+                        entity.getOwnerId(),
+                        entity.getSort(),
+                        entity.getExtension(),
+                        entity.getName(),
+                        entity.getS3Url(),
+                        entity.getCreatedAt(),
+                        entity.getStatus(),
+                        entity.getOrderNum()
                 ))
                 .toList();
     }
 
     @Override
     public List<FileDomain> findByOwnerAndSort(OwnerType ownerType, Long ownerId, String sort) {
-        return fileJpaRepository.findAllByOwnerTypeAndOwnerIdAndSortOrderByIdAsc(ownerType, ownerId, sort).stream()
-                .map(e -> FileDomain.of(
-                        e.getId(),
-                        e.getOwnerType(),
-                        e.getOwnerId(),
-                        e.getSort(),
-                        e.getExtension(),
-                        e.getName(),
-                        e.getS3Url(),
-                        e.getCreatedAt(),
-                        e.getStatus()
+        return fileJpaRepository.findTop5ByOwnerTypeAndOwnerIdAndSortOrderByOrderNumDesc(ownerType, ownerId, sort).stream()
+                .map(entity -> FileDomain.of(
+                        entity.getId(),
+                        entity.getOwnerType(),
+                        entity.getOwnerId(),
+                        entity.getSort(),
+                        entity.getExtension(),
+                        entity.getName(),
+                        entity.getS3Url(),
+                        entity.getCreatedAt(),
+                        entity.getStatus(),
+                        entity.getOrderNum()
                 ))
                 .toList();
     }

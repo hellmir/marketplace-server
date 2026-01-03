@@ -1,10 +1,10 @@
 package com.personal.marketnote.file.service.file;
 
 import com.personal.marketnote.common.application.UseCase;
+import com.personal.marketnote.common.domain.file.FileSort;
+import com.personal.marketnote.common.domain.file.OwnerType;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.file.domain.file.FileDomain;
-import com.personal.marketnote.file.domain.file.FileSort;
-import com.personal.marketnote.file.domain.file.OwnerType;
 import com.personal.marketnote.file.domain.file.ResizedFile;
 import com.personal.marketnote.file.mapper.FileCommandToDomainMapper;
 import com.personal.marketnote.file.port.in.command.AddFileCommand;
@@ -59,16 +59,24 @@ public class AddFilesService implements AddFileUseCase {
         }
 
         if (FormatValidator.hasValue(resizedToUpload)) {
-            uploadFilesPort.uploadFiles(
+            List<String> resizedS3Urls = uploadFilesPort.uploadFiles(
                     resizedToUpload,
                     OwnerType.from(addFilesCommand.ownerType()),
                     addFilesCommand.ownerId()
             );
+
+            if (FormatValidator.hasValue(resizedToSave)) {
+                List<ResizedFile> resizedWithUrls = new ArrayList<>(resizedToSave.size());
+                for (int i = 0; i < resizedToSave.size(); i++) {
+                    ResizedFile base = resizedToSave.get(i);
+                    resizedWithUrls.add(ResizedFile.of(base.getFileId(), base.getSize(), resizedS3Urls.get(i)));
+                }
+                saveResizedFilesPort.saveAll(resizedWithUrls);
+            }
+            return;
         }
 
-        if (FormatValidator.hasValue(resizedToSave)) {
-            saveResizedFilesPort.saveAll(resizedToSave);
-        }
+        // 업로드할 리사이즈 파일이 없으면 저장도 없음
     }
 
     private void resize(
