@@ -2,7 +2,7 @@ pipeline {
 	agent any
 
 	parameters {
-		choice(name: 'SERVICE', choices: ['auto','user-service','product-service'], description: '배포 대상 서비스')
+		choice(name: 'SERVICE', choices: ['auto','user-service','product-service','file-service'], description: '배포 대상 서비스')
 	}
 
 	environment {
@@ -25,7 +25,8 @@ pipeline {
 
 					def targetAdapters = [
 						'user-service'   : 'user-adapters',
-						'product-service': 'product-adapters'
+						'product-service': 'product-adapters',
+						'file-service': 'file-adapters',
 					]
 
 					def serviceTouched = {
@@ -191,21 +192,27 @@ pipeline {
 					withCredentials([
 						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_ECR_REPOSITORY',      variable: 'USER_SERVICE_ECR_REPOSITORY'),
 						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_ECR_REPOSITORY',   variable: 'PRODUCT_SERVICE_ECR_REPOSITORY'),
+						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_ECR_REPOSITORY',      variable: 'FILE_SERVICE_ECR_REPOSITORY'),
 
 						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_ECS_SERVICE_NAME',    variable: 'USER_SERVICE_ECS_SERVICE_NAME'),
 						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_ECS_SERVICE_NAME', variable: 'PRODUCT_SERVICE_ECS_SERVICE_NAME'),
+						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_ECS_SERVICE_NAME',    variable: 'FILE_SERVICE_ECS_SERVICE_NAME'),
 
 						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_TARGET_GROUP_ARN',    variable: 'USER_SERVICE_TARGET_GROUP_ARN'),
 						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_TARGET_GROUP_ARN', variable: 'PRODUCT_SERVICE_TARGET_GROUP_ARN'),
+						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_TARGET_GROUP_ARN',    variable: 'FILE_SERVICE_TARGET_GROUP_ARN'),
 
 						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_SERVER_ORIGIN',       variable: 'USER_SERVICE_SERVER_ORIGIN'),
 						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_SERVER_ORIGIN',    variable: 'PRODUCT_SERVICE_SERVER_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_SERVER_ORIGIN',       variable: 'FILE_SERVICE_SERVER_ORIGIN'),
 
 						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_DB_URL',              variable: 'USER_SERVICE_DB_URL'),
                         string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_DB_URL',           variable: 'PRODUCT_SERVICE_DB_URL'),
+                        string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_DB_URL',              variable: 'FILE_SERVICE_DB_URL'),
 
                         string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_DB_PASSWORD',         variable: 'USER_SERVICE_DB_PASSWORD'),
                         string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_DB_PASSWORD',      variable: 'PRODUCT_SERVICE_DB_PASSWORD'),
+                        string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_DB_PASSWORD',         variable: 'FILE_SERVICE_DB_PASSWORD'),
 					]) {
 						def svc = env.SERVICE_NAME
 						if (svc == 'user-service') {
@@ -222,6 +229,13 @@ pipeline {
 							env.SERVER_ORIGIN = PRODUCT_SERVICE_SERVER_ORIGIN
 							env.DB_URL = PRODUCT_SERVICE_DB_URL
                         	env.DB_PASSWORD = PRODUCT_SERVICE_DB_PASSWORD
+                        } else if (svc == 'file-service') {
+                           	env.ECR_REPOSITORY = FILE_SERVICE_ECR_REPOSITORY
+                           	env.ECS_SERVICE_NAME = FILE_SERVICE_ECS_SERVICE_NAME
+                           	env.TARGET_GROUP_ARN = FILE_SERVICE_TARGET_GROUP_ARN
+                           	env.SERVER_ORIGIN = FILE_SERVICE_SERVER_ORIGIN
+                           	env.DB_URL = FILE_SERVICE_DB_URL
+                            env.DB_PASSWORD = FILE_SERVICE_DB_PASSWORD
 						}  else {
 							error "SERVICE_NAME not mapped: ${svc}"
 						}

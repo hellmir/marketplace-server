@@ -11,3 +11,8 @@ include("product-service")
 include("product-service:product-adapters")
 include("product-service:product-application")
 include("product-service:product-domain")
+
+include("file-service")
+include("file-service:file-adapters")
+include("file-service:file-application")
+include("file-service:file-domain")
