@@ -1,6 +1,7 @@
 package com.personal.marketnote.file.adapter.in.configuration;
 
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.file.adapter.in.client.file.controller.FileController;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -14,10 +15,12 @@ import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.customizers.OpenApiCustomizer;
+import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.method.HandlerMethod;
 
 import java.util.Comparator;
 import java.util.List;
@@ -148,5 +151,21 @@ public class FileSwaggerConfig {
                                     )
                     );
         }
+    }
+
+    @Bean
+    public OperationCustomizer removeRequestBodyForAddFiles() {
+        return (operation, handlerMethod) -> {
+            if (isAddFilesEndpoint(handlerMethod)) {
+                operation.setRequestBody(null);
+            }
+            return operation;
+        };
+    }
+
+    private boolean isAddFilesEndpoint(HandlerMethod handlerMethod) {
+        return handlerMethod != null
+                && handlerMethod.getBeanType().equals(FileController.class)
+                && "addFiles".equals(handlerMethod.getMethod().getName());
     }
 }

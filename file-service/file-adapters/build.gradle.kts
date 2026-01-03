@@ -123,6 +123,10 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-api:0.12.3")
     implementation("io.jsonwebtoken:jjwt-impl:0.12.3")
     implementation("io.jsonwebtoken:jjwt-jackson:0.12.3")
+
+    // file
+    implementation("software.amazon.awssdk:s3:2.20.52")
+    implementation("software.amazon.awssdk:sts:2.20.52")
 }
 
 // ✅ 테스트 실행 시 JUnit 5 플랫폼 사용 설정
