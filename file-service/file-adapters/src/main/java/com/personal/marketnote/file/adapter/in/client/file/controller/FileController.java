@@ -5,9 +5,10 @@ import com.personal.marketnote.file.adapter.in.client.file.controller.apidocs.Ad
 import com.personal.marketnote.file.adapter.in.client.file.controller.apidocs.GetFilesApiDocs;
 import com.personal.marketnote.file.adapter.in.client.file.mapper.FileRequestToCommandMapper;
 import com.personal.marketnote.file.adapter.in.client.file.request.AddFilesRequest;
-import com.personal.marketnote.file.port.in.usecase.file.FileUseCase;
+import com.personal.marketnote.file.port.in.usecase.file.AddFileUseCase;
 import com.personal.marketnote.file.port.in.usecase.file.GetFilesUseCase;
 import com.personal.marketnote.file.port.in.usecase.file.result.GetFilesResult;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,7 +22,7 @@ import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFA
 @RequestMapping("/api/v1/files")
 @RequiredArgsConstructor
 public class FileController {
-    private final FileUseCase fileUseCase;
+    private final AddFileUseCase addFileUseCase;
     private final GetFilesUseCase getFilesUseCase;
 
     /**
@@ -34,8 +35,10 @@ public class FileController {
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @AddFilesApiDocs
-    public ResponseEntity<BaseResponse<Void>> addFiles(@ModelAttribute AddFilesRequest addFilesRequest) {
-        fileUseCase.addFiles(FileRequestToCommandMapper.mapToCommand(addFilesRequest));
+    public ResponseEntity<BaseResponse<Void>> addFiles(
+            @Parameter(hidden = true) @ModelAttribute AddFilesRequest addFilesRequest
+    ) {
+        addFileUseCase.addFiles(FileRequestToCommandMapper.mapToCommand(addFilesRequest));
 
         return new ResponseEntity<>(
                 BaseResponse.of(

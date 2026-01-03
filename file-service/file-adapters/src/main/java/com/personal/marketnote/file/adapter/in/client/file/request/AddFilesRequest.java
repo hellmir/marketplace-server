@@ -59,15 +59,17 @@ public class AddFilesRequest {
 
     @Schema(
             name = "ownerType",
-            description = "소유자 타입",
+            description = "소유자 유형",
+            example = "PRODUCT",
             requiredMode = Schema.RequiredMode.REQUIRED
     )
-    @NotBlank(message = "소유자 타입은 필수값입니다.")
+    @NotBlank(message = "소유자 유형은 필수값입니다.")
     private String ownerType;
 
     @Schema(
             name = "ownerId",
             description = "소유자 ID",
+            example = "1",
             requiredMode = Schema.RequiredMode.REQUIRED
     )
     @NotNull(message = "소유자 ID는 필수값입니다.")

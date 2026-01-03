@@ -16,5 +16,3 @@ public class RefreshTokenRedisAdapter implements DeleteRefreshTokenPort {
         stringRedisTemplate.delete(key);
     }
 }
-
-
