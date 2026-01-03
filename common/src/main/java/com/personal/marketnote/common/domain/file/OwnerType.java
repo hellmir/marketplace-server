@@ -1,4 +1,4 @@
-package com.personal.marketnote.file.domain.file;
+package com.personal.marketnote.common.domain.file;
 
 import com.personal.marketnote.common.utility.FormatValidator;
 import lombok.Getter;

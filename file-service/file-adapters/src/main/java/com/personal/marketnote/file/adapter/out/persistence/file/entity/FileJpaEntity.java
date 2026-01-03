@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
-import com.personal.marketnote.file.domain.file.OwnerType;
+import com.personal.marketnote.common.domain.file.OwnerType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -57,6 +57,8 @@ public class FileJpaEntity {
     @Enumerated(EnumType.STRING)
     private EntityStatus status;
 
+    private Long orderNum;
+
     public static FileJpaEntity from(com.personal.marketnote.file.domain.file.FileDomain domain, String s3Url) {
         return FileJpaEntity.builder()
                 .ownerType(domain.getOwnerType())
@@ -67,5 +69,9 @@ public class FileJpaEntity {
                 .s3Url(s3Url)
                 .status(EntityStatus.ACTIVE)
                 .build();
+    }
+
+    public void setIdToOrderNum() {
+        orderNum = id;
     }
 }

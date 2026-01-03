@@ -3,6 +3,7 @@ package com.personal.marketnote.product.adapter.in.client.product.controller;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.AuthorityValidator;
 import com.personal.marketnote.common.utility.ElementExtractor;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.*;
 import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductRequest;
@@ -131,7 +132,7 @@ public class ProductController {
      * @param sortProperty  정렬 속성
      * @param searchTarget  검색 대상
      * @param searchKeyword 검색 키워드
-     * @return 회원 목록 조회 응답 {@link GetProductsResponse}
+     * @return 상품 목록 조회 응답 {@link GetProductsResponse}
      * @Author 성효빈
      * @Date 2025-12-31
      * @Description 상품 목록을 조회합니다.
@@ -210,7 +211,7 @@ public class ProductController {
             }
             optionContents = flattened.isEmpty() ? optionContents : flattened;
         }
-        if (optionIds != null && !optionIds.isEmpty()) {
+        if (FormatValidator.hasValue(optionIds)) {
             List<String> flattenedIds = new ArrayList<>();
             for (String raw : optionIds) {
                 if (raw == null) continue;
@@ -288,7 +289,7 @@ public class ProductController {
     }
 
     /**
-     * (판매자/관리자) 상품 삭제 (논리 삭제)
+     * (판매자/관리자) 상품 삭제
      *
      * @param id 상품 ID
      * @Author 성효빈

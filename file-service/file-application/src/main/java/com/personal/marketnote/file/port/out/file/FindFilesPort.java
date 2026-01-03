@@ -1,7 +1,7 @@
 package com.personal.marketnote.file.port.out.file;
 
+import com.personal.marketnote.common.domain.file.OwnerType;
 import com.personal.marketnote.file.domain.file.FileDomain;
-import com.personal.marketnote.file.domain.file.OwnerType;
 
 import java.util.List;
 

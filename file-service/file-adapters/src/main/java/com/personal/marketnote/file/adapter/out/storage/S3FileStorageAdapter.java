@@ -1,9 +1,9 @@
 package com.personal.marketnote.file.adapter.out.storage;
 
+import com.personal.marketnote.common.domain.file.OwnerType;
 import com.personal.marketnote.common.utility.FormatConverter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.file.adapter.out.exception.S3UploadFailedException;
-import com.personal.marketnote.file.domain.file.OwnerType;
 import com.personal.marketnote.file.port.out.storage.UploadFilesPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

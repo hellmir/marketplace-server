@@ -15,6 +15,7 @@ public class ResizedFile {
     private Long id;
     private Long fileId;
     private String size;
+    private String s3Url;
     private LocalDateTime createdAt;
     private EntityStatus status;
 
@@ -25,11 +26,30 @@ public class ResizedFile {
                 .build();
     }
 
+    public static ResizedFile of(Long fileId, String size, String s3Url) {
+        return ResizedFile.builder()
+                .fileId(fileId)
+                .size(size)
+                .s3Url(s3Url)
+                .build();
+    }
+
     public static ResizedFile of(Long id, Long fileId, String size, LocalDateTime createdAt, EntityStatus status) {
         return ResizedFile.builder()
                 .id(id)
                 .fileId(fileId)
                 .size(size)
+                .createdAt(createdAt)
+                .status(status)
+                .build();
+    }
+
+    public static ResizedFile of(Long id, Long fileId, String size, String s3Url, LocalDateTime createdAt, EntityStatus status) {
+        return ResizedFile.builder()
+                .id(id)
+                .fileId(fileId)
+                .size(size)
+                .s3Url(s3Url)
                 .createdAt(createdAt)
                 .status(status)
                 .build();
