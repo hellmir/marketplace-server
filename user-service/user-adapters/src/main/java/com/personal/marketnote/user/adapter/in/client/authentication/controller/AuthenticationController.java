@@ -8,7 +8,6 @@ import com.personal.marketnote.user.adapter.in.client.authentication.controller.
 import com.personal.marketnote.user.adapter.in.client.authentication.controller.apidocs.SendEmailVerificationApiDocs;
 import com.personal.marketnote.user.adapter.in.client.authentication.controller.apidocs.ValidateVerificationCodeApiDocs;
 import com.personal.marketnote.user.adapter.in.client.authentication.request.OAuth2LoginRequest;
-import com.personal.marketnote.user.adapter.in.client.authentication.request.RefreshAccessTokenRequest;
 import com.personal.marketnote.user.adapter.in.client.authentication.response.OAuth2LoginResponse;
 import com.personal.marketnote.user.adapter.in.client.authentication.response.RefreshedAccessTokenResponse;
 import com.personal.marketnote.user.adapter.in.client.authentication.response.WebBasedTokenRefreshResponse;
@@ -97,8 +96,8 @@ public class AuthenticationController {
     /**
      * Access Token 재발급
      *
-     * @param refreshAccessTokenRequest 리프레시 토큰 요청
-     * @return 재발급된 Access Token 응답 {@link RefreshedAccessTokenResponse}
+     * @param refreshToken(cookie) Refresh Token; HTTP-only
+     * @return 재발급된 Access Token 응답 {@link BaseResponse<RefreshedAccessTokenResponse>}
      * @Author 성효빈
      * @Date 2025-12-28
      * @Description Access Token을 재발급합니다.
@@ -106,13 +105,8 @@ public class AuthenticationController {
     @RefreshAccessTokenApiDocs
     @PostMapping("/access-token/refresh")
     public ResponseEntity<BaseResponse<RefreshedAccessTokenResponse>> refreshAccessToken(
-            @CookieValue(value = "refresh_token") String refreshToken,
-            @RequestBody RefreshAccessTokenRequest refreshAccessTokenRequest
+            @CookieValue(value = "refresh_token") String refreshToken
     ) {
-        if (FormatValidator.hasValue(refreshAccessTokenRequest.getRefreshToken())) {
-            refreshToken = refreshAccessTokenRequest.getRefreshToken();
-        }
-
         TokenClaims claims = jwtUtil.parseRefreshToken(refreshToken);
         Long userId = claims.getUserId();
 

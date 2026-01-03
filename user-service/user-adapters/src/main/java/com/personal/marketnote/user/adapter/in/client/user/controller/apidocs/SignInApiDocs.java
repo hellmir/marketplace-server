@@ -60,8 +60,14 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | accessToken | string | 신규 발급된 Access Token | "f8310f8asohvh80scvh0zio3hr31d" |
-                | refreshToken | string | 신규 발급된 Refresh Token | "f8310f8asohvh80scvh0zio3hr31d" |
                 | isRequiredTermsAgreed | boolean | 필수 약관 동의 여부 | true /false |
+                
+                ---
+                
+                ### Response > headers
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                refreshToken(cookie) | string | Refresh Token; HTTP-only | "<jwt-refresh-token>" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(

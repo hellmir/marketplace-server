@@ -7,7 +7,6 @@ import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.adapter.in.client.user.controller.apidocs.*;
 import com.personal.marketnote.user.adapter.in.client.user.mapper.UserRequestToCommandMapper;
 import com.personal.marketnote.user.adapter.in.client.user.request.SignInRequest;
-import com.personal.marketnote.user.adapter.in.client.user.request.SignOutRequest;
 import com.personal.marketnote.user.adapter.in.client.user.request.SignUpRequest;
 import com.personal.marketnote.user.adapter.in.client.user.request.UpdateUserInfoRequest;
 import com.personal.marketnote.user.adapter.in.client.user.response.*;
@@ -110,18 +109,17 @@ public class UserController {
         String refreshToken = jwtUtil.generateRefreshToken(subject, id, roleIds, authVendor);
 
         String redisKey = "userId:" + id;
-        String refreshTokenValue = "r" + sha256Hex(refreshToken);
+        String refreshTokenValue = "r" + encodeBySha256Hex(refreshToken);
         stringRedisTemplate.opsForValue()
                 .set(Objects.requireNonNull(redisKey), Objects.requireNonNull(refreshTokenValue),
                         Objects.requireNonNull(refreshTokenTtlMillis), TimeUnit.MILLISECONDS);
 
         HttpStatus httpStatus = HttpStatus.CREATED;
         boolean isNewUser = signUpResult.isNewUser();
-        if (isNewUser) {
+        if (!isNewUser) {
             httpStatus = HttpStatus.OK;
         }
 
-        // refreshToken을 httpOnly cookie로 이동
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", refreshToken)
                 .httpOnly(true)
                 .secure(true)
@@ -134,7 +132,7 @@ public class UserController {
                 .header("Set-Cookie", refreshTokenCookie.toString())
                 .body(
                         BaseResponse.of(
-                                SignUpResponse.of(accessToken, refreshToken, isNewUser), // refreshToken은 null로 내려줌
+                                SignUpResponse.of(accessToken, isNewUser),
                                 httpStatus,
                                 DEFAULT_SUCCESS_CODE,
                                 "회원 가입 성공"
@@ -211,7 +209,7 @@ public class UserController {
         String refreshToken = jwtUtil.generateRefreshToken(subject, id, roleIds, authVendor);
 
         String redisKey = "refreshToken:" + id;
-        String refreshTokenValue = "r" + sha256Hex(refreshToken);
+        String refreshTokenValue = "r" + encodeBySha256Hex(refreshToken);
         stringRedisTemplate.opsForValue()
                 .set(Objects.requireNonNull(redisKey), Objects.requireNonNull(refreshTokenValue),
                         Objects.requireNonNull(refreshTokenTtlMillis), TimeUnit.MILLISECONDS);
@@ -230,7 +228,7 @@ public class UserController {
                 .header("Set-Cookie", refreshTokenCookie.toString())
                 .body(
                         BaseResponse.of(
-                                SignInResponse.of(accessToken, refreshToken, signInResult.isRequiredTermsAgreed()),
+                                SignInResponse.of(accessToken, signInResult.isRequiredTermsAgreed()),
                                 HttpStatus.OK,
                                 DEFAULT_SUCCESS_CODE,
                                 "회원 로그인 성공"
@@ -238,7 +236,7 @@ public class UserController {
                 );
     }
 
-    private String sha256Hex(String input) {
+    private String encodeBySha256Hex(String input) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
@@ -351,21 +349,19 @@ public class UserController {
     /**
      * 회원 로그아웃
      *
+     * @param refreshToken(cookie) Refresh Token; HTTP-only
      * @Author 성효빈
      * @Date 2025-12-28
      * @Description 로그아웃합니다.
      */
     @DeleteMapping("/sign-out")
     @SignOutApiDocs
-    public ResponseEntity<BaseResponse<SignOutResponse>> signOutUser(
-            @Valid @RequestBody SignOutRequest signOutRequest,
-            @CookieValue(value = "refresh_token") String refreshToken
-    ) {
+    public ResponseEntity<BaseResponse<Void>> signOutUser(@CookieValue(value = "refresh_token") String refreshToken) {
         HttpHeaders httpHeaders = signOutUseCase.signOut(refreshToken);
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        SignOutResponse.of("abc", "def"),
+                        null,
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "회원 로그아웃 성공"

@@ -35,8 +35,7 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
-                | refresh_token | string | Refresh Token | Y | "<jwt-refresh-token>" |
-                
+                | refreshToken(cookie) | string | Refresh Token; HTTP-only | Y | "<jwt-refresh-token>" |
                 ---
                 
                 ## Response
