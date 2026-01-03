@@ -23,14 +23,36 @@ import java.lang.annotation.*;
                 
                 ---
                 
+                ## Description
+                
+                - 복수의 파일을 저장합니다.
+                
+                - 각 파일에 대해 파일 종류(sort)를 지정해야 합니다.
+                
+                    - 상품 이미지
+                
+                        - 상품 카탈로그 이미지: "PRODUCT_CATALOG_IMAGE"
+                
+                        - 상품 상세 정보 상단 대표 이미지: "PRODUCT_REPRESENTATIVE_IMAGE"
+                
+                        - 상품 상세 정보 본문 이미지: "PRODUCT_CONTENT_IMAGE"
+                
+                    - 리뷰 이미지: "REVIEW_IMAGE"
+                
+                    - 아이콘: "ICON"
+                
+                    - 기타: "ETC"
+                
+                ---
+                
                 ## Request
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
-                | ownerType | string | 소유 도메인 타입 | Y | "PRODUCT" |
+                | ownerType | string | 소유 도메인 타입 | Y | "PRODUCT": 상품 / "REVIEW": 리뷰 |
                 | ownerId | number | 소유 도메인 ID | Y | 1 |
                 | file | file[] | 업로드할 파일 목록 | Y | [file1, file2] |
-                | sort | string[] | 파일 종류 목록 | Y | ["PRODUCT_CATALOG_IMAGE", "PRODUCT_REPRESENTATIVE_IMAGE"] |
+                | sort | string[] | 파일 종류 목록 | Y | ["PRODUCT_CATALOG_IMAGE", "PRODUCT_REPRESENTATIVE_IMAGE", "REVIEW_IMAGE"] |
                 | extension | string[] | 파일 확장자 목록 | N | ["jpg", "png"] |
                 | name | string[] | 파일명 목록 | N | ["스프링노트1", "스프링노트2"] |
                 
@@ -103,5 +125,3 @@ import java.lang.annotation.*;
         })
 public @interface AddFilesApiDocs {
 }
-
-
