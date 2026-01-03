@@ -1,5 +1,6 @@
 package com.personal.marketnote.user.adapter.out.vendor.authentication;
 
+import com.personal.marketnote.common.adapter.out.SecurityAdapter;
 import com.personal.marketnote.common.domain.exception.token.InvalidRefreshTokenException;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.common.utility.http.cookie.HttpCookieName;
@@ -20,13 +21,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
-@Component
+@SecurityAdapter
 @Slf4j
 public class WebBasedAuthenticationServiceAdapter {
     private static final long REFRESH_TOKEN_COOKIE_MAX_AGE = 2592000000L;
@@ -128,22 +128,5 @@ public class WebBasedAuthenticationServiceAdapter {
 
         return new WebBasedTokenRefreshResponse(headers,
                 new RefreshedAccessTokenResponse(grantedTokenInfo.accessToken()));
-    }
-
-    public HttpHeaders logout() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(
-                HttpHeaders.SET_COOKIE,
-                httpCookieUtils.invalidateCookie(HttpCookieName.USER_ID, false).asSetCookieHeaderValue()
-        );
-        headers.add(
-                HttpHeaders.SET_COOKIE,
-                httpCookieUtils.invalidateCookie(HttpCookieName.ACCESS_TOKEN, false).asSetCookieHeaderValue()
-        );
-        headers.add(
-                HttpHeaders.SET_COOKIE,
-                httpCookieUtils.invalidateCookie(HttpCookieName.REFRESH_TOKEN, false).asSetCookieHeaderValue()
-        );
-        return headers;
     }
 }

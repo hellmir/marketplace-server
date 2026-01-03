@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.LocalDateTime;
 
 @ControllerAdvice
@@ -306,6 +307,24 @@ public class GlobalExceptionHandler {
                 .code(code)
                 .message(message)
                 .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
+    }
+
+    @ExceptionHandler(UncheckedIOException.class)
+    private ResponseEntity<ErrorResponse> handleUncheckedIOException(UncheckedIOException e) {
+        httpStatus = HttpStatus.BAD_GATEWAY;
+        initializeMessage(e.getMessage());
+
+        log.info(LOG_INFO_MESSAGE, e.getMessage(), e);
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .statusCode(httpStatus.value())
+                .timestamp(LocalDateTime.now())
+                .code(code)
+                .message(message)
+                .build();
+
         return new ResponseEntity<>(errorResponse, HttpStatus.resolve(errorResponse.getStatusCode()));
     }
 }

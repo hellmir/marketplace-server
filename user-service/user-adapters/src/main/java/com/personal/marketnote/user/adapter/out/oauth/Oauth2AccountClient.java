@@ -1,5 +1,6 @@
-package com.personal.marketnote.user.adapter.out.oauth.kakao;
+package com.personal.marketnote.user.adapter.out.oauth;
 
+import com.personal.marketnote.common.adapter.out.VendorAdapter;
 import com.personal.marketnote.user.port.out.oauth.Oauth2AccountUnlinkPort;
 import com.personal.marketnote.user.service.exception.UnlinkOauth2AccountFailedException;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +9,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -16,7 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import static com.personal.marketnote.user.service.exception.ExceptionMessage.UNLINK_GOOGLE_ACCOUNT_FAILED_EXCEPTION_MESSAGE;
 import static com.personal.marketnote.user.service.exception.ExceptionMessage.UNLINK_KAKAO_ACCOUNT_FAILED_EXCEPTION_MESSAGE;
 
-@Component
+@VendorAdapter
 @Slf4j
 public class Oauth2AccountClient implements Oauth2AccountUnlinkPort {
     private static final String KAKAO_UNLINK_URL = "https://kapi.kakao.com/v1/user/unlink";

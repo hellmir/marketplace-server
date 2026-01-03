@@ -105,4 +105,9 @@ public class FormatConverter {
 
         return result.toString();
     }
+
+    public static String sanitizeFileName(String filename) {
+        return filename.replaceAll("\\s+", "-")
+                .replaceAll("[^a-zA-Z0-9._-]", "");
+    }
 }

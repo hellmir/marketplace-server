@@ -6,7 +6,7 @@ import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.domain.product.ProductOptionCategory;
 import com.personal.marketnote.product.exception.NotProductOwnerException;
 import com.personal.marketnote.product.exception.OptionsNoValueException;
-import com.personal.marketnote.product.mapper.ProductCommandToStateMapper;
+import com.personal.marketnote.product.mapper.ProductCommandToDomainMapper;
 import com.personal.marketnote.product.port.in.command.RegisterProductOptionsCommand;
 import com.personal.marketnote.product.port.in.command.UpdateProductOptionsCommand;
 import com.personal.marketnote.product.port.in.result.UpsertProductOptionsResult;
@@ -53,7 +53,7 @@ public class UpdateProductOptionsService implements UpdateProductOptionsUseCase 
 
         // 새 카테고리/옵션 저장
         ProductOptionCategory savedCategory = saveProductOptionsPort.save(
-                ProductCommandToStateMapper.mapToState(
+                ProductCommandToDomainMapper.mapToDomain(
                         product,
                         RegisterProductOptionsCommand.of(
                                 productId,

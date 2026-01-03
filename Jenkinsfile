@@ -69,7 +69,7 @@ pipeline {
 
 					sh "test -d '${env.SERVICE_DIRECTORY}'"
 
-					echo "Changed files count       = ${changed.size()}"
+					echo "Changed fileDomain count       = ${changed.size()}"
 					echo "COMMON changed?           = ${commonChanged}"
 				}
 			}
