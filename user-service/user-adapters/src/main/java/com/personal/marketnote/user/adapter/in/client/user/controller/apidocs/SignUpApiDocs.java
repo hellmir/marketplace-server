@@ -33,7 +33,7 @@ import java.lang.annotation.*;
                 
                     - 전화번호: dash를 포함하여 010-1234-5678과 같은 형식이어야 합니다.
                 
-                    - 비밀번호: 8자 이상, 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.
+                    ~- 비밀번호: 8자 이상, 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.~
                 
                 - 이미 **다른 방법으로 가입된 회원**인 경우 **isNewUser**: **false**를 반환합니다. 이 경우 계정이 새로 생성되지 않고, 기존 계정에 통합됩니다.
                 
@@ -71,9 +71,14 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | accessToken | string | 신규 발급된 Access Token | "f8310f8asohvh80scvh0zio3hr31d" |
-                | refreshToken | string | 신규 발급된 Refresh Token | "f8310f8asohvh80scvh0zio3hr31d" |
                 | isNewUser | boolean | 신규 회원 여부 | true |
                 
+                ---
+                
+                ### Response > headers
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                refreshToken(cookie) | string | Refresh Token; HTTP-only | "<jwt-refresh-token>" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
