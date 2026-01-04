@@ -7,9 +7,11 @@ import com.personal.marketnote.product.adapter.out.persistence.cart.repository.C
 import com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.pricepolicy.repository.PricePolicyJpaRepository;
 import com.personal.marketnote.product.domain.cart.CartProduct;
+import com.personal.marketnote.product.exception.CartProductNotFoundException;
 import com.personal.marketnote.product.port.out.cart.FindCartProductPort;
 import com.personal.marketnote.product.port.out.cart.FindCartProductsPort;
 import com.personal.marketnote.product.port.out.cart.SaveCartProductPort;
+import com.personal.marketnote.product.port.out.cart.UpdateCartProductPort;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -17,7 +19,7 @@ import java.util.Optional;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class CartPersistenceAdapter implements SaveCartProductPort, FindCartProductsPort, FindCartProductPort {
+public class CartPersistenceAdapter implements SaveCartProductPort, FindCartProductsPort, FindCartProductPort, UpdateCartProductPort {
     private final CartJpaRepository cartJpaRepository;
     private final PricePolicyJpaRepository pricePolicyJpaRepository;
 
@@ -46,5 +48,31 @@ public class CartPersistenceAdapter implements SaveCartProductPort, FindCartProd
         return CartJpaEntityToDomainMapper.mapToDomain(
                 cartJpaRepository.findByIdUserIdAndPricePolicyId(userId, pricePolicyId).orElse(null)
         );
+    }
+
+    @Override
+    public void update(CartProduct cartProduct, Long originalPricePolicyId) throws CartProductNotFoundException {
+        CartProductJpaEntity entity = findCartProductEntity(
+                cartProduct.getUserId(),
+                originalPricePolicyId
+        );
+
+        Long newPricePolicyId = cartProduct.getPricePolicy().getId();
+        boolean pricePolicyChanged = !originalPricePolicyId.equals(newPricePolicyId);
+
+        if (pricePolicyChanged) {
+            cartJpaRepository.delete(entity);
+            PricePolicyJpaEntity pricePolicyJpaEntity = pricePolicyJpaRepository.getReferenceById(newPricePolicyId);
+            cartJpaRepository.save(CartProductJpaEntity.from(cartProduct, pricePolicyJpaEntity));
+            return;
+        }
+
+        entity.updateFrom(cartProduct);
+    }
+
+    private CartProductJpaEntity findCartProductEntity(Long userId, Long pricePolicyId)
+            throws CartProductNotFoundException {
+        return cartJpaRepository.findByIdUserIdAndPricePolicyId(userId, pricePolicyId)
+                .orElseThrow(() -> new CartProductNotFoundException(pricePolicyId));
     }
 }

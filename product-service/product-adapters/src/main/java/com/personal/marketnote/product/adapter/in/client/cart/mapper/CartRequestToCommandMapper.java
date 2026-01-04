@@ -1,8 +1,10 @@
 package com.personal.marketnote.product.adapter.in.client.cart.mapper;
 
 import com.personal.marketnote.product.adapter.in.client.cart.request.AddCartProductRequest;
+import com.personal.marketnote.product.adapter.in.client.cart.request.UpdateCartProductOptionsRequest;
 import com.personal.marketnote.product.adapter.in.client.cart.request.UpdateCartProductQuantityRequest;
 import com.personal.marketnote.product.port.in.command.AddCartProductCommand;
+import com.personal.marketnote.product.port.in.command.UpdateCartProductOptionCommand;
 import com.personal.marketnote.product.port.in.command.UpdateCartProductQuantityCommand;
 
 public class CartRequestToCommandMapper {
@@ -20,6 +22,14 @@ public class CartRequestToCommandMapper {
                 userId,
                 request.pricePolicyId(),
                 request.newQuantity()
+        );
+    }
+
+    public static UpdateCartProductOptionCommand mapToCommand(Long userId, UpdateCartProductOptionsRequest request) {
+        return UpdateCartProductOptionCommand.of(
+                userId,
+                request.pricePolicyId(),
+                request.newOptionIds()
         );
     }
 }

@@ -4,14 +4,17 @@ import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.product.adapter.in.client.cart.mapper.CartRequestToCommandMapper;
 import com.personal.marketnote.product.adapter.in.client.cart.request.AddCartProductRequest;
+import com.personal.marketnote.product.adapter.in.client.cart.request.UpdateCartProductOptionsRequest;
 import com.personal.marketnote.product.adapter.in.client.cart.request.UpdateCartProductQuantityRequest;
 import com.personal.marketnote.product.adapter.in.client.cart.response.GetMyCartProductsResponse;
 import com.personal.marketnote.product.adapter.in.client.pricepolicy.AddCartProductApiDocs;
 import com.personal.marketnote.product.adapter.in.client.pricepolicy.GetMyCartProductsApiDocs;
+import com.personal.marketnote.product.adapter.in.client.pricepolicy.UpdateCartProductOptionApiDocs;
 import com.personal.marketnote.product.adapter.in.client.pricepolicy.UpdateCartProductQuantityApiDocs;
 import com.personal.marketnote.product.port.in.result.cart.GetMyCartProductsResult;
 import com.personal.marketnote.product.port.in.usecase.cart.AddCartProductUseCase;
 import com.personal.marketnote.product.port.in.usecase.cart.GetMyCartProductsUseCase;
+import com.personal.marketnote.product.port.in.usecase.cart.UpdateCartProductOptionsUseCase;
 import com.personal.marketnote.product.port.in.usecase.cart.UpdateCartProductQuantityUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -32,6 +35,7 @@ public class CartController {
     private final AddCartProductUseCase addCartProductUseCase;
     private final GetMyCartProductsUseCase getMyCartProductsUseCase;
     private final UpdateCartProductQuantityUseCase updateCartProductQuantityUseCase;
+    private final UpdateCartProductOptionsUseCase updateCartProductOptionsUseCase;
 
     /**
      * 장바구니 상품 추가
@@ -96,7 +100,7 @@ public class CartController {
      * @Date 2026-01-04
      * @Description 장바구니 상품 수량을 변경합니다.
      */
-    @PutMapping
+    @PatchMapping("/quantity")
     @UpdateCartProductQuantityApiDocs
     public ResponseEntity<BaseResponse<Void>> updateCartProductQuantity(
             @Valid @RequestBody UpdateCartProductQuantityRequest request,
@@ -112,6 +116,34 @@ public class CartController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "장바구니 상품 수량 변경 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 장바구니 상품 옵션 변경
+     *
+     * @Author 성효빈
+     * @Date 2026-01-04
+     * @Description 장바구니 상품 옵션을 변경합니다.
+     */
+    @PatchMapping("/options")
+    @UpdateCartProductOptionApiDocs
+    public ResponseEntity<BaseResponse<Void>> updateCartProductOptions(
+            @Valid @RequestBody UpdateCartProductOptionsRequest request,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        updateCartProductOptionsUseCase.updateCartProductOptions(
+                CartRequestToCommandMapper.mapToCommand(ElementExtractor.extractUserId(principal), request)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        null,
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "장바구니 상품 옵션 변경 성공"
                 ),
                 HttpStatus.OK
         );

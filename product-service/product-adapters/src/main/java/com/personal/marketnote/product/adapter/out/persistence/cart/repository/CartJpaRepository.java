@@ -13,7 +13,17 @@ public interface CartJpaRepository extends JpaRepository<CartProductJpaEntity, L
     @Query(
             """
                     SELECT c FROM CartProductJpaEntity c 
-                    WHERE c.id.userId = :userId 
+                    WHERE 1 = 1
+                    AND c.id.pricePolicyId = :pricePolicyId
+                    """
+    )
+    Optional<CartProductJpaEntity> findByPricePolicyId(Long pricePolicyId);
+
+    @Query(
+            """
+                    SELECT c FROM CartProductJpaEntity c 
+                    WHERE 1 = 1
+                    AND c.id.userId = :userId 
                     AND c.id.pricePolicyId = :pricePolicyId
                     """
     )

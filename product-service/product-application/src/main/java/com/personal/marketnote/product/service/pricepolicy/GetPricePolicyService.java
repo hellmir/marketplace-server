@@ -8,6 +8,8 @@ import com.personal.marketnote.product.port.out.pricepolicy.FindPricePolicyPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
 @UseCase
@@ -20,6 +22,12 @@ public class GetPricePolicyService implements GetPricePolicyUseCase {
     public PricePolicy getPricePolicy(Long id) {
         return findPricePolicyPort.findById(id)
                 .orElseThrow(() -> new PricePolicyNotFoundException(id));
+    }
+
+    @Override
+    public PricePolicy getPricePolicy(List<Long> optionIds) {
+        return findPricePolicyPort.findByOptionIds(optionIds)
+                .orElseThrow(() -> new PricePolicyNotFoundException(-1L));
     }
 }
 
