@@ -1,12 +1,10 @@
 package com.personal.marketnote.product.domain.product;
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
 public class ProductTag {

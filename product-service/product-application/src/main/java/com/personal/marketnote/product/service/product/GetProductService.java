@@ -35,26 +35,23 @@ public class GetProductService implements GetProductUseCase {
     private final FindProductCatalogImagePort findProductCatalogImagePort;
 
     @Override
-    public Product getProduct(Long id) {
-        return findProductPort.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
-    }
-
-    @Override
     public GetProductInfoWithOptionsResult getProductInfo(Long id, List<Long> selectedOptionIds) {
-        // 이미지 두 종류 병렬 조회 시작
-        CompletableFuture<GetFilesResult> representativeFuture =
-                CompletableFuture.supplyAsync(() ->
-                        findProductCatalogImagePort.findImagesByProductIdAndSort(id, "PRODUCT_REPRESENTATIVE_IMAGE").orElse(null)
-                );
-        CompletableFuture<GetFilesResult> contentFuture =
-                CompletableFuture.supplyAsync(() ->
-                        findProductCatalogImagePort.findImagesByProductIdAndSort(id, "PRODUCT_CONTENT_IMAGE").orElse(null)
-                );
+        // 상단 대표 이미지 목록, 본문 이미지 목록 조회 시작
+        CompletableFuture<GetFilesResult> representativeFuture
+                = CompletableFuture.supplyAsync(
+                () -> findProductCatalogImagePort.findImagesByProductIdAndSort(
+                        id, "PRODUCT_REPRESENTATIVE_IMAGE"
+                ).orElse(null)
+        );
+        CompletableFuture<GetFilesResult> contentFuture
+                = CompletableFuture.supplyAsync(
+                () -> findProductCatalogImagePort.findImagesByProductIdAndSort(
+                        id, "PRODUCT_CONTENT_IMAGE"
+                ).orElse(null)
+        );
 
         // 상품 조회 (동시에 진행)
         Product product = getProduct(id);
-
         List<ProductOptionCategory> categories
                 = findProductOptionCategoryPort.findActiveWithOptionsByProductId(product.getId());
 
@@ -71,6 +68,7 @@ public class GetProductService implements GetProductUseCase {
         ) {
             Optional<PricePolicy> pricePolicyOpt
                     = findPricePolicyPort.findByProductAndOptionIds(product.getId(), selectedOptionIds);
+
             if (pricePolicyOpt.isPresent()) {
                 PricePolicy pricePolicy = pricePolicyOpt.get();
                 adjustedPrice = pricePolicy.getPrice();
@@ -113,6 +111,12 @@ public class GetProductService implements GetProductUseCase {
         GetFilesResult contentImages = contentFuture.join();
 
         return GetProductInfoWithOptionsResult.of(info, selectableCategories, representativeImages, contentImages);
+    }
+
+    @Override
+    public Product getProduct(Long id) {
+        return findProductPort.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
     }
 
     @Override

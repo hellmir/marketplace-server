@@ -22,6 +22,13 @@ public interface ProductOptionCategoryJpaRepository extends JpaRepository<Produc
     List<ProductOptionCategoryJpaEntity> findActiveWithOptionsByProductId(
             @Param("productId") Long productId
     );
+
+    @Query("""
+            select c.productJpaEntity.id
+            from com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionCategoryJpaEntity c
+            where c.id = :categoryId
+            """)
+    Long findProductIdByCategoryId(@Param("categoryId") Long categoryId);
 }
 
 
