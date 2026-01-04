@@ -9,6 +9,7 @@ import com.personal.marketnote.file.port.in.result.GetFilesResult;
 import com.personal.marketnote.file.port.in.usecase.file.AddFileUseCase;
 import com.personal.marketnote.file.port.in.usecase.file.GetFilesUseCase;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,6 +21,7 @@ import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFA
 
 @Controller
 @RequestMapping("/api/v1/files")
+@Tag(name = "파일 API", description = "파일 관련 API")
 @RequiredArgsConstructor
 public class FileController {
     private final AddFileUseCase addFileUseCase;

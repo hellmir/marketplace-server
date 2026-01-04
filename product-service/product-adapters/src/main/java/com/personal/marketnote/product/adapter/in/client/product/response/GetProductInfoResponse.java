@@ -1,6 +1,7 @@
 package com.personal.marketnote.product.adapter.in.client.product.response;
 
 import com.personal.marketnote.common.application.file.port.in.result.GetFilesResult;
+import com.personal.marketnote.product.adapter.in.client.option.response.SelectableProductOptionCategoryResponse;
 import com.personal.marketnote.product.port.in.result.GetProductInfoResult;
 import com.personal.marketnote.product.port.in.result.GetProductInfoWithOptionsResult;
 import lombok.AccessLevel;

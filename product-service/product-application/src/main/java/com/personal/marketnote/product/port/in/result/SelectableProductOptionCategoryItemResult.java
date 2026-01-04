@@ -1,5 +1,6 @@
 package com.personal.marketnote.product.port.in.result;
 
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.product.ProductOptionCategory;
 
 import java.util.List;
@@ -23,23 +24,20 @@ public record SelectableProductOptionCategoryItemResult(
                 category.getOrderNum(),
                 category.getStatus().name(),
                 category.getOptions().stream()
-                        .map(opt -> SelectableProductOptionItemResult.from(
-                                opt,
-                                containsIgnoreCase(selectedOptionContents, opt.getContent())
+                        .map(option -> SelectableProductOptionItemResult.from(
+                                option,
+                                containsIgnoreCase(selectedOptionContents, option.getContent())
                         ))
                         .collect(Collectors.toList())
         );
     }
 
-    private static boolean containsIgnoreCase(Set<String> set, String value) {
-        if (set == null || set.isEmpty() || value == null) {
-            return false;
+    private static boolean containsIgnoreCase(Set<String> selectedOptionContents, String targetOptionContent) {
+        if (FormatValidator.hasValue(selectedOptionContents) && FormatValidator.hasValue(targetOptionContent)) {
+            return selectedOptionContents.stream()
+                    .anyMatch(selectedOptionContent -> selectedOptionContent.equalsIgnoreCase(targetOptionContent));
         }
-        for (String v : set) {
-            if (value.equalsIgnoreCase(v)) {
-                return true;
-            }
-        }
+
         return false;
     }
 }

@@ -4,6 +4,7 @@ import com.personal.marketnote.common.application.file.port.in.result.GetFilesRe
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.product.ProductTag;
 import com.personal.marketnote.product.port.in.result.ProductItemResult;
+import com.personal.marketnote.product.port.in.result.ProductOptionItemResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +28,7 @@ public class ProductItemResponse {
     private Integer sales;
     private List<ProductTag> productTags;
     private CatalogImagesResponse catalogImages;
+    private List<ProductOptionItemResult> selectedOptions;
     private Long orderNum;
     private String status;
 
@@ -43,6 +45,7 @@ public class ProductItemResponse {
                 .sales(result.sales())
                 .productTags(result.productTags())
                 .catalogImages(CatalogImagesResponse.from(result.catalogImages()))
+                .selectedOptions(result.selectedOptions())
                 .orderNum(result.orderNum())
                 .status(result.status())
                 .build();
