@@ -60,7 +60,7 @@ import java.lang.annotation.*;
                 | message | string | 처리 결과 | "자신의 정보 수정 성공" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
-        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+        requestBody = @RequestBody(
                 required = true,
                 content = @Content(
                         schema = @Schema(implementation = UpdateUserInfoRequest.class),

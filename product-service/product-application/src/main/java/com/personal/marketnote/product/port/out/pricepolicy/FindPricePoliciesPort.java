@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface FindPricePoliciesPort {
     List<PricePolicy> findByProductId(Long productId);
+
+    List<PricePolicy> findByIds(List<Long> ids);
 }

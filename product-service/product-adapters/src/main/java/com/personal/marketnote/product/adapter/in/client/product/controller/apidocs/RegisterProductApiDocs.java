@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
@@ -61,7 +62,7 @@ import java.lang.annotation.*;
         | --- | --- | --- | --- |
         | id | number | 상품 ID | 1 |
         """, security = {@SecurityRequirement(name = "bearer")},
-        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+        requestBody = @RequestBody(
                 required = true,
                 content = @Content(
                         schema = @Schema(implementation = RegisterProductRequest.class),

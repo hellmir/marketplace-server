@@ -40,7 +40,9 @@ public class CartController {
     /**
      * 장바구니 상품 추가
      *
-     * @param request 장바구니 상품 추가 요청
+     * @param request   장바구니 상품 추가 요청
+     * @param principal 인증 정보
+     * @return 장바구니 상품 추가 응답 {@link Void}
      * @Author 성효빈
      * @Date 2026-01-04
      * @Description 장바구니에 상품을 추가합니다.
@@ -69,6 +71,8 @@ public class CartController {
     /**
      * 회원 장바구니 상품 목록 조회
      *
+     * @param principal 인증 정보
+     * @return 장바구니 상품 목록 {@link GetMyCartProductsResponse}
      * @Author 성효빈
      * @Date 2026-01-04
      * @Description 회원의 장바구니 상품 목록을 조회합니다.
@@ -96,6 +100,9 @@ public class CartController {
     /**
      * 장바구니 상품 수량 변경
      *
+     * @param request   장바구니 상품 수량 변경 요청
+     * @param principal 인증 정보
+     * @return 장바구니 상품 수량 변경 응답 {@link Void}
      * @Author 성효빈
      * @Date 2026-01-04
      * @Description 장바구니 상품 수량을 변경합니다.
@@ -124,6 +131,12 @@ public class CartController {
     /**
      * 장바구니 상품 옵션 변경
      *
+     * @param request   장바구니 상품 옵션 변경 요청
+     * @param principal 인증 정보
+     * @param request   장바구니 상품 옵션 변경 요청
+     * @param principal 인증 정보
+     * @return 장바구니 상품 옵션 변경 응답 {@link Void}
+     * @return 장바구니 상품 옵션 변경 응답 {@link Void}
      * @Author 성효빈
      * @Date 2026-01-04
      * @Description 장바구니 상품 옵션을 변경합니다.

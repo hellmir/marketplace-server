@@ -76,7 +76,7 @@ import java.lang.annotation.*;
                         schema = @Schema(type = "number", example = "1")
                 )
         },
-        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+        requestBody = @RequestBody(
                 required = true,
                 content = @Content(
                         schema = @Schema(implementation = UpdateUserInfoRequest.class),

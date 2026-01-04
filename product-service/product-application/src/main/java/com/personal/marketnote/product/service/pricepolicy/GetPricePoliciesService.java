@@ -1,6 +1,7 @@
 package com.personal.marketnote.product.service.pricepolicy;
 
 import com.personal.marketnote.common.application.UseCase;
+import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
 import com.personal.marketnote.product.port.in.result.pricepolicy.GetPricePoliciesResult;
 import com.personal.marketnote.product.port.in.result.pricepolicy.GetProductPricePolicyWithOptionsResult;
 import com.personal.marketnote.product.port.in.usecase.pricepolicy.GetPricePoliciesUseCase;
@@ -22,17 +23,24 @@ public class GetPricePoliciesService implements GetPricePoliciesUseCase {
     public GetPricePoliciesResult getPricePolicies(Long productId) {
         List<GetProductPricePolicyWithOptionsResult> items = findPricePoliciesPort.findByProductId(productId)
                 .stream()
-                .map(pricePolicy -> new GetProductPricePolicyWithOptionsResult(
-                        pricePolicy.getId(),
-                        pricePolicy.getPrice(),
-                        pricePolicy.getDiscountPrice(),
-                        pricePolicy.getAccumulatedPoint(),
-                        pricePolicy.getDiscountRate(),
-                        pricePolicy.getOptionIds()
-                ))
+                .map(
+                        pricePolicy -> new GetProductPricePolicyWithOptionsResult(
+                                pricePolicy.getId(),
+                                pricePolicy.getPrice(),
+                                pricePolicy.getDiscountPrice(),
+                                pricePolicy.getAccumulatedPoint(),
+                                pricePolicy.getDiscountRate(),
+                                pricePolicy.getOptionIds()
+                        )
+                )
                 .toList();
 
         return GetPricePoliciesResult.of(items);
+    }
+
+    @Override
+    public List<PricePolicy> getPricePolicies(List<Long> ids) {
+        return findPricePoliciesPort.findByIds(ids);
     }
 }
 

@@ -56,7 +56,7 @@ import java.lang.annotation.*;
                 | refreshToken | string | 신규 발급된 Refresh Token | "f8310f8asohvh80scvh0zio3hr31d" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
-        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+        requestBody = @RequestBody(
                 required = true,
                 content = @Content(
                         schema = @Schema(implementation = VerifyCodeRequest.class),

@@ -189,6 +189,15 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
     }
 
     @Override
+    public List<Product> findByPricePolicyIds(List<Long> pricePolicyIds) {
+        return productJpaRepository.findByPricePolicyIds(pricePolicyIds).stream()
+                .map(ProductJpaEntityToDomainMapper::mapToDomain)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+    }
+
+    @Override
     public long countActive(ProductSearchTarget searchTarget, String searchKeyword) {
         String searchPattern = generateSearchPattern(searchKeyword);
 
