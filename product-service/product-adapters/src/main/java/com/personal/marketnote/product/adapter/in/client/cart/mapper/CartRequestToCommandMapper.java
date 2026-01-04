@@ -4,8 +4,11 @@ import com.personal.marketnote.product.adapter.in.client.cart.request.AddCartPro
 import com.personal.marketnote.product.adapter.in.client.cart.request.UpdateCartProductOptionsRequest;
 import com.personal.marketnote.product.adapter.in.client.cart.request.UpdateCartProductQuantityRequest;
 import com.personal.marketnote.product.port.in.command.AddCartProductCommand;
+import com.personal.marketnote.product.port.in.command.DeleteCartProductCommand;
 import com.personal.marketnote.product.port.in.command.UpdateCartProductOptionCommand;
 import com.personal.marketnote.product.port.in.command.UpdateCartProductQuantityCommand;
+
+import java.util.List;
 
 public class CartRequestToCommandMapper {
     public static AddCartProductCommand mapToCommand(Long userId, AddCartProductRequest request) {
@@ -31,5 +34,9 @@ public class CartRequestToCommandMapper {
                 request.pricePolicyId(),
                 request.newOptionIds()
         );
+    }
+
+    public static DeleteCartProductCommand mapToCommand(Long userId, List<Long> pricePolicyIds) {
+        return DeleteCartProductCommand.of(userId, pricePolicyIds);
     }
 }

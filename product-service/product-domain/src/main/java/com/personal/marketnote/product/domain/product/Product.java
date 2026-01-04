@@ -101,6 +101,39 @@ public class Product extends BaseDomain {
         return product;
     }
 
+    public static Product of(
+            Long id, Long sellerId, String name, String brandName, String detail,
+            Integer sales, Long viewCount, Long popularity, boolean findAllOptionsYn, List<ProductTag> productTags,
+            Long orderNum, EntityStatus status
+    ) {
+        Product product = Product.builder()
+                .id(id)
+                .sellerId(sellerId)
+                .name(name)
+                .brandName(brandName)
+                .detail(detail)
+                .sales(sales)
+                .viewCount(viewCount)
+                .popularity(popularity)
+                .findAllOptionsYn(findAllOptionsYn)
+                .productTags(productTags)
+                .orderNum(orderNum)
+                .build();
+
+        if (status.isActive()) {
+            product.activate();
+            return product;
+        }
+
+        if (status.isInactive()) {
+            product.deactivate();
+            return product;
+        }
+
+        product.hide();
+        return product;
+    }
+
     public void update(String name, String brandName, String detail, boolean isFindAllOptions, List<String> tags) {
         this.name = name;
         this.brandName = brandName;

@@ -7,15 +7,9 @@ import com.personal.marketnote.product.adapter.in.client.cart.request.AddCartPro
 import com.personal.marketnote.product.adapter.in.client.cart.request.UpdateCartProductOptionsRequest;
 import com.personal.marketnote.product.adapter.in.client.cart.request.UpdateCartProductQuantityRequest;
 import com.personal.marketnote.product.adapter.in.client.cart.response.GetMyCartProductsResponse;
-import com.personal.marketnote.product.adapter.in.client.pricepolicy.AddCartProductApiDocs;
-import com.personal.marketnote.product.adapter.in.client.pricepolicy.GetMyCartProductsApiDocs;
-import com.personal.marketnote.product.adapter.in.client.pricepolicy.UpdateCartProductOptionApiDocs;
-import com.personal.marketnote.product.adapter.in.client.pricepolicy.UpdateCartProductQuantityApiDocs;
+import com.personal.marketnote.product.adapter.in.client.pricepolicy.*;
 import com.personal.marketnote.product.port.in.result.cart.GetMyCartProductsResult;
-import com.personal.marketnote.product.port.in.usecase.cart.AddCartProductUseCase;
-import com.personal.marketnote.product.port.in.usecase.cart.GetMyCartProductsUseCase;
-import com.personal.marketnote.product.port.in.usecase.cart.UpdateCartProductOptionsUseCase;
-import com.personal.marketnote.product.port.in.usecase.cart.UpdateCartProductQuantityUseCase;
+import com.personal.marketnote.product.port.in.usecase.cart.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
 
@@ -36,6 +32,7 @@ public class CartController {
     private final GetMyCartProductsUseCase getMyCartProductsUseCase;
     private final UpdateCartProductQuantityUseCase updateCartProductQuantityUseCase;
     private final UpdateCartProductOptionsUseCase updateCartProductOptionsUseCase;
+    private final DeleteCartProductUseCase deleteCartProductUseCase;
 
     /**
      * 장바구니 상품 추가
@@ -157,6 +154,37 @@ public class CartController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "장바구니 상품 옵션 변경 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 장바구니 상품 삭제
+     *
+     * @param pricePolicyIds 장바구니 상품 옵션 변경 요청
+     * @param principal      인증 정보
+     * @return 장바구니 상품 삭제 응답 {@link Void}
+     * @Author 성효빈
+     * @Date 2026-01-04
+     * @Description 장바구니 상품을 삭제합니다.
+     */
+    @DeleteMapping
+    @DeleteCartProductApiDocs
+    public ResponseEntity<BaseResponse<Void>> deleteCartProduct(
+            @Valid @RequestParam List<Long> pricePolicyIds,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        deleteCartProductUseCase.deleteCartProduct(
+                CartRequestToCommandMapper.mapToCommand(ElementExtractor.extractUserId(principal), pricePolicyIds)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        null,
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "장바구니 상품 삭제 성공"
                 ),
                 HttpStatus.OK
         );
