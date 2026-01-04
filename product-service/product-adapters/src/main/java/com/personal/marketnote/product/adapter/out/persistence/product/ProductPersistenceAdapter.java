@@ -13,6 +13,9 @@ import com.personal.marketnote.product.port.out.product.FindProductPort;
 import com.personal.marketnote.product.port.out.product.SaveProductPort;
 import com.personal.marketnote.product.port.out.product.UpdateProductPort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
@@ -25,6 +28,7 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
     private final ProductJpaRepository productJpaRepository;
 
     @Override
+    @CachePut(value = "product:detail", key = "#result.id", unless = "#result == null")
     public Product save(Product product) {
         ProductJpaEntity savedEntity = productJpaRepository.save(ProductJpaEntity.from(product));
         savedEntity.setIdToOrderNum();
@@ -38,6 +42,11 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
     }
 
     @Override
+    @Cacheable(
+            value = "product:detail",
+            key = "#id",
+            unless = "#result == null || T(java.util.Optional).empty().equals(#result)"
+    )
     public Optional<Product> findById(Long id) {
         return ProductJpaEntityToDomainMapper.mapToDomain(
                 productJpaRepository.findById(id).orElse(null));
@@ -204,6 +213,7 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
     }
 
     @Override
+    @CacheEvict(value = "product:detail", key = "#product.id")
     public void update(Product product) throws ProductNotFoundException {
         ProductJpaEntity entity = findEntityById(product.getId());
         entity.updateFrom(product);

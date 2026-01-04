@@ -17,6 +17,7 @@ import com.personal.marketnote.product.port.out.productoption.FindProductOptionC
 import com.personal.marketnote.product.port.out.productoption.SaveProductOptionsPort;
 import com.personal.marketnote.product.port.out.productoption.UpdateOptionPricePolicyPort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +32,7 @@ public class ProductOptionPersistenceAdapter implements SaveProductOptionsPort, 
     private final com.personal.marketnote.product.adapter.out.persistence.pricepolicy.repository.PricePolicyJpaRepository pricePolicyJpaRepository;
 
     @Override
+    @CacheEvict(value = "product:detail", key = "#productOptionCategory.product.id")
     public ProductOptionCategory save(ProductOptionCategory productOptionCategory) {
         ProductJpaEntity productRef = productJpaRepository.getReferenceById(
                 productOptionCategory.getProduct().getId());
@@ -44,6 +46,12 @@ public class ProductOptionPersistenceAdapter implements SaveProductOptionsPort, 
 
     @Override
     public void deleteById(Long id) {
+        Long productId = productOptionCategoryJpaRepository.findProductIdByCategoryId(id);
+        deleteByIdInternal(productId, id);
+    }
+
+    @CacheEvict(value = "product:detail", key = "#productId")
+    public void deleteByIdInternal(Long productId, Long id) {
         List<Long> optionIds = productOptionJpaRepository.findIdsByCategoryId(id);
         if (FormatValidator.hasValue(optionIds)) {
             productOptionPricePolicyJpaRepository.deleteByOptionIds(optionIds);
@@ -65,6 +73,12 @@ public class ProductOptionPersistenceAdapter implements SaveProductOptionsPort, 
 
     @Override
     public void assignPricePolicyToOptions(Long pricePolicyId, List<Long> optionIds) {
+        ProductJpaEntity productOfPolicy = pricePolicyJpaRepository.getReferenceById(pricePolicyId).getProductJpaEntity();
+        assignPricePolicyToOptionsInternal(productOfPolicy.getId(), pricePolicyId, optionIds);
+    }
+
+    @CacheEvict(value = "product:detail", key = "#productId")
+    public void assignPricePolicyToOptionsInternal(Long productId, Long pricePolicyId, List<Long> optionIds) {
         PricePolicyJpaEntity pricePolicyRef = pricePolicyJpaRepository.getReferenceById(pricePolicyId);
         for (Long optionId : optionIds) {
             var optionRef = productOptionJpaRepository.getReferenceById(optionId);

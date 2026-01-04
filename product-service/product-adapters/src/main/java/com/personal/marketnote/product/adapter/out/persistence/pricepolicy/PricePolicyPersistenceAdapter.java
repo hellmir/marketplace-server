@@ -12,6 +12,7 @@ import com.personal.marketnote.product.port.out.pricepolicy.DeletePricePolicyPor
 import com.personal.marketnote.product.port.out.pricepolicy.FindPricePolicyPort;
 import com.personal.marketnote.product.port.out.pricepolicy.SavePricePolicyPort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, Delet
     private final ProductOptionPricePolicyJpaRepository productOptionPricePolicyJpaRepository;
 
     @Override
+    @CacheEvict(value = {"product:detail", "product:price-policy"}, key = "#pricePolicy.product.id", beforeInvocation = false)
     public Long save(PricePolicy pricePolicy) {
         ProductJpaEntity productRef = productJpaRepository.getReferenceById(pricePolicy.getProduct().getId());
         com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity saved = pricePolicyJpaRepository.save(com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity.from(productRef, pricePolicy));
@@ -32,6 +34,14 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, Delet
 
     @Override
     public void deleteById(Long pricePolicyId) {
+        Long productId = pricePolicyJpaRepository.findById(pricePolicyId)
+                .map(entity -> entity.getProductJpaEntity().getId())
+                .orElse(null);
+        deleteByIdInternal(productId, pricePolicyId);
+    }
+
+    @CacheEvict(value = {"product:detail", "product:price-policy"}, key = "#productId", beforeInvocation = false)
+    public void deleteByIdInternal(Long productId, Long pricePolicyId) {
         productOptionPricePolicyJpaRepository.deleteByPricePolicyId(pricePolicyId);
         pricePolicyJpaRepository.deleteById(pricePolicyId);
     }
