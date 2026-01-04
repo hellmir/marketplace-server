@@ -1,0 +1,107 @@
+package com.personal.marketnote.product.adapter.in.client.pricepolicy.controller;
+
+import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
+import com.personal.marketnote.common.utility.AuthorityValidator;
+import com.personal.marketnote.common.utility.ElementExtractor;
+import com.personal.marketnote.product.adapter.in.client.pricepolicy.request.RegisterPricePolicyRequest;
+import com.personal.marketnote.product.adapter.in.client.pricepolicy.response.GetPricePoliciesResponse;
+import com.personal.marketnote.product.adapter.in.client.pricepolicy.response.RegisterPricePolicyResponse;
+import com.personal.marketnote.product.port.in.command.RegisterPricePolicyCommand;
+import com.personal.marketnote.product.port.in.result.GetPricePoliciesResult;
+import com.personal.marketnote.product.port.in.result.RegisterPricePolicyResult;
+import com.personal.marketnote.product.port.in.usecase.product.DeletePricePolicyUseCase;
+import com.personal.marketnote.product.port.in.usecase.product.GetPricePoliciesUseCase;
+import com.personal.marketnote.product.port.in.usecase.product.RegisterPricePolicyUseCase;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
+import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER_POINTCUT;
+
+@RestController
+@RequestMapping("/api/v1/products/{productId}/price-policies")
+@Tag(name = "상품 가격 정책 API", description = "상품 가격 정책 관련 API")
+@RequiredArgsConstructor
+public class PricePolicyController {
+    private final RegisterPricePolicyUseCase registerPricePolicyUseCase;
+    private final DeletePricePolicyUseCase deletePricePolicyUseCase;
+    private final GetPricePoliciesUseCase getPricePoliciesUseCase;
+
+    @PostMapping
+    @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
+    public ResponseEntity<BaseResponse<RegisterPricePolicyResponse>> registerPricePolicy(
+            @PathVariable("productId") Long productId,
+            @Valid @RequestBody RegisterPricePolicyRequest request,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        RegisterPricePolicyResult result = registerPricePolicyUseCase.registerPricePolicy(
+                ElementExtractor.extractUserId(principal),
+                AuthorityValidator.hasAdminRole(principal),
+                RegisterPricePolicyCommand.of(
+                        productId,
+                        request.getPrice(),
+                        request.getDiscountPrice(),
+                        request.getAccumulatedPoint(),
+                        request.getOptionIds()
+                )
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        RegisterPricePolicyResponse.from(result),
+                        HttpStatus.CREATED,
+                        DEFAULT_SUCCESS_CODE,
+                        "상품 가격 정책 등록 성공"
+                ),
+                HttpStatus.CREATED
+        );
+    }
+
+
+    @GetMapping
+    public ResponseEntity<BaseResponse<GetPricePoliciesResponse>> getPricePolicies(
+            @PathVariable("productId") Long productId
+    ) {
+        GetPricePoliciesResult result = getPricePoliciesUseCase.getPricePolicies(productId);
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        GetPricePoliciesResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "상품 가격 정책 목록 조회 성공"
+                )
+        );
+    }
+
+    @DeleteMapping("/{pricePolicyId}")
+    @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
+    public ResponseEntity<BaseResponse<Void>> deletePricePolicy(
+            @PathVariable("productId") Long productId,
+            @PathVariable("pricePolicyId") Long pricePolicyId,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        deletePricePolicyUseCase.delete(
+                ElementExtractor.extractUserId(principal),
+                AuthorityValidator.hasAdminRole(principal),
+                productId,
+                pricePolicyId
+        );
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "상품 가격 정책 삭제 성공"
+                )
+        );
+    }
+}
+
+

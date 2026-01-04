@@ -1,0 +1,37 @@
+package com.personal.marketnote.product.adapter.in.client.pricepolicy.response;
+
+import com.personal.marketnote.product.port.in.result.PricePolicyItemResult;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PRIVATE)
+@Getter
+public class PricePolicyItemResponse {
+    private Long id;
+    private Long price;
+    private Long discountPrice;
+    private Long accumulatedPoint;
+    private BigDecimal discountRate;
+    private boolean basePolicy;
+    private List<Long> optionIds;
+
+    public static PricePolicyItemResponse from(PricePolicyItemResult result) {
+        return PricePolicyItemResponse.builder()
+                .id(result.id())
+                .price(result.price())
+                .discountPrice(result.discountPrice())
+                .accumulatedPoint(result.accumulatedPoint())
+                .discountRate(result.discountRate())
+                .basePolicy(result.basePolicy())
+                .optionIds(result.optionIds())
+                .build();
+    }
+}
+
+

@@ -6,14 +6,13 @@ import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.product.adapter.in.client.category.controller.apidocs.DeleteCategoryApiDocs;
 import com.personal.marketnote.product.adapter.in.client.category.controller.apidocs.GetCategoriesApiDocs;
 import com.personal.marketnote.product.adapter.in.client.category.controller.apidocs.RegisterCategoryApiDocs;
+import com.personal.marketnote.product.adapter.in.client.category.mapper.CategoryRequestToCommandMapper;
 import com.personal.marketnote.product.adapter.in.client.category.request.RegisterCategoryRequest;
+import com.personal.marketnote.product.adapter.in.client.category.request.RegisterProductCategoriesRequest;
 import com.personal.marketnote.product.adapter.in.client.category.response.GetCategoriesResponse;
 import com.personal.marketnote.product.adapter.in.client.category.response.RegisterCategoryResponse;
-import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.RegisterProductCategoriesApiDocs;
-import com.personal.marketnote.product.adapter.in.client.product.mapper.CategoryRequestToCommandMapper;
+import com.personal.marketnote.product.adapter.in.client.category.response.RegisterProductCategoriesResponse;
 import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
-import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductCategoriesRequest;
-import com.personal.marketnote.product.adapter.in.client.product.response.RegisterProductCategoriesResponse;
 import com.personal.marketnote.product.port.in.command.DeleteCategoryCommand;
 import com.personal.marketnote.product.port.in.result.GetCategoriesResult;
 import com.personal.marketnote.product.port.in.result.RegisterCategoryResult;
@@ -144,7 +143,6 @@ public class CategoryController {
      */
     @PutMapping("{productId}/categories")
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
-    @RegisterProductCategoriesApiDocs
     public ResponseEntity<BaseResponse<RegisterProductCategoriesResponse>> registerProductCategories(
             @PathVariable("productId") Long productId,
             @Valid @RequestBody RegisterProductCategoriesRequest request,

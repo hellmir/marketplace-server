@@ -1,8 +1,8 @@
 package com.personal.marketnote.product.adapter.in.client.product.mapper;
 
-import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductCategoriesRequest;
+import com.personal.marketnote.product.adapter.in.client.category.request.RegisterProductCategoriesRequest;
+import com.personal.marketnote.product.adapter.in.client.option.request.UpdateProductOptionsRequest;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductRequest;
-import com.personal.marketnote.product.adapter.in.client.product.request.UpdateProductOptionsRequest;
 import com.personal.marketnote.product.adapter.in.client.product.request.UpdateProductRequest;
 import com.personal.marketnote.product.port.in.command.*;
 

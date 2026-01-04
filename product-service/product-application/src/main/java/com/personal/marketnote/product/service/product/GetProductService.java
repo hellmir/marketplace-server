@@ -253,17 +253,12 @@ public class GetProductService implements GetProductUseCase {
                     .map(ProductOptionCategory::getOptions)
                     .toList();
 
-            for (List<ProductOption> combo : cartesianProduct(optionGroups)) {
-                // 이름 조합: "기본 상품명 (옵션1 / 옵션2 / ...)"
-                String comboSuffix = combo.stream()
-                        .map(ProductOption::getContent)
-                        .reduce((a, b) -> a + " / " + b)
-                        .orElse("");
-                String variantName = product.getName() + " (" + comboSuffix + ")";
-
-                List<Long> optionIds = combo.stream().map(ProductOption::getId).toList();
+            // 선택된 옵션 조합 추출
+            for (List<ProductOption> selectedOptionCombos : cartesianProduct(optionGroups)) {
+                List<Long> optionIds = selectedOptionCombos.stream().map(ProductOption::getId).toList();
                 Optional<PricePolicy> pricePolicyOpt
                         = findPricePolicyPort.findByProductAndOptionIds(product.getId(), optionIds);
+
                 Long variantPrice = product.getPrice();
                 Long variantDiscountPrice = product.getDiscountPrice();
                 BigDecimal variantDiscountRate = product.getDiscountRate();
@@ -277,42 +272,47 @@ public class GetProductService implements GetProductUseCase {
                     variantDiscountRate = pricePolicy.getDiscountRate();
                 }
 
-                results.add(ProductItemResult.from(
-                        product,
-                        variantName,
-                        variantPrice,
-                        variantDiscountPrice,
-                        variantDiscountRate,
-                        variantAccumulatedPoint
-                ));
+                results.add(
+                        ProductItemResult.from(
+                                product,
+                                selectedOptionCombos,
+                                variantPrice,
+                                variantDiscountPrice,
+                                variantDiscountRate,
+                                variantAccumulatedPoint
+                        )
+                );
             }
         }
 
         return results;
     }
 
-    private List<List<ProductOption>> cartesianProduct(List<List<ProductOption>> lists) {
+    private List<List<ProductOption>> cartesianProduct(List<List<ProductOption>> productOptionCombos) {
         List<List<ProductOption>> result = new ArrayList<>();
-        if (!FormatValidator.hasValue(lists)) {
+        if (!FormatValidator.hasValue(productOptionCombos)) {
             return result;
         }
-        backtrackCartesian(lists, 0, new ArrayList<>(), result);
+
+        backtrackCartesian(productOptionCombos, 0, new ArrayList<>(), result);
+
         return result;
     }
 
     private void backtrackCartesian(
-            List<List<ProductOption>> lists,
+            List<List<ProductOption>> productOptionCombos,
             int depth,
             List<ProductOption> path,
             List<List<ProductOption>> result
     ) {
-        if (depth == lists.size()) {
+        if (depth == productOptionCombos.size()) {
             result.add(new ArrayList<>(path));
             return;
         }
-        for (ProductOption opt : lists.get(depth)) {
+
+        for (ProductOption opt : productOptionCombos.get(depth)) {
             path.add(opt);
-            backtrackCartesian(lists, depth + 1, path, result);
+            backtrackCartesian(productOptionCombos, depth + 1, path, result);
             path.remove(path.size() - 1);
         }
     }
