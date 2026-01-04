@@ -1,6 +1,7 @@
 package com.personal.marketnote.product.adapter.out.persistence.pricepolicy;
 
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.pricepolicy.repository.PricePolicyJpaRepository;
 import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
@@ -25,7 +26,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, Delet
     @Override
     public Long save(PricePolicy pricePolicy) {
         ProductJpaEntity productRef = productJpaRepository.getReferenceById(pricePolicy.getProduct().getId());
-        PricePolicyJpaEntity saved = pricePolicyJpaRepository.save(PricePolicyJpaEntity.from(productRef, pricePolicy));
+        com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity saved = pricePolicyJpaRepository.save(com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity.from(productRef, pricePolicy));
         return saved.getId();
     }
 
@@ -55,22 +56,24 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, Delet
         for (Long id : candidateIds) {
             long mappingCount = productOptionPricePolicyJpaRepository.countByPricePolicyJpaEntity_Id(id);
             if (mappingCount == optionIds.size()) {
-                // ensure policy belongs to product
-                var policyOpt = pricePolicyJpaRepository.findById(id);
+                Optional<PricePolicyJpaEntity> policyOpt = pricePolicyJpaRepository.findById(id);
+
                 if (policyOpt.isPresent() && policyOpt.get().getProductJpaEntity().getId().equals(productId)) {
-                    if (matchedId == null || id > matchedId) {
-                        matchedId = id; // pick latest if multiple
+                    if (!FormatValidator.hasValue(matchedId) || id > matchedId) {
+                        matchedId = id;
                     }
                 }
             }
         }
 
-        if (matchedId == null) {
+        if (!FormatValidator.hasValue(matchedId)) {
             return Optional.empty();
         }
 
-        PricePolicyJpaEntity entity = pricePolicyJpaRepository.findById(matchedId).orElse(null);
-        if (entity == null) {
+        PricePolicyJpaEntity entity = pricePolicyJpaRepository.findById(matchedId)
+                .orElse(null);
+
+        if (!FormatValidator.hasValue(entity)) {
             return Optional.empty();
         }
 
@@ -94,7 +97,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, Delet
                 p.getStatus()
         );
 
-        PricePolicy domain = com.personal.marketnote.product.domain.product.PricePolicy.of(
+        PricePolicy domain = PricePolicy.of(
                 productDomain,
                 entity.getPrice(),
                 entity.getDiscountPrice(),
@@ -102,6 +105,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, Delet
                 entity.getAccumulatedPoint(),
                 entity.getDiscountRate()
         );
+
         return Optional.of(domain);
     }
 }

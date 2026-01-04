@@ -1,13 +1,14 @@
 package com.personal.marketnote.file.adapter.in.client.file.controller.apidocs;
 
-import com.personal.marketnote.file.adapter.in.client.file.request.AddFilesRequest;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import org.springframework.http.MediaType;
 
 import java.lang.annotation.*;
 
@@ -69,13 +70,35 @@ import java.lang.annotation.*;
                 | message | string | 처리 결과 | "파일 추가 성공" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
-        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                required = true,
-                content = @Content(
-                        mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
-                        schema = @Schema(implementation = AddFilesRequest.class)
+        parameters = {
+                @Parameter(name = "ownerType", in = ParameterIn.QUERY, required = true,
+                        description = "소유 도메인 타입",
+                        schema = @Schema(type = "string", example = "PRODUCT")
+                ),
+                @Parameter(name = "ownerId", in = ParameterIn.QUERY, required = true,
+                        description = "소유 도메인 ID",
+                        schema = @Schema(type = "number", example = "1")
+                ),
+                @Parameter(name = "file", in = ParameterIn.QUERY, required = true,
+                        description = "업로드할 파일 목록",
+                        content = @Content(
+                                mediaType = "multipart/form-data",
+                                array = @ArraySchema(schema = @Schema(type = "string", format = "binary"))
+                        )
+                ),
+                @Parameter(name = "sort", in = ParameterIn.QUERY, required = true,
+                        description = "파일 종류 목록",
+                        array = @ArraySchema(schema = @Schema(type = "string", example = "PRODUCT_CATALOG_IMAGE"))
+                ),
+                @Parameter(name = "extension", in = ParameterIn.QUERY,
+                        description = "파일 확장자 목록",
+                        array = @ArraySchema(schema = @Schema(type = "string", example = "jpg"))
+                ),
+                @Parameter(name = "name", in = ParameterIn.QUERY,
+                        description = "파일명 목록",
+                        array = @ArraySchema(schema = @Schema(type = "string", example = "스프링노트1"))
                 )
-        ),
+        },
         responses = {
                 @ApiResponse(
                         responseCode = "201",

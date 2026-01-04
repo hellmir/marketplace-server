@@ -3,7 +3,6 @@ package com.personal.marketnote.product.adapter.in.client.product.controller;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.AuthorityValidator;
 import com.personal.marketnote.common.utility.ElementExtractor;
-import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.*;
 import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductRequest;
@@ -25,7 +24,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
@@ -171,7 +169,8 @@ public class ProductController {
     /**
      * 상품 상세 정보 조회
      *
-     * @param id 상품 ID
+     * @param id                상품 ID
+     * @param selectedOptionIds 선택된 옵션 ID 목록
      * @return 상품 상세 정보 조회 응답 {@link GetProductInfoResponse}
      * @Author 성효빈
      * @Date 2026-01-02
@@ -181,73 +180,14 @@ public class ProductController {
     @GetProductInfoApiDocs
     public ResponseEntity<BaseResponse<GetProductInfoResponse>> getProductInfo(
             @PathVariable("id") Long id,
-            @RequestParam(value = "options", required = false) List<String> optionContents,
-            @RequestParam(value = "optionIds", required = false) List<String> optionIds
+            @RequestParam(value = "selectedOptionIds", required = false) List<Long> selectedOptionIds
     ) {
-        // normalize: allow "opt1,opt2" and also JSON-like ["opt1","opt2"]
-        if (optionContents != null && !optionContents.isEmpty()) {
-            List<String> flattened = new ArrayList<>();
-            for (String raw : optionContents) {
-                if (raw == null) continue;
-                String s = raw.trim();
-                // strip JSON-like brackets
-                if (s.startsWith("[") && s.endsWith("]")) {
-                    s = s.substring(1, s.length() - 1);
-                }
-                if (s.contains(",")) {
-                    for (String part : s.split(",")) {
-                        String v = part.trim();
-                        if (v.startsWith("\"") && v.endsWith("\"") && v.length() >= 2) {
-                            v = v.substring(1, v.length() - 1).trim();
-                        }
-                        if (!v.isEmpty()) flattened.add(v);
-                    }
-                } else {
-                    if (s.startsWith("\"") && s.endsWith("\"") && s.length() >= 2) {
-                        s = s.substring(1, s.length() - 1).trim();
-                    }
-                    if (!s.isEmpty()) flattened.add(s);
-                }
-            }
-            optionContents = flattened.isEmpty() ? optionContents : flattened;
-        }
-        if (FormatValidator.hasValue(optionIds)) {
-            List<String> flattenedIds = new ArrayList<>();
-            for (String raw : optionIds) {
-                if (raw == null) continue;
-                String s = raw.trim();
-                if (s.startsWith("[") && s.endsWith("]")) {
-                    s = s.substring(1, s.length() - 1);
-                }
-                if (s.contains(",")) {
-                    for (String part : s.split(",")) {
-                        String v = part.trim();
-                        if (v.startsWith("\"") && v.endsWith("\"") && v.length() >= 2) {
-                            v = v.substring(1, v.length() - 1).trim();
-                        }
-                        if (!v.isEmpty()) flattenedIds.add(v);
-                    }
-                } else {
-                    if (s.startsWith("\"") && s.endsWith("\"") && s.length() >= 2) {
-                        s = s.substring(1, s.length() - 1).trim();
-                    }
-                    if (!s.isEmpty()) flattenedIds.add(s);
-                }
-            }
-            if (!flattenedIds.isEmpty()) {
-                if (optionContents == null) {
-                    optionContents = flattenedIds;
-                } else {
-                    optionContents.addAll(flattenedIds);
-                }
-            }
-        }
-        GetProductInfoWithOptionsResult getProductUseCaseProductInfo
-                = getProductUseCase.getProductInfo(id, optionContents);
+        GetProductInfoWithOptionsResult getProductInfoWithOptionsResult
+                = getProductUseCase.getProductInfo(id, selectedOptionIds);
 
         return ResponseEntity.ok(
                 BaseResponse.of(
-                        GetProductInfoResponse.from(getProductUseCaseProductInfo),
+                        GetProductInfoResponse.from(getProductInfoWithOptionsResult),
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "상품 상세 정보 조회 성공"

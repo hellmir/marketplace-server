@@ -1,4 +1,4 @@
-package com.personal.marketnote.file.port.in.usecase.file.result;
+package com.personal.marketnote.file.port.in.result;
 
 import com.personal.marketnote.file.domain.file.FileDomain;
 import lombok.AccessLevel;

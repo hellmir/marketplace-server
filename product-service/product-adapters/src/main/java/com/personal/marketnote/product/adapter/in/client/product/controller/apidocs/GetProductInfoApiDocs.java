@@ -2,6 +2,8 @@ package com.personal.marketnote.product.adapter.in.client.product.controller.api
 
 import com.personal.marketnote.common.adapter.in.api.schema.StringResponseSchema;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -31,7 +33,7 @@ import java.lang.annotation.*;
         | **키** | **타입** | **설명** | **필수 여부** | **예시** |
         | --- | --- | --- | --- | --- |
         | id | number | 상품 ID | Y | 1 |
-        | options | array<string> | 선택된 옵션 목록 | N | ["3박스", "60개입"] |
+        | selectedOptionIds | array<number> | 선택된 옵션 ID 목록 | N | [4, 7] |
         
         ## Response
         
@@ -51,6 +53,8 @@ import java.lang.annotation.*;
         | --- | --- | --- | --- |
         | productInfo | object | 상품 상세 정보 | { ... } |
         | categories | array | 옵션 카테고리 목록 | [ ... ] |
+        | representativeImages | object | 상품 상세 정보 상단 대표 이미지 목록 | { ... } |
+        | contentImages | object | 상품 상세 정보 본문 이미지 목록 | { ... } |
         | selectedOptionIds | array<number> | 선택된 옵션 ID 목록 | [4, 7] |
         
         ---
@@ -112,9 +116,21 @@ import java.lang.annotation.*;
         | accumulatedPoint | number | 적립 포인트 | 1200 |
         | status | string | 상태 | "ACTIVE" |
         | isSelected | boolean | 선택 여부 | false |
-        """, security = {
-        @SecurityRequirement(name = "bearer")
-},
+        """,
+        security = {@SecurityRequirement(name = "bearer")},
+        parameters = {
+                @Parameter(
+                        name = "id",
+                        in = ParameterIn.PATH,
+                        description = "상품 ID",
+                        schema = @Schema(type = "number", example = "1")
+                ),
+                @Parameter(
+                        name = "selectedOptionIds",
+                        in = ParameterIn.QUERY,
+                        description = "선택된 옵션 ID 목록"
+                )
+        },
         responses = {
                 @ApiResponse(
                         responseCode = "200",
@@ -125,7 +141,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-02T18:09:30.313213",
+                                          "timestamp": "2026-01-04T15:36:46.169111",
                                           "content": {
                                             "productInfo": {
                                               "id": 30,
@@ -133,10 +149,10 @@ import java.lang.annotation.*;
                                               "name": "건기식테스트1",
                                               "brandName": "노트왕",
                                               "detail": "건기식테스트건기식테스트건기식테스트",
-                                              "price": 45000,
-                                              "discountPrice": 37000,
+                                              "price": 60000,
+                                              "discountPrice": 40000,
                                               "discountRate": 33.3,
-                                              "accumulatedPoint": 1200,
+                                              "accumulatedPoint": 3000,
                                               "sales": 0,
                                               "viewCount": 0,
                                               "popularity": 0,
@@ -173,7 +189,7 @@ import java.lang.annotation.*;
                                                     "price": null,
                                                     "accumulatedPoint": null,
                                                     "status": "ACTIVE",
-                                                    "isSelected": true
+                                                    "isSelected": false
                                                   },
                                                   {
                                                     "id": 9,
@@ -205,13 +221,127 @@ import java.lang.annotation.*;
                                                     "price": null,
                                                     "accumulatedPoint": null,
                                                     "status": "ACTIVE",
-                                                    "isSelected": true
+                                                    "isSelected": false
                                                   }
                                                 ]
                                               }
-                                            ]
+                                            ],
+                                            "representativeImages": {
+                                              "files": [
+                                                {
+                                                  "id": 41,
+                                                  "sort": "PRODUCT_REPRESENTATIVE_IMAGE",
+                                                  "extension": "png",
+                                                  "name": "상품대표이미지1",
+                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763534195681_image.png",
+                                                  "resizedS3Urls": [
+                                                    "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
+                                                    "https://marketnote.s3.amazonaws.com/product/30/1763534195988_image_800.png"
+                                                  ],
+                                                  "orderNum": 41
+                                                },
+                                                {
+                                                  "id": 39,
+                                                  "sort": "PRODUCT_REPRESENTATIVE_IMAGE",
+                                                  "extension": "png",
+                                                  "name": "상품대표이미지2",
+                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763534193377_image.png",
+                                                  "resizedS3Urls": [
+                                                    "https://marketnote.s3.amazonaws.com/product/30/1763534193688_image_600.png",
+                                                    "https://marketnote.s3.amazonaws.com/product/30/1763534193761_image_800.png"
+                                                  ],
+                                                  "orderNum": 39
+                                                },
+                                                {
+                                                  "id": 37,
+                                                  "sort": "PRODUCT_REPRESENTATIVE_IMAGE",
+                                                  "extension": "png",
+                                                  "name": "상품대표이미지3",
+                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763533915880_image.png",
+                                                  "resizedS3Urls": [
+                                                    "https://marketnote.s3.amazonaws.com/product/30/1763533916081_image_600.png",
+                                                    "https://marketnote.s3.amazonaws.com/product/30/1763533916187_image_800.png"
+                                                  ],
+                                                  "orderNum": 37
+                                                },
+                                                {
+                                                  "id": 35,
+                                                  "sort": "PRODUCT_REPRESENTATIVE_IMAGE",
+                                                  "extension": "png",
+                                                  "name": "상품대표이미지4",
+                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763533914726_image.png",
+                                                  "resizedS3Urls": [
+                                                    "https://marketnote.s3.amazonaws.com/product/30/1763533914954_image_600.png",
+                                                    "https://marketnote.s3.amazonaws.com/product/30/1763533915038_image_800.png"
+                                                  ],
+                                                  "orderNum": 35
+                                                },
+                                                {
+                                                  "id": 33,
+                                                  "sort": "PRODUCT_REPRESENTATIVE_IMAGE",
+                                                  "extension": "png",
+                                                  "name": "상품대표이미지5",
+                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763533911501_image.png",
+                                                  "resizedS3Urls": [
+                                                    "https://marketnote.s3.amazonaws.com/product/30/1763533911804_image_600.png",
+                                                    "https://marketnote.s3.amazonaws.com/product/30/1763533911854_image_800.png"
+                                                  ],
+                                                  "orderNum": 33
+                                                }
+                                              ]
+                                            },
+                                            "contentImages": {
+                                              "files": [
+                                                {
+                                                  "id": 40,
+                                                  "sort": "PRODUCT_CONTENT_IMAGE",
+                                                  "extension": "jpg",
+                                                  "name": "상품본문이미지1",
+                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763534195623_image.png",
+                                                  "resizedS3Urls": [],
+                                                  "orderNum": 40
+                                                },
+                                                {
+                                                  "id": 38,
+                                                  "sort": "PRODUCT_CONTENT_IMAGE",
+                                                  "extension": "jpg",
+                                                  "name": "상품본문이미지2",
+                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763534193258_image.png",
+                                                  "resizedS3Urls": [],
+                                                  "orderNum": 38
+                                                },
+                                                {
+                                                  "id": 36,
+                                                  "sort": "PRODUCT_CONTENT_IMAGE",
+                                                  "extension": "jpg",
+                                                  "name": "상품본문이미지3",
+                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763533915837_image.png",
+                                                  "resizedS3Urls": [],
+                                                  "orderNum": 36
+                                                },
+                                                {
+                                                  "id": 34,
+                                                  "sort": "PRODUCT_CONTENT_IMAGE",
+                                                  "extension": "jpg",
+                                                  "name": "상품본문이미지4",
+                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763533914674_image.png",
+                                                  "resizedS3Urls": [],
+                                                  "orderNum": 34
+                                                },
+                                                {
+                                                  "id": 32,
+                                                  "sort": "PRODUCT_CONTENT_IMAGE",
+                                                  "extension": "jpg",
+                                                  "name": "상품본문이미지5",
+                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763533911286_image.png",
+                                                  "resizedS3Urls": [],
+                                                  "orderNum": 32
+                                                }
+                                              ]
+                                            }
                                           },
                                           "message": "상품 상세 정보 조회 성공"
+                                        }
                                         }
                                         """)
                         )

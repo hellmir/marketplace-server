@@ -37,7 +37,7 @@ public class PricePolicyJpaEntity extends BaseGeneralEntity {
     private BigDecimal discountRate;
 
     public static PricePolicyJpaEntity from(ProductJpaEntity productRef, PricePolicy pricePolicy) {
-        return PricePolicyJpaEntity.builder()
+        return com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity.builder()
                 .productJpaEntity(productRef)
                 .price(pricePolicy.getPrice())
                 .discountPrice(pricePolicy.getDiscountPrice())

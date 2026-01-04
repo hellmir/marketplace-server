@@ -1,8 +1,8 @@
 package com.personal.marketnote.product.adapter.in.client.product.response;
 
+import com.personal.marketnote.common.application.file.port.in.result.GetFilesResult;
 import com.personal.marketnote.product.domain.product.ProductTag;
 import com.personal.marketnote.product.port.in.result.ProductItemResult;
-import com.personal.marketnote.product.port.out.file.dto.GetFilesResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

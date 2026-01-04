@@ -1,8 +1,8 @@
 package com.personal.marketnote.product.port.in.result;
 
+import com.personal.marketnote.common.application.file.port.in.result.GetFilesResult;
 import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.domain.product.ProductTag;
-import com.personal.marketnote.product.port.out.file.dto.GetFilesResult;
 
 import java.math.BigDecimal;
 import java.util.List;

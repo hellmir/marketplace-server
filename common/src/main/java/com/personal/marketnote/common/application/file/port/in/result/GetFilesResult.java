@@ -1,4 +1,4 @@
-package com.personal.marketnote.product.port.out.file.dto;
+package com.personal.marketnote.common.application.file.port.in.result;
 
 import java.util.List;
 
@@ -14,5 +14,3 @@ public record GetFilesResult(List<FileItem> files) {
     ) {
     }
 }
-
-
