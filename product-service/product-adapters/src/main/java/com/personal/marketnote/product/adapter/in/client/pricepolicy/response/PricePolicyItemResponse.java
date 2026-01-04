@@ -1,6 +1,6 @@
 package com.personal.marketnote.product.adapter.in.client.pricepolicy.response;
 
-import com.personal.marketnote.product.port.in.result.pricepolicy.PricePolicyItemResult;
+import com.personal.marketnote.product.port.in.result.pricepolicy.GetProductPricePolicyResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,14 +21,13 @@ public class PricePolicyItemResponse {
     private boolean basePolicy;
     private List<Long> optionIds;
 
-    public static PricePolicyItemResponse from(PricePolicyItemResult result) {
+    public static PricePolicyItemResponse from(GetProductPricePolicyResult result) {
         return PricePolicyItemResponse.builder()
                 .id(result.id())
                 .price(result.price())
                 .discountPrice(result.discountPrice())
                 .accumulatedPoint(result.accumulatedPoint())
                 .discountRate(result.discountRate())
-                .basePolicy(result.basePolicy())
                 .optionIds(result.optionIds())
                 .build();
     }

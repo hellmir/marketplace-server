@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FindPricePolicyPort {
-    boolean existsByIdAndProductId(Long pricePolicyId, Long productId);
+    Optional<PricePolicy> findById(Long id);
 
     Optional<PricePolicy> findByProductAndOptionIds(Long productId, List<Long> optionIds);
 }
