@@ -15,5 +15,3 @@ public class ProductOptionPricePolicyId {
     private Long productOptionId;
     private Long pricePolicyId;
 }
-
-

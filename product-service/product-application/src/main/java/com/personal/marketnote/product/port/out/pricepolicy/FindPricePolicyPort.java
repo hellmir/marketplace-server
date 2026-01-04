@@ -9,6 +9,8 @@ public interface FindPricePolicyPort {
     Optional<PricePolicy> findById(Long id);
 
     Optional<PricePolicy> findByProductAndOptionIds(Long productId, List<Long> optionIds);
+
+    Optional<PricePolicy> findByOptionIds(List<Long> optionIds);
 }
 
 

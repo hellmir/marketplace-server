@@ -54,4 +54,8 @@ public class CartProduct extends BaseDomain {
     public void updateQuantity(Short newQuantity) {
         quantity = newQuantity;
     }
+
+    public void updatePricePolicy(PricePolicy pricePolicy) {
+        this.pricePolicy = pricePolicy;
+    }
 }

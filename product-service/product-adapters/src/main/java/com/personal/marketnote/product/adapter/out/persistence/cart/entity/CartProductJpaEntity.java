@@ -14,7 +14,6 @@ import lombok.*;
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
 public class CartProductJpaEntity extends BaseEntity {
-
     @EmbeddedId
     private CartId id;
 
@@ -41,5 +40,10 @@ public class CartProductJpaEntity extends BaseEntity {
                 .quantity(cartProduct.getQuantity())
                 .status(cartProduct.getStatus())
                 .build();
+    }
+
+    public void updateFrom(CartProduct cartProduct) {
+        quantity = cartProduct.getQuantity();
+        status = cartProduct.getStatus();
     }
 }
