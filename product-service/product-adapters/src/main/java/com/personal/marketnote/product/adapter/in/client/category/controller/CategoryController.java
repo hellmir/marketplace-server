@@ -153,8 +153,7 @@ public class CategoryController {
         RegisterProductCategoriesResult result = registerProductCategoriesUseCase.registerProductCategories(
                 ElementExtractor.extractUserId(principal),
                 AuthorityValidator.hasAdminRole(principal),
-                ProductRequestToCommandMapper.mapToCommand(productId, request
-                )
+                ProductRequestToCommandMapper.mapToCommand(productId, request)
         );
 
         return ResponseEntity.ok(

@@ -24,6 +24,8 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.springframework.data.redis.cache.RedisCacheConfiguration.defaultCacheConfig;
 
@@ -66,8 +68,13 @@ public class CacheConfig {
                         .SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper())))
                 .entryTtl(Duration.ofMinutes(10));
 
+        Map<String, RedisCacheConfiguration> perCacheTtl = new HashMap<>();
+        // 상품 목록 첫 페이지 전용 캐시: 2분 TTL
+        perCacheTtl.put("product:list:first", redisCacheConfiguration.entryTtl(Duration.ofMinutes(2)));
+
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(redisCacheConfiguration)
+                .withInitialCacheConfigurations(perCacheTtl)
                 .build();
     }
 

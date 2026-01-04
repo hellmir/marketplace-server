@@ -26,6 +26,8 @@ import java.lang.annotation.*;
         
         - 상품 목록을 조회합니다.
         
+        - 각 카테고리, 정렬 기준 별 첫 페이지에 Redis Cache 적용되어 있습니다. TTL: 2분
+        
         - categoryId 미 전송 시 전체 상품 목록을 반환합니다.
         
         - categoryId 전송 시 해당 카테고리의 상품 목록을 반환합니다.

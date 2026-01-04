@@ -24,7 +24,9 @@ import java.lang.annotation.*;
         
         ## Description
         
-        상품의 상세 정보를 조회합니다.
+        - 상품의 상세 정보를 조회합니다.
+        
+        - Redis Cache 적용되어 있습니다. TTL: 10분
         
         ---
         

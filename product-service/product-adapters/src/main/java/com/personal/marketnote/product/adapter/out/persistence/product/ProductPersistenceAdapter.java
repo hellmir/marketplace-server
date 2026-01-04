@@ -92,6 +92,11 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
     }
 
     @Override
+    @Cacheable(
+            value = "product:list:first",
+            key = "#categoryId + ':' + #pageable.getPageSize() + ':' + #sortProperty.name() + ':' + #searchTarget.name()",
+            condition = "#cursor == null && (#searchKeyword == null || #searchKeyword.isBlank())"
+    )
     public List<Product> findAllActiveByCategoryId(
             Long categoryId,
             Long cursor,
