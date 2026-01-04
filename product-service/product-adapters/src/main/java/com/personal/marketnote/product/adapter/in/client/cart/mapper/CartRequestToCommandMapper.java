@@ -7,8 +7,8 @@ public class CartRequestToCommandMapper {
     public static AddCartProductCommand mapToCommand(Long userId, AddCartProductRequest request) {
         return AddCartProductCommand.of(
                 userId,
-                request.productId(),
                 request.pricePolicyId(),
+                request.imageUrl(),
                 request.quantity()
         );
     }

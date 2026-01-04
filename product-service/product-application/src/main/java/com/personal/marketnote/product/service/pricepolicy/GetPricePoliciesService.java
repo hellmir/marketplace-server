@@ -2,13 +2,13 @@ package com.personal.marketnote.product.service.pricepolicy;
 
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.product.port.in.result.pricepolicy.GetPricePoliciesResult;
-import com.personal.marketnote.product.port.in.result.pricepolicy.PricePolicyItemResult;
+import com.personal.marketnote.product.port.in.result.pricepolicy.GetProductPricePolicyResult;
 import com.personal.marketnote.product.port.in.usecase.pricepolicy.GetPricePoliciesUseCase;
 import com.personal.marketnote.product.port.out.pricepolicy.FindPricePoliciesPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.stream.Collectors;
+import java.util.List;
 
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
@@ -20,17 +20,17 @@ public class GetPricePoliciesService implements GetPricePoliciesUseCase {
 
     @Override
     public GetPricePoliciesResult getPricePolicies(Long productId) {
-        var items = findPricePoliciesPort.findByProductId(productId).stream()
-                .map(pp -> new PricePolicyItemResult(
-                        pp.id(),
-                        pp.price(),
-                        pp.discountPrice(),
-                        pp.accumulatedPoint(),
-                        pp.discountRate(),
-                        pp.optionIds() == null || pp.optionIds().isEmpty(),
-                        pp.optionIds()
+        List<GetProductPricePolicyResult> items = findPricePoliciesPort.findByProductId(productId).stream()
+                .map(pricePolicy -> new GetProductPricePolicyResult(
+                        pricePolicy.id(),
+                        pricePolicy.price(),
+                        pricePolicy.discountPrice(),
+                        pricePolicy.accumulatedPoint(),
+                        pricePolicy.discountRate(),
+                        pricePolicy.optionIds()
                 ))
-                .collect(Collectors.toList());
+                .toList();
+
         return GetPricePoliciesResult.of(items);
     }
 }

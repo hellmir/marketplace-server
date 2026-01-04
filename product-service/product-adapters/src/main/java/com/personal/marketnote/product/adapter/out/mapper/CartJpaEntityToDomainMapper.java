@@ -11,8 +11,8 @@ public class CartJpaEntityToDomainMapper {
                 .map(
                         entity -> CartProduct.of(
                                 cartProductJpaEntity.getId().getUserId(),
-                                cartProductJpaEntity.getId().getProductId(),
-                                cartProductJpaEntity.getId().getPricePolicyId(),
+                                PricePolicyJpaEntityToDomainMapper.mapToDomain(cartProductJpaEntity.getPricePolicyJpaEntity()).orElse(null),
+                                cartProductJpaEntity.getImageUrl(),
                                 cartProductJpaEntity.getQuantity(),
                                 cartProductJpaEntity.getStatus()
                         )
