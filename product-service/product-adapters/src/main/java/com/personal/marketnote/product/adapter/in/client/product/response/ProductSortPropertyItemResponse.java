@@ -1,6 +1,6 @@
 package com.personal.marketnote.product.adapter.in.client.product.response;
 
-import com.personal.marketnote.product.port.in.result.ProductSortPropertyItemResult;
+import com.personal.marketnote.product.port.in.result.product.ProductSortPropertyItemResult;
 
 public record ProductSortPropertyItemResponse(
         String name,

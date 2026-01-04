@@ -2,8 +2,9 @@ package com.personal.marketnote.product.adapter.in.client.product.response;
 
 import com.personal.marketnote.common.application.file.port.in.result.GetFilesResult;
 import com.personal.marketnote.product.adapter.in.client.option.response.SelectableProductOptionCategoryResponse;
-import com.personal.marketnote.product.port.in.result.GetProductInfoResult;
-import com.personal.marketnote.product.port.in.result.GetProductInfoWithOptionsResult;
+import com.personal.marketnote.product.port.in.result.pricepolicy.GetProductPricePolicyResult;
+import com.personal.marketnote.product.port.in.result.product.GetProductInfoResult;
+import com.personal.marketnote.product.port.in.result.product.GetProductInfoWithOptionsResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,7 @@ public class GetProductInfoResponse {
     private List<SelectableProductOptionCategoryResponse> categories;
     private GetFilesResult representativeImages;
     private GetFilesResult contentImages;
+    private List<GetProductPricePolicyResult> pricePolicies;
 
     public static GetProductInfoResponse from(GetProductInfoWithOptionsResult getProductInfoWithOptionsResult) {
         return GetProductInfoResponse.builder()
@@ -30,6 +32,7 @@ public class GetProductInfoResponse {
                 )
                 .representativeImages(getProductInfoWithOptionsResult.representativeImages())
                 .contentImages(getProductInfoWithOptionsResult.contentImages())
+                .pricePolicies(getProductInfoWithOptionsResult.pricePolicies())
                 .build();
     }
 }

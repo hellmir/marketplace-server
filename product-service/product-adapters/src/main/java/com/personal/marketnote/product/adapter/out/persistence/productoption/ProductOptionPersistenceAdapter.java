@@ -11,7 +11,7 @@ import com.personal.marketnote.product.adapter.out.persistence.productoption.ent
 import com.personal.marketnote.product.adapter.out.persistence.productoption.repository.ProductOptionCategoryJpaRepository;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.repository.ProductOptionJpaRepository;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.repository.ProductOptionPricePolicyJpaRepository;
-import com.personal.marketnote.product.domain.product.ProductOptionCategory;
+import com.personal.marketnote.product.domain.option.ProductOptionCategory;
 import com.personal.marketnote.product.port.out.productoption.DeleteProductOptionCategoryPort;
 import com.personal.marketnote.product.port.out.productoption.FindProductOptionCategoryPort;
 import com.personal.marketnote.product.port.out.productoption.SaveProductOptionsPort;

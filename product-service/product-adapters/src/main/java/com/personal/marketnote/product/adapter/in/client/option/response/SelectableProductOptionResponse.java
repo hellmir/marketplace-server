@@ -1,6 +1,6 @@
 package com.personal.marketnote.product.adapter.in.client.option.response;
 
-import com.personal.marketnote.product.port.in.result.SelectableProductOptionItemResult;
+import com.personal.marketnote.product.port.in.result.option.SelectableProductOptionItemResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -6,7 +6,7 @@ import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.category.Category;
 import com.personal.marketnote.product.exception.CategoryNotFoundException;
 import com.personal.marketnote.product.port.in.command.RegisterCategoryCommand;
-import com.personal.marketnote.product.port.in.result.RegisterCategoryResult;
+import com.personal.marketnote.product.port.in.result.category.RegisterCategoryResult;
 import com.personal.marketnote.product.port.in.usecase.category.RegisterCategoryUseCase;
 import com.personal.marketnote.product.port.out.category.FindCategoryPort;
 import com.personal.marketnote.product.port.out.category.SaveCategoryPort;

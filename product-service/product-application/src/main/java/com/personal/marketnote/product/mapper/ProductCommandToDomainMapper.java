@@ -1,9 +1,9 @@
 package com.personal.marketnote.product.mapper;
 
-import com.personal.marketnote.product.domain.product.PricePolicy;
+import com.personal.marketnote.product.domain.option.ProductOption;
+import com.personal.marketnote.product.domain.option.ProductOptionCategory;
+import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
 import com.personal.marketnote.product.domain.product.Product;
-import com.personal.marketnote.product.domain.product.ProductOption;
-import com.personal.marketnote.product.domain.product.ProductOptionCategory;
 import com.personal.marketnote.product.port.in.command.RegisterPricePolicyCommand;
 import com.personal.marketnote.product.port.in.command.RegisterProductOptionsCommand;
 

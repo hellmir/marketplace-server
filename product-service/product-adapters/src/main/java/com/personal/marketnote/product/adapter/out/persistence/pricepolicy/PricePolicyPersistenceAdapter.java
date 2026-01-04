@@ -7,7 +7,7 @@ import com.personal.marketnote.product.adapter.out.persistence.pricepolicy.repos
 import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.product.repository.ProductJpaRepository;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.repository.ProductOptionPricePolicyJpaRepository;
-import com.personal.marketnote.product.domain.product.PricePolicy;
+import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
 import com.personal.marketnote.product.port.out.pricepolicy.DeletePricePolicyPort;
 import com.personal.marketnote.product.port.out.pricepolicy.FindPricePolicyPort;
 import com.personal.marketnote.product.port.out.pricepolicy.SavePricePolicyPort;

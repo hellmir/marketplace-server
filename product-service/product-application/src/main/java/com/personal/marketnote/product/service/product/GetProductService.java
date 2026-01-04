@@ -3,11 +3,22 @@ package com.personal.marketnote.product.service.product;
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.application.file.port.in.result.GetFilesResult;
 import com.personal.marketnote.common.utility.FormatValidator;
-import com.personal.marketnote.product.domain.product.*;
+import com.personal.marketnote.product.domain.option.ProductOption;
+import com.personal.marketnote.product.domain.option.ProductOptionCategory;
+import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
+import com.personal.marketnote.product.domain.product.Product;
+import com.personal.marketnote.product.domain.product.ProductSearchTarget;
+import com.personal.marketnote.product.domain.product.ProductSortProperty;
 import com.personal.marketnote.product.exception.ProductNotFoundException;
-import com.personal.marketnote.product.port.in.result.*;
+import com.personal.marketnote.product.port.in.result.option.SelectableProductOptionCategoryItemResult;
+import com.personal.marketnote.product.port.in.result.pricepolicy.GetProductPricePolicyResult;
+import com.personal.marketnote.product.port.in.result.product.GetProductInfoResult;
+import com.personal.marketnote.product.port.in.result.product.GetProductInfoWithOptionsResult;
+import com.personal.marketnote.product.port.in.result.product.GetProductsResult;
+import com.personal.marketnote.product.port.in.result.product.ProductItemResult;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
 import com.personal.marketnote.product.port.out.file.FindProductImagesPort;
+import com.personal.marketnote.product.port.out.pricepolicy.FindPricePoliciesPort;
 import com.personal.marketnote.product.port.out.pricepolicy.FindPricePolicyPort;
 import com.personal.marketnote.product.port.out.product.FindProductPort;
 import com.personal.marketnote.product.port.out.productoption.FindProductOptionCategoryPort;
@@ -33,6 +44,7 @@ public class GetProductService implements GetProductUseCase {
     private final FindProductPort findProductPort;
     private final FindProductOptionCategoryPort findProductOptionCategoryPort;
     private final FindPricePolicyPort findPricePolicyPort;
+    private final FindPricePoliciesPort findPricePoliciesPort;
     private final FindProductImagesPort findProductImagesPort;
 
     @Override
@@ -59,30 +71,36 @@ public class GetProductService implements GetProductUseCase {
         Long adjustedPrice = product.getPrice();
         Long adjustedDiscountPrice = FormatValidator.hasValue(product.getDiscountPrice())
                 ? product.getDiscountPrice()
-                : product.getPrice();
+                : adjustedPrice;
         Long adjustedAccumulatedPoint = product.getAccumulatedPoint();
+
+        List<GetProductPricePolicyResult> pricePoliciesWithOptions
+                = findPricePoliciesPort.findByProductId(product.getId())
+                .stream()
+                .filter(GetProductPricePolicyResult::hasOptions)
+                .toList();
 
         if (
                 product.isFindAllOptionsYn()
                         && FormatValidator.hasValue(selectedOptionIds)
                         && FormatValidator.hasValue(categories)
         ) {
-            Optional<PricePolicy> pricePolicyOpt
-                    = findPricePolicyPort.findByProductAndOptionIds(product.getId(), selectedOptionIds);
+            GetProductPricePolicyResult selectedPricePolicy = pricePoliciesWithOptions.stream()
+                    .filter(policy -> FormatValidator.equals(policy.optionIds(), selectedOptionIds))
+                    .findFirst()
+                    .orElse(null);
+            if (FormatValidator.hasValue(selectedPricePolicy)) {
+                adjustedPrice = selectedPricePolicy.price();
+                adjustedDiscountPrice = selectedPricePolicy.discountPrice();
+                adjustedAccumulatedPoint = selectedPricePolicy.accumulatedPoint();
+            }
 
-            if (pricePolicyOpt.isPresent()) {
-                PricePolicy pricePolicy = pricePolicyOpt.get();
-                adjustedPrice = pricePolicy.getPrice();
-                adjustedDiscountPrice = pricePolicy.getDiscountPrice();
-                adjustedAccumulatedPoint = pricePolicy.getAccumulatedPoint();
-
-                if (
-                        FormatValidator.hasValue(adjustedDiscountPrice)
-                                && FormatValidator.hasValue(adjustedPrice)
-                                && adjustedDiscountPrice > adjustedPrice
-                ) {
-                    adjustedDiscountPrice = adjustedPrice;
-                }
+            if (
+                    FormatValidator.hasValue(adjustedDiscountPrice)
+                            && FormatValidator.hasValue(adjustedPrice)
+                            && adjustedDiscountPrice > adjustedPrice
+            ) {
+                adjustedDiscountPrice = adjustedPrice;
             }
         }
 
@@ -111,7 +129,9 @@ public class GetProductService implements GetProductUseCase {
         GetFilesResult representativeImages = representativeFuture.join();
         GetFilesResult contentImages = contentFuture.join();
 
-        return GetProductInfoWithOptionsResult.of(info, selectableCategories, representativeImages, contentImages);
+        return GetProductInfoWithOptionsResult.of(
+                info, selectableCategories, representativeImages, contentImages, pricePoliciesWithOptions
+        );
     }
 
     @Override

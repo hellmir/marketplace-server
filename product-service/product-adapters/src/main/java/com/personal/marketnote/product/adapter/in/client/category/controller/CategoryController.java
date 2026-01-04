@@ -14,13 +14,13 @@ import com.personal.marketnote.product.adapter.in.client.category.response.Regis
 import com.personal.marketnote.product.adapter.in.client.category.response.RegisterProductCategoriesResponse;
 import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
 import com.personal.marketnote.product.port.in.command.DeleteCategoryCommand;
-import com.personal.marketnote.product.port.in.result.GetCategoriesResult;
-import com.personal.marketnote.product.port.in.result.RegisterCategoryResult;
-import com.personal.marketnote.product.port.in.result.RegisterProductCategoriesResult;
+import com.personal.marketnote.product.port.in.result.category.GetCategoriesResult;
+import com.personal.marketnote.product.port.in.result.category.RegisterCategoryResult;
+import com.personal.marketnote.product.port.in.result.category.RegisterProductCategoriesResult;
 import com.personal.marketnote.product.port.in.usecase.category.DeleteCategoryUseCase;
 import com.personal.marketnote.product.port.in.usecase.category.GetCategoryUseCase;
 import com.personal.marketnote.product.port.in.usecase.category.RegisterCategoryUseCase;
-import com.personal.marketnote.product.port.in.usecase.product.RegisterProductCategoriesUseCase;
+import com.personal.marketnote.product.port.in.usecase.category.RegisterProductCategoriesUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

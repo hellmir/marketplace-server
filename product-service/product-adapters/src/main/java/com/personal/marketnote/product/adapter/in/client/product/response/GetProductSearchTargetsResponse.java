@@ -1,6 +1,6 @@
 package com.personal.marketnote.product.adapter.in.client.product.response;
 
-import com.personal.marketnote.product.port.in.result.GetProductSearchTargetsResult;
+import com.personal.marketnote.product.port.in.result.product.GetProductSearchTargetsResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

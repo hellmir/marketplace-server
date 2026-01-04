@@ -3,16 +3,20 @@ package com.personal.marketnote.product.adapter.in.client.option.controller;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.AuthorityValidator;
 import com.personal.marketnote.common.utility.ElementExtractor;
+import com.personal.marketnote.product.adapter.in.client.option.controller.apidocs.DeleteProductOptionsApiDocs;
+import com.personal.marketnote.product.adapter.in.client.option.controller.apidocs.GetProductOptionsApiDocs;
+import com.personal.marketnote.product.adapter.in.client.option.controller.apidocs.RegisterProductOptionsApiDocs;
+import com.personal.marketnote.product.adapter.in.client.option.controller.apidocs.UpdateProductOptionsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.option.request.UpdateProductOptionsRequest;
 import com.personal.marketnote.product.adapter.in.client.option.response.GetProductOptionsResponse;
 import com.personal.marketnote.product.adapter.in.client.option.response.UpsertProductOptionsResponse;
 import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
-import com.personal.marketnote.product.port.in.result.GetProductOptionsResult;
-import com.personal.marketnote.product.port.in.result.UpsertProductOptionsResult;
-import com.personal.marketnote.product.port.in.usecase.product.DeleteProductOptionsUseCase;
-import com.personal.marketnote.product.port.in.usecase.product.GetProductOptionsUseCase;
-import com.personal.marketnote.product.port.in.usecase.product.RegisterProductOptionsUseCase;
-import com.personal.marketnote.product.port.in.usecase.product.UpdateProductOptionsUseCase;
+import com.personal.marketnote.product.port.in.result.option.GetProductOptionsResult;
+import com.personal.marketnote.product.port.in.result.option.UpdateProductOptionsResult;
+import com.personal.marketnote.product.port.in.usecase.option.DeleteProductOptionsUseCase;
+import com.personal.marketnote.product.port.in.usecase.option.GetProductOptionsUseCase;
+import com.personal.marketnote.product.port.in.usecase.option.RegisterProductOptionsUseCase;
+import com.personal.marketnote.product.port.in.usecase.option.UpdateProductOptionsUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,12 +54,13 @@ public class ProductOptionController {
      */
     @PostMapping("/option-categories")
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
+    @RegisterProductOptionsApiDocs
     public ResponseEntity<BaseResponse<UpsertProductOptionsResponse>> registerProductOptionCategories(
             @PathVariable("productId") Long productId,
             @Valid @RequestBody UpdateProductOptionsRequest request,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
-        UpsertProductOptionsResult result = registerProductOptionsUseCase.registerProductOptions(
+        UpdateProductOptionsResult result = registerProductOptionsUseCase.registerProductOptions(
                 ElementExtractor.extractUserId(principal),
                 AuthorityValidator.hasAdminRole(principal),
                 ProductRequestToCommandMapper.mapToCommand(productId, request));
@@ -79,8 +84,9 @@ public class ProductOptionController {
      * @Author 성효빈
      * @Date 2026-01-01
      * @Description 특정 상품의 옵션 카테고리 및 하위 옵션 목록을 조회합니다.
-     */
+     */ 
     @GetMapping("/option-categories")
+    @GetProductOptionsApiDocs
     public ResponseEntity<BaseResponse<GetProductOptionsResponse>> getProductOptions(
             @PathVariable("productId") Long productId
     ) {
@@ -109,13 +115,14 @@ public class ProductOptionController {
      */
     @PutMapping("/option-categories/{id}")
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
+    @UpdateProductOptionsApiDocs
     public ResponseEntity<BaseResponse<UpsertProductOptionsResponse>> updateProductOptionCategories(
             @PathVariable("productId") Long productId,
             @PathVariable("id") Long id,
             @Valid @RequestBody UpdateProductOptionsRequest request,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
-        UpsertProductOptionsResult result = updateProductOptionsUseCase.updateProductOptions(
+        UpdateProductOptionsResult result = updateProductOptionsUseCase.updateProductOptions(
                 ElementExtractor.extractUserId(principal),
                 AuthorityValidator.hasAdminRole(principal),
                 ProductRequestToCommandMapper.mapToUpdateCommand(productId, id, request)
@@ -143,6 +150,7 @@ public class ProductOptionController {
      */
     @DeleteMapping("/option-categories/{id}")
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
+    @DeleteProductOptionsApiDocs
     public ResponseEntity<BaseResponse<Void>> deleteProductOptionCategories(
             @PathVariable("productId") Long productId,
             @PathVariable("id") Long id,

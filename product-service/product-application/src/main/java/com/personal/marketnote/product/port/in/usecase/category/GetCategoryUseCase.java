@@ -1,7 +1,7 @@
 package com.personal.marketnote.product.port.in.usecase.category;
 
 import com.personal.marketnote.product.domain.category.Category;
-import com.personal.marketnote.product.port.in.result.GetCategoriesResult;
+import com.personal.marketnote.product.port.in.result.category.GetCategoriesResult;
 
 public interface GetCategoryUseCase {
     /**

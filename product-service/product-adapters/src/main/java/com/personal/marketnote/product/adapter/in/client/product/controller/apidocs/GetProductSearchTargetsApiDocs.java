@@ -13,7 +13,9 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Operation(summary = "상품 검색 대상 목록 조회", description = """
+@Operation(
+        summary = "상품 검색 대상 목록 조회",
+        description = """
         작성일자: 2026-01-02
         
         작성자: 성효빈
@@ -118,7 +120,8 @@ import java.lang.annotation.*;
                                         """)
                         )
                 )
-        })
+        }
+        )
 public @interface GetProductSearchTargetsApiDocs {
 }
 

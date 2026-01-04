@@ -2,7 +2,7 @@ package com.personal.marketnote.product.adapter.out.persistence.productoption.en
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseOrderedGeneralEntity;
 import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
-import com.personal.marketnote.product.domain.product.ProductOptionCategory;
+import com.personal.marketnote.product.domain.option.ProductOptionCategory;
 import jakarta.persistence.*;
 import lombok.*;
 
