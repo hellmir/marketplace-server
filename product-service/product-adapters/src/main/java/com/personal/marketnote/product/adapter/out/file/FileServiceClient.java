@@ -3,6 +3,7 @@ package com.personal.marketnote.product.adapter.out.file;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.personal.marketnote.common.adapter.out.ServiceAdapter;
+import com.personal.marketnote.common.application.file.port.in.result.GetFileResult;
 import com.personal.marketnote.common.application.file.port.in.result.GetFilesResult;
 import com.personal.marketnote.common.domain.file.FileSort;
 import com.personal.marketnote.common.utility.FormatValidator;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.personal.marketnote.common.domain.file.OwnerType.PRODUCT;
+import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_MAX_REQUEST_COUNT;
 
 @ServiceAdapter
 @RequiredArgsConstructor
@@ -35,7 +37,6 @@ public class FileServiceClient implements FindProductImagesPort {
     private String adminAccessToken;
 
     private final RestTemplate restTemplate;
-    private byte requestCount;
 
     @Override
     public Optional<GetFilesResult> findImagesByProductIdAndSort(Long productId, FileSort sort) {
@@ -52,53 +53,52 @@ public class FileServiceClient implements FindProductImagesPort {
         headers.setBearerAuth(adminAccessToken);
         HttpEntity<Void> httpEntity = new HttpEntity<>(headers);
 
-        try {
-            ResponseEntity<BaseResponse<FilesContent>> response =
-                    restTemplate.exchange(
-                            uri,
-                            HttpMethod.GET,
-                            httpEntity,
-                            new ParameterizedTypeReference<>() {
-                            }
-                    );
+        for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            try {
+                ResponseEntity<BaseResponse<FilesContent>> response =
+                        restTemplate.exchange(
+                                uri,
+                                HttpMethod.GET,
+                                httpEntity,
+                                new ParameterizedTypeReference<>() {
+                                }
+                        );
 
-            BaseResponse<FilesContent> body = response.getBody();
-            FilesContent content = FormatValidator.hasValue(body)
-                    ? body.content
-                    : null;
+                BaseResponse<FilesContent> body = response.getBody();
+                FilesContent filesContent = null;
+                if (FormatValidator.hasValue(body)) {
+                    filesContent = body.content;
+                }
 
-            if (!FormatValidator.hasValue(content) || !FormatValidator.hasValue(content.files)) {
-                return Optional.empty();
+                if (!FormatValidator.hasValue(filesContent) || !FormatValidator.hasValue(filesContent.files)) {
+                    return Optional.empty();
+                }
+
+                List<GetFileResult> getFileResults = filesContent.files.stream()
+                        .map(getFileResult -> new GetFileResult(
+                                getFileResult.id,
+                                getFileResult.sort,
+                                getFileResult.extension,
+                                getFileResult.name,
+                                getFileResult.s3Url,
+                                getFileResult.resizedS3Urls,
+                                getFileResult.orderNum
+                        ))
+                        .toList();
+
+                return Optional.of(new GetFilesResult(getFileResults));
+            } catch (Exception e) {
+                log.warn(e.getMessage(), e);
             }
-
-            List<GetFilesResult.FileItem> items = content.files.stream()
-                    .map(f -> new GetFilesResult.FileItem(
-                            f.id,
-                            f.sort,
-                            f.extension,
-                            f.name,
-                            f.s3Url,
-                            f.resizedS3Urls,
-                            f.orderNum
-                    ))
-                    .toList();
-
-            return Optional.of(new GetFilesResult(items));
-        } catch (Exception e) {
-            // 실패 시 3회 재시도
-            if (++requestCount < 3) {
-                log.warn(
-                        "Retrying to fetch images for productId {} and sort {}. Attempt: {}",
-                        productId, sort, requestCount
-                );
-                return findImagesByProductIdAndSort(productId, sort);
-            }
-
-            log.error(e.getMessage(), e);
-            requestCount = 0;
-
-            return Optional.empty();
         }
+
+        log.error("Failed to find images by product id: {} and sort: {}", productId, sort);
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<GetFileResult> findCatalogImageByProductId(Long productId) {
+        return Optional.empty();
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -117,16 +117,22 @@ public class FileServiceClient implements FindProductImagesPort {
     private static class FileItem {
         @JsonProperty("id")
         Long id;
+
         @JsonProperty("sort")
         String sort;
+
         @JsonProperty("extension")
         String extension;
+
         @JsonProperty("name")
         String name;
+
         @JsonProperty("s3Url")
         String s3Url;
+
         @JsonProperty("resizedS3Urls")
         List<String> resizedS3Urls;
+
         @JsonProperty("orderNum")
         Long orderNum;
     }

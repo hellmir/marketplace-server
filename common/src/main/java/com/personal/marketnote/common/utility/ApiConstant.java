@@ -11,4 +11,5 @@ public class ApiConstant {
                     "(hasAuthority('ROLE_SELLER') and " +
                     " #request.sellerId.toString() == authentication.name)" +
                     ")";
+    public static final Byte INTER_SERVER_MAX_REQUEST_COUNT = 5;
 }

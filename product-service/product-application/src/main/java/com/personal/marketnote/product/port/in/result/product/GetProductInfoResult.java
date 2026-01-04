@@ -1,21 +1,21 @@
 package com.personal.marketnote.product.port.in.result.product;
 
+import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
 import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.domain.product.ProductTag;
+import com.personal.marketnote.product.port.in.result.pricepolicy.GetProductPricePolicyResult;
+import lombok.Builder;
 
-import java.math.BigDecimal;
 import java.util.List;
 
+@Builder(access = lombok.AccessLevel.PRIVATE)
 public record GetProductInfoResult(
         Long id,
         Long sellerId,
         String name,
         String brandName,
         String detail,
-        Long price,
-        Long discountPrice,
-        BigDecimal discountRate,
-        Long accumulatedPoint,
+        GetProductPricePolicyResult selectedPricePolicy,
         Integer sales,
         Long viewCount,
         Long popularity,
@@ -24,50 +24,21 @@ public record GetProductInfoResult(
         Long orderNum,
         String status
 ) {
-    public static GetProductInfoResult from(Product product) {
-        return new GetProductInfoResult(
-                product.getId(),
-                product.getSellerId(),
-                product.getName(),
-                product.getBrandName(),
-                product.getDetail(),
-                product.getPrice(),
-                product.getDiscountPrice(),
-                product.getDiscountRate(),
-                product.getAccumulatedPoint(),
-                product.getSales(),
-                product.getViewCount(),
-                product.getPopularity(),
-                product.isFindAllOptionsYn(),
-                product.getProductTags(),
-                product.getOrderNum(),
-                product.getStatus().name()
-        );
-    }
-
-    public static GetProductInfoResult fromAdjusted(
-            Product product,
-            Long price,
-            Long discountPrice,
-            Long accumulatedPoint
-    ) {
-        return new GetProductInfoResult(
-                product.getId(),
-                product.getSellerId(),
-                product.getName(),
-                product.getBrandName(),
-                product.getDetail(),
-                price,
-                discountPrice,
-                product.getDiscountRate(),
-                accumulatedPoint,
-                product.getSales(),
-                product.getViewCount(),
-                product.getPopularity(),
-                product.isFindAllOptionsYn(),
-                product.getProductTags(),
-                product.getOrderNum(),
-                product.getStatus().name()
-        );
+    public static GetProductInfoResult from(Product product, PricePolicy pricePolicy) {
+        return GetProductInfoResult.builder()
+                .id(product.getId())
+                .sellerId(product.getSellerId())
+                .name(product.getName())
+                .brandName(product.getBrandName())
+                .detail(product.getDetail())
+                .selectedPricePolicy(GetProductPricePolicyResult.from(pricePolicy))
+                .sales(product.getSales())
+                .viewCount(product.getViewCount())
+                .popularity(product.getPopularity())
+                .findAllOptionsYn(product.isFindAllOptionsYn())
+                .productTags(product.getProductTags())
+                .orderNum(product.getOrderNum())
+                .status(product.getStatus().name())
+                .build();
     }
 }

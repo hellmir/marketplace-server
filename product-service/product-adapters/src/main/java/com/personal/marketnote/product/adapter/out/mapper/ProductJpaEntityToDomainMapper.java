@@ -17,28 +17,31 @@ public class ProductJpaEntityToDomainMapper {
     public static Optional<Product> mapToDomain(ProductJpaEntity productJpaEntity) {
         return Optional.ofNullable(productJpaEntity)
                 .map(
-                        entity -> Product.of(
-                                productJpaEntity.getId(),
-                                productJpaEntity.getSellerId(),
-                                productJpaEntity.getName(),
-                                productJpaEntity.getBrandName(),
-                                productJpaEntity.getDetail(),
-                                productJpaEntity.getPrice(),
-                                productJpaEntity.getDiscountPrice(),
-                                productJpaEntity.getDiscountRate(),
-                                productJpaEntity.getAccumulatedPoint(),
-                                productJpaEntity.getSales(),
-                                productJpaEntity.getViewCount(),
-                                productJpaEntity.getPopularity(),
-                                productJpaEntity.isFindAllOptionsYn(),
-                                productJpaEntity.getProductTagJpaEntities().stream()
-                                        .map(ProductJpaEntityToDomainMapper::mapToDomain)
-                                        .filter(Optional::isPresent)
-                                        .map(Optional::get)
-                                        .toList(),
-                                productJpaEntity.getOrderNum(),
-                                productJpaEntity.getStatus()
-                        )
+                        entity -> {
+                            Product product = Product.of(
+                                    productJpaEntity.getId(),
+                                    productJpaEntity.getSellerId(),
+                                    productJpaEntity.getName(),
+                                    productJpaEntity.getBrandName(),
+                                    productJpaEntity.getDetail(),
+                                    PricePolicyJpaEntityToDomainMapper.mapToDomain(productJpaEntity.getDefaultPricePolicy())
+                                            .orElse(null),
+                                    productJpaEntity.getSales(),
+                                    productJpaEntity.getViewCount(),
+                                    productJpaEntity.getPopularity(),
+                                    productJpaEntity.isFindAllOptionsYn(),
+                                    productJpaEntity.getProductTagJpaEntities().stream()
+                                            .map(ProductJpaEntityToDomainMapper::mapToDomain)
+                                            .filter(Optional::isPresent)
+                                            .map(Optional::get)
+                                            .toList(),
+                                    productJpaEntity.getOrderNum(),
+                                    productJpaEntity.getStatus()
+                            );
+                            product.getDefaultPricePolicy().addProduct(product);
+
+                            return product;
+                        }
                 );
     }
 
@@ -108,7 +111,8 @@ public class ProductJpaEntityToDomainMapper {
 
     private static Optional<ProductOption> mapToDomain(
             ProductOptionJpaEntity productOptionJpaEntity,
-            ProductOptionCategory shallowCategory) {
+            ProductOptionCategory shallowCategory
+    ) {
         return Optional.ofNullable(productOptionJpaEntity)
                 .map(
                         entity -> ProductOption.of(

@@ -2,6 +2,7 @@ package com.personal.marketnote.product.adapter.out.persistence.product.entity;
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseOrderedGeneralEntity;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity;
 import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.domain.product.ProductTag;
 import jakarta.persistence.Column;
@@ -11,10 +12,10 @@ import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Formula;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,74 +43,6 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
     @Column(name = "detail", length = 1023)
     private String detail;
 
-    @Formula("""
-            (
-            SELECT pp.price
-            FROM price_policy pp
-            WHERE 1 = 1
-            AND pp.status = 'ACTIVE'
-            AND pp.product_id = id
-            AND NOT EXISTS (
-                SELECT 1
-                FROM product_option_price_policy popp
-                WHERE popp.price_policy_id = pp.id
-            )
-            ORDER BY pp.id DESC LIMIT 1
-            )
-            """)
-    private Long price;
-
-    @Formula("""
-            (
-            SELECT pp.discount_price
-            FROM price_policy pp
-            WHERE 1 = 1
-            AND pp.status = 'ACTIVE'
-            AND pp.product_id = id
-            AND NOT EXISTS (
-                SELECT 1
-                FROM product_option_price_policy popp
-                WHERE popp.price_policy_id = pp.id
-            )
-            ORDER BY pp.id DESC LIMIT 1
-            )
-            """)
-    private Long discountPrice;
-
-    @Formula("""
-            (
-            SELECT pp.discount_rate
-            FROM price_policy pp
-            WHERE 1 = 1
-            AND pp.status = 'ACTIVE'
-            AND pp.product_id = id
-            AND NOT EXISTS (
-                SELECT 1
-                FROM product_option_price_policy popp
-                WHERE popp.price_policy_id = pp.id
-            )
-            ORDER BY pp.id DESC LIMIT 1
-            )
-            """)
-    private BigDecimal discountRate;
-
-    @Formula("""
-            (
-            SELECT pp.accumulated_point
-            FROM price_policy pp
-            WHERE 1 = 1
-            AND pp.status = 'ACTIVE'
-            AND pp.product_id = id
-            AND NOT EXISTS (
-                SELECT 1
-                FROM product_option_price_policy popp
-                WHERE popp.price_policy_id = pp.id
-            )
-            ORDER BY pp.id DESC LIMIT 1
-            )
-            """)
-    private Long accumulatedPoint;
-
     @Column(name = "sales", nullable = false, insertable = false, columnDefinition = "INT DEFAULT 0")
     private Integer sales;
 
@@ -124,6 +57,9 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
 
     @OneToMany(mappedBy = "productJpaEntity", cascade = {PERSIST, MERGE}, orphanRemoval = true)
     private List<ProductTagJpaEntity> productTagJpaEntities = new ArrayList<>();
+
+    @OneToMany(mappedBy = "productJpaEntity", cascade = {PERSIST, MERGE}, orphanRemoval = true)
+    private List<PricePolicyJpaEntity> pricePolicyJpaEntities = new ArrayList<>();
 
     public static ProductJpaEntity from(Product product) {
         ProductJpaEntity productJpaEntity = ProductJpaEntity.builder()
@@ -171,5 +107,31 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
         }
 
         hide();
+    }
+
+    public PricePolicyJpaEntity getDefaultPricePolicy() {
+        return pricePolicyJpaEntities.stream()
+                .max(Comparator.comparing(PricePolicyJpaEntity::getId))
+                .orElse(null);
+    }
+
+    public Long getPrice() {
+        PricePolicyJpaEntity latest = getDefaultPricePolicy();
+        return FormatValidator.hasValue(latest) ? latest.getPrice() : null;
+    }
+
+    public Long getDiscountPrice() {
+        PricePolicyJpaEntity latest = getDefaultPricePolicy();
+        return FormatValidator.hasValue(latest) ? latest.getDiscountPrice() : null;
+    }
+
+    public BigDecimal getDiscountRate() {
+        PricePolicyJpaEntity latest = getDefaultPricePolicy();
+        return FormatValidator.hasValue(latest) ? latest.getDiscountRate() : null;
+    }
+
+    public Long getAccumulatedPoint() {
+        PricePolicyJpaEntity latest = getDefaultPricePolicy();
+        return FormatValidator.hasValue(latest) ? latest.getAccumulatedPoint() : null;
     }
 }

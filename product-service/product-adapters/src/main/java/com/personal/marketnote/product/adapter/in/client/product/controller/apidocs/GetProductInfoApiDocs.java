@@ -74,10 +74,7 @@ import java.lang.annotation.*;
         | name | string | 상품명 | "스프링노트1" |
         | brandName | string | 브랜드명 | "노트왕" |
         | detail | string | 상품 상세 설명 | "스프링노트1 설명" |
-        | price | number | 기본 판매 가격(원) | 164000 |
-        | discountPrice | number | 할인 판매 가격(원) | 156000 |
-        | discountRate | number | 할인율(%, 최대 소수점 1자리) | 17.8 |
-        | accumulatedPoint | number | 구매 시 적립 포인트 | 13200 |
+        | selectedPricePolicy | object | 선택된 가격 정책 | { ... } |
         | sales | number | 판매량 | 0 |
         | viewCount | number | 조회수 | 0 |
         | popularity | number | 인기도 | 0 |
@@ -121,6 +118,19 @@ import java.lang.annotation.*;
         | accumulatedPoint | number | 적립 포인트 | 1200 |
         | status | string | 상태 | "ACTIVE" |
         | isSelected | boolean | 선택 여부 | false |
+        
+        ---
+        
+        ### Response > content > productInfo > selectedPricePolicy
+        
+        | **키** | **타입** | **설명** | **예시** |
+        | --- | --- | --- | --- |
+        | id | number | 가격 정책 ID | 23 |
+        | price | number | 기본 판매 가격(원) | 43000 |
+        | discountPrice | number | 할인 가격(원) | 36000 |
+        | accumulatedPoint | number | 적립 포인트 | 500 |
+        | discountRate | number | 할인율(%, 최대 소수점 1자리) | 1.4 |
+        | optionIds | array<number> | 옵션 ID 목록 | [8, 11] |
         
         ---
         
@@ -203,7 +213,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-04T14:16:34.360777",
+                                          "timestamp": "2026-01-04T23:36:07.671425",
                                           "content": {
                                             "productInfo": {
                                               "id": 30,
@@ -211,10 +221,13 @@ import java.lang.annotation.*;
                                               "name": "건기식테스트1",
                                               "brandName": "노트왕",
                                               "detail": "건기식테스트건기식테스트건기식테스트",
-                                              "price": 60000,
-                                              "discountPrice": 40000,
-                                              "discountRate": 33.3,
-                                              "accumulatedPoint": 3000,
+                                              "selectedPricePolicy": {
+                                                "id": 23,
+                                                "price": 43000,
+                                                "discountPrice": 36000,
+                                                "discountRate": 1.4,
+                                                "accumulatedPoint": 500
+                                              },
                                               "sales": 0,
                                               "viewCount": 0,
                                               "popularity": 0,
@@ -248,18 +261,12 @@ import java.lang.annotation.*;
                                                   {
                                                     "id": 8,
                                                     "content": "1박스",
-                                                    "price": null,
-                                                    "discountPrice": null,
-                                                    "accumulatedPoint": null,
                                                     "status": "ACTIVE",
                                                     "isSelected": false
                                                   },
                                                   {
                                                     "id": 9,
                                                     "content": "3박스",
-                                                    "price": null,
-                                                    "discountPrice": null,
-                                                    "accumulatedPoint": null,
                                                     "status": "ACTIVE",
                                                     "isSelected": false
                                                   }
@@ -274,18 +281,12 @@ import java.lang.annotation.*;
                                                   {
                                                     "id": 10,
                                                     "content": "30개입",
-                                                    "price": null,
-                                                    "discountPrice": null,
-                                                    "accumulatedPoint": null,
                                                     "status": "ACTIVE",
                                                     "isSelected": false
                                                   },
                                                   {
                                                     "id": 11,
                                                     "content": "60개입",
-                                                    "price": null,
-                                                    "discountPrice": null,
-                                                    "accumulatedPoint": null,
                                                     "status": "ACTIVE",
                                                     "isSelected": false
                                                   }
@@ -411,11 +412,16 @@ import java.lang.annotation.*;
                                                 "price": 43000,
                                                 "discountPrice": 36000,
                                                 "accumulatedPoint": 500,
+                                                "discountRate": 1.4,
+                                                "optionIds": null
+                                              },
+                                              {
+                                                "id": 23,
+                                                "price": 43000,
+                                                "discountPrice": 36000,
+                                                "accumulatedPoint": 500,
                                                 "discountRate": 16.3,
-                                                "optionIds": [
-                                                  9,
-                                                  10
-                                                ]
+                                                "optionIds": null
                                               },
                                               {
                                                 "id": 22,
@@ -423,10 +429,7 @@ import java.lang.annotation.*;
                                                 "discountPrice": 40000,
                                                 "accumulatedPoint": 2000,
                                                 "discountRate": 20,
-                                                "optionIds": [
-                                                  9,
-                                                  11
-                                                ]
+                                                "optionIds": null
                                               },
                                               {
                                                 "id": 21,
@@ -434,10 +437,7 @@ import java.lang.annotation.*;
                                                 "discountPrice": 32000,
                                                 "accumulatedPoint": 800,
                                                 "discountRate": 20,
-                                                "optionIds": [
-                                                  8,
-                                                  10
-                                                ]
+                                                "optionIds": null
                                               },
                                               {
                                                 "id": 20,
@@ -445,10 +445,7 @@ import java.lang.annotation.*;
                                                 "discountPrice": 37000,
                                                 "accumulatedPoint": 1200,
                                                 "discountRate": 17.8,
-                                                "optionIds": [
-                                                  8,
-                                                  11
-                                                ]
+                                                "optionIds": null
                                               }
                                             ]
                                           },

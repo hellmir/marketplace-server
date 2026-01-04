@@ -85,15 +85,25 @@ import java.lang.annotation.*;
         | sellerId | number | 판매자 ID | 10 |
         | name | string | 상품명 | "스프링노트1" |
         | brandName | string | 브랜드명 | "노트왕" |
-        | price | number | 기본 판매 가격(원) | 100000 |
-        | discountPrice | number | 할인 판매 가격(원) | 80000 |
-        | discountRate | number | 할인율(%, 최대 소수점 1자리) | 20 |
-        | accumulatedPoint | number | 구매 시 적립 포인트 | 1000 |
+        | pricePolicy | object | 가격 정책 | { ... } |
         | sales | number | 판매량 | 0 |
         | productTags | array | 상품 태그 목록 | [ ... ] |
         | catalogImages | object | 상품 카탈로그 이미지 목록 | { ... } |
         | orderNum | number | 정렬 순서 | 1 |
         | status | string | 상태 | "ACTIVE" |
+        
+        ---
+        
+        ### Response > content > products > pricePolicy
+        
+        | **키** | **타입** | **설명** | **예시** |
+        | --- | --- | --- | --- |
+        | id | number | 가격 정책 ID | 22 |
+        | price | number | 기본 판매 가격(원) | 50000 |
+        | discountPrice | number | 할인 가격(원) | 40000 |
+        | accumulatedPoint | number | 적립 포인트 | 2000 |
+        | discountRate | number | 할인율(%, 최대 소수점 1자리) | 20 |
+        | optionIds | array<number> | 옵션 ID 목록 | [8, 11] |
         
         ---
         
@@ -213,7 +223,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-04T10:58:15.334324",
+                                          "timestamp": "2026-01-04T23:35:03.051692",
                                           "content": {
                                             "products": {
                                               "totalElements": 14,
@@ -225,10 +235,13 @@ import java.lang.annotation.*;
                                                   "sellerId": 1,
                                                   "name": "건기식테스트1",
                                                   "brandName": "노트왕",
-                                                  "price": 40000,
-                                                  "discountPrice": 32000,
-                                                  "discountRate": 20,
-                                                  "accumulatedPoint": 800,
+                                                  "pricePolicy": {
+                                                    "id": 21,
+                                                    "price": 40000,
+                                                    "discountPrice": 32000,
+                                                    "discountRate": 2.5,
+                                                    "accumulatedPoint": 800
+                                                  },
                                                   "sales": 0,
                                                   "productTags": [
                                                     {
@@ -325,10 +338,13 @@ import java.lang.annotation.*;
                                                   "sellerId": 1,
                                                   "name": "건기식테스트1",
                                                   "brandName": "노트왕",
-                                                  "price": 45000,
-                                                  "discountPrice": 37000,
-                                                  "discountRate": 17.8,
-                                                  "accumulatedPoint": 1200,
+                                                  "pricePolicy": {
+                                                    "id": 20,
+                                                    "price": 45000,
+                                                    "discountPrice": 37000,
+                                                    "discountRate": 3.2,
+                                                    "accumulatedPoint": 1200
+                                                  },
                                                   "sales": 0,
                                                   "productTags": [
                                                     {
@@ -425,10 +441,13 @@ import java.lang.annotation.*;
                                                   "sellerId": 1,
                                                   "name": "건기식테스트1",
                                                   "brandName": "노트왕",
-                                                  "price": 60000,
-                                                  "discountPrice": 40000,
-                                                  "discountRate": 33.3,
-                                                  "accumulatedPoint": 3000,
+                                                  "pricePolicy": {
+                                                    "id": 23,
+                                                    "price": 43000,
+                                                    "discountPrice": 36000,
+                                                    "discountRate": 1.4,
+                                                    "accumulatedPoint": 500
+                                                  },
                                                   "sales": 0,
                                                   "productTags": [
                                                     {
@@ -525,10 +544,13 @@ import java.lang.annotation.*;
                                                   "sellerId": 1,
                                                   "name": "건기식테스트1",
                                                   "brandName": "노트왕",
-                                                  "price": 50000,
-                                                  "discountPrice": 40000,
-                                                  "discountRate": 20,
-                                                  "accumulatedPoint": 2000,
+                                                  "pricePolicy": {
+                                                    "id": 22,
+                                                    "price": 50000,
+                                                    "discountPrice": 40000,
+                                                    "discountRate": 5,
+                                                    "accumulatedPoint": 2000
+                                                  },
                                                   "sales": 0,
                                                   "productTags": [
                                                     {

@@ -1,33 +1,26 @@
 package com.personal.marketnote.product.port.in.result.pricepolicy;
 
-import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
 import lombok.AccessLevel;
 import lombok.Builder;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record GetProductPricePolicyResult(
         Long id,
         Long price,
         Long discountPrice,
-        Long accumulatedPoint,
         BigDecimal discountRate,
-        List<Long> optionIds
+        Long accumulatedPoint
 ) {
-    public boolean hasOptions() {
-        return FormatValidator.hasValue(optionIds);
-    }
-
     public static GetProductPricePolicyResult from(PricePolicy pricePolicy) {
         return GetProductPricePolicyResult.builder()
                 .id(pricePolicy.getId())
                 .price(pricePolicy.getPrice())
                 .discountPrice(pricePolicy.getDiscountPrice())
-                .accumulatedPoint(pricePolicy.getAccumulatedPoint())
                 .discountRate(pricePolicy.getDiscountRate())
+                .accumulatedPoint(pricePolicy.getAccumulatedPoint())
                 .build();
     }
 }

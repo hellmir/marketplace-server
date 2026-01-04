@@ -82,10 +82,8 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
                 productJpaEntity.getName(),
                 productJpaEntity.getBrandName(),
                 productJpaEntity.getDetail(),
-                productJpaEntity.getPrice(),
-                productJpaEntity.getDiscountPrice(),
-                productJpaEntity.getDiscountRate(),
-                productJpaEntity.getAccumulatedPoint(),
+                PricePolicyJpaEntityToDomainMapper.mapToDomain(productJpaEntity.getDefaultPricePolicy())
+                        .orElse(null),
                 productJpaEntity.getSales(),
                 productJpaEntity.getViewCount(),
                 productJpaEntity.getPopularity(),
@@ -96,6 +94,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
         );
 
         PricePolicy pricePolicy = PricePolicy.of(
+                entity.getId(),
                 product,
                 entity.getPrice(),
                 entity.getDiscountPrice(),

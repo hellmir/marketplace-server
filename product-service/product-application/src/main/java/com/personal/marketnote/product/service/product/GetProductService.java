@@ -11,7 +11,6 @@ import com.personal.marketnote.product.domain.product.ProductSearchTarget;
 import com.personal.marketnote.product.domain.product.ProductSortProperty;
 import com.personal.marketnote.product.exception.ProductNotFoundException;
 import com.personal.marketnote.product.port.in.result.option.SelectableProductOptionCategoryItemResult;
-import com.personal.marketnote.product.port.in.result.pricepolicy.GetProductPricePolicyResult;
 import com.personal.marketnote.product.port.in.result.product.GetProductInfoResult;
 import com.personal.marketnote.product.port.in.result.product.GetProductInfoWithOptionsResult;
 import com.personal.marketnote.product.port.in.result.product.GetProductsResult;
@@ -28,7 +27,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -67,53 +65,35 @@ public class GetProductService implements GetProductUseCase {
         Product product = getProduct(id);
         List<ProductOptionCategory> categories
                 = findProductOptionCategoryPort.findActiveWithOptionsByProductId(product.getId());
+        PricePolicy defaultPricePolicy = product.getDefaultPricePolicy();
 
-        Long adjustedPrice = product.getPrice();
-        Long adjustedDiscountPrice = FormatValidator.hasValue(product.getDiscountPrice())
-                ? product.getDiscountPrice()
-                : adjustedPrice;
-        Long adjustedAccumulatedPoint = product.getAccumulatedPoint();
-
-        List<GetProductPricePolicyResult> pricePoliciesWithOptions
+        List<PricePolicy> pricePolicies
                 = findPricePoliciesPort.findByProductId(product.getId())
                 .stream()
-                .filter(GetProductPricePolicyResult::hasOptions)
-                .toList();
+                .filter(PricePolicy::hasOptions)
+                .collect(Collectors.toList());
+        pricePolicies.addFirst(defaultPricePolicy);
 
+        PricePolicy selectedPricePolicy = defaultPricePolicy;
         if (
                 product.isFindAllOptionsYn()
                         && FormatValidator.hasValue(selectedOptionIds)
                         && FormatValidator.hasValue(categories)
         ) {
-            GetProductPricePolicyResult selectedPricePolicy = pricePoliciesWithOptions.stream()
-                    .filter(policy -> FormatValidator.equals(policy.optionIds(), selectedOptionIds))
+            selectedPricePolicy = pricePolicies.stream()
+                    .filter(policy -> FormatValidator.equals(policy.getOptionIds(), selectedOptionIds))
                     .findFirst()
                     .orElse(null);
-            if (FormatValidator.hasValue(selectedPricePolicy)) {
-                adjustedPrice = selectedPricePolicy.price();
-                adjustedDiscountPrice = selectedPricePolicy.discountPrice();
-                adjustedAccumulatedPoint = selectedPricePolicy.accumulatedPoint();
-            }
-
-            if (
-                    FormatValidator.hasValue(adjustedDiscountPrice)
-                            && FormatValidator.hasValue(adjustedPrice)
-                            && adjustedDiscountPrice > adjustedPrice
-            ) {
-                adjustedDiscountPrice = adjustedPrice;
-            }
         }
 
-        GetProductInfoResult info = GetProductInfoResult.fromAdjusted(
-                product, adjustedPrice, adjustedDiscountPrice, adjustedAccumulatedPoint
-        );
+        GetProductInfoResult productInfo = GetProductInfoResult.from(product, selectedPricePolicy);
 
         Set<String> selectedFlags = new HashSet<>();
         if (FormatValidator.hasValue(categories) && FormatValidator.hasValue(selectedOptionIds)) {
-            Set<Long> selectedIdSet = new HashSet<>(selectedOptionIds);
+            Set<Long> selectedIds = new HashSet<>(selectedOptionIds);
             for (ProductOptionCategory category : categories) {
                 for (ProductOption option : category.getOptions()) {
-                    if (selectedIdSet.contains(option.getId())) {
+                    if (selectedIds.contains(option.getId())) {
                         selectedFlags.add(option.getContent());
                     }
                 }
@@ -130,7 +110,7 @@ public class GetProductService implements GetProductUseCase {
         GetFilesResult contentImages = contentFuture.join();
 
         return GetProductInfoWithOptionsResult.of(
-                info, selectableCategories, representativeImages, contentImages, pricePoliciesWithOptions
+                productInfo, selectableCategories, representativeImages, contentImages, pricePolicies
         );
     }
 
@@ -274,33 +254,14 @@ public class GetProductService implements GetProductUseCase {
                     .toList();
 
             // 선택된 옵션 조합 추출
-            for (List<ProductOption> selectedOptionCombos : cartesianProduct(optionGroups)) {
-                List<Long> optionIds = selectedOptionCombos.stream().map(ProductOption::getId).toList();
-                Optional<PricePolicy> pricePolicyOpt
-                        = findPricePolicyPort.findByProductAndOptionIds(product.getId(), optionIds);
-
-                Long variantPrice = product.getPrice();
-                Long variantDiscountPrice = product.getDiscountPrice();
-                BigDecimal variantDiscountRate = product.getDiscountRate();
-                Long variantAccumulatedPoint = product.getAccumulatedPoint();
-
-                if (pricePolicyOpt.isPresent()) {
-                    PricePolicy pricePolicy = pricePolicyOpt.get();
-                    variantPrice = pricePolicy.getPrice();
-                    variantDiscountPrice = pricePolicy.getDiscountPrice();
-                    variantAccumulatedPoint = pricePolicy.getAccumulatedPoint();
-                    variantDiscountRate = pricePolicy.getDiscountRate();
-                }
+            for (List<ProductOption> selectedOptions : cartesianProduct(optionGroups)) {
+                List<Long> optionIds = selectedOptions.stream().map(ProductOption::getId).toList();
+                PricePolicy pricePolicy
+                        = findPricePolicyPort.findByProductAndOptionIds(product.getId(), optionIds)
+                        .orElse(product.getDefaultPricePolicy());
 
                 results.add(
-                        ProductItemResult.from(
-                                product,
-                                selectedOptionCombos,
-                                variantPrice,
-                                variantDiscountPrice,
-                                variantDiscountRate,
-                                variantAccumulatedPoint
-                        )
+                        ProductItemResult.from(product, selectedOptions, pricePolicy)
                 );
             }
         }
