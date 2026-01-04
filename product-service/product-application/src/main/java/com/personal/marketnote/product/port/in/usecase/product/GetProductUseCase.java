@@ -20,11 +20,14 @@ public interface GetProductUseCase {
     Product getProduct(Long id);
 
     /**
-     * @param id             상품 ID
-     * @param optionContents 선택할 옵션명 목록 (선택)
-     * @return 상품 상세 정보 + 옵션 카테고리/옵션(선택 상태 포함)
+     * @param id                상품 ID
+     * @param selectedOptionIds 선택된 옵션 ID 목록
+     * @return 상품 상세 정보 응답 {@link GetProductInfoWithOptionsResult}
+     * @Date 2025-12-31
+     * @Author 성효빈
+     * @Description 상품 상세 정보를 조회합니다.
      */
-    GetProductInfoWithOptionsResult getProductInfo(Long id, List<String> optionContents);
+    GetProductInfoWithOptionsResult getProductInfo(Long id, List<Long> selectedOptionIds);
 
     /**
      * @param categoryId    카테고리 ID

@@ -5,9 +5,9 @@ import com.personal.marketnote.file.adapter.in.client.file.controller.apidocs.Ad
 import com.personal.marketnote.file.adapter.in.client.file.controller.apidocs.GetFilesApiDocs;
 import com.personal.marketnote.file.adapter.in.client.file.mapper.FileRequestToCommandMapper;
 import com.personal.marketnote.file.adapter.in.client.file.request.AddFilesRequest;
+import com.personal.marketnote.file.port.in.result.GetFilesResult;
 import com.personal.marketnote.file.port.in.usecase.file.AddFileUseCase;
 import com.personal.marketnote.file.port.in.usecase.file.GetFilesUseCase;
-import com.personal.marketnote.file.port.in.usecase.file.result.GetFilesResult;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
