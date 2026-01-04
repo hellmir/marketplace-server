@@ -59,7 +59,7 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | productId | number | 상품 ID | 1001 |
-                | categoryIds | array<number> | 최종 등록된 카테고리 ID 목록 | [1,10004,10005] |
+                | categoryIds | array<number> | 최종 등록된 카테고리 ID 목록 | [1001,10004,10005] |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         parameters = {
@@ -77,7 +77,7 @@ import java.lang.annotation.*;
                         schema = @Schema(implementation = RegisterProductCategoriesRequest.class),
                         examples = @ExampleObject("""
                                 {
-                                    "categoryIds": [1,10004,10005]
+                                    "categoryIds": [1001,10004,10005]
                                 }
                                 """)
                 )

@@ -6,6 +6,8 @@ import com.personal.marketnote.product.adapter.out.persistence.productcategory.r
 import com.personal.marketnote.product.port.out.productcategory.FindProductCategoryPort;
 import com.personal.marketnote.product.port.out.productcategory.ReplaceProductCategoriesPort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -19,6 +21,10 @@ public class ProductCategoryPersistenceAdapter implements ReplaceProductCategori
 
     @Override
     @Transactional(isolation = READ_COMMITTED)
+    @Caching(evict = {
+            @CacheEvict(value = "product:detail", key = "#productId"),
+            @CacheEvict(value = "product:list:first", allEntries = true)
+    })
     public void replaceProductCategories(Long productId, List<Long> categoryIds) {
         productCategoryJpaRepository.deleteByProductId(productId);
         if (categoryIds == null || categoryIds.isEmpty()) {
