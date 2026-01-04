@@ -18,9 +18,9 @@ public record ProductItemResult(
         Long accumulatedPoint,
         Integer sales,
         List<ProductTag> productTags,
+        GetFilesResult catalogImages,
         Long orderNum,
-        String status,
-        GetFilesResult catalogImages
+        String status
 ) {
     public static ProductItemResult from(Product product) {
         return new ProductItemResult(
@@ -34,9 +34,9 @@ public record ProductItemResult(
                 product.getAccumulatedPoint(),
                 product.getSales(),
                 product.getProductTags(),
+                null,
                 product.getOrderNum(),
-                product.getStatus().name(),
-                null
+                product.getStatus().name()
         );
     }
 
@@ -59,9 +59,9 @@ public record ProductItemResult(
                 accumulatedPoint,
                 product.getSales(),
                 product.getProductTags(),
+                null,
                 product.getOrderNum(),
-                product.getStatus().name(),
-                null
+                product.getStatus().name()
         );
     }
 
@@ -77,9 +77,9 @@ public record ProductItemResult(
                 base.accumulatedPoint(),
                 base.sales(),
                 base.productTags(),
+                catalogImages,
                 base.orderNum(),
-                base.status(),
-                catalogImages
+                base.status()
         );
     }
 }

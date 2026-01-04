@@ -45,7 +45,7 @@ import java.lang.annotation.*;
         | **키** | **타입** | **설명** | **필수 여부** | **예시** |
         | --- | --- | --- | --- | --- |
         | categoryId | number | 카테고리 ID | N | 1001 |
-        | cursor | number | 이전 페이지의 nextCursor 값, 전송하지 않는 경우 첫 데이터부터 조회 | N | -1 |
+        | cursor | number | 이전 페이지의 nextCursor 값, 전송하지 않는 경우 첫 데이터부터 조회 | N | default: 0 |
         | page-size | number | 페이지 크기 | N | 4 |
         | sortDirection | string | 정렬 방향(ASC, DESC) | N | DESC |
         | sortProperty | string | 정렬 속성(ORDER_NUM, POPULARITY, DISCOUNT_PRICE, ACCUMULATED_POINT) | N | ORDER_NUM |
@@ -91,6 +91,7 @@ import java.lang.annotation.*;
         | accumulatedPoint | number | 구매 시 적립 포인트 | 1000 |
         | sales | number | 판매량 | 0 |
         | productTags | array | 상품 태그 목록 | [ ... ] |
+        | catalogImages | object | 상품 카탈로그 이미지 목록 | { ... } |
         | orderNum | number | 정렬 순서 | 1 |
         | status | string | 상태 | "ACTIVE" |
         
@@ -105,6 +106,28 @@ import java.lang.annotation.*;
         | name | string | 상품 태그명 | "루테인" |
         | orderNum | number | 정렬 순서 | 1 |
         | status | string | 상태 | "ACTIVE" |
+        
+        ---
+        
+        ### Response > content > products > catalogImages
+        
+        | **키** | **타입** | **설명** | **예시** |
+        | --- | --- | --- | --- |
+        | images | array | 이미지 목록 | [ ... ] |
+        
+        ---
+        
+        ### Response > content > products > catalogImages > images
+        
+        | **키** | **타입** | **설명** | **예시** |
+        | --- | --- | --- | --- |
+        | id | number | 이미지 ID | 1 |
+        | sort | string | 이미지 종류 | "PRODUCT_CATALOG_IMAGE" |
+        | extension | string | 이미지 확장자 | "jpg" |
+        | name | string | 이미지명 | "스프링노트1" |
+        | s3Url | string | 이미지 S3 URL | "https://marketnote.s3.amazonaws.com/product/30/1763517082648_grafana-icon.png" |
+        | resizedS3Urls | array | 리사이즈 이미지 S3 URL 목록 | [ "https://marketnote.s3.amazonaws.com/product/30/1763517083251_grafana-icon_300x300.png" ] |
+        | orderNum | number | 정렬 순서 | 1 |
         """, security = {
         @SecurityRequirement(name = "bearer")
 },
@@ -213,10 +236,8 @@ import java.lang.annotation.*;
                                                       "status": "ACTIVE"
                                                     }
                                                   ],
-                                                  "orderNum": 30,
-                                                  "status": "ACTIVE",
                                                   "catalogImages": {
-                                                    "files": [
+                                                    "images": [
                                                       {
                                                         "id": 12,
                                                         "sort": "PRODUCT_CATALOG_IMAGE",
@@ -262,7 +283,9 @@ import java.lang.annotation.*;
                                                         "orderNum": null
                                                       }
                                                     ]
-                                                  }
+                                                  },
+                                                  "orderNum": 30,
+                                                  "status": "ACTIVE"
                                                 },
                                                 {
                                                   "id": 30,
@@ -290,10 +313,8 @@ import java.lang.annotation.*;
                                                       "status": "ACTIVE"
                                                     }
                                                   ],
-                                                  "orderNum": 30,
-                                                  "status": "ACTIVE",
                                                   "catalogImages": {
-                                                    "files": [
+                                                    "images": [
                                                       {
                                                         "id": 12,
                                                         "sort": "PRODUCT_CATALOG_IMAGE",
@@ -339,7 +360,9 @@ import java.lang.annotation.*;
                                                         "orderNum": null
                                                       }
                                                     ]
-                                                  }
+                                                  },
+                                                  "orderNum": 30,
+                                                  "status": "ACTIVE"
                                                 },
                                                 {
                                                   "id": 30,
@@ -367,10 +390,8 @@ import java.lang.annotation.*;
                                                       "status": "ACTIVE"
                                                     }
                                                   ],
-                                                  "orderNum": 30,
-                                                  "status": "ACTIVE",
                                                   "catalogImages": {
-                                                    "files": [
+                                                    "images": [
                                                       {
                                                         "id": 12,
                                                         "sort": "PRODUCT_CATALOG_IMAGE",
@@ -416,7 +437,9 @@ import java.lang.annotation.*;
                                                         "orderNum": null
                                                       }
                                                     ]
-                                                  }
+                                                  },
+                                                  "orderNum": 30,
+                                                  "status": "ACTIVE"
                                                 },
                                                 {
                                                   "id": 30,
@@ -444,10 +467,8 @@ import java.lang.annotation.*;
                                                       "status": "ACTIVE"
                                                     }
                                                   ],
-                                                  "orderNum": 30,
-                                                  "status": "ACTIVE",
                                                   "catalogImages": {
-                                                    "files": [
+                                                    "images": [
                                                       {
                                                         "id": 12,
                                                         "sort": "PRODUCT_CATALOG_IMAGE",
@@ -493,7 +514,9 @@ import java.lang.annotation.*;
                                                         "orderNum": 18
                                                       }
                                                     ]
-                                                  }
+                                                  },
+                                                  "orderNum": 30,
+                                                  "status": "ACTIVE"
                                                 }
                                               ]
                                             }

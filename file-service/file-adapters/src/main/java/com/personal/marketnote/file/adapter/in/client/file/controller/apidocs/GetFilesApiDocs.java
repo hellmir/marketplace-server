@@ -45,6 +45,8 @@ import java.lang.annotation.*;
                 
                 - 파일 종류(sort)를 지정하지 않으면 해당 도메인의 모든 파일 목록을 조회합니다.
                 
+                - 가장 최신의 5개까지만 조회합니다.
+                
                 ---
                 
                 ## Request

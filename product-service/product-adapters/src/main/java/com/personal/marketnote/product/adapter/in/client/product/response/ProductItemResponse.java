@@ -1,6 +1,7 @@
 package com.personal.marketnote.product.adapter.in.client.product.response;
 
 import com.personal.marketnote.common.application.file.port.in.result.GetFilesResult;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.product.ProductTag;
 import com.personal.marketnote.product.port.in.result.ProductItemResult;
 import lombok.AccessLevel;
@@ -25,9 +26,9 @@ public class ProductItemResponse {
     private Long accumulatedPoint;
     private Integer sales;
     private List<ProductTag> productTags;
+    private CatalogImagesResponse catalogImages;
     private Long orderNum;
     private String status;
-    private CatalogImagesResponse catalogImages;
 
     public static ProductItemResponse from(ProductItemResult result) {
         return ProductItemResponse.builder()
@@ -41,9 +42,9 @@ public class ProductItemResponse {
                 .accumulatedPoint(result.accumulatedPoint())
                 .sales(result.sales())
                 .productTags(result.productTags())
+                .catalogImages(CatalogImagesResponse.from(result.catalogImages()))
                 .orderNum(result.orderNum())
                 .status(result.status())
-                .catalogImages(CatalogImagesResponse.from(result.catalogImages()))
                 .build();
     }
 
@@ -51,15 +52,18 @@ public class ProductItemResponse {
     @Builder(access = AccessLevel.PRIVATE)
     @Getter
     public static class CatalogImagesResponse {
-        private List<CatalogImageItemResponse> files;
+        private List<CatalogImageItemResponse> images;
 
-        public static CatalogImagesResponse from(GetFilesResult dto) {
-            if (dto == null || dto.files() == null) {
-                return new CatalogImagesResponse(List.of());
+        public static CatalogImagesResponse from(GetFilesResult getFilesResult) {
+            if (FormatValidator.hasValue(getFilesResult) && FormatValidator.hasValue(getFilesResult)) {
+                return CatalogImagesResponse.builder()
+                        .images(getFilesResult.images()
+                                .stream()
+                                .map(CatalogImageItemResponse::from).toList())
+                        .build();
             }
-            return CatalogImagesResponse.builder()
-                    .files(dto.files().stream().map(CatalogImageItemResponse::from).toList())
-                    .build();
+
+            return new CatalogImagesResponse(List.of());
         }
     }
 

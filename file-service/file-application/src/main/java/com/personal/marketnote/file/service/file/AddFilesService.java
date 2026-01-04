@@ -73,10 +73,7 @@ public class AddFilesService implements AddFileUseCase {
                 }
                 saveResizedFilesPort.saveAll(resizedWithUrls);
             }
-            return;
         }
-
-        // 업로드할 리사이즈 파일이 없으면 저장도 없음
     }
 
     private void resize(
@@ -90,8 +87,7 @@ public class AddFilesService implements AddFileUseCase {
 
             try {
                 MultipartFile resizedFile = resizeSquare(
-                        originalFile, size, size,
-                        appendSizeToFilename(originalFile.getOriginalFilename(), size + "x" + size)
+                        originalFile, size, appendSizeToFilename(originalFile.getOriginalFilename(), size + "x" + size)
                 );
                 resizedToUpload.add(resizedFile);
                 resizedToSave.add(ResizedFile.of(savedFile.getId(), size + "x" + size));
@@ -117,57 +113,63 @@ public class AddFilesService implements AddFileUseCase {
         }
     }
 
-    private MultipartFile resizeSquare(MultipartFile original, int targetW, int targetH, String newOriginalFilename) throws IOException {
-        BufferedImage src = ImageIO.read(original.getInputStream());
-        BufferedImage dst = new BufferedImage(targetW, targetH, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = dst.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2.drawImage(src, 0, 0, targetW, targetH, null);
-        g2.dispose();
+    private MultipartFile resizeSquare(MultipartFile original, int targetWidth, String newOriginalFilename) throws IOException {
+        BufferedImage source = ImageIO.read(original.getInputStream());
 
-        String ext = getExtension(newOriginalFilename, "png");
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(dst, ext, baos);
-
-        return new InMemoryMultipartFile("file", newOriginalFilename, "image/" + ext, baos.toByteArray());
+        return resize(targetWidth, targetWidth, source, newOriginalFilename);
     }
 
     private MultipartFile resizeByWidth(MultipartFile original, int targetWidth, String newOriginalFilename) throws IOException {
-        BufferedImage src = ImageIO.read(original.getInputStream());
-        int origW = src.getWidth();
-        int origH = src.getHeight();
-        int targetH = (int) Math.round((double) origH * targetWidth / origW);
+        BufferedImage source = ImageIO.read(original.getInputStream());
+        int originalWidth = source.getWidth();
+        int originalHeight = source.getHeight();
+        int targetHeight = (int) Math.round((double) originalHeight * targetWidth / originalWidth);
 
-        BufferedImage dst = new BufferedImage(targetWidth, targetH, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = dst.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2.drawImage(src, 0, 0, targetWidth, targetH, null);
-        g2.dispose();
-
-        String ext = getExtension(newOriginalFilename, "png");
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(dst, ext, baos);
-
-        return new InMemoryMultipartFile("file", newOriginalFilename, "image/" + ext, baos.toByteArray());
+        return resize(targetWidth, targetHeight, source, newOriginalFilename);
     }
 
-    private String getExtension(String filename, String defaultExt) {
-        if (filename == null) return defaultExt;
+    private MultipartFile resize(
+            int targetWidth, int targetHeight, BufferedImage source, String newOriginalFilename
+    ) throws IOException {
+        BufferedImage dst = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics2D = dst.createGraphics();
+        graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        graphics2D.drawImage(source, 0, 0, targetWidth, targetHeight, null);
+        graphics2D.dispose();
+
+        String extension = getExtension(newOriginalFilename, "png");
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(dst, extension, byteArrayOutputStream);
+
+        return new InMemoryMultipartFile("file", newOriginalFilename, "image/" + extension, byteArrayOutputStream.toByteArray());
+    }
+
+    private String getExtension(String filename, String defaultExtension) {
+        if (!FormatValidator.hasValue(filename)) {
+            return defaultExtension;
+        }
+
         int idx = filename.lastIndexOf('.');
-        if (idx < 0) return defaultExt;
+        if (idx < 0) {
+            return defaultExtension;
+        }
+
         return filename.substring(idx + 1).toLowerCase();
     }
 
     private String appendSizeToFilename(String originalFilename, String sizeTag) {
-        if (originalFilename == null) {
+        if (!FormatValidator.hasValue(originalFilename)) {
             return sizeTag;
         }
+
         int idx = originalFilename.lastIndexOf('.');
         if (idx < 0) {
             return originalFilename + "_" + sizeTag;
         }
+
         String name = originalFilename.substring(0, idx);
         String ext = originalFilename.substring(idx + 1);
+
         return name + "_" + sizeTag + "." + ext;
     }
 }

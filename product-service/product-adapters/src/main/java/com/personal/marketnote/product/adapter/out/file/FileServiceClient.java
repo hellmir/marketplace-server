@@ -4,8 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.personal.marketnote.common.adapter.out.ServiceAdapter;
 import com.personal.marketnote.common.application.file.port.in.result.GetFilesResult;
+import com.personal.marketnote.common.domain.file.FileSort;
 import com.personal.marketnote.common.utility.FormatValidator;
-import com.personal.marketnote.product.port.out.file.FindProductCatalogImagePort;
+import com.personal.marketnote.product.port.out.file.FindProductImagesPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,46 +21,43 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import static com.personal.marketnote.common.domain.file.OwnerType.PRODUCT;
+
 @ServiceAdapter
 @RequiredArgsConstructor
 @Slf4j
-public class FileServiceClient implements FindProductCatalogImagePort {
-
+public class FileServiceClient implements FindProductImagesPort {
     @Value("${file-service.base-url:http://localhost:9000}")
     private String fileServiceBaseUrl;
 
     @Value("${spring.jwt.admin-access-token}")
     private String adminAccessToken;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
+    private byte requestCount;
 
     @Override
-    public Optional<GetFilesResult> findCatalogImagesByProductId(Long productId) {
-        return findImagesByProductIdAndSort(productId, "PRODUCT_CATALOG_IMAGE");
-    }
+    public Optional<GetFilesResult> findImagesByProductIdAndSort(Long productId, FileSort sort) {
+        URI uri = UriComponentsBuilder
+                .fromUriString(fileServiceBaseUrl)
+                .path("/api/v1/files")
+                .queryParam("ownerType", PRODUCT)
+                .queryParam("ownerId", productId)
+                .queryParam("sort", sort)
+                .build()
+                .toUri();
 
-    @Override
-    public Optional<GetFilesResult> findImagesByProductIdAndSort(Long productId, String sort) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(adminAccessToken);
+        HttpEntity<Void> httpEntity = new HttpEntity<>(headers);
+
         try {
-            URI uri = UriComponentsBuilder
-                    .fromUriString(fileServiceBaseUrl)
-                    .path("/api/v1/files")
-                    .queryParam("ownerType", "PRODUCT")
-                    .queryParam("ownerId", productId)
-                    .queryParam("sort", sort)
-                    .build()
-                    .toUri();
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setBearerAuth(adminAccessToken);
-            HttpEntity<Void> httpEntity = new HttpEntity<>(headers);
-
             ResponseEntity<BaseResponse<FilesContent>> response =
                     restTemplate.exchange(
                             uri,
                             org.springframework.http.HttpMethod.GET,
                             httpEntity,
-                            new ParameterizedTypeReference<BaseResponse<FilesContent>>() {
+                            new ParameterizedTypeReference<>() {
                             }
                     );
 
@@ -86,7 +84,18 @@ public class FileServiceClient implements FindProductCatalogImagePort {
 
             return Optional.of(new GetFilesResult(items));
         } catch (Exception e) {
+            // 실패 시 3회 재시도
+            if (++requestCount < 3) {
+                log.warn(
+                        "Retrying to fetch images for productId {} and sort {}. Attempt: {}",
+                        productId, sort, requestCount
+                );
+                return findImagesByProductIdAndSort(productId, sort);
+            }
+
             log.error(e.getMessage(), e);
+            requestCount = 0;
+
             return Optional.empty();
         }
     }
