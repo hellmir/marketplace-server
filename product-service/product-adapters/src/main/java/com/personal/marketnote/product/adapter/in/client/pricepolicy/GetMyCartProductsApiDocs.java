@@ -81,7 +81,8 @@ import java.lang.annotation.*;
         | discountPrice | number | 할인 판매 가격(원) | 32000 |
         | discountRate | number | 할인율(%, 최대 소수점 1자리) | 20 |
         | accumulatedPoint | number | 구매 시 적립 포인트 | 800 |
-        """, security = {@SecurityRequirement(name = "bearer")},
+        """,
+        security = {@SecurityRequirement(name = "bearer")},
         responses = {
                 @ApiResponse(
                         responseCode = "201",

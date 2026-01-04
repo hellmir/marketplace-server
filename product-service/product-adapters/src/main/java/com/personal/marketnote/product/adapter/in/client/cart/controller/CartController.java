@@ -4,12 +4,15 @@ import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.product.adapter.in.client.cart.mapper.CartRequestToCommandMapper;
 import com.personal.marketnote.product.adapter.in.client.cart.request.AddCartProductRequest;
+import com.personal.marketnote.product.adapter.in.client.cart.request.UpdateCartProductQuantityRequest;
 import com.personal.marketnote.product.adapter.in.client.cart.response.GetMyCartProductsResponse;
 import com.personal.marketnote.product.adapter.in.client.pricepolicy.AddCartProductApiDocs;
 import com.personal.marketnote.product.adapter.in.client.pricepolicy.GetMyCartProductsApiDocs;
+import com.personal.marketnote.product.adapter.in.client.pricepolicy.UpdateCartProductQuantityApiDocs;
 import com.personal.marketnote.product.port.in.result.cart.GetMyCartProductsResult;
 import com.personal.marketnote.product.port.in.usecase.cart.AddCartProductUseCase;
 import com.personal.marketnote.product.port.in.usecase.cart.GetMyCartProductsUseCase;
+import com.personal.marketnote.product.port.in.usecase.cart.UpdateCartProductQuantityUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +31,7 @@ import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFA
 public class CartController {
     private final AddCartProductUseCase addCartProductUseCase;
     private final GetMyCartProductsUseCase getMyCartProductsUseCase;
+    private final UpdateCartProductQuantityUseCase updateCartProductQuantityUseCase;
 
     /**
      * 장바구니 상품 추가
@@ -80,6 +84,34 @@ public class CartController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "회원 장바구니 상품 목록 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 장바구니 상품 수량 변경
+     *
+     * @Author 성효빈
+     * @Date 2026-01-04
+     * @Description 장바구니 상품 수량을 변경합니다.
+     */
+    @PutMapping
+    @UpdateCartProductQuantityApiDocs
+    public ResponseEntity<BaseResponse<Void>> updateCartProductQuantity(
+            @Valid @RequestBody UpdateCartProductQuantityRequest request,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        updateCartProductQuantityUseCase.updateCartProductQuantity(
+                CartRequestToCommandMapper.mapToCommand(ElementExtractor.extractUserId(principal), request)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        null,
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "장바구니 상품 수량 변경 성공"
                 ),
                 HttpStatus.OK
         );

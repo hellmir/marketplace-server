@@ -7,7 +7,8 @@ import com.personal.marketnote.product.adapter.out.persistence.cart.repository.C
 import com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.pricepolicy.repository.PricePolicyJpaRepository;
 import com.personal.marketnote.product.domain.cart.CartProduct;
-import com.personal.marketnote.product.port.out.cart.GetCartProductsPort;
+import com.personal.marketnote.product.port.out.cart.FindCartProductPort;
+import com.personal.marketnote.product.port.out.cart.FindCartProductsPort;
 import com.personal.marketnote.product.port.out.cart.SaveCartProductPort;
 import lombok.RequiredArgsConstructor;
 
@@ -16,7 +17,7 @@ import java.util.Optional;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class CartPersistenceAdapter implements SaveCartProductPort, GetCartProductsPort {
+public class CartPersistenceAdapter implements SaveCartProductPort, FindCartProductsPort, FindCartProductPort {
     private final CartJpaRepository cartJpaRepository;
     private final PricePolicyJpaRepository pricePolicyJpaRepository;
 
@@ -31,12 +32,19 @@ public class CartPersistenceAdapter implements SaveCartProductPort, GetCartProdu
     }
 
     @Override
-    public List<CartProduct> getUserCartProducts(Long userId) {
+    public List<CartProduct> findByUserId(Long userId) {
         List<CartProductJpaEntity> cartProductJpaEntities = cartJpaRepository.findByIdUserId(userId);
         return cartProductJpaEntities.stream()
                 .map(CartJpaEntityToDomainMapper::mapToDomain)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
+    }
+
+    @Override
+    public Optional<CartProduct> findCartProductByUserIdAndPricePolicyId(Long userId, Long pricePolicyId) {
+        return CartJpaEntityToDomainMapper.mapToDomain(
+                cartJpaRepository.findByIdUserIdAndPricePolicyId(userId, pricePolicyId).orElse(null)
+        );
     }
 }
