@@ -14,7 +14,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(summary = "장바구니 상품 추가", description = """
-        작성일자: 2025-12-30
+        작성일자: 2026-01-04
         
         작성자: 성효빈
         
@@ -22,7 +22,11 @@ import java.lang.annotation.*;
         
         ## Description
         
-        - 장바구니에 상품을 추가합니다.
+        - 회원 장바구니에 상품을 추가합니다.
+        
+        - 회원이 선택한 옵션 ID 조합에 맞는 가격 정책 ID를 전송해야 합니다.
+        
+        - 옵션 ID 조합에 맞는 가격 정책 ID가 없는 경우, 기본 가격 정책 ID를 전송합니다.
         
         ---
         

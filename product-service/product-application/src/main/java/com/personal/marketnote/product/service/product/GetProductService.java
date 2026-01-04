@@ -63,7 +63,7 @@ public class GetProductService implements GetProductUseCase {
                 ).orElse(null)
         );
 
-        // 상품 조회 (동시에 진행)
+        // 상품 조회 (병렬 진행)
         Product product = getProduct(id);
         List<ProductOptionCategory> categories
                 = findProductOptionCategoryPort.findActiveWithOptionsByProductId(product.getId());

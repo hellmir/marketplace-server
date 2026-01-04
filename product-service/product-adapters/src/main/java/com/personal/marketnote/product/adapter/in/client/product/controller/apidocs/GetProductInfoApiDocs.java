@@ -163,7 +163,7 @@ import java.lang.annotation.*;
         | extension | string | 이미지 확장자 | "jpg" |
         | name | string | 이미지명 | "상품본문이미지1" |
         | s3Url | string | 이미지 S3 URL | "https://marketnote.s3.amazonaws.com/product/30/1763534195623_image.png" |
-        | resizedS3Urls | array | 리사이즈 이미지 S3 URL 목록 | [] |
+        | resizedS3Urls | array | 리사이즈 이미지 S3 URL 목록(없음) | [] |
         | orderNum | number | 정렬 순서 | 40 |
         
         ---
