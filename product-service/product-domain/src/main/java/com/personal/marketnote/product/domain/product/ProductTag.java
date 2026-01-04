@@ -1,5 +1,7 @@
 package com.personal.marketnote.product.domain.product;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
 import lombok.*;
 
@@ -13,6 +15,17 @@ public class ProductTag {
     private String name;
     private Long orderNum;
     private EntityStatus status;
+
+    @JsonCreator
+    private static ProductTag jsonCreator(
+            @JsonProperty("id") Long id,
+            @JsonProperty("productId") Long productId,
+            @JsonProperty("name") String name,
+            @JsonProperty("orderNum") Long orderNum,
+            @JsonProperty("status") EntityStatus status
+    ) {
+        return of(id, productId, name, orderNum, status);
+    }
 
     public static ProductTag of(String name) {
         return ProductTag.builder()

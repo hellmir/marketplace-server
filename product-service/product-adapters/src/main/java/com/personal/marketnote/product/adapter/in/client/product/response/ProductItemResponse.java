@@ -1,16 +1,17 @@
 package com.personal.marketnote.product.adapter.in.client.product.response;
 
+import com.personal.marketnote.common.application.file.port.in.result.GetFileResult;
 import com.personal.marketnote.common.application.file.port.in.result.GetFilesResult;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.product.ProductTag;
 import com.personal.marketnote.product.port.in.result.option.ProductOptionItemResult;
+import com.personal.marketnote.product.port.in.result.pricepolicy.GetProductPricePolicyResult;
 import com.personal.marketnote.product.port.in.result.product.ProductItemResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -21,10 +22,7 @@ public class ProductItemResponse {
     private Long sellerId;
     private String name;
     private String brandName;
-    private Long price;
-    private Long discountPrice;
-    private BigDecimal discountRate;
-    private Long accumulatedPoint;
+    private GetProductPricePolicyResult pricePolicy;
     private Integer sales;
     private List<ProductTag> productTags;
     private CatalogImagesResponse catalogImages;
@@ -38,10 +36,7 @@ public class ProductItemResponse {
                 .sellerId(result.sellerId())
                 .name(result.name())
                 .brandName(result.brandName())
-                .price(result.price())
-                .discountPrice(result.discountPrice())
-                .discountRate(result.discountRate())
-                .accumulatedPoint(result.accumulatedPoint())
+                .pricePolicy(result.pricePolicy())
                 .sales(result.sales())
                 .productTags(result.productTags())
                 .catalogImages(CatalogImagesResponse.from(result.catalogImages()))
@@ -82,15 +77,15 @@ public class ProductItemResponse {
         private List<String> resizedS3Urls;
         private Long orderNum;
 
-        public static CatalogImageItemResponse from(GetFilesResult.FileItem item) {
+        public static CatalogImageItemResponse from(GetFileResult getFileResult) {
             return CatalogImageItemResponse.builder()
-                    .id(item.id())
-                    .sort(item.sort())
-                    .extension(item.extension())
-                    .name(item.name())
-                    .s3Url(item.s3Url())
-                    .resizedS3Urls(item.resizedS3Urls())
-                    .orderNum(item.orderNum())
+                    .id(getFileResult.id())
+                    .sort(getFileResult.sort())
+                    .extension(getFileResult.extension())
+                    .name(getFileResult.name())
+                    .s3Url(getFileResult.s3Url())
+                    .resizedS3Urls(getFileResult.resizedS3Urls())
+                    .orderNum(getFileResult.orderNum())
                     .build();
         }
     }

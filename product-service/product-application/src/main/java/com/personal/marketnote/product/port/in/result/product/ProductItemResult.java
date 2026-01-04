@@ -2,13 +2,14 @@ package com.personal.marketnote.product.port.in.result.product;
 
 import com.personal.marketnote.common.application.file.port.in.result.GetFilesResult;
 import com.personal.marketnote.product.domain.option.ProductOption;
+import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
 import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.domain.product.ProductTag;
 import com.personal.marketnote.product.port.in.result.option.ProductOptionItemResult;
+import com.personal.marketnote.product.port.in.result.pricepolicy.GetProductPricePolicyResult;
 import lombok.AccessLevel;
 import lombok.Builder;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Builder(access = AccessLevel.PRIVATE)
@@ -17,10 +18,7 @@ public record ProductItemResult(
         Long sellerId,
         String name,
         String brandName,
-        Long price,
-        Long discountPrice,
-        BigDecimal discountRate,
-        Long accumulatedPoint,
+        GetProductPricePolicyResult pricePolicy,
         Integer sales,
         List<ProductTag> productTags,
         GetFilesResult catalogImages,
@@ -34,10 +32,7 @@ public record ProductItemResult(
                 .sellerId(product.getSellerId())
                 .name(product.getName())
                 .brandName(product.getBrandName())
-                .price(product.getPrice())
-                .discountPrice(product.getDiscountPrice())
-                .discountRate(product.getDiscountRate())
-                .accumulatedPoint(product.getAccumulatedPoint())
+                .pricePolicy(GetProductPricePolicyResult.from(product.getDefaultPricePolicy()))
                 .sales(product.getSales())
                 .productTags(product.getProductTags())
                 .orderNum(product.getOrderNum())
@@ -48,20 +43,14 @@ public record ProductItemResult(
     public static ProductItemResult from(
             Product product,
             List<ProductOption> selectedOptions,
-            Long price,
-            Long discountPrice,
-            BigDecimal discountRate,
-            Long accumulatedPoint
+            PricePolicy pricePolicy
     ) {
         return ProductItemResult.builder()
                 .id(product.getId())
                 .sellerId(product.getSellerId())
                 .name(product.getName())
                 .brandName(product.getBrandName())
-                .price(price)
-                .discountPrice(discountPrice)
-                .discountRate(discountRate)
-                .accumulatedPoint(accumulatedPoint)
+                .pricePolicy(GetProductPricePolicyResult.from(pricePolicy))
                 .sales(product.getSales())
                 .productTags(product.getProductTags())
                 .selectedOptions(selectedOptions.stream()
@@ -78,10 +67,7 @@ public record ProductItemResult(
                 .sellerId(productItemResult.sellerId())
                 .name(productItemResult.name())
                 .brandName(productItemResult.brandName())
-                .price(productItemResult.price())
-                .discountPrice(productItemResult.discountPrice())
-                .discountRate(productItemResult.discountRate())
-                .accumulatedPoint(productItemResult.accumulatedPoint())
+                .pricePolicy(productItemResult.pricePolicy())
                 .sales(productItemResult.sales())
                 .productTags(productItemResult.productTags())
                 .catalogImages(catalogImages)

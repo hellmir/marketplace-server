@@ -1,6 +1,10 @@
 package com.personal.marketnote.product.domain.pricepolicy;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.product.Product;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,35 +12,54 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
 public class PricePolicy {
     private Long id;
+
+    @JsonIgnore
     private Product product;
+
     private Long price;
     private Long discountPrice;
-    private BigDecimal accumulationRate;
-    private Long accumulatedPoint;
     private BigDecimal discountRate;
+    private Long accumulatedPoint;
+    private BigDecimal accumulationRate;
+    private List<Long> optionIds;
     private EntityStatus status;
+
+    @JsonCreator
+    private static PricePolicy jsonCreator(
+            @JsonProperty("id") Long id,
+            @JsonProperty("price") Long price,
+            @JsonProperty("discountPrice") Long discountPrice,
+            @JsonProperty("discountRate") BigDecimal discountRate,
+            @JsonProperty("accumulatedPoint") Long accumulatedPoint,
+            @JsonProperty("accumulationRate") BigDecimal accumulationRate,
+            @JsonProperty("optionIds") List<Long> optionIds,
+            @JsonProperty("status") EntityStatus status
+    ) {
+        return of(id, price, discountPrice, discountRate, accumulatedPoint, accumulationRate, optionIds);
+    }
 
     public static PricePolicy of(
             Product product,
             Long price,
             Long discountPrice,
-            BigDecimal accumulationRate,
+            BigDecimal discountRate,
             Long accumulatedPoint,
-            BigDecimal discountRate
+            BigDecimal accumulationRate
     ) {
         return PricePolicy.builder()
                 .product(product)
                 .price(price)
                 .discountPrice(discountPrice)
-                .accumulationRate(accumulationRate)
-                .accumulatedPoint(accumulatedPoint)
                 .discountRate(discountRate)
+                .accumulatedPoint(accumulatedPoint)
+                .accumulationRate(accumulationRate)
                 .status(EntityStatus.ACTIVE)
                 .build();
     }
@@ -46,19 +69,67 @@ public class PricePolicy {
             Product product,
             Long price,
             Long discountPrice,
-            BigDecimal accumulationRate,
+            BigDecimal discountRate,
             Long accumulatedPoint,
-            BigDecimal discountRate
+            BigDecimal accumulationRate
     ) {
         return PricePolicy.builder()
                 .id(id)
                 .product(product)
                 .price(price)
                 .discountPrice(discountPrice)
-                .accumulationRate(accumulationRate)
-                .accumulatedPoint(accumulatedPoint)
                 .discountRate(discountRate)
+                .accumulatedPoint(accumulatedPoint)
+                .accumulationRate(accumulationRate)
                 .status(EntityStatus.ACTIVE)
                 .build();
+    }
+
+    public static PricePolicy of(
+            Long id,
+            Long price,
+            Long discountPrice,
+            BigDecimal discountRate,
+            Long accumulatedPoint,
+            BigDecimal accumulationRate
+    ) {
+        return PricePolicy.builder()
+                .id(id)
+                .price(price)
+                .discountPrice(discountPrice)
+                .discountRate(discountRate)
+                .accumulatedPoint(accumulatedPoint)
+                .accumulationRate(accumulationRate)
+                .status(EntityStatus.ACTIVE)
+                .build();
+    }
+
+    public static PricePolicy of(
+            Long id,
+            Long price,
+            Long discountPrice,
+            BigDecimal discountRate,
+            Long accumulatedPoint,
+            BigDecimal accumulationRate,
+            List<Long> optionIds
+    ) {
+        return PricePolicy.builder()
+                .id(id)
+                .price(price)
+                .discountPrice(discountPrice)
+                .discountRate(discountRate)
+                .accumulatedPoint(accumulatedPoint)
+                .accumulationRate(accumulationRate)
+                .optionIds(optionIds)
+                .status(EntityStatus.ACTIVE)
+                .build();
+    }
+
+    public boolean hasOptions() {
+        return FormatValidator.hasValue(optionIds);
+    }
+
+    public void addProduct(Product product) {
+        this.product = product;
     }
 }
