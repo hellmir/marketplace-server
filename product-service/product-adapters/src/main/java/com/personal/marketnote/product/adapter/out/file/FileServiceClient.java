@@ -43,7 +43,7 @@ public class FileServiceClient implements FindProductCatalogImagePort {
         try {
             URI uri = UriComponentsBuilder
                     .fromUriString(fileServiceBaseUrl)
-                    .path("/api/v1/files")
+                    .path("/api/v1/images")
                     .queryParam("ownerType", "PRODUCT")
                     .queryParam("ownerId", productId)
                     .queryParam("sort", sort)

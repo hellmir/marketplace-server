@@ -81,7 +81,6 @@ import java.lang.annotation.*;
         | productTags | array | 상품 태그 목록 | [ ... ] |
         | orderNum | number | 정렬 순서 | 19 |
         | status | string | 상태 | "ACTIVE" |
-        
         ---
         
         ### Response > content > productInfo > productTags
@@ -118,6 +117,50 @@ import java.lang.annotation.*;
         | accumulatedPoint | number | 적립 포인트 | 1200 |
         | status | string | 상태 | "ACTIVE" |
         | isSelected | boolean | 선택 여부 | false |
+        
+        ---
+        
+        ### Response > content > representativeImages
+        
+        | **키** | **타입** | **설명** | **예시** |
+        | --- | --- | --- | --- |
+        | images | array | 상단 대표 이미지 목록 | [ ... ] |
+        
+        ---
+        
+        ### Response > content > representativeImages > images
+        
+        | **키** | **타입** | **설명** | **예시** |
+        | --- | --- | --- | --- |
+        | id | number | 이미지 ID | 1 |
+        | sort | string | 이미지 종류 | "PRODUCT_REPRESENTATIVE_IMAGE" |
+        | extension | string | 이미지 확장자 | "png" |
+        | name | string | 이미지명 | "상품대표이미지1" |
+        | s3Url | string | 이미지 S3 URL | "https://marketnote.s3.amazonaws.com/product/30/1763534195681_image.png" |
+        | resizedS3Urls | array | 리사이즈 이미지 S3 URL 목록 | [ "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png", "https://marketnote.s3.amazonaws.com/product/30/1763534195988_image_800.png" ] |
+        | orderNum | number | 정렬 순서 | 41 |
+        
+        ---
+        
+        ### Response > content > contentImages
+        
+        | **키** | **타입** | **설명** | **예시** |
+        | --- | --- | --- | --- |
+        | images | array | 본문 이미지 목록 | [ ... ] |
+        
+        ---
+        
+        ### Response > content > contentImages > images
+        
+        | **키** | **타입** | **설명** | **예시** |
+        | --- | --- | --- | --- |
+        | id | number | 이미지 ID | 1 |
+        | sort | string | 이미지 종류 | "PRODUCT_CONTENT_IMAGE" |
+        | extension | string | 이미지 확장자 | "jpg" |
+        | name | string | 이미지명 | "상품본문이미지1" |
+        | s3Url | string | 이미지 S3 URL | "https://marketnote.s3.amazonaws.com/product/30/1763534195623_image.png" |
+        | resizedS3Urls | array | 리사이즈 이미지 S3 URL 목록 | [] |
+        | orderNum | number | 정렬 순서 | 40 |
         """,
         security = {@SecurityRequirement(name = "bearer")},
         parameters = {
@@ -229,7 +272,7 @@ import java.lang.annotation.*;
                                               }
                                             ],
                                             "representativeImages": {
-                                              "files": [
+                                              "images": [
                                                 {
                                                   "id": 41,
                                                   "sort": "PRODUCT_REPRESENTATIVE_IMAGE",
@@ -293,7 +336,7 @@ import java.lang.annotation.*;
                                               ]
                                             },
                                             "contentImages": {
-                                              "files": [
+                                              "images": [
                                                 {
                                                   "id": 40,
                                                   "sort": "PRODUCT_CONTENT_IMAGE",
