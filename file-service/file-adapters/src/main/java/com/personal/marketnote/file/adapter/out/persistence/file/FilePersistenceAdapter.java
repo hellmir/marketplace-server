@@ -2,6 +2,7 @@ package com.personal.marketnote.file.adapter.out.persistence.file;
 
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
 import com.personal.marketnote.common.domain.file.OwnerType;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.file.adapter.out.persistence.file.entity.FileJpaEntity;
 import com.personal.marketnote.file.adapter.out.persistence.file.repository.FileJpaRepository;
 import com.personal.marketnote.file.domain.file.FileDomain;
@@ -19,10 +20,10 @@ public class FilePersistenceAdapter implements SaveFilesPort, FindFilesPort {
 
     @Override
     public List<FileDomain> saveAll(List<FileDomain> fileDomains, List<String> s3Urls) {
-        if (fileDomains == null || fileDomains.isEmpty()) {
+        if (!FormatValidator.hasValue(fileDomains)) {
             return List.of();
         }
-        if (s3Urls == null || s3Urls.size() != fileDomains.size()) {
+        if (!FormatValidator.hasValue(s3Urls) || s3Urls.size() != fileDomains.size()) {
             throw new IllegalArgumentException("s3Urls size must match fileDomains size");
         }
 

@@ -7,7 +7,7 @@ import com.personal.marketnote.product.domain.product.*;
 import com.personal.marketnote.product.exception.ProductNotFoundException;
 import com.personal.marketnote.product.port.in.result.*;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
-import com.personal.marketnote.product.port.out.file.FindProductCatalogImagePort;
+import com.personal.marketnote.product.port.out.file.FindProductImagesPort;
 import com.personal.marketnote.product.port.out.pricepolicy.FindPricePolicyPort;
 import com.personal.marketnote.product.port.out.product.FindProductPort;
 import com.personal.marketnote.product.port.out.productoption.FindProductOptionCategoryPort;
@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import static com.personal.marketnote.common.domain.file.FileSort.*;
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
 @UseCase
@@ -32,21 +33,21 @@ public class GetProductService implements GetProductUseCase {
     private final FindProductPort findProductPort;
     private final FindProductOptionCategoryPort findProductOptionCategoryPort;
     private final FindPricePolicyPort findPricePolicyPort;
-    private final FindProductCatalogImagePort findProductCatalogImagePort;
+    private final FindProductImagesPort findProductImagesPort;
 
     @Override
     public GetProductInfoWithOptionsResult getProductInfo(Long id, List<Long> selectedOptionIds) {
         // 상단 대표 이미지 목록, 본문 이미지 목록 조회 시작
         CompletableFuture<GetFilesResult> representativeFuture
                 = CompletableFuture.supplyAsync(
-                () -> findProductCatalogImagePort.findImagesByProductIdAndSort(
-                        id, "PRODUCT_REPRESENTATIVE_IMAGE"
+                () -> findProductImagesPort.findImagesByProductIdAndSort(
+                        id, PRODUCT_REPRESENTATIVE_IMAGE
                 ).orElse(null)
         );
         CompletableFuture<GetFilesResult> contentFuture
                 = CompletableFuture.supplyAsync(
-                () -> findProductCatalogImagePort.findImagesByProductIdAndSort(
-                        id, "PRODUCT_CONTENT_IMAGE"
+                () -> findProductImagesPort.findImagesByProductIdAndSort(
+                        id, PRODUCT_CONTENT_IMAGE
                 ).orElse(null)
         );
 
@@ -170,7 +171,7 @@ public class GetProductService implements GetProductUseCase {
         List<CompletableFuture<Void>> futures = pageItems.stream()
                 .map(
                         item -> CompletableFuture.runAsync(() -> {
-                            findProductCatalogImagePort.findCatalogImagesByProductId(item.id())
+                            findProductImagesPort.findImagesByProductIdAndSort(item.id(), PRODUCT_CATALOG_IMAGE)
                                     .ifPresent(dto -> productIdToImages.put(item.id(), dto));
                         })
                 )

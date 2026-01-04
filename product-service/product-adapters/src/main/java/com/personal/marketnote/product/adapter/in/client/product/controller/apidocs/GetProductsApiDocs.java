@@ -45,7 +45,7 @@ import java.lang.annotation.*;
         | **키** | **타입** | **설명** | **필수 여부** | **예시** |
         | --- | --- | --- | --- | --- |
         | categoryId | number | 카테고리 ID | N | 1001 |
-        | cursor | number | 이전 페이지의 nextCursor 값, 전송하지 않는 경우 첫 데이터부터 조회 | N | -1 |
+        | cursor | number | 이전 페이지의 nextCursor 값, 전송하지 않는 경우 첫 데이터부터 조회 | N | default: 0 |
         | page-size | number | 페이지 크기 | N | 4 |
         | sortDirection | string | 정렬 방향(ASC, DESC) | N | DESC |
         | sortProperty | string | 정렬 속성(ORDER_NUM, POPULARITY, DISCOUNT_PRICE, ACCUMULATED_POINT) | N | ORDER_NUM |
