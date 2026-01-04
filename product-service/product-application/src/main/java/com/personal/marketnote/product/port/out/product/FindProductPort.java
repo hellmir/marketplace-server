@@ -80,6 +80,15 @@ public interface FindProductPort {
     );
 
     /**
+     * @param pricePolicyIds 가격 정책 ID 목록
+     * @return 상품 목록 {@link List<Product>}
+     * @Date 2026-01-05
+     * @Author 성효빈
+     * @Description 가격 정책 ID 목록에 해당하는 상품 목록을 조회합니다.
+     */
+    List<Product> findByPricePolicyIds(List<Long> pricePolicyIds);
+
+    /**
      * @param searchTarget  검색 대상
      * @param searchKeyword 검색 키워드
      * @return 상품 총 개수 {@link long}

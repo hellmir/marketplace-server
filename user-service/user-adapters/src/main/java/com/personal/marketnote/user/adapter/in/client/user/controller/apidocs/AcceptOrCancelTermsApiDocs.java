@@ -68,7 +68,7 @@ import java.lang.annotation.*;
                 | isAgreed | boolean | 동의/미동의 여부 | true / false |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
-        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+        requestBody = @RequestBody(
                 required = true,
                 content = @Content(
                         schema = @Schema(implementation = AcceptOrCancelTermsRequest.class),

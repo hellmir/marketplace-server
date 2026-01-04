@@ -232,7 +232,7 @@ public class ProductController {
      * @param id 상품 ID
      * @Author 성효빈
      * @Date 2026-01-02
-     * @Description 상품을 논리적으로 삭제합니다.
+     * @Description 상품을 삭제합니다.
      */
     @DeleteMapping("/{id}")
     @PreAuthorize(ADMIN_OR_SELLER_PRINCIPAL_POINTCUT)

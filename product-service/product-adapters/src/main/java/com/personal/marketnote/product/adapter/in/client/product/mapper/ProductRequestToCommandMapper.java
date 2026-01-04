@@ -1,5 +1,6 @@
 package com.personal.marketnote.product.adapter.in.client.product.mapper;
 
+import com.personal.marketnote.product.adapter.in.client.cart.request.GetMyOrderingProductsRequest;
 import com.personal.marketnote.product.adapter.in.client.category.request.RegisterProductCategoriesRequest;
 import com.personal.marketnote.product.adapter.in.client.option.request.UpdateProductOptionsRequest;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductRequest;
@@ -58,6 +59,18 @@ public class ProductRequestToCommandMapper {
                 request.getDetail(),
                 request.getIsFindAllOptions(),
                 request.getTags()
+        );
+    }
+
+    public static GetMyOrderingProductsCommand mapToCommand(
+            GetMyOrderingProductsRequest getMyOrderingProductsRequest
+    ) {
+        return GetMyOrderingProductsCommand.from(
+                getMyOrderingProductsRequest.orderingItemRequests().stream()
+                        .map(request -> OrderingItemCommand.of(
+                                request.pricePolicyId(), request.quantity(), request.imageUrl())
+                        )
+                        .toList()
         );
     }
 }

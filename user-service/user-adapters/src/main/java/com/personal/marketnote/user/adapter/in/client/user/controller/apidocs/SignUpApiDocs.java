@@ -81,7 +81,7 @@ import java.lang.annotation.*;
                 refreshToken(cookie) | string | Refresh Token; HTTP-only | "<jwt-refresh-token>" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
-        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+        requestBody = @RequestBody(
                 required = true,
                 content = @Content(
                         schema = @Schema(implementation = SignUpRequest.class),

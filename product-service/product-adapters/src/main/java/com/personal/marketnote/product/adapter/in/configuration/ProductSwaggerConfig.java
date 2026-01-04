@@ -35,7 +35,8 @@ public class ProductSwaggerConfig {
             "상품 API",
             "상품 가격 정책 API",
             "상품 옵션 API",
-            "장바구니 API"
+            "장바구니 API",
+            "상품 주문 API"
     );
 
     private static final Map<String, Integer> ORDER_MAP = new ConcurrentHashMap<>();

@@ -33,6 +33,20 @@ public class PricePolicyReadPersistenceAdapter implements FindPricePoliciesPort 
                 .map(Optional::get)
                 .toList();
     }
+
+    @Override
+    public List<PricePolicy> findByIds(List<Long> ids) {
+        return pricePolicyJpaRepository.findAllById(ids).stream()
+                .map(
+                        policyEntity -> PricePolicyJpaEntityToDomainMapper.mapToDomain(
+                                policyEntity,
+                                productOptionPricePolicyJpaRepository.findOptionIdsByPricePolicyId(policyEntity.getId())
+                        )
+                )
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+    }
 }
 
 
