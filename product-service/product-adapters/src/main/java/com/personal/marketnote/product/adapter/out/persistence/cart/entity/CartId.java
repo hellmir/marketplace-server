@@ -15,5 +15,6 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class CartId implements Serializable {
     private Long userId;
+    private Long productId;
     private Long pricePolicyId;
 }

@@ -2,7 +2,6 @@ package com.personal.marketnote.product.domain.cart;
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
 import com.personal.marketnote.common.domain.BaseDomain;
-import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
 import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -11,15 +10,15 @@ import lombok.*;
 @Getter
 public class CartProduct extends BaseDomain {
     private Long userId;
-    private PricePolicy pricePolicy;
-    private String imageUrl;
+    private Long productId;
+    private Long pricePolicyId;
     private Short quantity;
 
-    public static CartProduct of(Long userId, PricePolicy pricePolicy, String imageUrl, Short quantity) {
+    public static CartProduct of(Long userId, Long productId, Long pricePolicyId, Short quantity) {
         CartProduct cartProduct = CartProduct.builder()
                 .userId(userId)
-                .pricePolicy(pricePolicy)
-                .imageUrl(imageUrl)
+                .productId(productId)
+                .pricePolicyId(pricePolicyId)
                 .quantity(quantity)
                 .build();
         cartProduct.activate();
@@ -27,27 +26,12 @@ public class CartProduct extends BaseDomain {
         return cartProduct;
     }
 
-    public static CartProduct of(
-            Long userId, PricePolicy pricePolicy, String imageUrl, Short quantity, EntityStatus status
-    ) {
-        CartProduct cartProduct = CartProduct.builder()
+    public static CartProduct of(Long userId, Long productId, Long pricePolicyId, Short quantity, EntityStatus status) {
+        return CartProduct.builder()
                 .userId(userId)
-                .pricePolicy(pricePolicy)
-                .imageUrl(imageUrl)
+                .productId(productId)
+                .pricePolicyId(pricePolicyId)
                 .quantity(quantity)
                 .build();
-
-        if (status.isActive()) {
-            cartProduct.activate();
-            return cartProduct;
-        }
-
-        if (status.isInactive()) {
-            cartProduct.deactivate();
-            return cartProduct;
-        }
-
-        cartProduct.hide();
-        return cartProduct;
     }
 }

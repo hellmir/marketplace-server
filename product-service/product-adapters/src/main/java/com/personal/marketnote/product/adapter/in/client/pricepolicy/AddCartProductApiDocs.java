@@ -32,7 +32,6 @@ import java.lang.annotation.*;
         | --- | --- | --- | --- | --- |
         | productId | number | 상품 ID | Y | 1 |
         | pricePolicyId | number | 가격 정책 ID | Y | 1 |
-        | imageUrl | string | 상품 이미지 URL | Y | "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png" |
         | quantity | number | 상품 수량 | Y | 1 |
         ---
         
@@ -56,7 +55,6 @@ import java.lang.annotation.*;
                                 {
                                     "productId": 1,
                                     "pricePolicyId": 1,
-                                    "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
                                     "quantity": 1
                                 }
                                 """)

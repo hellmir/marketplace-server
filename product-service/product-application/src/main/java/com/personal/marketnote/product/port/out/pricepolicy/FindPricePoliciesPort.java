@@ -5,5 +5,7 @@ import com.personal.marketnote.product.port.in.result.pricepolicy.GetProductPric
 import java.util.List;
 
 public interface FindPricePoliciesPort {
+
+
     List<GetProductPricePolicyResult> findByProductId(Long productId);
 }
