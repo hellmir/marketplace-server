@@ -2,12 +2,14 @@ package com.personal.marketnote.product.adapter.out.persistence.pricepolicy;
 
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.product.adapter.out.mapper.PricePolicyJpaEntityToDomainMapper;
 import com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.pricepolicy.repository.PricePolicyJpaRepository;
 import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.product.repository.ProductJpaRepository;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.repository.ProductOptionPricePolicyJpaRepository;
 import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
+import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.port.out.pricepolicy.DeletePricePolicyPort;
 import com.personal.marketnote.product.port.out.pricepolicy.FindPricePolicyPort;
 import com.personal.marketnote.product.port.out.pricepolicy.SavePricePolicyPort;
@@ -19,7 +21,7 @@ import java.util.Optional;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, DeletePricePolicyPort, FindPricePolicyPort {
+public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindPricePolicyPort, DeletePricePolicyPort {
     private final ProductJpaRepository productJpaRepository;
     private final PricePolicyJpaRepository pricePolicyJpaRepository;
     private final ProductOptionPricePolicyJpaRepository productOptionPricePolicyJpaRepository;
@@ -33,32 +35,18 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, Delet
     }
 
     @Override
-    public void deleteById(Long pricePolicyId) {
-        Long productId = pricePolicyJpaRepository.findById(pricePolicyId)
-                .map(entity -> entity.getProductJpaEntity().getId())
-                .orElse(null);
-        deleteByIdInternal(productId, pricePolicyId);
-    }
-
-    @CacheEvict(value = {"product:detail", "product:price-policy"}, key = "#productId", beforeInvocation = false)
-    public void deleteByIdInternal(Long productId, Long pricePolicyId) {
-        productOptionPricePolicyJpaRepository.deleteByPricePolicyId(pricePolicyId);
-        pricePolicyJpaRepository.deleteById(pricePolicyId);
-    }
-
-    @Override
-    public boolean existsByIdAndProductId(Long pricePolicyId, Long productId) {
-        return pricePolicyJpaRepository.existsByIdAndProductJpaEntity_Id(pricePolicyId, productId);
+    public Optional<PricePolicy> findById(Long id) {
+        return PricePolicyJpaEntityToDomainMapper.mapToDomain(pricePolicyJpaRepository.findById(id).orElse(null));
     }
 
     @Override
     public Optional<PricePolicy> findByProductAndOptionIds(Long productId, List<Long> optionIds) {
-        if (optionIds == null || optionIds.isEmpty()) {
+        if (!FormatValidator.hasValue(optionIds)) {
             return Optional.empty();
         }
 
         List<Long> candidateIds = productOptionPricePolicyJpaRepository.findCandidatePricePolicyIds(optionIds, optionIds.size());
-        if (candidateIds == null || candidateIds.isEmpty()) {
+        if (!FormatValidator.hasValue(candidateIds)) {
             return Optional.empty();
         }
 
@@ -87,28 +75,28 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, Delet
             return Optional.empty();
         }
 
-        ProductJpaEntity p = entity.getProductJpaEntity();
-        var productDomain = com.personal.marketnote.product.domain.product.Product.of(
-                p.getId(),
-                p.getSellerId(),
-                p.getName(),
-                p.getBrandName(),
-                p.getDetail(),
-                p.getPrice(),
-                p.getDiscountPrice(),
-                p.getDiscountRate(),
-                p.getAccumulatedPoint(),
-                p.getSales(),
-                p.getViewCount(),
-                p.getPopularity(),
-                p.isFindAllOptionsYn(),
+        ProductJpaEntity productJpaEntity = entity.getProductJpaEntity();
+        Product product = Product.of(
+                productJpaEntity.getId(),
+                productJpaEntity.getSellerId(),
+                productJpaEntity.getName(),
+                productJpaEntity.getBrandName(),
+                productJpaEntity.getDetail(),
+                productJpaEntity.getPrice(),
+                productJpaEntity.getDiscountPrice(),
+                productJpaEntity.getDiscountRate(),
+                productJpaEntity.getAccumulatedPoint(),
+                productJpaEntity.getSales(),
+                productJpaEntity.getViewCount(),
+                productJpaEntity.getPopularity(),
+                productJpaEntity.isFindAllOptionsYn(),
                 java.util.List.of(),
-                p.getOrderNum(),
-                p.getStatus()
+                productJpaEntity.getOrderNum(),
+                productJpaEntity.getStatus()
         );
 
-        PricePolicy domain = PricePolicy.of(
-                productDomain,
+        PricePolicy pricePolicy = PricePolicy.of(
+                product,
                 entity.getPrice(),
                 entity.getDiscountPrice(),
                 entity.getAccumulationRate(),
@@ -116,6 +104,20 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, Delet
                 entity.getDiscountRate()
         );
 
-        return Optional.of(domain);
+        return Optional.of(pricePolicy);
+    }
+
+    @Override
+    public void deleteById(Long pricePolicyId) {
+        Long productId = pricePolicyJpaRepository.findById(pricePolicyId)
+                .map(entity -> entity.getProductJpaEntity().getId())
+                .orElse(null);
+        deleteByIdInternal(productId, pricePolicyId);
+    }
+
+    @CacheEvict(value = {"product:detail", "product:price-policy"}, key = "#productId", beforeInvocation = false)
+    public void deleteByIdInternal(Long productId, Long pricePolicyId) {
+        productOptionPricePolicyJpaRepository.deleteByPricePolicyId(pricePolicyId);
+        pricePolicyJpaRepository.deleteById(pricePolicyId);
     }
 }

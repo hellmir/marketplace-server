@@ -84,7 +84,7 @@ public class ProductOptionController {
      * @Author 성효빈
      * @Date 2026-01-01
      * @Description 특정 상품의 옵션 카테고리 및 하위 옵션 목록을 조회합니다.
-     */ 
+     */
     @GetMapping("/option-categories")
     @GetProductOptionsApiDocs
     public ResponseEntity<BaseResponse<GetProductOptionsResponse>> getProductOptions(
