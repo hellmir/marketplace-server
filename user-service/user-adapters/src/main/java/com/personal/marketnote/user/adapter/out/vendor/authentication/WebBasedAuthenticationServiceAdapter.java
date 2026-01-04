@@ -2,6 +2,7 @@ package com.personal.marketnote.user.adapter.out.vendor.authentication;
 
 import com.personal.marketnote.common.adapter.out.SecurityAdapter;
 import com.personal.marketnote.common.domain.exception.token.InvalidRefreshTokenException;
+import com.personal.marketnote.common.utility.FormatConverter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.common.utility.http.cookie.HttpCookieName;
 import com.personal.marketnote.common.utility.http.cookie.HttpCookieObject;
@@ -17,14 +18,25 @@ import com.personal.marketnote.user.security.token.support.TokenSupport;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import com.personal.marketnote.user.utility.OAuth2WebUtils;
 import com.personal.marketnote.user.utility.jwt.JwtUtil;
+import com.personal.marketnote.user.utility.jwt.claims.TokenClaims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.StringUtils;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+
+import static com.personal.marketnote.common.security.token.utility.TokenConstant.ONE_DAY_MILLIS;
 
 @SecurityAdapter
 @Slf4j
@@ -38,6 +50,10 @@ public class WebBasedAuthenticationServiceAdapter {
     private final String clientOrigin;
     private final HttpCookieUtils httpCookieUtils;
     private final JwtUtil jwtUtil;
+    private final StringRedisTemplate stringRedisTemplate;
+
+    @Value("${spring.jwt.refresh-token.ttl:1209600000}")
+    private Long refreshTokenTtlMillis;
 
     public WebBasedAuthenticationServiceAdapter(
             LoginUseCase loginUseCase,
@@ -45,7 +61,8 @@ public class WebBasedAuthenticationServiceAdapter {
             @Value("${server.origin}") String serverOrigin,
             @Value("${client.origin}") List<String> clientOrigins,
             HttpCookieUtils httpCookieUtils,
-            JwtUtil jwtUtil
+            JwtUtil jwtUtil,
+            StringRedisTemplate stringRedisTemplate
     ) {
         this.loginUseCase = loginUseCase;
         this.tokenSupport = tokenSupport;
@@ -53,6 +70,7 @@ public class WebBasedAuthenticationServiceAdapter {
         this.clientOrigin = clientOrigins.getFirst();
         this.httpCookieUtils = httpCookieUtils;
         this.jwtUtil = jwtUtil;
+        this.stringRedisTemplate = stringRedisTemplate;
     }
 
     public OAuth2LoginResponse loginByOAuth2(OAuth2LoginRequest oAuth2LoginRequest) {
@@ -112,21 +130,51 @@ public class WebBasedAuthenticationServiceAdapter {
 
         GrantedTokenInfo grantedTokenInfo = tokenSupport.refreshToken(refreshToken);
         log.debug("grantedTokenInfo: {}", grantedTokenInfo);
+        String newRefreshToken = grantedTokenInfo.refreshToken();
+        String newAccessToken = grantedTokenInfo.accessToken();
 
-        HttpHeaders headers = new HttpHeaders();
-        if (FormatValidator.hasValue(grantedTokenInfo.refreshToken())) {
-            HttpCookieObject refreshTokenCookie = this.httpCookieUtils.generateHttpOnlyCookie(
-                    HttpCookieName.REFRESH_TOKEN,
-                    grantedTokenInfo.refreshToken(),
-                    REFRESH_TOKEN_COOKIE_MAX_AGE
-            );
+        TokenClaims claims = jwtUtil.parseRefreshToken(refreshToken);
+        long millisLeft = Duration.between(LocalDateTime.now(), claims.getExpirationAt()).toMillis();
 
-            log.debug("refreshTokenCookie: {}", refreshTokenCookie.asSetCookieHeaderValue());
-
-            headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.asSetCookieHeaderValue());
+        if (millisLeft < ONE_DAY_MILLIS && FormatValidator.hasValue(newRefreshToken)) {
+            refreshToken = newRefreshToken;
+            Long id = FormatConverter.parseToLong(grantedTokenInfo.id());
+            String redisKey = "refreshToken:" + id;
+            String refreshTokenValue = "r" + encodeBySha256Hex(refreshToken);
+            stringRedisTemplate.opsForValue()
+                    .set(Objects.requireNonNull(redisKey), Objects.requireNonNull(refreshTokenValue),
+                            Objects.requireNonNull(refreshTokenTtlMillis), TimeUnit.MILLISECONDS);
         }
 
-        return new WebBasedTokenRefreshResponse(headers,
-                new RefreshedAccessTokenResponse(grantedTokenInfo.accessToken()));
+        HttpCookieObject refreshTokenCookie = httpCookieUtils.generateHttpOnlyCookie(
+                HttpCookieName.REFRESH_TOKEN,
+                refreshToken,
+                REFRESH_TOKEN_COOKIE_MAX_AGE
+        );
+
+        log.debug("refreshTokenCookie: {}", refreshTokenCookie.asSetCookieHeaderValue());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.asSetCookieHeaderValue());
+
+        return new WebBasedTokenRefreshResponse(headers, new RefreshedAccessTokenResponse(newAccessToken));
+    }
+
+    private String encodeBySha256Hex(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder(hash.length * 2);
+            for (byte b : hash) {
+                String hex = Integer.toHexString(b & 0xff);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 algorithm not available", e);
+        }
     }
 }
