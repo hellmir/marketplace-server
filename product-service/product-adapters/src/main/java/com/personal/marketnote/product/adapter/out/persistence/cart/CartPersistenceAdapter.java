@@ -8,10 +8,7 @@ import com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entit
 import com.personal.marketnote.product.adapter.out.persistence.pricepolicy.repository.PricePolicyJpaRepository;
 import com.personal.marketnote.product.domain.cart.CartProduct;
 import com.personal.marketnote.product.exception.CartProductNotFoundException;
-import com.personal.marketnote.product.port.out.cart.FindCartProductPort;
-import com.personal.marketnote.product.port.out.cart.FindCartProductsPort;
-import com.personal.marketnote.product.port.out.cart.SaveCartProductPort;
-import com.personal.marketnote.product.port.out.cart.UpdateCartProductPort;
+import com.personal.marketnote.product.port.out.cart.*;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -19,7 +16,7 @@ import java.util.Optional;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class CartPersistenceAdapter implements SaveCartProductPort, FindCartProductsPort, FindCartProductPort, UpdateCartProductPort {
+public class CartPersistenceAdapter implements SaveCartProductPort, FindCartProductsPort, FindCartProductPort, UpdateCartProductPort, DeleteCartProductPort {
     private final CartJpaRepository cartJpaRepository;
     private final PricePolicyJpaRepository pricePolicyJpaRepository;
 
@@ -74,5 +71,10 @@ public class CartPersistenceAdapter implements SaveCartProductPort, FindCartProd
             throws CartProductNotFoundException {
         return cartJpaRepository.findByIdUserIdAndPricePolicyId(userId, pricePolicyId)
                 .orElseThrow(() -> new CartProductNotFoundException(pricePolicyId));
+    }
+
+    @Override
+    public void delete(Long userId, List<Long> pricePolicyIds) {
+        cartJpaRepository.deleteByUserIdAndPricePolicyIdIn(userId, pricePolicyIds);
     }
 }

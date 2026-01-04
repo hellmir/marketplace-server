@@ -10,14 +10,22 @@ public class PricePolicyJpaEntityToDomainMapper {
     public static Optional<PricePolicy> mapToDomain(PricePolicyJpaEntity pricePolicyJpaEntity) {
         return Optional.ofNullable(pricePolicyJpaEntity)
                 .map(
-                        entity -> PricePolicy.of(
-                                pricePolicyJpaEntity.getId(),
-                                entity.getPrice(),
-                                entity.getDiscountPrice(),
-                                entity.getAccumulationRate(),
-                                entity.getAccumulatedPoint(),
-                                entity.getDiscountRate()
-                        )
+                        entity -> {
+                            PricePolicy pricePolicy = PricePolicy.of(
+                                    pricePolicyJpaEntity.getId(),
+                                    pricePolicyJpaEntity.getPrice(),
+                                    pricePolicyJpaEntity.getDiscountPrice(),
+                                    pricePolicyJpaEntity.getDiscountRate(),
+                                    pricePolicyJpaEntity.getAccumulatedPoint(),
+                                    pricePolicyJpaEntity.getAccumulationRate()
+                            );
+                            pricePolicy.addProduct(
+                                    ProductJpaEntityToDomainMapper.mapToDomainWithoutPolicyProduct(entity.getProductJpaEntity())
+                                            .orElse(null)
+                            );
+
+                            return pricePolicy;
+                        }
                 );
     }
 

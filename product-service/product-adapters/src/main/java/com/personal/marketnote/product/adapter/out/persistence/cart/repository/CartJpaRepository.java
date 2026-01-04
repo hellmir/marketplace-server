@@ -2,6 +2,7 @@ package com.personal.marketnote.product.adapter.out.persistence.cart.repository;
 
 import com.personal.marketnote.product.adapter.out.persistence.cart.entity.CartProductJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -28,4 +29,15 @@ public interface CartJpaRepository extends JpaRepository<CartProductJpaEntity, L
                     """
     )
     Optional<CartProductJpaEntity> findByIdUserIdAndPricePolicyId(Long userId, Long pricePolicyId);
+
+    @Modifying
+    @Query(
+            """
+                    DELETE FROM CartProductJpaEntity c 
+                    WHERE 1 = 1
+                    AND c.id.userId = :userId 
+                    AND c.id.pricePolicyId IN :pricePolicyIds
+                    """
+    )
+    void deleteByUserIdAndPricePolicyIdIn(Long userId, List<Long> pricePolicyIds);
 }

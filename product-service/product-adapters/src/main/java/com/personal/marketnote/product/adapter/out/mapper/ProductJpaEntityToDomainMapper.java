@@ -1,6 +1,5 @@
 package com.personal.marketnote.product.adapter.out.mapper;
 
-import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductTagJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionCategoryJpaEntity;
@@ -19,29 +18,53 @@ public class ProductJpaEntityToDomainMapper {
                 .map(
                         entity -> {
                             Product product = Product.of(
-                                    productJpaEntity.getId(),
-                                    productJpaEntity.getSellerId(),
-                                    productJpaEntity.getName(),
-                                    productJpaEntity.getBrandName(),
-                                    productJpaEntity.getDetail(),
-                                    PricePolicyJpaEntityToDomainMapper.mapToDomain(productJpaEntity.getDefaultPricePolicy())
+                                    entity.getId(),
+                                    entity.getSellerId(),
+                                    entity.getName(),
+                                    entity.getBrandName(),
+                                    entity.getDetail(),
+                                    PricePolicyJpaEntityToDomainMapper.mapToDomain(entity.getDefaultPricePolicy())
                                             .orElse(null),
-                                    productJpaEntity.getSales(),
-                                    productJpaEntity.getViewCount(),
-                                    productJpaEntity.getPopularity(),
-                                    productJpaEntity.isFindAllOptionsYn(),
-                                    productJpaEntity.getProductTagJpaEntities().stream()
+                                    entity.getSales(),
+                                    entity.getViewCount(),
+                                    entity.getPopularity(),
+                                    entity.isFindAllOptionsYn(),
+                                    entity.getProductTagJpaEntities().stream()
                                             .map(ProductJpaEntityToDomainMapper::mapToDomain)
                                             .filter(Optional::isPresent)
                                             .map(Optional::get)
                                             .toList(),
-                                    productJpaEntity.getOrderNum(),
-                                    productJpaEntity.getStatus()
+                                    entity.getOrderNum(),
+                                    entity.getStatus()
                             );
                             product.getDefaultPricePolicy().addProduct(product);
 
                             return product;
                         }
+                );
+    }
+
+    public static Optional<Product> mapToDomainWithoutPolicyProduct(ProductJpaEntity productJpaEntity) {
+        return Optional.ofNullable(productJpaEntity)
+                .map(
+                        entity -> Product.of(
+                                entity.getId(),
+                                entity.getSellerId(),
+                                entity.getName(),
+                                entity.getBrandName(),
+                                entity.getDetail(),
+                                entity.getSales(),
+                                entity.getViewCount(),
+                                entity.getPopularity(),
+                                entity.isFindAllOptionsYn(),
+                                entity.getProductTagJpaEntities().stream()
+                                        .map(ProductJpaEntityToDomainMapper::mapToDomain)
+                                        .filter(Optional::isPresent)
+                                        .map(Optional::get)
+                                        .toList(),
+                                entity.getOrderNum(),
+                                entity.getStatus()
+                        )
                 );
     }
 
@@ -74,36 +97,6 @@ public class ProductJpaEntityToDomainMapper {
                             entity.getName(),
                             options,
                             entity.getOrderNum(),
-                            entity.getStatus()
-                    );
-                });
-    }
-
-    public static Optional<ProductOption> mapToDomain(ProductOptionJpaEntity productOptionJpaEntity) {
-        return Optional.ofNullable(productOptionJpaEntity)
-                .map(entity -> {
-                    ProductOptionCategoryJpaEntity categoryEntity = entity
-                            .getProductOptionCategoryJpaEntity();
-                    Product product = FormatValidator.hasValue(categoryEntity)
-                            ? ProductJpaEntityToDomainMapper
-                            .mapToDomain(categoryEntity.getProductJpaEntity())
-                            .orElse(null)
-                            : null;
-                    ProductOptionCategory shallowCategory = !FormatValidator.hasValue(categoryEntity)
-                            ? null
-                            : ProductOptionCategory.of(
-                            categoryEntity.getId(),
-                            product,
-                            categoryEntity.getName(),
-                            null,
-                            categoryEntity.getOrderNum(),
-                            categoryEntity.getStatus()
-                    );
-
-                    return ProductOption.of(
-                            entity.getId(),
-                            shallowCategory,
-                            entity.getContent(),
                             entity.getStatus()
                     );
                 });
