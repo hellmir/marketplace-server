@@ -1,7 +1,7 @@
 package com.personal.marketnote.product.adapter.in.client.product.response;
 
 import com.personal.marketnote.common.adapter.in.response.CursorResponse;
-import com.personal.marketnote.product.port.in.result.GetProductsResult;
+import com.personal.marketnote.product.port.in.result.product.GetProductsResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

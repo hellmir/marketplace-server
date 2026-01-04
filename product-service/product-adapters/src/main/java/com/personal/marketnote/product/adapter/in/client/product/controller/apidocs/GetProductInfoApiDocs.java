@@ -26,6 +26,10 @@ import java.lang.annotation.*;
         
         - 상품의 상세 정보를 조회합니다.
         
+        - 선택된 옵션 목록 기반으로 조회할 수 있습니다(예: 30개입 / 60박스).
+        
+        - 대상 상품의 모든 옵션 조합 목록에 대한 가격 정책 목록(pricePolicies)을 반환합니다.
+        
         - Redis Cache 적용되어 있습니다. TTL: 10분
         
         ---
@@ -161,6 +165,19 @@ import java.lang.annotation.*;
         | s3Url | string | 이미지 S3 URL | "https://marketnote.s3.amazonaws.com/product/30/1763534195623_image.png" |
         | resizedS3Urls | array | 리사이즈 이미지 S3 URL 목록 | [] |
         | orderNum | number | 정렬 순서 | 40 |
+        
+        ---
+        
+        ### Response > content > pricePolicies
+        
+        | **키** | **타입** | **설명** | **예시** |
+        | --- | --- | --- | --- |
+        | id | number | 가격 정책 ID | 22 |
+        | price | number | 가격(원) | 50000 |
+        | discountPrice | number | 할인 가격(원) | 40000 |
+        | accumulatedPoint | number | 적립 포인트 | 2000 |
+        | discountRate | number | 할인율(%, 최대 소수점 1자리) | 20 |
+        | optionIds | array<number> | 옵션 ID 목록 | [8, 11] |
         """,
         security = {@SecurityRequirement(name = "bearer")},
         parameters = {
@@ -186,7 +203,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-04T15:36:46.169111",
+                                          "timestamp": "2026-01-04T14:16:34.360777",
                                           "content": {
                                             "productInfo": {
                                               "id": 30,
@@ -232,6 +249,7 @@ import java.lang.annotation.*;
                                                     "id": 8,
                                                     "content": "1박스",
                                                     "price": null,
+                                                    "discountPrice": null,
                                                     "accumulatedPoint": null,
                                                     "status": "ACTIVE",
                                                     "isSelected": false
@@ -240,6 +258,7 @@ import java.lang.annotation.*;
                                                     "id": 9,
                                                     "content": "3박스",
                                                     "price": null,
+                                                    "discountPrice": null,
                                                     "accumulatedPoint": null,
                                                     "status": "ACTIVE",
                                                     "isSelected": false
@@ -256,6 +275,7 @@ import java.lang.annotation.*;
                                                     "id": 10,
                                                     "content": "30개입",
                                                     "price": null,
+                                                    "discountPrice": null,
                                                     "accumulatedPoint": null,
                                                     "status": "ACTIVE",
                                                     "isSelected": false
@@ -264,6 +284,7 @@ import java.lang.annotation.*;
                                                     "id": 11,
                                                     "content": "60개입",
                                                     "price": null,
+                                                    "discountPrice": null,
                                                     "accumulatedPoint": null,
                                                     "status": "ACTIVE",
                                                     "isSelected": false
@@ -277,7 +298,7 @@ import java.lang.annotation.*;
                                                   "id": 41,
                                                   "sort": "PRODUCT_REPRESENTATIVE_IMAGE",
                                                   "extension": "png",
-                                                  "name": "상품대표이미지1",
+                                                  "name": "스프링노트2",
                                                   "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763534195681_image.png",
                                                   "resizedS3Urls": [
                                                     "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
@@ -289,7 +310,7 @@ import java.lang.annotation.*;
                                                   "id": 39,
                                                   "sort": "PRODUCT_REPRESENTATIVE_IMAGE",
                                                   "extension": "png",
-                                                  "name": "상품대표이미지2",
+                                                  "name": "스프링노트2",
                                                   "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763534193377_image.png",
                                                   "resizedS3Urls": [
                                                     "https://marketnote.s3.amazonaws.com/product/30/1763534193688_image_600.png",
@@ -301,7 +322,7 @@ import java.lang.annotation.*;
                                                   "id": 37,
                                                   "sort": "PRODUCT_REPRESENTATIVE_IMAGE",
                                                   "extension": "png",
-                                                  "name": "상품대표이미지3",
+                                                  "name": "스프링노트2",
                                                   "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763533915880_image.png",
                                                   "resizedS3Urls": [
                                                     "https://marketnote.s3.amazonaws.com/product/30/1763533916081_image_600.png",
@@ -313,7 +334,7 @@ import java.lang.annotation.*;
                                                   "id": 35,
                                                   "sort": "PRODUCT_REPRESENTATIVE_IMAGE",
                                                   "extension": "png",
-                                                  "name": "상품대표이미지4",
+                                                  "name": "스프링노트2",
                                                   "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763533914726_image.png",
                                                   "resizedS3Urls": [
                                                     "https://marketnote.s3.amazonaws.com/product/30/1763533914954_image_600.png",
@@ -325,7 +346,7 @@ import java.lang.annotation.*;
                                                   "id": 33,
                                                   "sort": "PRODUCT_REPRESENTATIVE_IMAGE",
                                                   "extension": "png",
-                                                  "name": "상품대표이미지5",
+                                                  "name": "스프링노트2",
                                                   "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763533911501_image.png",
                                                   "resizedS3Urls": [
                                                     "https://marketnote.s3.amazonaws.com/product/30/1763533911804_image_600.png",
@@ -341,8 +362,8 @@ import java.lang.annotation.*;
                                                   "id": 40,
                                                   "sort": "PRODUCT_CONTENT_IMAGE",
                                                   "extension": "jpg",
-                                                  "name": "상품본문이미지1",
-                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763534195623_image.png",
+                                                  "name": "스프링노트1",
+                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763534195623_grafana-icon.png",
                                                   "resizedS3Urls": [],
                                                   "orderNum": 40
                                                 },
@@ -350,8 +371,8 @@ import java.lang.annotation.*;
                                                   "id": 38,
                                                   "sort": "PRODUCT_CONTENT_IMAGE",
                                                   "extension": "jpg",
-                                                  "name": "상품본문이미지2",
-                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763534193258_image.png",
+                                                  "name": "스프링노트1",
+                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763534193258_grafana-icon.png",
                                                   "resizedS3Urls": [],
                                                   "orderNum": 38
                                                 },
@@ -359,8 +380,8 @@ import java.lang.annotation.*;
                                                   "id": 36,
                                                   "sort": "PRODUCT_CONTENT_IMAGE",
                                                   "extension": "jpg",
-                                                  "name": "상품본문이미지3",
-                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763533915837_image.png",
+                                                  "name": "스프링노트1",
+                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763533915837_grafana-icon.png",
                                                   "resizedS3Urls": [],
                                                   "orderNum": 36
                                                 },
@@ -368,8 +389,8 @@ import java.lang.annotation.*;
                                                   "id": 34,
                                                   "sort": "PRODUCT_CONTENT_IMAGE",
                                                   "extension": "jpg",
-                                                  "name": "상품본문이미지4",
-                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763533914674_image.png",
+                                                  "name": "스프링노트1",
+                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763533914674_grafana-icon.png",
                                                   "resizedS3Urls": [],
                                                   "orderNum": 34
                                                 },
@@ -377,16 +398,61 @@ import java.lang.annotation.*;
                                                   "id": 32,
                                                   "sort": "PRODUCT_CONTENT_IMAGE",
                                                   "extension": "jpg",
-                                                  "name": "상품본문이미지5",
-                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763533911286_image.png",
+                                                  "name": "스프링노트1",
+                                                  "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763533911286_grafana-icon.png",
                                                   "resizedS3Urls": [],
                                                   "orderNum": 32
                                                 }
                                               ]
-                                            }
+                                            },
+                                            "pricePolicies": [
+                                              {
+                                                "id": 23,
+                                                "price": 43000,
+                                                "discountPrice": 36000,
+                                                "accumulatedPoint": 500,
+                                                "discountRate": 16.3,
+                                                "optionIds": [
+                                                  9,
+                                                  10
+                                                ]
+                                              },
+                                              {
+                                                "id": 22,
+                                                "price": 50000,
+                                                "discountPrice": 40000,
+                                                "accumulatedPoint": 2000,
+                                                "discountRate": 20,
+                                                "optionIds": [
+                                                  9,
+                                                  11
+                                                ]
+                                              },
+                                              {
+                                                "id": 21,
+                                                "price": 40000,
+                                                "discountPrice": 32000,
+                                                "accumulatedPoint": 800,
+                                                "discountRate": 20,
+                                                "optionIds": [
+                                                  8,
+                                                  10
+                                                ]
+                                              },
+                                              {
+                                                "id": 20,
+                                                "price": 45000,
+                                                "discountPrice": 37000,
+                                                "accumulatedPoint": 1200,
+                                                "discountRate": 17.8,
+                                                "optionIds": [
+                                                  8,
+                                                  11
+                                                ]
+                                              }
+                                            ]
                                           },
                                           "message": "상품 상세 정보 조회 성공"
-                                        }
                                         }
                                         """)
                         )

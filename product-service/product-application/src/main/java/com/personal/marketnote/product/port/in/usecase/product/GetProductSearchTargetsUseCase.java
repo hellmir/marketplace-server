@@ -1,6 +1,6 @@
 package com.personal.marketnote.product.port.in.usecase.product;
 
-import com.personal.marketnote.product.port.in.result.GetProductSearchTargetsResult;
+import com.personal.marketnote.product.port.in.result.product.GetProductSearchTargetsResult;
 
 public interface GetProductSearchTargetsUseCase {
     /**

@@ -1,6 +1,6 @@
 package com.personal.marketnote.product.adapter.in.client.option.response;
 
-import com.personal.marketnote.product.port.in.result.UpsertProductOptionsResult;
+import com.personal.marketnote.product.port.in.result.option.UpdateProductOptionsResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,7 @@ public class UpsertProductOptionsResponse {
     private Long id;
     private List<Long> optionIds;
 
-    public static UpsertProductOptionsResponse from(UpsertProductOptionsResult result) {
+    public static UpsertProductOptionsResponse from(UpdateProductOptionsResult result) {
         return UpsertProductOptionsResponse.builder()
                 .id(result.id())
                 .optionIds(result.optionIds())

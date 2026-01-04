@@ -3,7 +3,7 @@ package com.personal.marketnote.product.service.category;
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.product.domain.category.Category;
 import com.personal.marketnote.product.exception.CategoryNotFoundException;
-import com.personal.marketnote.product.port.in.result.GetCategoriesResult;
+import com.personal.marketnote.product.port.in.result.category.GetCategoriesResult;
 import com.personal.marketnote.product.port.in.usecase.category.GetCategoryUseCase;
 import com.personal.marketnote.product.port.out.category.FindCategoryPort;
 import lombok.RequiredArgsConstructor;

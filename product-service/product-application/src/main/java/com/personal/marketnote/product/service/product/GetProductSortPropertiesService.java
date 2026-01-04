@@ -2,7 +2,7 @@ package com.personal.marketnote.product.service.product;
 
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.product.domain.product.ProductSortProperty;
-import com.personal.marketnote.product.port.in.result.GetProductSortPropertiesResult;
+import com.personal.marketnote.product.port.in.result.product.GetProductSortPropertiesResult;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductSortPropertiesUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;

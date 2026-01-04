@@ -3,15 +3,18 @@ package com.personal.marketnote.product.adapter.in.client.pricepolicy.controller
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.AuthorityValidator;
 import com.personal.marketnote.common.utility.ElementExtractor;
+import com.personal.marketnote.product.adapter.in.client.pricepolicy.controller.apidocs.DeletePricePolicyApiDocs;
+import com.personal.marketnote.product.adapter.in.client.pricepolicy.controller.apidocs.GetPricePoliciesApiDocs;
+import com.personal.marketnote.product.adapter.in.client.pricepolicy.controller.apidocs.RegisterPricePolicyApiDocs;
 import com.personal.marketnote.product.adapter.in.client.pricepolicy.request.RegisterPricePolicyRequest;
 import com.personal.marketnote.product.adapter.in.client.pricepolicy.response.GetPricePoliciesResponse;
 import com.personal.marketnote.product.adapter.in.client.pricepolicy.response.RegisterPricePolicyResponse;
 import com.personal.marketnote.product.port.in.command.RegisterPricePolicyCommand;
-import com.personal.marketnote.product.port.in.result.GetPricePoliciesResult;
-import com.personal.marketnote.product.port.in.result.RegisterPricePolicyResult;
-import com.personal.marketnote.product.port.in.usecase.product.DeletePricePolicyUseCase;
-import com.personal.marketnote.product.port.in.usecase.product.GetPricePoliciesUseCase;
-import com.personal.marketnote.product.port.in.usecase.product.RegisterPricePolicyUseCase;
+import com.personal.marketnote.product.port.in.result.pricepolicy.GetPricePoliciesResult;
+import com.personal.marketnote.product.port.in.result.pricepolicy.RegisterPricePolicyResult;
+import com.personal.marketnote.product.port.in.usecase.pricepolicy.DeletePricePolicyUseCase;
+import com.personal.marketnote.product.port.in.usecase.pricepolicy.GetPricePoliciesUseCase;
+import com.personal.marketnote.product.port.in.usecase.pricepolicy.RegisterPricePolicyUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +39,7 @@ public class PricePolicyController {
 
     @PostMapping
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
+    @RegisterPricePolicyApiDocs
     public ResponseEntity<BaseResponse<RegisterPricePolicyResponse>> registerPricePolicy(
             @PathVariable("productId") Long productId,
             @Valid @RequestBody RegisterPricePolicyRequest request,
@@ -66,6 +70,7 @@ public class PricePolicyController {
 
 
     @GetMapping
+    @GetPricePoliciesApiDocs
     public ResponseEntity<BaseResponse<GetPricePoliciesResponse>> getPricePolicies(
             @PathVariable("productId") Long productId
     ) {
@@ -82,6 +87,7 @@ public class PricePolicyController {
 
     @DeleteMapping("/{pricePolicyId}")
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
+    @DeletePricePolicyApiDocs
     public ResponseEntity<BaseResponse<Void>> deletePricePolicy(
             @PathVariable("productId") Long productId,
             @PathVariable("pricePolicyId") Long pricePolicyId,

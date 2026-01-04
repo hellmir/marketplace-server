@@ -1,6 +1,6 @@
 package com.personal.marketnote.product.adapter.in.client.product.response;
 
-import com.personal.marketnote.product.port.in.result.RegisterProductResult;
+import com.personal.marketnote.product.port.in.result.product.RegisterProductResult;
 import lombok.AccessLevel;
 import lombok.Builder;
 

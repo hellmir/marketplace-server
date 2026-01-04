@@ -1,6 +1,6 @@
 package com.personal.marketnote.product.adapter.in.client.pricepolicy.response;
 
-import com.personal.marketnote.product.port.in.result.GetPricePoliciesResult;
+import com.personal.marketnote.product.port.in.result.pricepolicy.GetPricePoliciesResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

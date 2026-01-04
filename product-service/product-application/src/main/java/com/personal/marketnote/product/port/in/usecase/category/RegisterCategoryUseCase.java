@@ -1,7 +1,7 @@
 package com.personal.marketnote.product.port.in.usecase.category;
 
 import com.personal.marketnote.product.port.in.command.RegisterCategoryCommand;
-import com.personal.marketnote.product.port.in.result.RegisterCategoryResult;
+import com.personal.marketnote.product.port.in.result.category.RegisterCategoryResult;
 
 public interface RegisterCategoryUseCase {
     /**

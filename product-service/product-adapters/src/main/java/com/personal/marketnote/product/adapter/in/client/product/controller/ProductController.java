@@ -10,12 +10,11 @@ import com.personal.marketnote.product.adapter.in.client.product.request.UpdateP
 import com.personal.marketnote.product.adapter.in.client.product.response.*;
 import com.personal.marketnote.product.domain.product.ProductSearchTarget;
 import com.personal.marketnote.product.domain.product.ProductSortProperty;
-import com.personal.marketnote.product.port.in.result.*;
+import com.personal.marketnote.product.port.in.result.product.*;
 import com.personal.marketnote.product.port.in.usecase.product.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +33,6 @@ import static com.personal.marketnote.common.utility.NumberConstant.MINUS_ONE;
 @RequestMapping("/api/v1/products")
 @Tag(name = "상품 API", description = "상품 관련 API")
 @RequiredArgsConstructor
-@Slf4j
 public class ProductController {
     private static final String GET_PRODUCTS_DEFAULT_PAGE_SIZE = "4";
 

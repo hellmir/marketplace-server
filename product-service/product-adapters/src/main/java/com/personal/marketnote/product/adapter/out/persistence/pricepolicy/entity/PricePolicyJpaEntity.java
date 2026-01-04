@@ -2,7 +2,7 @@ package com.personal.marketnote.product.adapter.out.persistence.pricepolicy.enti
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseGeneralEntity;
 import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
-import com.personal.marketnote.product.domain.product.PricePolicy;
+import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
 import jakarta.persistence.*;
 import lombok.*;
 

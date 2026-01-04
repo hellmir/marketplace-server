@@ -5,9 +5,9 @@ import com.personal.marketnote.product.adapter.out.persistence.product.entity.Pr
 import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductTagJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionCategoryJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionJpaEntity;
+import com.personal.marketnote.product.domain.option.ProductOption;
+import com.personal.marketnote.product.domain.option.ProductOptionCategory;
 import com.personal.marketnote.product.domain.product.Product;
-import com.personal.marketnote.product.domain.product.ProductOption;
-import com.personal.marketnote.product.domain.product.ProductOptionCategory;
 import com.personal.marketnote.product.domain.product.ProductTag;
 
 import java.util.List;

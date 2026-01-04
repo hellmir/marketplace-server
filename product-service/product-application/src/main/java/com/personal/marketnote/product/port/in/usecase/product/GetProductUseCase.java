@@ -3,8 +3,8 @@ package com.personal.marketnote.product.port.in.usecase.product;
 import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.domain.product.ProductSearchTarget;
 import com.personal.marketnote.product.domain.product.ProductSortProperty;
-import com.personal.marketnote.product.port.in.result.GetProductInfoWithOptionsResult;
-import com.personal.marketnote.product.port.in.result.GetProductsResult;
+import com.personal.marketnote.product.port.in.result.product.GetProductInfoWithOptionsResult;
+import com.personal.marketnote.product.port.in.result.product.GetProductsResult;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;

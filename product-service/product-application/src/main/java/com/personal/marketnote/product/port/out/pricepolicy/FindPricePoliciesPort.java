@@ -1,18 +1,11 @@
 package com.personal.marketnote.product.port.out.pricepolicy;
 
-import java.math.BigDecimal;
+import com.personal.marketnote.product.port.in.result.pricepolicy.GetProductPricePolicyResult;
+
 import java.util.List;
 
 public interface FindPricePoliciesPort {
-    record PricePolicyWithOptions(
-            Long id,
-            Long price,
-            Long discountPrice,
-            Long accumulatedPoint,
-            BigDecimal discountRate,
-            List<Long> optionIds
-    ) {
-    }
 
-    List<PricePolicyWithOptions> findByProductId(Long productId);
+
+    List<GetProductPricePolicyResult> findByProductId(Long productId);
 }
