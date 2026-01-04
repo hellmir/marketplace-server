@@ -50,4 +50,8 @@ public class CartProduct extends BaseDomain {
         cartProduct.hide();
         return cartProduct;
     }
+
+    public void updateQuantity(Short newQuantity) {
+        quantity = newQuantity;
+    }
 }
