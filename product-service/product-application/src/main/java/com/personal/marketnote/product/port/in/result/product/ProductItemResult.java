@@ -1,6 +1,6 @@
 package com.personal.marketnote.product.port.in.result.product;
 
-import com.personal.marketnote.common.application.file.port.in.result.GetFilesResult;
+import com.personal.marketnote.common.application.file.port.in.result.GetFileResult;
 import com.personal.marketnote.product.domain.option.ProductOption;
 import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
 import com.personal.marketnote.product.domain.product.Product;
@@ -21,7 +21,7 @@ public record ProductItemResult(
         GetProductPricePolicyResult pricePolicy,
         Integer sales,
         List<ProductTag> productTags,
-        GetFilesResult catalogImages,
+        GetFileResult catalogImage,
         List<ProductOptionItemResult> selectedOptions,
         Long orderNum,
         String status
@@ -61,7 +61,7 @@ public record ProductItemResult(
                 .build();
     }
 
-    public static ProductItemResult withCatalogImages(ProductItemResult productItemResult, GetFilesResult catalogImages) {
+    public static ProductItemResult from(ProductItemResult productItemResult, GetFileResult catalogImage) {
         return ProductItemResult.builder()
                 .id(productItemResult.id())
                 .sellerId(productItemResult.sellerId())
@@ -70,7 +70,7 @@ public record ProductItemResult(
                 .pricePolicy(productItemResult.pricePolicy())
                 .sales(productItemResult.sales())
                 .productTags(productItemResult.productTags())
-                .catalogImages(catalogImages)
+                .catalogImage(catalogImage)
                 .selectedOptions(productItemResult.selectedOptions())
                 .orderNum(productItemResult.orderNum())
                 .status(productItemResult.status())

@@ -179,7 +179,12 @@ public class GetProductService implements GetProductUseCase {
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
         List<ProductItemResult> pageItemsWithImage = pageItems.stream()
-                .map(item -> ProductItemResult.withCatalogImages(item, productIdToImages.get(item.id())))
+                .map(item -> ProductItemResult.from(
+                        item,
+                        productIdToImages.get(item.id())
+                                .images()
+                                .getFirst())
+                )
                 .collect(Collectors.toList());
 
         Long totalElements = null;

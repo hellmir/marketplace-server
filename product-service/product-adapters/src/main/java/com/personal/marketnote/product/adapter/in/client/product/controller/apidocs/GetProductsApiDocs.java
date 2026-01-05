@@ -88,7 +88,7 @@ import java.lang.annotation.*;
         | pricePolicy | object | 가격 정책 | { ... } |
         | sales | number | 판매량 | 0 |
         | productTags | array | 상품 태그 목록 | [ ... ] |
-        | catalogImages | object | 상품 카탈로그 이미지 목록 | { ... } |
+        | catalogImage | object | 상품 카탈로그 이미지 | { ... } |
         | orderNum | number | 정렬 순서 | 1 |
         | status | string | 상태 | "ACTIVE" |
         
@@ -119,15 +119,7 @@ import java.lang.annotation.*;
         
         ---
         
-        ### Response > content > products > catalogImages
-        
-        | **키** | **타입** | **설명** | **예시** |
-        | --- | --- | --- | --- |
-        | images | array | 이미지 목록 | [ ... ] |
-        
-        ---
-        
-        ### Response > content > products > catalogImages > images
+        ### Response > content > products > catalogImage
         
         | **키** | **타입** | **설명** | **예시** |
         | --- | --- | --- | --- |
@@ -259,64 +251,16 @@ import java.lang.annotation.*;
                                                       "status": "ACTIVE"
                                                     }
                                                   ],
-                                                  "catalogImages": {
-                                                    "images": [
-                                                      {
-                                                        "id": 28,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763521042462_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763521042802_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 28
-                                                      },
-                                                      {
-                                                        "id": 26,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763521039723_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763521040050_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 26
-                                                      },
-                                                      {
-                                                        "id": 18,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517310521_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517310821_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 18
-                                                      },
-                                                      {
-                                                        "id": 16,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517302521_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517302838_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 16
-                                                      },
-                                                      {
-                                                        "id": 14,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517295839_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517296419_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 14
-                                                      }
-                                                    ]
+                                                  "catalogImage": {
+                                                    "id": 28,
+                                                    "sort": "PRODUCT_CATALOG_IMAGE",
+                                                    "extension": "jpg",
+                                                    "name": "스프링노트1",
+                                                    "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763521042462_grafana-icon.png",
+                                                    "resizedS3Urls": [
+                                                      "https://marketnote.s3.amazonaws.com/product/30/1763521042802_grafana-icon_300x300.png"
+                                                    ],
+                                                    "orderNum": 28
                                                   },
                                                   "selectedOptions": [
                                                     {
@@ -362,64 +306,16 @@ import java.lang.annotation.*;
                                                       "status": "ACTIVE"
                                                     }
                                                   ],
-                                                  "catalogImages": {
-                                                    "images": [
-                                                      {
-                                                        "id": 28,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763521042462_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763521042802_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 28
-                                                      },
-                                                      {
-                                                        "id": 26,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763521039723_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763521040050_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 26
-                                                      },
-                                                      {
-                                                        "id": 18,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517310521_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517310821_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 18
-                                                      },
-                                                      {
-                                                        "id": 16,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517302521_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517302838_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 16
-                                                      },
-                                                      {
-                                                        "id": 14,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517295839_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517296419_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 14
-                                                      }
-                                                    ]
+                                                  "catalogImage": {
+                                                    "id": 28,
+                                                    "sort": "PRODUCT_CATALOG_IMAGE",
+                                                    "extension": "jpg",
+                                                    "name": "스프링노트1",
+                                                    "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763521042462_grafana-icon.png",
+                                                    "resizedS3Urls": [
+                                                      "https://marketnote.s3.amazonaws.com/product/30/1763521042802_grafana-icon_300x300.png"
+                                                    ],
+                                                    "orderNum": 28
                                                   },
                                                   "selectedOptions": [
                                                     {
@@ -465,64 +361,16 @@ import java.lang.annotation.*;
                                                       "status": "ACTIVE"
                                                     }
                                                   ],
-                                                  "catalogImages": {
-                                                    "images": [
-                                                      {
-                                                        "id": 28,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763521042462_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763521042802_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 28
-                                                      },
-                                                      {
-                                                        "id": 26,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763521039723_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763521040050_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 26
-                                                      },
-                                                      {
-                                                        "id": 18,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517310521_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517310821_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 18
-                                                      },
-                                                      {
-                                                        "id": 16,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517302521_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517302838_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 16
-                                                      },
-                                                      {
-                                                        "id": 14,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517295839_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517296419_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 14
-                                                      }
-                                                    ]
+                                                  "catalogImage": {
+                                                    "id": 28,
+                                                    "sort": "PRODUCT_CATALOG_IMAGE",
+                                                    "extension": "jpg",
+                                                    "name": "스프링노트1",
+                                                    "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763521042462_grafana-icon.png",
+                                                    "resizedS3Urls": [
+                                                      "https://marketnote.s3.amazonaws.com/product/30/1763521042802_grafana-icon_300x300.png"
+                                                    ],
+                                                    "orderNum": 28
                                                   },
                                                   "selectedOptions": [
                                                     {
@@ -568,64 +416,16 @@ import java.lang.annotation.*;
                                                       "status": "ACTIVE"
                                                     }
                                                   ],
-                                                  "catalogImages": {
-                                                    "images": [
-                                                      {
-                                                        "id": 28,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763521042462_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763521042802_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 28
-                                                      },
-                                                      {
-                                                        "id": 26,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763521039723_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763521040050_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 26
-                                                      },
-                                                      {
-                                                        "id": 18,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517310521_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517310821_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 18
-                                                      },
-                                                      {
-                                                        "id": 16,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517302521_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517302838_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 16
-                                                      },
-                                                      {
-                                                        "id": 14,
-                                                        "sort": "PRODUCT_CATALOG_IMAGE",
-                                                        "extension": "jpg",
-                                                        "name": "스프링노트1",
-                                                        "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763517295839_grafana-icon.png",
-                                                        "resizedS3Urls": [
-                                                          "https://marketnote.s3.amazonaws.com/product/30/1763517296419_grafana-icon_300x300.png"
-                                                        ],
-                                                        "orderNum": 14
-                                                      }
-                                                    ]
+                                                  "catalogImage": {
+                                                    "id": 28,
+                                                    "sort": "PRODUCT_CATALOG_IMAGE",
+                                                    "extension": "jpg",
+                                                    "name": "스프링노트1",
+                                                    "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763521042462_grafana-icon.png",
+                                                    "resizedS3Urls": [
+                                                      "https://marketnote.s3.amazonaws.com/product/30/1763521042802_grafana-icon_300x300.png"
+                                                    ],
+                                                    "orderNum": 28
                                                   },
                                                   "selectedOptions": [
                                                     {

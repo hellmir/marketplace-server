@@ -1,7 +1,9 @@
 package com.personal.marketnote.file.service.file;
 
 import com.personal.marketnote.common.application.UseCase;
+import com.personal.marketnote.common.domain.file.FileSort;
 import com.personal.marketnote.common.domain.file.OwnerType;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.file.domain.file.FileDomain;
 import com.personal.marketnote.file.domain.file.ResizedFile;
 import com.personal.marketnote.file.port.in.result.GetFilesResult;
@@ -27,9 +29,9 @@ public class GetFilesService implements GetFilesUseCase {
     @Override
     public GetFilesResult getFiles(String ownerType, Long ownerId, String sort) {
         OwnerType type = OwnerType.from(ownerType);
-        List<FileDomain> files = (sort == null || sort.isBlank())
+        List<FileDomain> files = (!FormatValidator.hasValue(sort))
                 ? findFilesPort.findByOwner(type, ownerId)
-                : findFilesPort.findByOwnerAndSort(type, ownerId, sort);
+                : findFilesPort.findByOwnerAndSort(type, ownerId, FileSort.from(sort));
 
         List<Long> fileIds = files.stream().map(FileDomain::getId).toList();
         List<ResizedFile> resized = findResizedFilesPort.findByFileIds(fileIds);

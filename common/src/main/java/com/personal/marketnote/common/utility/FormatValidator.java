@@ -11,7 +11,7 @@ public class FormatValidator {
     }
 
     public static boolean hasValue(Object value) {
-        return value != null && !value.toString().trim().isEmpty();
+        return value != null && !value.toString().isBlank();
     }
 
     public static boolean hasValue(Collection<?> value) {
