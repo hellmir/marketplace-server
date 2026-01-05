@@ -1,4 +1,3 @@
-val serviceName = project.path.removePrefix(":").substringBefore(":")
 val javaVersion = 21
 val lombokVersion = "1.18.34"
 val dotenvVersion = "3.0.0"
@@ -14,9 +13,9 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.7.22" apply false
 }
 
-group = "com.personal.marketnote.product.adapters"
+group = "com.personal.marketnote.order.application"
 version = "1.0.0"
-description = "product service adapters"
+description = "order service application"
 
 java {
     toolchain {
@@ -30,9 +29,6 @@ configurations {
     }
 }
 
-// 별도 소스 JAR 다운로드용 구성 (IDE가 소스 첨부 못할 때 수동 다운로드)
-val redisSources by configurations.creating
-
 repositories {
     mavenCentral()
 }
@@ -40,8 +36,7 @@ repositories {
 dependencies {
     // module
     implementation(project(":common"))
-    implementation(project(":product-service:product-application"))
-    implementation(project(":product-service:product-domain"))
+    implementation(project(":order-service:order-domain"))
 
     // 🔹 Spring Boot 관련 의존성
     implementation("org.springframework.boot:spring-boot-starter-data-jpa") // JPA (데이터베이스 ORM)
@@ -49,9 +44,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation") // Spring Validation
     implementation("org.springframework.boot:spring-boot-starter-security") // Spring Security
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server") // OAuth 2.0 Resource server
-
-    // Spring Data Redis
-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-mail") // JavaMailSender
 
     //querydsl 설정
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
@@ -66,15 +59,8 @@ dependencies {
     testCompileOnly("org.projectlombok:lombok:$lombokVersion") // 빌드 타임에만 필요한 라이브러리
     testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion") // 애너테이션 프로세서 활성화
 
-    // security
-    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-
     // JSON parser
     implementation("org.json:json:20240303")
-
-    // Jackson Hibernate Module (Jakarta, Boot 3.x/Hibernate 6 호환)
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate5-jakarta")
 
     // MapStruct
     implementation("org.mapstruct:mapstruct:$mapstructVersion")
@@ -102,9 +88,6 @@ dependencies {
     // Spring Boot Actuator(Prometheus Monitoring Query)
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 
-    // Swagger API 문서 생성
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
-
     // Spring Batch
     implementation("org.springframework.boot:spring-boot-starter-batch")
 
@@ -119,14 +102,6 @@ dependencies {
 
     // Prometheus
     implementation("io.micrometer:micrometer-registry-prometheus")
-
-    // spring-data-redis sources (IDE에서 소스 자동 첨부가 안 될 때 CLI로 받기 위함)
-    redisSources("org.springframework.data:spring-data-redis:3.5.4:sources")
-
-    // JWT
-    implementation("io.jsonwebtoken:jjwt-api:0.12.3")
-    implementation("io.jsonwebtoken:jjwt-impl:0.12.3")
-    implementation("io.jsonwebtoken:jjwt-jackson:0.12.3")
 }
 
 // ✅ 테스트 실행 시 JUnit 5 플랫폼 사용 설정
@@ -140,9 +115,14 @@ tasks.withType<JavaCompile>().configureEach {
     options.encoding = projectEncoding
 }
 
+// ✅ 빌드 정보 생성 설정
+springBoot {
+    buildInfo()
+}
+
 tasks.register("printProjectName") {
     doLast {
-        println(serviceName)
+        println(project.name)
     }
 }
 
@@ -152,24 +132,8 @@ tasks.register("printProjectVersion") {
     }
 }
 
-tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
-    archiveBaseName.set(serviceName)
-    enabled = true
-}
-tasks.named<Jar>("jar") {
+tasks.named("bootJar") {
     enabled = false
-}
-
-springBoot {
-    mainClass.set("com.personal.marketnote.product.ProductApplication")
-    buildInfo()
-}
-
-// `./gradlew :product-service:product-adapters:downloadRedisSources` 실행 시 소스 JAR를 로컬 캐시에 받음
-tasks.register("downloadRedisSources") {
-    doLast {
-        redisSources.resolve()
-    }
 }
 
 tasks.register("prepareKotlinBuildScriptModel") {

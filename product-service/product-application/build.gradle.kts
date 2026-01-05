@@ -46,9 +46,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server") // OAuth 2.0 Resource server
     implementation("org.springframework.boot:spring-boot-starter-mail") // JavaMailSender
 
-    // Spring Data Redis
-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
-
     //querydsl 설정
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
     annotationProcessor("jakarta.persistence:jakarta.persistence-api:3.1.0")
@@ -77,6 +74,7 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test") // Spring Security 테스트 지원
     testRuntimeOnly("org.junit.platform:junit-platform-launcher") // JUnit 테스트 런처
     testImplementation("org.awaitility:awaitility:4.2.0") // 비동기,스케줄링 테스트 지원
+
     // 🔹 추가 라이브러리
     // dotenv
     implementation("io.github.cdimascio:dotenv-java:$dotenvVersion")
@@ -87,7 +85,7 @@ dependencies {
     // PostgreSQL 드라이버
     runtimeOnly("org.postgresql:postgresql:42.7.4")
 
-    // 빌드 정보를 위한 스프링 부트 액추에이터
+    // Spring Boot Actuator(Prometheus Monitoring Query)
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 
     // Spring Batch
