@@ -14,9 +14,9 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.7.22" apply false
 }
 
-group = "com.personal.marketnote.product.adapters"
+group = "com.personal.marketnote.order.adapters"
 version = "1.0.0"
-description = "product service adapters"
+description = "order service adapters"
 
 java {
     toolchain {
@@ -30,9 +30,6 @@ configurations {
     }
 }
 
-// 별도 소스 JAR 다운로드용 구성 (IDE가 소스 첨부 못할 때 수동 다운로드)
-val redisSources by configurations.creating
-
 repositories {
     mavenCentral()
 }
@@ -40,8 +37,8 @@ repositories {
 dependencies {
     // module
     implementation(project(":common"))
-    implementation(project(":product-service:product-application"))
-    implementation(project(":product-service:product-domain"))
+    implementation(project(":order-service:order-application"))
+    implementation(project(":order-service:order-domain"))
 
     // 🔹 Spring Boot 관련 의존성
     implementation("org.springframework.boot:spring-boot-starter-data-jpa") // JPA (데이터베이스 ORM)
@@ -49,9 +46,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation") // Spring Validation
     implementation("org.springframework.boot:spring-boot-starter-security") // Spring Security
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server") // OAuth 2.0 Resource server
-
-    // Spring Data Redis
-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
     //querydsl 설정
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
@@ -105,12 +99,6 @@ dependencies {
     // Swagger API 문서 생성
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
 
-    // Spring Batch
-    implementation("org.springframework.boot:spring-boot-starter-batch")
-
-    // Spring Batch 테스트 의존성
-    testImplementation("org.springframework.batch:spring-batch-test")
-
     // HNSW 라이브러리
     implementation("com.github.jelmerk:hnswlib-core:1.2.1")
 
@@ -119,9 +107,6 @@ dependencies {
 
     // Prometheus
     implementation("io.micrometer:micrometer-registry-prometheus")
-
-    // spring-data-redis sources (IDE에서 소스 자동 첨부가 안 될 때 CLI로 받기 위함)
-    redisSources("org.springframework.data:spring-data-redis:3.5.4:sources")
 
     // JWT
     implementation("io.jsonwebtoken:jjwt-api:0.12.3")
@@ -161,15 +146,8 @@ tasks.named<Jar>("jar") {
 }
 
 springBoot {
-    mainClass.set("com.personal.marketnote.product.ProductApplication")
+    mainClass.set("com.personal.marketnote.order.OrderApplication")
     buildInfo()
-}
-
-// `./gradlew :product-service:product-adapters:downloadRedisSources` 실행 시 소스 JAR를 로컬 캐시에 받음
-tasks.register("downloadRedisSources") {
-    doLast {
-        redisSources.resolve()
-    }
 }
 
 tasks.register("prepareKotlinBuildScriptModel") {

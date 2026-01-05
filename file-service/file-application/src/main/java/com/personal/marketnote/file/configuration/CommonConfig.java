@@ -1,4 +1,4 @@
-package com.personal.marketnote.product.configuration;
+package com.personal.marketnote.file.configuration;
 
 import com.personal.marketnote.common.configuration.security.OpaqueTokenIntrospectorConfig;
 import com.personal.marketnote.common.configuration.security.OpaqueTokenIntrospectorProvider;

@@ -98,10 +98,10 @@ dependencies {
     // PostgreSQL 드라이버
     runtimeOnly("org.postgresql:postgresql:42.7.4")
 
-    // 빌드 정보를 위한 스프링 부트 액추에이터
+    // Spring Boot Actuator(Prometheus Monitoring Query)
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 
-    // 스웨거 API 문서 생성
+    // Swagger API 문서 생성
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
 
     // Spring Batch
