@@ -33,6 +33,30 @@ import java.lang.annotation.*;
                 
                 - 가격 정책 목록 미전송 시, 모든 주문 상품의 상태를 변경합니다.
                 
+                - 주문 상태 목록
+                
+                    - "PAYMENT_PENDING": 결제 대기
+                
+                    - "PAID": 결제 완료
+                
+                    - "FAILED": 결제 실패
+                
+                    - "PREPARING": 상품 준비중
+                
+                    - "PREPARED": 상품 준비 완료
+                
+                    - "CANCELLED": 주문 취소
+                
+                    - "SHIPPING": 배송중
+                
+                    - "DELIVERED": 배송 완료
+                
+                    - "REFUNDING": 환불 진행중
+                
+                    - "PARTIALLY_REFUNDED": 부분 환불
+                
+                    - "REFUNDED": 환불 완료
+                
                 ---
                 
                 ## Request
@@ -41,14 +65,6 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- | --- |
                 | pricePolicyIds | array<number> | 가격 정책 ID 목록 | Y | [1, 2, 3] |
                 | orderStatus | string | 주문 상태 | Y | "PAYMENT_PENDING" |
-                
-                ---
-                
-                ### Request > pricePolicyIds
-                
-                | **키** | **타입** | **설명** | **필수 여부** | **예시** |
-                | --- | --- | --- | --- | --- |
-                | number | number | 가격 정책 ID | Y | 1 |
                 
                 ---
                 
