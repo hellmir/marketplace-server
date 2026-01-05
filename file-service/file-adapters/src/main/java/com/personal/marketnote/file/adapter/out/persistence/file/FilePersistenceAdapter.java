@@ -1,6 +1,7 @@
 package com.personal.marketnote.file.adapter.out.persistence.file;
 
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
+import com.personal.marketnote.common.domain.file.FileSort;
 import com.personal.marketnote.common.domain.file.OwnerType;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.file.adapter.out.persistence.file.entity.FileJpaEntity;
@@ -70,8 +71,10 @@ public class FilePersistenceAdapter implements SaveFilesPort, FindFilesPort {
     }
 
     @Override
-    public List<FileDomain> findByOwnerAndSort(OwnerType ownerType, Long ownerId, String sort) {
-        return fileJpaRepository.findTop5ByOwnerTypeAndOwnerIdAndSortOrderByOrderNumDesc(ownerType, ownerId, sort).stream()
+    public List<FileDomain> findByOwnerAndSort(OwnerType ownerType, Long ownerId, FileSort sort) {
+        List<FileJpaEntity> entities = getEntities(ownerType, ownerId, sort);
+
+        return entities.stream()
                 .map(entity -> FileDomain.of(
                         entity.getId(),
                         entity.getOwnerType(),
@@ -85,6 +88,19 @@ public class FilePersistenceAdapter implements SaveFilesPort, FindFilesPort {
                         entity.getOrderNum()
                 ))
                 .toList();
+    }
+
+    private List<FileJpaEntity> getEntities(OwnerType ownerType, Long ownerId, FileSort sort) {
+        String sortName = sort.name();
+        if (sort.isCatalogImage()) {
+            return fileJpaRepository.findTop1ByOwnerTypeAndOwnerIdAndSortOrderByOrderNumDesc(
+                    ownerType, ownerId, sortName
+            );
+        }
+
+        return fileJpaRepository.findTop5ByOwnerTypeAndOwnerIdAndSortOrderByOrderNumDesc(
+                ownerType, ownerId, sortName
+        );
     }
 }
 

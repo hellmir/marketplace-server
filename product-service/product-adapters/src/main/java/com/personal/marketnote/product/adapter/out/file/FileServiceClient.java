@@ -53,6 +53,10 @@ public class FileServiceClient implements FindProductImagesPort {
         headers.setBearerAuth(adminAccessToken);
         HttpEntity<Void> httpEntity = new HttpEntity<>(headers);
 
+        return sendRequest(uri, httpEntity, productId, sort);
+    }
+
+    public Optional<GetFilesResult> sendRequest(URI uri, HttpEntity<Void> httpEntity, Long productId, FileSort sort) {
         for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
             try {
                 ResponseEntity<BaseResponse<FilesContent>> response =
@@ -74,7 +78,8 @@ public class FileServiceClient implements FindProductImagesPort {
                     return Optional.empty();
                 }
 
-                List<GetFileResult> getFileResults = filesContent.files.stream()
+                List<GetFileResult> getFileResults = filesContent.files
+                        .stream()
                         .map(getFileResult -> new GetFileResult(
                                 getFileResult.id,
                                 getFileResult.sort,
@@ -89,15 +94,16 @@ public class FileServiceClient implements FindProductImagesPort {
                 return Optional.of(new GetFilesResult(getFileResults));
             } catch (Exception e) {
                 log.warn(e.getMessage(), e);
+
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
 
         log.error("Failed to find images by product id: {} and sort: {}", productId, sort);
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<GetFileResult> findCatalogImageByProductId(Long productId) {
         return Optional.empty();
     }
 

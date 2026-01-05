@@ -1,6 +1,6 @@
 package com.personal.marketnote.product.adapter.in.client.product.response;
 
-import com.personal.marketnote.common.application.file.port.in.result.GetFilesResult;
+import com.personal.marketnote.common.application.file.port.in.result.GetFileResult;
 import com.personal.marketnote.product.adapter.in.client.option.response.SelectableProductOptionCategoryResponse;
 import com.personal.marketnote.product.port.in.result.pricepolicy.GetProductPricePolicyWithOptionsResult;
 import com.personal.marketnote.product.port.in.result.product.GetProductInfoResult;
@@ -18,8 +18,8 @@ import java.util.List;
 public class GetProductInfoResponse {
     private GetProductInfoResult productInfo;
     private List<SelectableProductOptionCategoryResponse> categories;
-    private GetFilesResult representativeImages;
-    private GetFilesResult contentImages;
+    private List<GetFileResult> representativeImages;
+    private List<GetFileResult> contentImages;
     private List<GetProductPricePolicyWithOptionsResult> pricePolicies;
 
     public static GetProductInfoResponse from(GetProductInfoWithOptionsResult getProductInfoWithOptionsResult) {
@@ -30,8 +30,8 @@ public class GetProductInfoResponse {
                                 .map(SelectableProductOptionCategoryResponse::from)
                                 .toList()
                 )
-                .representativeImages(getProductInfoWithOptionsResult.representativeImages())
-                .contentImages(getProductInfoWithOptionsResult.contentImages())
+                .representativeImages(getProductInfoWithOptionsResult.representativeImages().images())
+                .contentImages(getProductInfoWithOptionsResult.contentImages().images())
                 .pricePolicies(getProductInfoWithOptionsResult.pricePolicies())
                 .build();
     }
