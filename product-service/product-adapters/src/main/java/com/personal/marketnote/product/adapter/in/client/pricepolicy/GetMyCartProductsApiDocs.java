@@ -98,6 +98,7 @@ import java.lang.annotation.*;
                                               {
                                                 "product": {
                                                   "id": 30,
+                                                  "sellerId": 1,
                                                   "name": "건기식테스트1",
                                                   "brandName": "노트왕",
                                                   "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
@@ -115,6 +116,7 @@ import java.lang.annotation.*;
                                               {
                                                 "product": {
                                                   "id": 30,
+                                                  "sellerId": 1,
                                                   "name": "건기식테스트1",
                                                   "brandName": "노트왕",
                                                   "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763533916081_image_600.png",
@@ -132,6 +134,7 @@ import java.lang.annotation.*;
                                               {
                                                 "product": {
                                                   "id": 30,
+                                                  "sellerId": 1,
                                                   "name": "건기식테스트1",
                                                   "brandName": "노트왕",
                                                   "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763533914954_image_600.png",
