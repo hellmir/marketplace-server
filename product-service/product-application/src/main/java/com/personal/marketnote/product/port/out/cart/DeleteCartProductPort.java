@@ -4,4 +4,6 @@ import java.util.List;
 
 public interface DeleteCartProductPort {
     void delete(Long userId, List<Long> pricePolicyIds);
+
+    void deleteAll(Long userId);
 }

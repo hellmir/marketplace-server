@@ -16,7 +16,12 @@ public class DeleteCartProductService implements DeleteCartProductUseCase {
     private final DeleteCartProductPort deleteCartProductPort;
 
     @Override
-    public void deleteCartProduct(DeleteCartProductCommand command) {
+    public void deleteCartProducts(DeleteCartProductCommand command) {
         deleteCartProductPort.delete(command.userId(), command.pricePolicyIds());
+    }
+
+    @Override
+    public void deleteAllCartProducts(Long userId) {
+        deleteCartProductPort.deleteAll(userId);
     }
 }
