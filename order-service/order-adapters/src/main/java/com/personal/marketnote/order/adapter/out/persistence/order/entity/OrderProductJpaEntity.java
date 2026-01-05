@@ -1,6 +1,7 @@
 package com.personal.marketnote.order.adapter.out.persistence.order.entity;
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseEntity;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.order.OrderProduct;
 import com.personal.marketnote.product.domain.order.OrderStatus;
 import jakarta.persistence.*;
@@ -35,8 +36,11 @@ public class OrderProductJpaEntity extends BaseEntity {
     private OrderStatus orderStatus;
 
     public static OrderProductJpaEntity from(OrderProduct orderProduct, OrderJpaEntity orderJpaEntity) {
-        Long orderId = orderProduct.getOrderId() != null ? orderProduct.getOrderId() : orderJpaEntity.getId();
+        Long orderId = FormatValidator.hasValue(orderProduct.getOrderId())
+                ? orderProduct.getOrderId()
+                : orderJpaEntity.getId();
         OrderProductId id = new OrderProductId(orderProduct.getPricePolicyId(), orderId);
+
         return OrderProductJpaEntity.builder()
                 .id(id)
                 .orderJpaEntity(orderJpaEntity)
