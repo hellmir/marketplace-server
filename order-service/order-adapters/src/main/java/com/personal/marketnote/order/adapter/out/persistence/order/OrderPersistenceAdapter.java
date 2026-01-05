@@ -44,3 +44,15 @@ public class OrderPersistenceAdapter implements SaveOrderPort, FindOrderPort, Up
         return orderJpaRepository.findById(id)
                 .flatMap(OrderJpaEntityToDomainMapper::mapToDomain);
     }
+
+    @Override
+    public void update(Order order) throws OrderNotFoundException {
+        OrderJpaEntity entity = findEntityById(order.getId());
+        entity.updateFrom(order);
+    }
+
+    private OrderJpaEntity findEntityById(Long id) throws OrderNotFoundException {
+        return orderJpaRepository.findById(id)
+                .orElseThrow(() -> new OrderNotFoundException(id));
+    }
+}

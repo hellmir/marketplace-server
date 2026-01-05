@@ -61,5 +61,23 @@ public class Order {
                 .orderProducts(orderProducts)
                 .build();
     }
+
+    public void changeProductsStatus(List<Long> pricePolicyIds, OrderStatus orderStatus) {
+        orderProducts.stream()
+                .filter(orderProduct -> pricePolicyIds.contains(orderProduct.getPricePolicyId()))
+                .forEach(orderProduct -> orderProduct.changeOrderStatus(orderStatus));
+
+        if (orderStatus.isRefunded()) {
+            this.orderStatus = OrderStatus.getPartiallyRefunded();
+            return;
+        }
+
+        this.orderStatus = orderStatus;
+    }
+
+    public void changeAllProductsStatus(OrderStatus orderStatus) {
+        orderProducts.forEach(orderProduct -> orderProduct.changeOrderStatus(orderStatus));
+        this.orderStatus = orderStatus;
+    }
 }
 

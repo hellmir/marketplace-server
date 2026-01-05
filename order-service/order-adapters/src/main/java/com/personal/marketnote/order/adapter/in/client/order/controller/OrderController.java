@@ -3,7 +3,7 @@ package com.personal.marketnote.order.adapter.in.client.order.controller;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.order.adapter.in.client.order.controller.apidocs.ChangeOrderStatusApiDocs;
-import com.personal.marketnote.order.adapter.in.client.order.controller.apidocs.GetOrderApiDocs;
+import com.personal.marketnote.order.adapter.in.client.order.controller.apidocs.GetOrderInfoApiDocs;
 import com.personal.marketnote.order.adapter.in.client.order.controller.apidocs.RegisterOrderApiDocs;
 import com.personal.marketnote.order.adapter.in.client.order.mapper.OrderRequestToCommandMapper;
 import com.personal.marketnote.order.adapter.in.client.order.request.ChangeOrderStatusRequest;
@@ -35,6 +35,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER
 public class OrderController {
     private final RegisterOrderUseCase registerOrderUseCase;
     private final GetOrderUseCase getOrderUseCase;
+    private final ChangeOrderStatusUseCase changeOrderStatusUseCase;
 
     /**
      * 주문 등록
@@ -81,7 +82,7 @@ public class OrderController {
      */
     @GetMapping("/{id}")
     @PreAuthorize(ADMIN_OR_SELLER_PRINCIPAL_POINTCUT)
-    @GetOrderApiDocs
+    @GetOrderInfoApiDocs
     public ResponseEntity<BaseResponse<GetOrderResponse>> getOrder(@PathVariable("id") Long id) {
         GetOrderResult getOrderResult = GetOrderResult.from(getOrderUseCase.getOrder(id));
 
@@ -91,6 +92,36 @@ public class OrderController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "주문 정보 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 주문 상태 변경
+     *
+     * @param request 주문 상태 변겅 요청
+     * @Author 성효빈
+     * @Date 2026-01-05
+     * @Description 주문 상태를 변경합니다.
+     */
+    @PatchMapping("/{id}")
+    @PreAuthorize(ADMIN_OR_SELLER_PRINCIPAL_POINTCUT)
+    @ChangeOrderStatusApiDocs
+    public ResponseEntity<BaseResponse<Void>> changeOrderStatus(
+            @PathVariable("id") Long id,
+            @Valid @RequestBody ChangeOrderStatusRequest request
+    ) {
+        changeOrderStatusUseCase.changeOrderStatus(
+                OrderRequestToCommandMapper.mapToCommand(id, request)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        null,
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "주문 상태 변경 성공"
                 ),
                 HttpStatus.OK
         );
