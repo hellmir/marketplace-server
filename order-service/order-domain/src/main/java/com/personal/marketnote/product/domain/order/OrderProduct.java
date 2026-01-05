@@ -46,5 +46,9 @@ public class OrderProduct {
                 .orderStatus(orderStatus)
                 .build();
     }
+
+    public void changeOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
 }
 

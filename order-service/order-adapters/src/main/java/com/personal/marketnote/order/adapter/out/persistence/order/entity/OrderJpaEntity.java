@@ -77,5 +77,15 @@ public class OrderJpaEntity extends BaseEntity {
     public void addOrderProduct(OrderProductJpaEntity orderProductJpaEntity) {
         this.orderProductJpaEntities.add(orderProductJpaEntity);
     }
+
+    public void updateFrom(Order order) {
+        orderStatus = order.getOrderStatus();
+        totalAmount = order.getTotalAmount();
+        paidAmount = order.getPaidAmount();
+        couponAmount = order.getCouponAmount();
+        pointAmount = order.getPointAmount();
+        order.getOrderProducts()
+                .forEach(orderProduct -> OrderProductJpaEntity.from(orderProduct, this));
+    }
 }
 

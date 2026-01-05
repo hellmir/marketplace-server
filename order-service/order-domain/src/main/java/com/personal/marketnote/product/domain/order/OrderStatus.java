@@ -2,10 +2,16 @@ package com.personal.marketnote.product.domain.order;
 
 public enum OrderStatus {
     PAYMENT_PENDING("결제 대기"),
-    PAYMENT_COMPLETED("결제 완료"),
-    SHIPPING("배송 중"),
+    PAID("결제 완료"),
+    FAILED("결제 실패"),
+    PREPARING("상품 준비중"),
+    PREPARED("상품 준비 완료"),
+    CANCELLED("주문 취소"),
+    SHIPPING("배송중"),
     DELIVERED("배송 완료"),
-    CANCELLED("취소됨");
+    REFUNDING("환불 진행중"),
+    PARTIALLY_REFUNDED("부분 환불"),
+    REFUNDED("환불 완료");
 
     private final String description;
 
@@ -16,5 +22,12 @@ public enum OrderStatus {
     public String getDescription() {
         return description;
     }
-}
 
+    public boolean isRefunded() {
+        return this == REFUNDED;
+    }
+
+    public static OrderStatus getPartiallyRefunded() {
+        return PARTIALLY_REFUNDED;
+    }
+}

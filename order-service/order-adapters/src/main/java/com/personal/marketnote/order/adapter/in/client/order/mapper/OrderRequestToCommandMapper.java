@@ -1,6 +1,8 @@
 package com.personal.marketnote.order.adapter.in.client.order.mapper;
 
+import com.personal.marketnote.order.adapter.in.client.order.request.ChangeOrderStatusRequest;
 import com.personal.marketnote.order.adapter.in.client.order.request.RegisterOrderRequest;
+import com.personal.marketnote.order.port.in.command.ChangeOrderStatusCommand;
 import com.personal.marketnote.order.port.in.command.RegisterOrderCommand;
 
 import java.util.List;
@@ -27,6 +29,10 @@ public class OrderRequestToCommandMapper {
                 request.getPointAmount(),
                 orderProducts
         );
+    }
+
+    public static ChangeOrderStatusCommand mapToCommand(Long id, ChangeOrderStatusRequest request) {
+        return ChangeOrderStatusCommand.of(id, request.getPricePolicyIds(), request.getOrderStatus());
     }
 }
 
