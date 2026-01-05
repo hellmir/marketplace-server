@@ -6,13 +6,18 @@ import com.personal.marketnote.order.adapter.out.mapper.OrderJpaEntityToDomainMa
 import com.personal.marketnote.order.adapter.out.persistence.order.entity.OrderJpaEntity;
 import com.personal.marketnote.order.adapter.out.persistence.order.entity.OrderProductJpaEntity;
 import com.personal.marketnote.order.adapter.out.persistence.order.repository.OrderJpaRepository;
+import com.personal.marketnote.order.exception.OrderNotFoundException;
+import com.personal.marketnote.order.port.out.order.FindOrderPort;
 import com.personal.marketnote.order.port.out.order.SaveOrderPort;
+import com.personal.marketnote.order.port.out.order.UpdateOrderPort;
 import com.personal.marketnote.product.domain.order.Order;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class OrderPersistenceAdapter implements SaveOrderPort {
+public class OrderPersistenceAdapter implements SaveOrderPort, FindOrderPort, UpdateOrderPort {
     private final OrderJpaRepository orderJpaRepository;
 
     @Override
@@ -33,5 +38,9 @@ public class OrderPersistenceAdapter implements SaveOrderPort {
 
         return OrderJpaEntityToDomainMapper.mapToDomain(finalEntity).orElse(null);
     }
-}
 
+    @Override
+    public Optional<Order> findById(Long id) {
+        return orderJpaRepository.findById(id)
+                .flatMap(OrderJpaEntityToDomainMapper::mapToDomain);
+    }
