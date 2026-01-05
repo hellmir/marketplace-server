@@ -77,4 +77,9 @@ public class CartPersistenceAdapter implements SaveCartProductPort, FindCartProd
     public void delete(Long userId, List<Long> pricePolicyIds) {
         cartJpaRepository.deleteByUserIdAndPricePolicyIdIn(userId, pricePolicyIds);
     }
+
+    @Override
+    public void deleteAll(Long userId) {
+        cartJpaRepository.deleteByUserId(userId);
+    }
 }

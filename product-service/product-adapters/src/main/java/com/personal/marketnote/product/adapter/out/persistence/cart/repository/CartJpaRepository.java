@@ -40,4 +40,14 @@ public interface CartJpaRepository extends JpaRepository<CartProductJpaEntity, L
                     """
     )
     void deleteByUserIdAndPricePolicyIdIn(Long userId, List<Long> pricePolicyIds);
+
+    @Modifying
+    @Query(
+            """
+                    DELETE FROM CartProductJpaEntity c 
+                    WHERE 1 = 1
+                    AND c.id.userId = :userId
+                    """
+    )
+    void deleteByUserId(Long userId);
 }

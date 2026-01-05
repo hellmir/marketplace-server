@@ -32,7 +32,7 @@ public class CartController {
     private final GetMyCartProductsUseCase getMyCartProductsUseCase;
     private final UpdateCartProductQuantityUseCase updateCartProductQuantityUseCase;
     private final UpdateCartProductOptionsUseCase updateCartProductOptionsUseCase;
-    private final DeleteCartProductUseCase deleteCartProductUseCase;
+    private final DeleteCartProductUseCase deleteCartProductsUseCase;
 
     /**
      * 장바구니 상품 추가
@@ -135,7 +135,7 @@ public class CartController {
      * @return 장바구니 상품 옵션 변경 응답 {@link Void}
      * @return 장바구니 상품 옵션 변경 응답 {@link Void}
      * @Author 성효빈
-     * @Date 2026-01-04
+     * @Date 2026-01-05
      * @Description 장바구니 상품 옵션을 변경합니다.
      */
     @PatchMapping("/options")
@@ -164,18 +164,17 @@ public class CartController {
      *
      * @param pricePolicyIds 장바구니 상품 옵션 변경 요청
      * @param principal      인증 정보
-     * @return 장바구니 상품 삭제 응답 {@link Void}
      * @Author 성효빈
      * @Date 2026-01-04
      * @Description 장바구니 상품을 삭제합니다.
      */
     @DeleteMapping
     @DeleteCartProductApiDocs
-    public ResponseEntity<BaseResponse<Void>> deleteCartProduct(
+    public ResponseEntity<BaseResponse<Void>> deleteCartProducts(
             @Valid @RequestParam List<Long> pricePolicyIds,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
-        deleteCartProductUseCase.deleteCartProduct(
+        deleteCartProductsUseCase.deleteCartProducts(
                 CartRequestToCommandMapper.mapToCommand(ElementExtractor.extractUserId(principal), pricePolicyIds)
         );
 
@@ -185,6 +184,32 @@ public class CartController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "장바구니 상품 삭제 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 장바구니 비우기
+     *
+     * @param principal 인증 정보
+     * @Author 성효빈
+     * @Date 2026-01-05
+     * @Description 회원의 장바구니를 비웁니다.
+     */
+    @DeleteMapping("/all")
+    @DeleteAllCartProductsApiDocs
+    public ResponseEntity<BaseResponse<Void>> deleteAllCartProducts(
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        deleteCartProductsUseCase.deleteAllCartProducts(ElementExtractor.extractUserId(principal));
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        null,
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "장바구니 비우기 성공"
                 ),
                 HttpStatus.OK
         );
