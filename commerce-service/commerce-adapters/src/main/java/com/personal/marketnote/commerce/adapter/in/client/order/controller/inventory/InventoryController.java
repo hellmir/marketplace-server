@@ -2,9 +2,9 @@ package com.personal.marketnote.commerce.adapter.in.client.order.controller.inve
 
 import com.personal.marketnote.commerce.adapter.in.client.order.controller.order.RegisterInventoryApiDocs;
 import com.personal.marketnote.commerce.adapter.in.client.order.mapper.InventoryRequestToCommandMapper;
-import com.personal.marketnote.commerce.adapter.in.client.order.request.inventory.RegisterInventoryRequest;
 import com.personal.marketnote.commerce.port.in.usecase.inventory.RegisterInventoryUseCase;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
+import com.personal.marketnote.common.adapter.in.request.RegisterInventoryRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

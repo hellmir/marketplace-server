@@ -1,5 +1,6 @@
 package com.personal.marketnote.product.adapter.out.mapper;
 
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductTagJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionCategoryJpaEntity;
@@ -37,7 +38,10 @@ public class ProductJpaEntityToDomainMapper {
                                     entity.getOrderNum(),
                                     entity.getStatus()
                             );
-                            product.getDefaultPricePolicy().addProduct(product);
+
+                            if (FormatValidator.hasValue(product.getDefaultPricePolicy())) {
+                                product.getDefaultPricePolicy().addProduct(product);
+                            }
 
                             return product;
                         }

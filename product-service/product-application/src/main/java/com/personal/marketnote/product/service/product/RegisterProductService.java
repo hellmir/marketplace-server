@@ -4,9 +4,11 @@ import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.port.in.command.RegisterPricePolicyCommand;
 import com.personal.marketnote.product.port.in.command.RegisterProductCommand;
+import com.personal.marketnote.product.port.in.result.pricepolicy.RegisterPricePolicyResult;
 import com.personal.marketnote.product.port.in.result.product.RegisterProductResult;
 import com.personal.marketnote.product.port.in.usecase.pricepolicy.RegisterPricePolicyUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterProductUseCase;
+import com.personal.marketnote.product.port.out.inventory.RegisterInventoryPort;
 import com.personal.marketnote.product.port.out.product.SaveProductPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,7 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 public class RegisterProductService implements RegisterProductUseCase {
     private final RegisterPricePolicyUseCase registerPricePolicyUseCase;
     private final SaveProductPort saveProductPort;
+    private final RegisterInventoryPort registerInventoryPort;
 
     @Override
     public RegisterProductResult registerProduct(RegisterProductCommand registerProductCommand) {
@@ -35,9 +38,11 @@ public class RegisterProductService implements RegisterProductUseCase {
                 )
         );
 
-        registerPricePolicyUseCase.registerPricePolicy(
+        RegisterPricePolicyResult registerPricePolicyResult = registerPricePolicyUseCase.registerPricePolicy(
                 sellerId, false, RegisterPricePolicyCommand.from(savedProduct.getId(), registerProductCommand)
         );
+
+        registerInventoryPort.registerInventory(registerPricePolicyResult.id());
 
         return RegisterProductResult.from(savedProduct);
     }

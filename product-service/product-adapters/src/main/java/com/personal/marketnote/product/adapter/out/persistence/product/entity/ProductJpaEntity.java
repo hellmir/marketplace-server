@@ -113,9 +113,13 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
     }
 
     public PricePolicyJpaEntity getDefaultPricePolicy() {
-        return pricePolicyJpaEntities.stream()
-                .max(Comparator.comparing(PricePolicyJpaEntity::getId))
-                .orElse(null);
+        if (FormatValidator.hasValue(pricePolicyJpaEntities)) {
+            return pricePolicyJpaEntities.stream()
+                    .max(Comparator.comparing(PricePolicyJpaEntity::getId))
+                    .orElse(null);
+        }
+
+        return null;
     }
 
     public Long getPrice() {
