@@ -72,7 +72,7 @@ pipeline {
 	agent any
 
 	parameters {
-		choice(name: 'SERVICE', choices: ['auto','user-service','product-service','order-service','file-service'], description: '배포 대상 서비스')
+		choice(name: 'SERVICE', choices: ['auto','user-service','product-service','commerce-service','file-service'], description: '배포 대상 서비스')
 	}
 
 	environment {
@@ -96,7 +96,7 @@ pipeline {
 					def targetAdapters = [
 						'user-service'   : 'user-adapters',
 						'product-service': 'product-adapters',
-						'order-service': 'order-adapters',
+						'commerce-service': 'commerce-adapters',
 						'file-service': 'file-adapters',
 					]
 
@@ -306,7 +306,7 @@ pipeline {
 							env.SERVER_ORIGIN = PRODUCT_SERVICE_SERVER_ORIGIN
 							env.DB_URL = PRODUCT_SERVICE_DB_URL
                         	env.DB_PASSWORD = PRODUCT_SERVICE_DB_PASSWORD
-                        } else if (svc == 'order-service') {
+                        } else if (svc == 'commerce-service') {
                            	env.ECR_REPOSITORY = ORDER_SERVICE_ECR_REPOSITORY
                            	env.ECS_SERVICE_NAME = ORDER_SERVICE_ECS_SERVICE_NAME
                            	env.TARGET_GROUP_ARN = ORDER_SERVICE_TARGET_GROUP_ARN
