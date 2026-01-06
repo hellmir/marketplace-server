@@ -25,8 +25,8 @@ public class InventoryAdditionHistoryJpaEntity extends BaseEntity {
     @Column(name = "price_policy_id", nullable = false)
     private Long pricePolicyId;
 
-    @Column(name = "quantity", nullable = false)
-    private Integer quantity;
+    @Column(name = "stock", nullable = false)
+    private Integer stock;
 
     @Column(name = "reason", length = 511)
     private String reason;

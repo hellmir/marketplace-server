@@ -23,8 +23,8 @@ public class InventoryJpaEntity extends BaseEntity {
     @Column(name = "price_policy_id", nullable = false)
     private Long pricePolicyId;
 
-    @Column(name = "quantity", nullable = false, columnDefinition = "INT DEFAULT 0")
-    private Integer quantity;
+    @Column(name = "stock", nullable = false, columnDefinition = "INT DEFAULT 0")
+    private Integer stock;
 
     private InventoryJpaEntity(Long pricePolicyId) {
         this.pricePolicyId = pricePolicyId;
@@ -35,7 +35,7 @@ public class InventoryJpaEntity extends BaseEntity {
     }
 
     public void updateFrom(Inventory inventory) {
-        quantity = inventory.getQuantity().getValue();
+        stock = inventory.getStock().getValue();
     }
 }
 

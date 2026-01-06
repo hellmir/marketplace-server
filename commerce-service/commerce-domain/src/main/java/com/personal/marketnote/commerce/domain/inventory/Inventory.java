@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 public class Inventory {
     private Long pricePolicyId;
-    private InventoryQuantity quantity;
+    private Stock stock;
 
     public static Inventory of(Long pricePolicyId) {
         return Inventory.builder()
@@ -16,16 +16,16 @@ public class Inventory {
                 .build();
     }
 
-    public static Inventory of(Long pricePolicyId, Integer quantity) {
+    public static Inventory of(Long pricePolicyId, Integer stock) {
         return Inventory.builder()
                 .pricePolicyId(pricePolicyId)
-                .quantity(InventoryQuantity.of(quantity.toString()))
+                .stock(Stock.of(stock.toString()))
                 .build();
     }
 
-    public void reduce(int quantityToReduce) {
-        Integer reducedQuantity = quantity.reduce(quantityToReduce);
-        quantity = InventoryQuantity.of(reducedQuantity.toString());
+    public void reduce(int stockToReduce) {
+        Integer reducedStock = stock.reduce(stockToReduce);
+        stock = Stock.of(reducedStock.toString());
     }
 }
 

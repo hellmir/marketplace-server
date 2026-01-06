@@ -96,10 +96,8 @@ public class UserController {
             authVendor = resolveVendorFromIssuer(FormatConverter.toUpperCase(issuer));
         }
 
-        String clientIp = extractClientIp(request);
-
         SignUpResult signUpResult = signUpUseCase.signUp(
-                UserRequestToCommandMapper.mapToCommand(signUpRequest), authVendor, oidcId, clientIp
+                UserRequestToCommandMapper.mapToCommand(signUpRequest), authVendor, oidcId, extractClientIp(request)
         );
 
         List<String> roleIds = List.of(signUpResult.roleId());
