@@ -144,7 +144,22 @@ import java.lang.annotation.*;
                                         }
                                         """)
                         )
-                )
+                ),
+                @ApiResponse(
+                        responseCode = "400",
+                        description = "재고 수량이 음수값이 됨(주로 재고 부족이 원인)",
+                        content = @Content(
+                                examples = @ExampleObject("""
+                                        {
+                                          "statusCode": 400,
+                                          "code": "BAD_REQUEST",
+                                          "timestamp": "2026-01-06T17:50:25.320936",
+                                          "content": null,
+                                          "message": "재고 수량은 0 또는 양의 정수(0 이상의 숫자값)여야 합니다. 전송된 수량: -2"
+                                        }
+                                        """)
+                        )
+                ),
         })
 public @interface ChangeOrderStatusApiDocs {
 }

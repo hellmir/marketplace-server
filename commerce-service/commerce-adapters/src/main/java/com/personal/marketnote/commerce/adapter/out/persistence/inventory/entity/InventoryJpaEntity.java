@@ -1,7 +1,7 @@
 package com.personal.marketnote.commerce.adapter.out.persistence.inventory.entity;
 
+import com.personal.marketnote.commerce.domain.inventory.Inventory;
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseEntity;
-import com.personal.marketnote.product.domain.inventory.Inventory;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -32,6 +32,10 @@ public class InventoryJpaEntity extends BaseEntity {
 
     public static InventoryJpaEntity from(Inventory inventory) {
         return new InventoryJpaEntity(inventory.getPricePolicyId());
+    }
+
+    public void updateFrom(Inventory inventory) {
+        quantity = inventory.getQuantity().getValue();
     }
 }
 

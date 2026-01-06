@@ -2,7 +2,8 @@ package com.personal.marketnote.commerce.port.out.inventory;
 
 import com.personal.marketnote.commerce.domain.inventory.Inventory;
 
-public interface SaveInventoryPort {
-    void save(Inventory inventory);
-}
+import java.util.Set;
 
+public interface FindInventoryPort {
+    Set<Inventory> findByPricePolicyIds(Set<Long> pricePolicyIds);
+}

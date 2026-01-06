@@ -7,4 +7,5 @@ public class RegularExpressionConstant {
     public static final String FULL_NAME_PATTERN = "^[가-힣]{2,10}$";
     public static final String PHONE_NUMBER_PATTERN = "^01[016789]-\\d{3,4}-\\d{4}$";
     public static final String POSITIVE_INTEGER_PATTERN = "^([1-9]\\d*)$";
+    public static final String ZERO_AND_POSITIVE_INTEGER_PATTERN = "^(0|[1-9]\\d*)$";
 }

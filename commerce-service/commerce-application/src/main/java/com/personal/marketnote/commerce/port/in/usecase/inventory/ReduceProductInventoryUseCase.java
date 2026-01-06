@@ -4,7 +4,7 @@ import com.personal.marketnote.product.domain.order.OrderProduct;
 
 import java.util.List;
 
-public interface ReduceProductStockUseCase {
+public interface ReduceProductInventoryUseCase {
     /**
      * @param orderProducts 주문 상품 목록
      * @Date 2026-01-06
