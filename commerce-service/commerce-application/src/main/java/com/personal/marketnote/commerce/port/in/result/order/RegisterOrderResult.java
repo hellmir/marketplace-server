@@ -1,6 +1,6 @@
 package com.personal.marketnote.commerce.port.in.result.order;
 
-import com.personal.marketnote.product.domain.order.Order;
+import com.personal.marketnote.commerce.domain.order.Order;
 
 public record RegisterOrderResult(
         Long id

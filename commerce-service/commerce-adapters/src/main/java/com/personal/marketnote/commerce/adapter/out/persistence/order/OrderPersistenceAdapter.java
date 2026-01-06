@@ -4,13 +4,13 @@ import com.personal.marketnote.commerce.adapter.out.mapper.OrderJpaEntityToDomai
 import com.personal.marketnote.commerce.adapter.out.persistence.order.entity.OrderJpaEntity;
 import com.personal.marketnote.commerce.adapter.out.persistence.order.entity.OrderProductJpaEntity;
 import com.personal.marketnote.commerce.adapter.out.persistence.order.repository.OrderJpaRepository;
+import com.personal.marketnote.commerce.domain.order.Order;
 import com.personal.marketnote.commerce.exception.OrderNotFoundException;
 import com.personal.marketnote.commerce.port.out.order.FindOrderPort;
 import com.personal.marketnote.commerce.port.out.order.SaveOrderPort;
 import com.personal.marketnote.commerce.port.out.order.UpdateOrderPort;
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
 import com.personal.marketnote.common.utility.FormatValidator;
-import com.personal.marketnote.product.domain.order.Order;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

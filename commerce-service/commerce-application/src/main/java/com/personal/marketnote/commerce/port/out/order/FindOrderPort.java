@@ -1,6 +1,6 @@
 package com.personal.marketnote.commerce.port.out.order;
 
-import com.personal.marketnote.product.domain.order.Order;
+import com.personal.marketnote.commerce.domain.order.Order;
 
 import java.util.List;
 import java.util.Optional;

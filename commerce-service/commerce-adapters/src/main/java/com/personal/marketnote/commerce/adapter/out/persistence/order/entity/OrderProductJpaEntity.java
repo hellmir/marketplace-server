@@ -1,9 +1,9 @@
 package com.personal.marketnote.commerce.adapter.out.persistence.order.entity;
 
+import com.personal.marketnote.commerce.domain.order.OrderProduct;
+import com.personal.marketnote.commerce.domain.order.OrderStatus;
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseEntity;
 import com.personal.marketnote.common.utility.FormatValidator;
-import com.personal.marketnote.product.domain.order.OrderProduct;
-import com.personal.marketnote.product.domain.order.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -49,6 +49,13 @@ public class OrderProductJpaEntity extends BaseEntity {
                 .imageUrl(orderProduct.getImageUrl())
                 .orderStatus(orderProduct.getOrderStatus())
                 .build();
+    }
+
+    public void updateFrom(OrderProduct orderProduct) {
+        quantity = orderProduct.getQuantity();
+        unitAmount = orderProduct.getUnitAmount();
+        imageUrl = orderProduct.getImageUrl();
+        orderStatus = orderProduct.getOrderStatus();
     }
 }
 

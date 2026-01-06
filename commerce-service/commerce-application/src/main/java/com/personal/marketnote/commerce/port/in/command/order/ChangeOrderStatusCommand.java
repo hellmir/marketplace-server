@@ -1,7 +1,7 @@
 package com.personal.marketnote.commerce.port.in.command.order;
 
+import com.personal.marketnote.commerce.domain.order.OrderStatus;
 import com.personal.marketnote.common.utility.FormatValidator;
-import com.personal.marketnote.product.domain.order.OrderStatus;
 
 import java.util.List;
 

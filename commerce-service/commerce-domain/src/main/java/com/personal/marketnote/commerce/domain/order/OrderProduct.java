@@ -1,4 +1,4 @@
-package com.personal.marketnote.product.domain.order;
+package com.personal.marketnote.commerce.domain.order;
 
 import lombok.*;
 
@@ -12,7 +12,7 @@ public class OrderProduct {
     private Integer quantity;
     private Long unitAmount;
     private String imageUrl;
-    private com.personal.marketnote.product.domain.order.OrderStatus orderStatus;
+    private OrderStatus orderStatus;
 
     public static OrderProduct of(
             Long pricePolicyId,
@@ -25,7 +25,7 @@ public class OrderProduct {
                 .quantity(quantity)
                 .unitAmount(unitAmount)
                 .imageUrl(imageUrl)
-                .orderStatus(com.personal.marketnote.product.domain.order.OrderStatus.PAYMENT_PENDING)
+                .orderStatus(OrderStatus.PAYMENT_PENDING)
                 .build();
     }
 
@@ -35,7 +35,7 @@ public class OrderProduct {
             Integer quantity,
             Long unitAmount,
             String imageUrl,
-            com.personal.marketnote.product.domain.order.OrderStatus orderStatus
+            OrderStatus orderStatus
     ) {
         return OrderProduct.builder()
                 .pricePolicyId(pricePolicyId)
@@ -47,7 +47,7 @@ public class OrderProduct {
                 .build();
     }
 
-    public void changeOrderStatus(com.personal.marketnote.product.domain.order.OrderStatus orderStatus) {
+    public void changeOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
     }
 }

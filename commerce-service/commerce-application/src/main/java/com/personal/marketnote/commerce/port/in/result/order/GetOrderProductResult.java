@@ -1,7 +1,7 @@
 package com.personal.marketnote.commerce.port.in.result.order;
 
-import com.personal.marketnote.product.domain.order.OrderProduct;
-import com.personal.marketnote.product.domain.order.OrderStatus;
+import com.personal.marketnote.commerce.domain.order.OrderProduct;
+import com.personal.marketnote.commerce.domain.order.OrderStatus;
 
 public record GetOrderProductResult(
         Long pricePolicyId,

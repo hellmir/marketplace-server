@@ -39,7 +39,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 201: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
                 | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
-                | timestamp | string(datetime) | 응답 일시 | "2026-01-05T12:12:30.013" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-01-06T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
                 | message | string | 처리 결과 | "회원 주문 내역 조회 성공" |
                 
@@ -124,7 +124,7 @@ import java.lang.annotation.*;
                                                 "buyerId": 4,
                                                 "orderStatus": "PAID",
                                                 "totalAmount": 120000,
-                                                "paidAmount": null,
+                                                "paidAmount": 120000,
                                                 "couponAmount": 5000,
                                                 "pointAmount": 5000,
                                                 "orderProducts": [
@@ -133,14 +133,14 @@ import java.lang.annotation.*;
                                                     "quantity": 2,
                                                     "unitAmount": 50000,
                                                     "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
-                                                    "orderStatus": "PAYMENT_PENDING"
+                                                    "orderStatus": "PAID"
                                                   },
                                                   {
                                                     "pricePolicyId": 14,
                                                     "quantity": 10,
                                                     "unitAmount": 70000,
                                                     "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763533916081_image_600.png",
-                                                    "orderStatus": "PAYMENT_PENDING"
+                                                    "orderStatus": "PAID"
                                                   }
                                                 ]
                                               }
@@ -159,7 +159,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 401,
                                           "code": "UNAUTHORIZED",
-                                          "timestamp": "2026-01-05T12:12:30.013",
+                                          "timestamp": "2026-01-06T12:12:30.013",
                                           "content": null,
                                           "message": "Invalid token"
                                         }
@@ -174,7 +174,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 403,
                                           "code": "FORBIDDEN",
-                                          "timestamp": "2026-01-05T12:12:30.013",
+                                          "timestamp": "2026-01-06T12:12:30.013",
                                           "content": null,
                                           "message": "Access Denied"
                                         }
