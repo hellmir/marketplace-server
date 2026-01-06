@@ -51,59 +51,67 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
               )
               AND (
                     :cursor IS NULL
-                 OR NOT EXISTS (SELECT 1 FROM ProductJpaEntity p0 WHERE p0.id = :cursor)
+                 OR NOT EXISTS (SELECT 1 FROM PricePolicyJpaEntity pp0 WHERE pp0.id = :cursor)
                  OR (
                         (:sortProperty = 'orderNum' AND (
-                              p.orderNum > (SELECT p2.orderNum FROM ProductJpaEntity p2 WHERE p2.id = :cursor)
-                           OR (p.orderNum = (SELECT p2.orderNum FROM ProductJpaEntity p2 WHERE p2.id = :cursor) AND p.id > :cursor)
+                              p.orderNum > (
+                                  SELECT pp2.productJpaEntity.orderNum
+                                  FROM PricePolicyJpaEntity pp2
+                                  WHERE pp2.id = :cursor
+                              )
+                           OR (p.orderNum = (
+                                    SELECT pp2.productJpaEntity.orderNum
+                                    FROM PricePolicyJpaEntity pp2
+                                    WHERE pp2.id = :cursor
+                                )
+                               AND p.id > (
+                                    SELECT pp2.productJpaEntity.id
+                                    FROM PricePolicyJpaEntity pp2
+                                    WHERE pp2.id = :cursor
+                               ))
                         ))
                      OR (:sortProperty = 'popularity' AND (
-                              p.sales > (SELECT p2.sales FROM ProductJpaEntity p2 WHERE p2.id = :cursor)
-                           OR (p.sales = (SELECT p2.sales FROM ProductJpaEntity p2 WHERE p2.id = :cursor) AND p.id > :cursor)
+                              p.sales > (
+                                  SELECT pp2.productJpaEntity.sales
+                                  FROM PricePolicyJpaEntity pp2
+                                  WHERE pp2.id = :cursor
+                              )
+                           OR (p.sales = (
+                                    SELECT pp2.productJpaEntity.sales
+                                    FROM PricePolicyJpaEntity pp2
+                                    WHERE pp2.id = :cursor
+                                )
+                               AND p.id > (
+                                    SELECT pp2.productJpaEntity.id
+                                    FROM PricePolicyJpaEntity pp2
+                                    WHERE pp2.id = :cursor
+                               ))
                         ))
                      OR (:sortProperty = 'discountPrice' AND (
                               COALESCE(pp.discountPrice, 0) > (
                                   SELECT COALESCE(pp3.discountPrice, 0)
                                   FROM PricePolicyJpaEntity pp3
-                                  WHERE pp3.productJpaEntity.id = :cursor
-                                    AND pp3.id = (
-                                        SELECT MAX(pp4.id)
-                                        FROM PricePolicyJpaEntity pp4
-                                        WHERE pp4.productJpaEntity.id = :cursor
-                                    )
+                                  WHERE pp3.id = :cursor
                               )
                            OR (COALESCE(pp.discountPrice, 0) = (
-                                  SELECT COALESCE(pp3.discountPrice, 0)
-                                  FROM PricePolicyJpaEntity pp3
-                                  WHERE pp3.productJpaEntity.id = :cursor
-                                    AND pp3.id = (
-                                        SELECT MAX(pp4.id)
-                                        FROM PricePolicyJpaEntity pp4
-                                        WHERE pp4.productJpaEntity.id = :cursor
-                                    )
-                              ) AND p.id > :cursor)
+                                    SELECT COALESCE(pp3.discountPrice, 0)
+                                    FROM PricePolicyJpaEntity pp3
+                                    WHERE pp3.id = :cursor
+                                )
+                               AND pp.id > :cursor)
                         ))
                      OR (:sortProperty = 'accumulatedPoint' AND (
                               COALESCE(pp.accumulatedPoint, 0) > (
                                   SELECT COALESCE(pp5.accumulatedPoint, 0)
                                   FROM PricePolicyJpaEntity pp5
-                                  WHERE pp5.productJpaEntity.id = :cursor
-                                    AND pp5.id = (
-                                        SELECT MAX(pp6.id)
-                                        FROM PricePolicyJpaEntity pp6
-                                        WHERE pp6.productJpaEntity.id = :cursor
-                                    )
+                                  WHERE pp5.id = :cursor
                               )
                            OR (COALESCE(pp.accumulatedPoint, 0) = (
-                                  SELECT COALESCE(pp5.accumulatedPoint, 0)
-                                  FROM PricePolicyJpaEntity pp5
-                                  WHERE pp5.productJpaEntity.id = :cursor
-                                    AND pp5.id = (
-                                        SELECT MAX(pp6.id)
-                                        FROM PricePolicyJpaEntity pp6
-                                        WHERE pp6.productJpaEntity.id = :cursor
-                                    )
-                              ) AND p.id > :cursor)
+                                    SELECT COALESCE(pp5.accumulatedPoint, 0)
+                                    FROM PricePolicyJpaEntity pp5
+                                    WHERE pp5.id = :cursor
+                                )
+                               AND pp.id > :cursor)
                         ))
                  )
               )
@@ -116,7 +124,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
             """)
     List<ProductJpaEntity> findAllActiveByCursorAsc(
             @Param("cursor") Long cursor,
-            @Param("pageable") Pageable pageable,
+            Pageable pageable,
             @Param("sortProperty") String sortProperty,
             @Param("searchTarget") String searchTarget,
             @Param("pattern") String pattern);
@@ -146,59 +154,67 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
               )
               AND (
                     :cursor IS NULL
-                 OR NOT EXISTS (SELECT 1 FROM ProductJpaEntity p0 WHERE p0.id = :cursor)
+                 OR NOT EXISTS (SELECT 1 FROM PricePolicyJpaEntity pp0 WHERE pp0.id = :cursor)
                  OR (
                         (:sortProperty = 'orderNum' AND (
-                              p.orderNum < (SELECT p2.orderNum FROM ProductJpaEntity p2 WHERE p2.id = :cursor)
-                           OR (p.orderNum = (SELECT p2.orderNum FROM ProductJpaEntity p2 WHERE p2.id = :cursor) AND p.id < :cursor)
+                              p.orderNum < (
+                                  SELECT pp2.productJpaEntity.orderNum
+                                  FROM PricePolicyJpaEntity pp2
+                                  WHERE pp2.id = :cursor
+                              )
+                           OR (p.orderNum = (
+                                    SELECT pp2.productJpaEntity.orderNum
+                                    FROM PricePolicyJpaEntity pp2
+                                    WHERE pp2.id = :cursor
+                                )
+                               AND p.id < (
+                                    SELECT pp2.productJpaEntity.id
+                                    FROM PricePolicyJpaEntity pp2
+                                    WHERE pp2.id = :cursor
+                               ))
                         ))
                      OR (:sortProperty = 'popularity' AND (
-                              p.sales < (SELECT p2.sales FROM ProductJpaEntity p2 WHERE p2.id = :cursor)
-                           OR (p.sales = (SELECT p2.sales FROM ProductJpaEntity p2 WHERE p2.id = :cursor) AND p.id < :cursor)
+                              p.sales < (
+                                  SELECT pp2.productJpaEntity.sales
+                                  FROM PricePolicyJpaEntity pp2
+                                  WHERE pp2.id = :cursor
+                              )
+                           OR (p.sales = (
+                                    SELECT pp2.productJpaEntity.sales
+                                    FROM PricePolicyJpaEntity pp2
+                                    WHERE pp2.id = :cursor
+                                )
+                               AND p.id < (
+                                    SELECT pp2.productJpaEntity.id
+                                    FROM PricePolicyJpaEntity pp2
+                                    WHERE pp2.id = :cursor
+                               ))
                         ))
                      OR (:sortProperty = 'discountPrice' AND (
                               COALESCE(pp.discountPrice, 0) < (
                                   SELECT COALESCE(pp3.discountPrice, 0)
                                   FROM PricePolicyJpaEntity pp3
-                                  WHERE pp3.productJpaEntity.id = :cursor
-                                    AND pp3.id = (
-                                        SELECT MAX(pp4.id)
-                                        FROM PricePolicyJpaEntity pp4
-                                        WHERE pp4.productJpaEntity.id = :cursor
-                                    )
+                                  WHERE pp3.id = :cursor
                               )
                            OR (COALESCE(pp.discountPrice, 0) = (
-                                  SELECT COALESCE(pp3.discountPrice, 0)
-                                  FROM PricePolicyJpaEntity pp3
-                                  WHERE pp3.productJpaEntity.id = :cursor
-                                    AND pp3.id = (
-                                        SELECT MAX(pp4.id)
-                                        FROM PricePolicyJpaEntity pp4
-                                        WHERE pp4.productJpaEntity.id = :cursor
-                                    )
-                              ) AND p.id < :cursor)
+                                    SELECT COALESCE(pp3.discountPrice, 0)
+                                    FROM PricePolicyJpaEntity pp3
+                                    WHERE pp3.id = :cursor
+                                )
+                               AND pp.id < :cursor)
                         ))
                      OR (:sortProperty = 'accumulatedPoint' AND (
                               COALESCE(pp.accumulatedPoint, 0) < (
                                   SELECT COALESCE(pp5.accumulatedPoint, 0)
                                   FROM PricePolicyJpaEntity pp5
-                                  WHERE pp5.productJpaEntity.id = :cursor
-                                    AND pp5.id = (
-                                        SELECT MAX(pp6.id)
-                                        FROM PricePolicyJpaEntity pp6
-                                        WHERE pp6.productJpaEntity.id = :cursor
-                                    )
+                                  WHERE pp5.id = :cursor
                               )
                            OR (COALESCE(pp.accumulatedPoint, 0) = (
-                                  SELECT COALESCE(pp5.accumulatedPoint, 0)
-                                  FROM PricePolicyJpaEntity pp5
-                                  WHERE pp5.productJpaEntity.id = :cursor
-                                    AND pp5.id = (
-                                        SELECT MAX(pp6.id)
-                                        FROM PricePolicyJpaEntity pp6
-                                        WHERE pp6.productJpaEntity.id = :cursor
-                                    )
-                              ) AND p.id < :cursor)
+                                    SELECT COALESCE(pp5.accumulatedPoint, 0)
+                                    FROM PricePolicyJpaEntity pp5
+                                    WHERE pp5.id = :cursor
+                                )
+                               AND pp.id < :cursor)
                         ))
                  )
               )
@@ -211,7 +227,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
             """)
     List<ProductJpaEntity> findAllActiveByCursorDesc(
             @Param("cursor") Long cursor,
-            @Param("pageable") Pageable pageable,
+            Pageable pageable,
             @Param("sortProperty") String sortProperty,
             @Param("searchTarget") String searchTarget,
             @Param("pattern") String pattern);
@@ -248,59 +264,67 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
               )
               AND (
                     :cursor IS NULL
-                 OR NOT EXISTS (SELECT 1 FROM ProductJpaEntity p0 WHERE p0.id = :cursor)
+                 OR NOT EXISTS (SELECT 1 FROM PricePolicyJpaEntity pp0 WHERE pp0.id = :cursor)
                  OR (
                         (:sortProperty = 'orderNum' AND (
-                              p.orderNum > (SELECT p2.orderNum FROM ProductJpaEntity p2 WHERE p2.id = :cursor)
-                           OR (p.orderNum = (SELECT p2.orderNum FROM ProductJpaEntity p2 WHERE p2.id = :cursor) AND p.id > :cursor)
+                              p.orderNum > (
+                                  SELECT pp2.productJpaEntity.orderNum
+                                  FROM PricePolicyJpaEntity pp2
+                                  WHERE pp2.id = :cursor
+                              )
+                           OR (p.orderNum = (
+                                    SELECT pp2.productJpaEntity.orderNum
+                                    FROM PricePolicyJpaEntity pp2
+                                    WHERE pp2.id = :cursor
+                                )
+                               AND p.id > (
+                                    SELECT pp2.productJpaEntity.id
+                                    FROM PricePolicyJpaEntity pp2
+                                    WHERE pp2.id = :cursor
+                               ))
                         ))
                      OR (:sortProperty = 'popularity' AND (
-                              p.sales > (SELECT p2.sales FROM ProductJpaEntity p2 WHERE p2.id = :cursor)
-                           OR (p.sales = (SELECT p2.sales FROM ProductJpaEntity p2 WHERE p2.id = :cursor) AND p.id > :cursor)
+                              p.sales > (
+                                  SELECT pp2.productJpaEntity.sales
+                                  FROM PricePolicyJpaEntity pp2
+                                  WHERE pp2.id = :cursor
+                              )
+                           OR (p.sales = (
+                                    SELECT pp2.productJpaEntity.sales
+                                    FROM PricePolicyJpaEntity pp2
+                                    WHERE pp2.id = :cursor
+                                )
+                               AND p.id > (
+                                    SELECT pp2.productJpaEntity.id
+                                    FROM PricePolicyJpaEntity pp2
+                                    WHERE pp2.id = :cursor
+                               ))
                         ))
                      OR (:sortProperty = 'discountPrice' AND (
                               COALESCE(pp.discountPrice, 0) > (
                                   SELECT COALESCE(pp3.discountPrice, 0)
                                   FROM PricePolicyJpaEntity pp3
-                                  WHERE pp3.productJpaEntity.id = :cursor
-                                    AND pp3.id = (
-                                        SELECT MAX(pp4.id)
-                                        FROM PricePolicyJpaEntity pp4
-                                        WHERE pp4.productJpaEntity.id = :cursor
-                                    )
+                                  WHERE pp3.id = :cursor
                               )
                            OR (COALESCE(pp.discountPrice, 0) = (
-                                  SELECT COALESCE(pp3.discountPrice, 0)
-                                  FROM PricePolicyJpaEntity pp3
-                                  WHERE pp3.productJpaEntity.id = :cursor
-                                    AND pp3.id = (
-                                        SELECT MAX(pp4.id)
-                                        FROM PricePolicyJpaEntity pp4
-                                        WHERE pp4.productJpaEntity.id = :cursor
-                                    )
-                              ) AND p.id > :cursor)
+                                    SELECT COALESCE(pp3.discountPrice, 0)
+                                    FROM PricePolicyJpaEntity pp3
+                                    WHERE pp3.id = :cursor
+                                )
+                               AND pp.id > :cursor)
                         ))
                      OR (:sortProperty = 'accumulatedPoint' AND (
                               COALESCE(pp.accumulatedPoint, 0) > (
                                   SELECT COALESCE(pp5.accumulatedPoint, 0)
                                   FROM PricePolicyJpaEntity pp5
-                                  WHERE pp5.productJpaEntity.id = :cursor
-                                    AND pp5.id = (
-                                        SELECT MAX(pp6.id)
-                                        FROM PricePolicyJpaEntity pp6
-                                        WHERE pp6.productJpaEntity.id = :cursor
-                                    )
+                                  WHERE pp5.id = :cursor
                               )
                            OR (COALESCE(pp.accumulatedPoint, 0) = (
-                                  SELECT COALESCE(pp5.accumulatedPoint, 0)
-                                  FROM PricePolicyJpaEntity pp5
-                                  WHERE pp5.productJpaEntity.id = :cursor
-                                    AND pp5.id = (
-                                        SELECT MAX(pp6.id)
-                                        FROM PricePolicyJpaEntity pp6
-                                        WHERE pp6.productJpaEntity.id = :cursor
-                                    )
-                              ) AND p.id > :cursor)
+                                    SELECT COALESCE(pp5.accumulatedPoint, 0)
+                                    FROM PricePolicyJpaEntity pp5
+                                    WHERE pp5.id = :cursor
+                                )
+                               AND pp.id > :cursor)
                         ))
                  )
               )
@@ -314,7 +338,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
     List<ProductJpaEntity> findAllActiveByCategoryIdCursorAsc(
             @Param("categoryId") Long categoryId,
             @Param("cursor") Long cursor,
-            @Param("pageable") Pageable pageable,
+            Pageable pageable,
             @Param("sortProperty") String sortProperty,
             @Param("searchTarget") String searchTarget,
             @Param("pattern") String pattern);
@@ -351,73 +375,81 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
               )
               AND (
                     :cursor IS NULL
-                 OR NOT EXISTS (SELECT 1 FROM ProductJpaEntity p0 WHERE p0.id = :cursor)
+                 OR NOT EXISTS (SELECT 1 FROM PricePolicyJpaEntity pp0 WHERE pp0.id = :cursor)
                  OR (
                         (:sortProperty = 'orderNum' AND (
-                              p.orderNum < (SELECT p2.orderNum FROM ProductJpaEntity p2 WHERE p2.id = :cursor)
-                           OR (p.orderNum = (SELECT p2.orderNum FROM ProductJpaEntity p2 WHERE p2.id = :cursor) AND p.id < :cursor)
+                              p.orderNum < (
+                                  SELECT pp2.productJpaEntity.orderNum
+                                  FROM PricePolicyJpaEntity pp2
+                                  WHERE pp2.id = :cursor
+                              )
+                           OR (p.orderNum = (
+                                    SELECT pp2.productJpaEntity.orderNum
+                                    FROM PricePolicyJpaEntity pp2
+                                    WHERE pp2.id = :cursor
+                                )
+                               AND p.id < (
+                                    SELECT pp2.productJpaEntity.id
+                                    FROM PricePolicyJpaEntity pp2
+                                    WHERE pp2.id = :cursor
+                               ))
                         ))
                      OR (:sortProperty = 'popularity' AND (
-                              p.sales < (SELECT p2.sales FROM ProductJpaEntity p2 WHERE p2.id = :cursor)
-                           OR (p.sales = (SELECT p2.sales FROM ProductJpaEntity p2 WHERE p2.id = :cursor) AND p.id < :cursor)
+                              p.sales < (
+                                  SELECT pp2.productJpaEntity.sales
+                                  FROM PricePolicyJpaEntity pp2
+                                  WHERE pp2.id = :cursor
+                              )
+                           OR (p.sales = (
+                                    SELECT pp2.productJpaEntity.sales
+                                    FROM PricePolicyJpaEntity pp2
+                                    WHERE pp2.id = :cursor
+                                )
+                               AND p.id < (
+                                    SELECT pp2.productJpaEntity.id
+                                    FROM PricePolicyJpaEntity pp2
+                                    WHERE pp2.id = :cursor
+                               ))
                         ))
                      OR (:sortProperty = 'discountPrice' AND (
                               COALESCE(pp.discountPrice, 0) < (
                                   SELECT COALESCE(pp3.discountPrice, 0)
                                   FROM PricePolicyJpaEntity pp3
-                                  WHERE pp3.productJpaEntity.id = :cursor
-                                    AND pp3.id = (
-                                        SELECT MAX(pp4.id)
-                                        FROM PricePolicyJpaEntity pp4
-                                        WHERE pp4.productJpaEntity.id = :cursor
-                                    )
+                                  WHERE pp3.id = :cursor
                               )
                            OR (COALESCE(pp.discountPrice, 0) = (
-                                  SELECT COALESCE(pp3.discountPrice, 0)
-                                  FROM PricePolicyJpaEntity pp3
-                                  WHERE pp3.productJpaEntity.id = :cursor
-                                    AND pp3.id = (
-                                        SELECT MAX(pp4.id)
-                                        FROM PricePolicyJpaEntity pp4
-                                        WHERE pp4.productJpaEntity.id = :cursor
-                                    )
-                              ) AND p.id < :cursor)
+                                    SELECT COALESCE(pp3.discountPrice, 0)
+                                    FROM PricePolicyJpaEntity pp3
+                                    WHERE pp3.id = :cursor
+                                )
+                               AND pp.id < :cursor)
                         ))
                      OR (:sortProperty = 'accumulatedPoint' AND (
                               COALESCE(pp.accumulatedPoint, 0) < (
                                   SELECT COALESCE(pp5.accumulatedPoint, 0)
                                   FROM PricePolicyJpaEntity pp5
-                                  WHERE pp5.productJpaEntity.id = :cursor
-                                    AND pp5.id = (
-                                        SELECT MAX(pp6.id)
-                                        FROM PricePolicyJpaEntity pp6
-                                        WHERE pp6.productJpaEntity.id = :cursor
-                                    )
+                                  WHERE pp5.id = :cursor
                               )
                            OR (COALESCE(pp.accumulatedPoint, 0) = (
-                                  SELECT COALESCE(pp5.accumulatedPoint, 0)
-                                  FROM PricePolicyJpaEntity pp5
-                                  WHERE pp5.productJpaEntity.id = :cursor
-                                    AND pp5.id = (
-                                        SELECT MAX(pp6.id)
-                                        FROM PricePolicyJpaEntity pp6
-                                        WHERE pp6.productJpaEntity.id = :cursor
-                                    )
-                              ) AND p.id < :cursor)
+                                    SELECT COALESCE(pp5.accumulatedPoint, 0)
+                                    FROM PricePolicyJpaEntity pp5
+                                    WHERE pp5.id = :cursor
+                                )
+                               AND pp.id < :cursor)
                         ))
                  )
               )
             ORDER BY
                 CASE WHEN :sortProperty = 'orderNum' THEN p.orderNum END DESC,
                 CASE WHEN :sortProperty = 'popularity' THEN p.sales END DESC,
-                CASE WHEN :sortProperty = 'discountPrice' THEN COALESCE(pp.discountPrice, 0) END DESC,
-                CASE WHEN :sortProperty = 'accumulatedPoint' THEN COALESCE(pp.accumulatedPoint, 0) END DESC,
+                CASE WHEN :sortProperty = 'name' THEN COALESCE(pp.discountPrice, 0) END DESC,
+                CASE WHEN :sortProperty = 'brandName' THEN COALESCE(pp.accumulatedPoint, 0) END DESC,
                 p.id DESC
             """)
     List<ProductJpaEntity> findAllActiveByCategoryIdCursorDesc(
             @Param("categoryId") Long categoryId,
             @Param("cursor") Long cursor,
-            @Param("pageable") Pageable pageable,
+            Pageable pageable,
             @Param("sortProperty") String sortProperty,
             @Param("searchTarget") String searchTarget,
             @Param("pattern") String pattern);

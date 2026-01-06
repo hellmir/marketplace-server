@@ -137,7 +137,7 @@ public class GetProductService implements GetProductUseCase {
         }
 
         Pageable pageable = PageRequest.of(
-                0, pageSize + 1, Sort.by(sortDirection, sortProperty.getCamelCaseValue())
+                0, pageSize + 1, Sort.by(sortDirection, sortProperty.getAlternativeKey())
         );
 
         boolean isCategorized = FormatValidator.hasValue(categoryId);
@@ -163,7 +163,7 @@ public class GetProductService implements GetProductUseCase {
 
         Long nextCursor = null;
         if (FormatValidator.hasValue(pageItems)) {
-            nextCursor = pageItems.get(pageItems.size() - 1).id();
+            nextCursor = pageItems.getLast().pricePolicy().id();
         }
 
         // 상품 카탈로그 이미지 병렬 조회
@@ -172,7 +172,7 @@ public class GetProductService implements GetProductUseCase {
                 .map(
                         item -> CompletableFuture.runAsync(() -> {
                             findProductImagesPort.findImagesByProductIdAndSort(item.id(), PRODUCT_CATALOG_IMAGE)
-                                    .ifPresent(dto -> productIdToImages.put(item.id(), dto));
+                                    .ifPresent(result -> productIdToImages.put(item.id(), result));
                         })
                 )
                 .toList();
@@ -180,10 +180,13 @@ public class GetProductService implements GetProductUseCase {
 
         List<ProductItemResult> pageItemsWithImage = pageItems.stream()
                 .map(item -> ProductItemResult.from(
-                        item,
-                        productIdToImages.get(item.id())
-                                .images()
-                                .getFirst())
+                                item,
+                                FormatValidator.hasValue(productIdToImages.get(item.id()))
+                                        ? productIdToImages.get(item.id())
+                                        .images()
+                                        .getFirst()
+                                        : null
+                        )
                 )
                 .collect(Collectors.toList());
 
