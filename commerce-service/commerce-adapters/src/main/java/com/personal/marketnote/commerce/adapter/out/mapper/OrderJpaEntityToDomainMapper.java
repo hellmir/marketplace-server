@@ -2,8 +2,8 @@ package com.personal.marketnote.commerce.adapter.out.mapper;
 
 import com.personal.marketnote.commerce.adapter.out.persistence.order.entity.OrderJpaEntity;
 import com.personal.marketnote.commerce.adapter.out.persistence.order.entity.OrderProductJpaEntity;
-import com.personal.marketnote.product.domain.order.Order;
-import com.personal.marketnote.product.domain.order.OrderProduct;
+import com.personal.marketnote.commerce.domain.order.Order;
+import com.personal.marketnote.commerce.domain.order.OrderProduct;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,6 +1,6 @@
 package com.personal.marketnote.commerce.adapter.in.client.order.request.order;
 
-import com.personal.marketnote.product.domain.order.OrderStatus;
+import com.personal.marketnote.commerce.domain.order.OrderStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 

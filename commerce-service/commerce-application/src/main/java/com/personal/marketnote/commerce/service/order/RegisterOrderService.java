@@ -1,12 +1,12 @@
 package com.personal.marketnote.commerce.service.order;
 
+import com.personal.marketnote.commerce.domain.order.Order;
+import com.personal.marketnote.commerce.domain.order.OrderProduct;
 import com.personal.marketnote.commerce.port.in.command.order.RegisterOrderCommand;
 import com.personal.marketnote.commerce.port.in.result.order.RegisterOrderResult;
 import com.personal.marketnote.commerce.port.in.usecase.order.RegisterOrderUseCase;
 import com.personal.marketnote.commerce.port.out.order.SaveOrderPort;
 import com.personal.marketnote.common.application.UseCase;
-import com.personal.marketnote.product.domain.order.Order;
-import com.personal.marketnote.product.domain.order.OrderProduct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 

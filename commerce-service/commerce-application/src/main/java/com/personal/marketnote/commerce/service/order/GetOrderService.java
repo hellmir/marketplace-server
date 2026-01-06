@@ -1,10 +1,10 @@
 package com.personal.marketnote.commerce.service.order;
 
+import com.personal.marketnote.commerce.domain.order.Order;
 import com.personal.marketnote.commerce.exception.OrderNotFoundException;
 import com.personal.marketnote.commerce.port.in.usecase.order.GetOrderUseCase;
 import com.personal.marketnote.commerce.port.out.order.FindOrderPort;
 import com.personal.marketnote.common.application.UseCase;
-import com.personal.marketnote.product.domain.order.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 

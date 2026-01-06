@@ -1,4 +1,4 @@
-package com.personal.marketnote.product.domain.order;
+package com.personal.marketnote.commerce.domain.order;
 
 public enum OrderStatus {
     PAYMENT_PENDING("결제 대기"),

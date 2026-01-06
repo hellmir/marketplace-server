@@ -1,4 +1,4 @@
-package com.personal.marketnote.product.domain.order;
+package com.personal.marketnote.commerce.domain.order;
 
 import lombok.*;
 
@@ -12,12 +12,12 @@ public class Order {
     private Long id;
     private Long sellerId;
     private Long buyerId;
-    private com.personal.marketnote.product.domain.order.OrderStatus orderStatus;
+    private OrderStatus orderStatus;
     private Long totalAmount;
     private Long paidAmount;
     private Long couponAmount;
     private Long pointAmount;
-    private List<com.personal.marketnote.product.domain.order.OrderProduct> orderProducts;
+    private List<OrderProduct> orderProducts;
 
     public static Order of(
             Long sellerId,
@@ -25,12 +25,12 @@ public class Order {
             Long totalAmount,
             Long couponAmount,
             Long pointAmount,
-            List<com.personal.marketnote.product.domain.order.OrderProduct> orderProducts
+            List<OrderProduct> orderProducts
     ) {
         return Order.builder()
                 .sellerId(sellerId)
                 .buyerId(buyerId)
-                .orderStatus(com.personal.marketnote.product.domain.order.OrderStatus.PAYMENT_PENDING)
+                .orderStatus(OrderStatus.PAYMENT_PENDING)
                 .totalAmount(totalAmount)
                 .couponAmount(couponAmount)
                 .pointAmount(pointAmount)
@@ -42,12 +42,12 @@ public class Order {
             Long id,
             Long sellerId,
             Long buyerId,
-            com.personal.marketnote.product.domain.order.OrderStatus orderStatus,
+            OrderStatus orderStatus,
             Long totalAmount,
             Long paidAmount,
             Long couponAmount,
             Long pointAmount,
-            List<com.personal.marketnote.product.domain.order.OrderProduct> orderProducts
+            List<OrderProduct> orderProducts
     ) {
         return Order.builder()
                 .id(id)
@@ -62,20 +62,20 @@ public class Order {
                 .build();
     }
 
-    public void changeProductsStatus(List<Long> pricePolicyIds, com.personal.marketnote.product.domain.order.OrderStatus orderStatus) {
+    public void changeProductsStatus(List<Long> pricePolicyIds, OrderStatus orderStatus) {
         orderProducts.stream()
                 .filter(orderProduct -> pricePolicyIds.contains(orderProduct.getPricePolicyId()))
                 .forEach(orderProduct -> orderProduct.changeOrderStatus(orderStatus));
 
         if (orderStatus.isRefunded()) {
-            this.orderStatus = com.personal.marketnote.product.domain.order.OrderStatus.getPartiallyRefunded();
+            this.orderStatus = OrderStatus.getPartiallyRefunded();
             return;
         }
 
         this.orderStatus = orderStatus;
     }
 
-    public void changeAllProductsStatus(com.personal.marketnote.product.domain.order.OrderStatus orderStatus) {
+    public void changeAllProductsStatus(OrderStatus orderStatus) {
         orderProducts.forEach(orderProduct -> orderProduct.changeOrderStatus(orderStatus));
         this.orderStatus = orderStatus;
     }

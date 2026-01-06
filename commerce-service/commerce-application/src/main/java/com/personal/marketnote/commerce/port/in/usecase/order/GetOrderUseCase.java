@@ -1,6 +1,6 @@
 package com.personal.marketnote.commerce.port.in.usecase.order;
 
-import com.personal.marketnote.product.domain.order.Order;
+import com.personal.marketnote.commerce.domain.order.Order;
 
 import java.util.List;
 

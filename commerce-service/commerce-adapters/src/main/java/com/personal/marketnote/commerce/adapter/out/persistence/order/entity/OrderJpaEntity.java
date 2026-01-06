@@ -1,9 +1,9 @@
 package com.personal.marketnote.commerce.adapter.out.persistence.order.entity;
 
+import com.personal.marketnote.commerce.domain.order.Order;
+import com.personal.marketnote.commerce.domain.order.OrderStatus;
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseEntity;
 import com.personal.marketnote.common.utility.FormatValidator;
-import com.personal.marketnote.product.domain.order.Order;
-import com.personal.marketnote.product.domain.order.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -12,6 +12,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static jakarta.persistence.CascadeType.MERGE;
 import static jakarta.persistence.CascadeType.PERSIST;
 
 @Entity
@@ -24,7 +25,7 @@ import static jakarta.persistence.CascadeType.PERSIST;
 @DynamicUpdate
 public class OrderJpaEntity extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -50,7 +51,7 @@ public class OrderJpaEntity extends BaseEntity {
     @Column(name = "point_amount")
     private Long pointAmount;
 
-    @OneToMany(mappedBy = "orderJpaEntity", cascade = {PERSIST}, orphanRemoval = true)
+    @OneToMany(mappedBy = "orderJpaEntity", cascade = {PERSIST, MERGE}, orphanRemoval = true)
     @Builder.Default
     private List<OrderProductJpaEntity> orderProductJpaEntities = new ArrayList<>();
 
@@ -84,8 +85,14 @@ public class OrderJpaEntity extends BaseEntity {
         paidAmount = order.getPaidAmount();
         couponAmount = order.getCouponAmount();
         pointAmount = order.getPointAmount();
-        order.getOrderProducts()
-                .forEach(orderProduct -> OrderProductJpaEntity.from(orderProduct, this));
+        order.getOrderProducts().forEach(orderProduct -> orderProductJpaEntities.forEach(
+                orderProductJpaEntity -> orderProductJpaEntity.updateFrom(
+                        order.getOrderProducts().stream()
+                                .filter(op -> op.getPricePolicyId().equals(orderProductJpaEntity.getId().getPricePolicyId()))
+                                .findFirst()
+                                .orElse(null)
+                )
+        ));
     }
 }
 
