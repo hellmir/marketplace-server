@@ -8,7 +8,7 @@ import java.util.Optional;
 public class InventoryJpaEntityToDomainMapper {
     public static Optional<Inventory> mapToDomain(InventoryJpaEntity inventoryJpaEntity) {
         return Optional.ofNullable(inventoryJpaEntity)
-                .map(entity -> Inventory.of(entity.getPricePolicyId(), entity.getQuantity()));
+                .map(entity -> Inventory.of(entity.getPricePolicyId(), entity.getStock()));
     }
 }
 

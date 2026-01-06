@@ -1,5 +1,6 @@
 package com.personal.marketnote.product.domain.inventory;
 
+import com.personal.marketnote.commerce.domain.inventory.Stock;
 import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -9,21 +10,21 @@ import lombok.*;
 public class InventoryAdditionHistory {
     private Long id;
     private Long pricePolicyId;
-    private Integer quantity;
+    private Stock stock;
     private String reason;
     private Long unitPrice;
     private String supplier;
 
     public static InventoryAdditionHistory of(
             Long pricePolicyId,
-            Integer quantity,
+            Integer stock,
             String reason,
             Long unitPrice,
             String supplier
     ) {
         return InventoryAdditionHistory.builder()
                 .pricePolicyId(pricePolicyId)
-                .quantity(quantity)
+                .stock(Stock.of(stock.toString()))
                 .reason(reason)
                 .unitPrice(unitPrice)
                 .supplier(supplier)
@@ -33,7 +34,7 @@ public class InventoryAdditionHistory {
     public static InventoryAdditionHistory of(
             Long id,
             Long pricePolicyId,
-            Integer quantity,
+            Integer stock,
             String reason,
             Long unitPrice,
             String supplier
@@ -41,7 +42,7 @@ public class InventoryAdditionHistory {
         return InventoryAdditionHistory.builder()
                 .id(id)
                 .pricePolicyId(pricePolicyId)
-                .quantity(quantity)
+                .stock(Stock.of(stock.toString()))
                 .reason(reason)
                 .unitPrice(unitPrice)
                 .supplier(supplier)
