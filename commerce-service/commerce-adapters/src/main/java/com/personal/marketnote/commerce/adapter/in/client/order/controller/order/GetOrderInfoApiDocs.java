@@ -1,8 +1,11 @@
-package com.personal.marketnote.commerce.adapter.in.client.order.controller.apidocs;
+package com.personal.marketnote.commerce.adapter.in.client.order.controller.order;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
@@ -12,9 +15,9 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "회원 주문 내역 조회",
+        summary = "주문 정보 조회",
         description = """
-                작성일자: 2026-01-06
+                작성일자: 2026-01-05
                 
                 작성자: 성효빈
                 
@@ -22,7 +25,7 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                회원의 주문 내역을 조회합니다.
+                주문 정보를 조회합니다.
                 
                 ---
                 
@@ -30,6 +33,7 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
+                | id | number | 주문 ID | Y | 1 |
                 
                 ---
                 
@@ -41,19 +45,11 @@ import java.lang.annotation.*;
                 | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
                 | timestamp | string(datetime) | 응답 일시 | "2026-01-05T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
-                | message | string | 처리 결과 | "회원 주문 내역 조회 성공" |
+                | message | string | 처리 결과 | "주문 정보 조회 성공" |
                 
                 ---
                 
                 ### Response > content
-                
-                | **키** | **타입** | **설명** | **예시** |
-                | --- | --- | --- | --- |
-                | orders | array | 주문 내역 목록 | [ ... ] |
-                
-                ---
-                
-                ### Response > orders
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
@@ -80,73 +76,54 @@ import java.lang.annotation.*;
                 | orderStatus | string | 주문 상태 | "PAYMENT_PENDING" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
+        parameters = {
+                @Parameter(
+                        name = "id",
+                        description = "주문 ID",
+                        in = ParameterIn.PATH,
+                        required = true,
+                        schema = @Schema(type = "number")
+                )
+        },
         responses = {
                 @ApiResponse(
                         responseCode = "200",
-                        description = "회원 주문 내역 조회 성공",
+                        description = "주문 정보 조회 성공",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-06T11:18:48.109239",
+                                          "timestamp": "2026-01-05T18:06:03.849993",
                                           "content": {
-                                            "orders": [
-                                              {
-                                                "id": 2,
-                                                "sellerId": 1,
-                                                "buyerId": 4,
-                                                "orderStatus": "PAYMENT_PENDING",
-                                                "totalAmount": 120000,
-                                                "paidAmount": null,
-                                                "couponAmount": 5000,
-                                                "pointAmount": 5000,
-                                                "orderProducts": [
-                                                  {
-                                                    "pricePolicyId": 23,
-                                                    "quantity": 2,
-                                                    "unitAmount": 50000,
-                                                    "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
-                                                    "orderStatus": "PAYMENT_PENDING"
-                                                  },
-                                                  {
-                                                    "pricePolicyId": 14,
-                                                    "quantity": 10,
-                                                    "unitAmount": 70000,
-                                                    "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763533916081_image_600.png",
-                                                    "orderStatus": "PAYMENT_PENDING"
-                                                  }
-                                                ]
-                                              },
-                                              {
-                                                "id": 3,
-                                                "sellerId": 1,
-                                                "buyerId": 4,
-                                                "orderStatus": "PAID",
-                                                "totalAmount": 120000,
-                                                "paidAmount": null,
-                                                "couponAmount": 5000,
-                                                "pointAmount": 5000,
-                                                "orderProducts": [
-                                                  {
-                                                    "pricePolicyId": 13,
-                                                    "quantity": 2,
-                                                    "unitAmount": 50000,
-                                                    "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
-                                                    "orderStatus": "PAYMENT_PENDING"
-                                                  },
-                                                  {
-                                                    "pricePolicyId": 14,
-                                                    "quantity": 10,
-                                                    "unitAmount": 70000,
-                                                    "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763533916081_image_600.png",
-                                                    "orderStatus": "PAYMENT_PENDING"
-                                                  }
-                                                ]
-                                              }
-                                            ]
+                                            "orderInfo": {
+                                              "id": 2,
+                                              "sellerId": 1,
+                                              "buyerId": 4,
+                                              "orderStatus": "PAYMENT_PENDING",
+                                              "totalAmount": 120000,
+                                              "paidAmount": null,
+                                              "couponAmount": 5000,
+                                              "pointAmount": 5000,
+                                              "orderProducts": [
+                                                {
+                                                  "pricePolicyId": 23,
+                                                  "quantity": 2,
+                                                  "unitAmount": 50000,
+                                                  "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
+                                                  "orderStatus": "PAYMENT_PENDING"
+                                                },
+                                                {
+                                                  "pricePolicyId": 14,
+                                                  "quantity": 10,
+                                                  "unitAmount": 70000,
+                                                  "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763533916081_image_600.png",
+                                                  "orderStatus": "PAYMENT_PENDING"
+                                                }
+                                              ]
+                                            }
                                           },
-                                          "message": "회원 주문 내역 조회 성공"
+                                          "message": "주문 정보 조회 성공"
                                         }
                                         """)
                         )
@@ -182,6 +159,6 @@ import java.lang.annotation.*;
                         )
                 )
         })
-public @interface GetOrdersApiDocs {
+public @interface GetOrderInfoApiDocs {
 }
 

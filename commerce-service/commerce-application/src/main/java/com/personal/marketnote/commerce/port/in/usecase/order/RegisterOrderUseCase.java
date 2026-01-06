@@ -1,6 +1,6 @@
 package com.personal.marketnote.commerce.port.in.usecase.order;
 
-import com.personal.marketnote.commerce.port.in.command.RegisterOrderCommand;
+import com.personal.marketnote.commerce.port.in.command.order.RegisterOrderCommand;
 import com.personal.marketnote.commerce.port.in.result.order.RegisterOrderResult;
 
 public interface RegisterOrderUseCase {

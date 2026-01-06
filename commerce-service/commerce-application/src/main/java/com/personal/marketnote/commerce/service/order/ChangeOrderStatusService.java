@@ -1,6 +1,6 @@
 package com.personal.marketnote.commerce.service.order;
 
-import com.personal.marketnote.commerce.port.in.command.ChangeOrderStatusCommand;
+import com.personal.marketnote.commerce.port.in.command.order.ChangeOrderStatusCommand;
 import com.personal.marketnote.commerce.port.in.usecase.inventory.ReduceProductStockUseCase;
 import com.personal.marketnote.commerce.port.in.usecase.order.ChangeOrderStatusUseCase;
 import com.personal.marketnote.commerce.port.in.usecase.order.GetOrderUseCase;
