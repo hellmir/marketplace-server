@@ -1,4 +1,4 @@
-package com.personal.marketnote.product.adapter.out.file;
+package com.personal.marketnote.product.adapter.out.service.file;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

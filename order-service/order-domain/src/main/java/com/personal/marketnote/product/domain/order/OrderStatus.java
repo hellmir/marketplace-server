@@ -9,6 +9,7 @@ public enum OrderStatus {
     CANCELLED("주문 취소"),
     SHIPPING("배송중"),
     DELIVERED("배송 완료"),
+    CONFIRMED("구매 확정"),
     REFUNDING("환불 진행중"),
     PARTIALLY_REFUNDED("부분 환불"),
     REFUNDED("환불 완료");
@@ -29,5 +30,9 @@ public enum OrderStatus {
 
     public static OrderStatus getPartiallyRefunded() {
         return PARTIALLY_REFUNDED;
+    }
+
+    public boolean isPaid() {
+        return this == PAID;
     }
 }
