@@ -131,6 +131,21 @@ import java.lang.annotation.*;
                                         }
                                         """)
                         )
+                ),
+                @ApiResponse(
+                        responseCode = "502",
+                        description = "커머스 서비스 통신 실패",
+                        content = @Content(
+                                examples = @ExampleObject("""
+                                        {
+                                          "statusCode": 502,
+                                          "code": "BAD_GATEWAY",
+                                          "timestamp": "2026-01-06T16:36:28.920366",
+                                          "content": null,
+                                          "message": "Commerce 서비스 통신 중 오류가 발생했습니다."
+                                        }
+                                        """)
+                        )
                 )
         })
 public @interface RegisterProductApiDocs {

@@ -46,6 +46,7 @@ def buildMarketNoteTaskDefinition(env) {
                 [name: "REDIS_EMAIL_VERIFICATION_PREFIX",value: env.REDIS_EMAIL_VERIFICATION_PREFIX],
                 [name: "FILE_SERVICE_SERVER_ORIGIN",     value: env.FILE_SERVICE_SERVER_ORIGIN],
                 [name: "PRODUCT_SERVICE_SERVER_ORIGIN",  value: env.PRODUCT_SERVICE_SERVER_ORIGIN],
+                [name: "COMMERCE_SERVICE_SERVER_ORIGIN", value: env.COMMERCE_SERVICE_SERVER_ORIGIN],
                 [name: "JWT_ADMIN_ACCESS_TOKEN",         value: env.JWT_ADMIN_ACCESS_TOKEN],
             ],
             logConfiguration: [
@@ -559,6 +560,7 @@ pipeline {
 						string(credentialsId: 'MARKETNOTE_REDIS_EMAIL_VERIFICATION_PREFIX',   variable: 'REDIS_EMAIL_VERIFICATION_PREFIX'),
 						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_SERVER_ORIGIN',     variable: 'FILE_SERVICE_SERVER_ORIGIN'),
 						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_SERVER_ORIGIN',  variable: 'PRODUCT_SERVICE_SERVER_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_QA_ORDER_SERVICE_SERVER_ORIGIN',    variable: 'COMMERCE_SERVICE_SERVER_ORIGIN'),
 						string(credentialsId: 'MARKETNOTE_QA_JWT_ADMIN_ACCESS_TOKEN',         variable: 'JWT_ADMIN_ACCESS_TOKEN'),
 					]) {
 						sh '''
