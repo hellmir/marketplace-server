@@ -1,3 +1,73 @@
+import com.cloudbees.groovy.cps.NonCPS
+
+@NonCPS
+def buildMarketNoteTaskDefinition(env) {
+    [
+        family: env.PROJECT_NAME,
+        networkMode: "awsvpc",
+        requiresCompatibilities: ["FARGATE"],
+        cpu: "512",
+        memory: "1024",
+        executionRoleArn: env.ECS_TASK_EXECUTION_ROLE_ARN,
+        taskRoleArn:      env.ECS_TASK_ROLE_ARN,
+        containerDefinitions: [[
+            name:  env.PROJECT_NAME,
+            image: env.IMAGE_URI,
+            portMappings: [[containerPort: 8080, protocol: "tcp"]],
+            essential: true,
+            environment: [
+                [name: "SERVICE_NAME",                   value: env.ECS_SERVICE_NAME],
+                [name: "DB_URL",                         value: env.DB_URL],
+                [name: "DB_USERNAME",                    value: env.DB_USERNAME],
+                [name: "DB_PASSWORD",                    value: env.DB_PASSWORD],
+                [name: "JWT_SECRET_KEY",                 value: env.JWT_SECRET_KEY],
+                [name: "ACCESS_TOKEN_EXPIRATION_TIME",   value: env.ACCESS_TOKEN_EXPIRATION_TIME],
+                [name: "REFRESH_TOKEN_EXPIRATION_TIME",  value: env.REFRESH_TOKEN_EXPIRATION_TIME],
+                [name: "CLIENT_ORIGIN",                  value: env.CLIENT_ORIGIN],
+                [name: "COOKIE_DOMAIN",                  value: env.COOKIE_DOMAIN],
+                [name: "ACCESS_CONTROL_ALLOWED_ORIGINS", value: env.ACCESS_CONTROL_ALLOWED_ORIGINS],
+                [name: "SERVER_ORIGIN",                  value: env.SERVER_ORIGIN],
+                [name: "SPRING_PROFILES_ACTIVE",         value: env.SPRING_PROFILE],
+                [name: "GOOGLE_CLIENT_ID",               value: env.GOOGLE_CLIENT_ID],
+                [name: "GOOGLE_CLIENT_SECRET",           value: env.GOOGLE_CLIENT_SECRET],
+                [name: "KAKAO_CLIENT_ID",                value: env.KAKAO_CLIENT_ID],
+                [name: "KAKAO_CLIENT_SECRET",            value: env.KAKAO_CLIENT_SECRET],
+                [name: "KAKAO_ADMIN_KEY",                value: env.KAKAO_ADMIN_KEY],
+                [name: "S3_ACCESS_KEY",                  value: env.S3_ACCESS_KEY],
+                [name: "S3_SECRET_KEY",                  value: env.S3_SECRET_KEY],
+                [name: "S3_BUCKET_NAME",                 value: env.S3_BUCKET_NAME],
+                [name: "SES_SMTP_USERNAME",              value: env.SES_SMTP_USERNAME],
+                [name: "SES_SMTP_PASSWORD",              value: env.SES_SMTP_PASSWORD],
+                [name: "MAIL_FROM",                      value: env.MAIL_FROM],
+                [name: "MAIL_SENDER_NAME",               value: env.MAIL_SENDER_NAME],
+                [name: "MAIL_VERIFICATION_TTL_MINUTES",  value: env.MAIL_VERIFICATION_TTL_MINUTES],
+                [name: "REDIS_HOST_NAME",                value: env.REDIS_HOST_NAME],
+                [name: "REDIS_PASSWORD",                 value: env.REDIS_PASSWORD],
+                [name: "REDIS_EMAIL_VERIFICATION_PREFIX",value: env.REDIS_EMAIL_VERIFICATION_PREFIX],
+                [name: "FILE_SERVICE_SERVER_ORIGIN",     value: env.FILE_SERVICE_SERVER_ORIGIN],
+                [name: "PRODUCT_SERVICE_SERVER_ORIGIN",  value: env.PRODUCT_SERVICE_SERVER_ORIGIN],
+                [name: "JWT_ADMIN_ACCESS_TOKEN",         value: env.JWT_ADMIN_ACCESS_TOKEN],
+            ],
+            logConfiguration: [
+                logDriver: "awslogs",
+                options: [
+                    "awslogs-group":  env.CLOUDWATCH_LOG_GROUP,
+                    "awslogs-region": env.AWS_DEFAULT_REGION,
+                    "awslogs-stream-prefix": env.PROJECT_NAME
+                ]
+            ],
+            healthCheck: [
+                command: ["CMD-SHELL",
+                    "(curl -fsS http://127.0.0.1:8080/actuator/health || wget -qO- http://127.0.0.1:8080/actuator/health) | grep '\"status\":\"UP\"'"],
+                interval: 15,
+                timeout: 5,
+                retries: 3,
+                startPeriod: 45
+            ]
+        ]]
+    ]
+}
+
 pipeline {
 	agent any
 
@@ -499,70 +569,7 @@ pipeline {
                   fi
                 '''
 
-						def td = [
-							family: env.PROJECT_NAME,
-							networkMode: "awsvpc",
-							requiresCompatibilities: ["FARGATE"],
-							cpu: "512",
-							memory: "1024",
-							executionRoleArn: env.ECS_TASK_EXECUTION_ROLE_ARN,
-							taskRoleArn:      env.ECS_TASK_ROLE_ARN,
-							containerDefinitions: [[
-								name:  env.PROJECT_NAME,
-								image: env.IMAGE_URI,
-								portMappings: [[containerPort: 8080, protocol: "tcp"]],
-								essential: true,
-								environment: [
-									[name: "SERVICE_NAME",                   value: env.ECS_SERVICE_NAME],
-									[name: "DB_URL",                         value: env.DB_URL],
-									[name: "DB_USERNAME",                    value: env.DB_USERNAME],
-									[name: "DB_PASSWORD",                    value: env.DB_PASSWORD],
-									[name: "JWT_SECRET_KEY",                 value: env.JWT_SECRET_KEY],
-									[name: "ACCESS_TOKEN_EXPIRATION_TIME",   value: env.ACCESS_TOKEN_EXPIRATION_TIME],
-									[name: "REFRESH_TOKEN_EXPIRATION_TIME",  value: env.REFRESH_TOKEN_EXPIRATION_TIME],
-									[name: "CLIENT_ORIGIN",                  value: env.CLIENT_ORIGIN],
-									[name: "COOKIE_DOMAIN",                  value: env.COOKIE_DOMAIN],
-									[name: "ACCESS_CONTROL_ALLOWED_ORIGINS", value: env.ACCESS_CONTROL_ALLOWED_ORIGINS],
-									[name: "SERVER_ORIGIN",                  value: env.SERVER_ORIGIN],
-									[name: "SPRING_PROFILES_ACTIVE",         value: env.SPRING_PROFILE],
-									[name: "GOOGLE_CLIENT_ID",               value: env.GOOGLE_CLIENT_ID],
-									[name: "GOOGLE_CLIENT_SECRET",           value: env.GOOGLE_CLIENT_SECRET],
-									[name: "KAKAO_CLIENT_ID",                value: env.KAKAO_CLIENT_ID],
-									[name: "KAKAO_CLIENT_SECRET",            value: env.KAKAO_CLIENT_SECRET],
-									[name: "KAKAO_ADMIN_KEY",                value: env.KAKAO_ADMIN_KEY],
-									[name: "S3_ACCESS_KEY",                  value: env.S3_ACCESS_KEY],
-									[name: "S3_SECRET_KEY",                  value: env.S3_SECRET_KEY],
-									[name: "S3_BUCKET_NAME",                 value: env.S3_BUCKET_NAME],
-									[name: "SES_SMTP_USERNAME",              value: env.SES_SMTP_USERNAME],
-									[name: "SES_SMTP_PASSWORD",              value: env.SES_SMTP_PASSWORD],
-									[name: "MAIL_FROM",                      value: env.MAIL_FROM],
-									[name: "MAIL_SENDER_NAME",               value: env.MAIL_SENDER_NAME],
-									[name: "MAIL_VERIFICATION_TTL_MINUTES",  value: env.MAIL_VERIFICATION_TTL_MINUTES],
-									[name: "REDIS_HOST_NAME",                value: env.REDIS_HOST_NAME],
-									[name: "REDIS_PASSWORD",                 value: env.REDIS_PASSWORD],
-									[name: "REDIS_EMAIL_VERIFICATION_PREFIX",value: env.REDIS_EMAIL_VERIFICATION_PREFIX],
-									[name: "FILE_SERVICE_SERVER_ORIGIN",     value: env.FILE_SERVICE_SERVER_ORIGIN],
-									[name: "PRODUCT_SERVICE_SERVER_ORIGIN",  value: env.PRODUCT_SERVICE_SERVER_ORIGIN],
-									[name: "JWT_ADMIN_ACCESS_TOKEN",         value: env.JWT_ADMIN_ACCESS_TOKEN],
-								],
-								logConfiguration: [
-									logDriver: "awslogs",
-									options: [
-										"awslogs-group":  env.CLOUDWATCH_LOG_GROUP,
-										"awslogs-region": env.AWS_DEFAULT_REGION,
-										"awslogs-stream-prefix": env.PROJECT_NAME
-									]
-								],
-								healthCheck: [
-									command: ["CMD-SHELL",
-										"(curl -fsS http://127.0.0.1:8080/actuator/health || wget -qO- http://127.0.0.1:8080/actuator/health) | grep '\"status\":\"UP\"'"],
-									interval: 15,
-									timeout: 5,
-									retries: 3,
-									startPeriod: 45
-								]
-							]]
-						]
+						def td = buildMarketNoteTaskDefinition(env)
 
 						def json = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(td))
 						writeFile file: 'taskdef.json', text: json
