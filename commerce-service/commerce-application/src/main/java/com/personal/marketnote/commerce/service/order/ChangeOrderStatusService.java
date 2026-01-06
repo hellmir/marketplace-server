@@ -1,7 +1,7 @@
 package com.personal.marketnote.commerce.service.order;
 
 import com.personal.marketnote.commerce.port.in.command.order.ChangeOrderStatusCommand;
-import com.personal.marketnote.commerce.port.in.usecase.inventory.ReduceProductStockUseCase;
+import com.personal.marketnote.commerce.port.in.usecase.inventory.ReduceProductInventoryUseCase;
 import com.personal.marketnote.commerce.port.in.usecase.order.ChangeOrderStatusUseCase;
 import com.personal.marketnote.commerce.port.in.usecase.order.GetOrderUseCase;
 import com.personal.marketnote.commerce.port.out.order.DeleteOrderedCartProductsPort;
@@ -19,7 +19,7 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 @RequiredArgsConstructor
 @Transactional(isolation = READ_COMMITTED)
 public class ChangeOrderStatusService implements ChangeOrderStatusUseCase {
-    private final ReduceProductStockUseCase reduceProductStockUseCase;
+    private final ReduceProductInventoryUseCase reduceProductInventoryUseCase;
     private final GetOrderUseCase getOrderUseCase;
     private final UpdateOrderPort updateOrderPort;
     private final DeleteOrderedCartProductsPort deleteOrderedCartProductsPort;
@@ -40,7 +40,7 @@ public class ChangeOrderStatusService implements ChangeOrderStatusUseCase {
         // FIXME: Payment Service의 Kafka 이벤트 Consumption으로 변경(주문 상태 PAID로 변경 / 재고 감소 / 장바구니 상품 삭제)
         if (status.isPaid()) {
             // 결제 완료 시 재고 차감
-            reduceProductStockUseCase.reduce(order.getOrderProducts());
+            reduceProductInventoryUseCase.reduce(order.getOrderProducts());
 
             // 결제 완료 시 장바구니 상품 삭제
             deleteOrderedCartProductsPort.delete(

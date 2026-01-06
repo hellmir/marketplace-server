@@ -1,4 +1,4 @@
-package com.personal.marketnote.product.domain.inventory;
+package com.personal.marketnote.commerce.domain.inventory;
 
 import lombok.*;
 
@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 public class Inventory {
     private Long pricePolicyId;
-    private Integer quantity;
+    private InventoryQuantity quantity;
 
     public static Inventory of(Long pricePolicyId) {
         return Inventory.builder()
@@ -19,8 +19,13 @@ public class Inventory {
     public static Inventory of(Long pricePolicyId, Integer quantity) {
         return Inventory.builder()
                 .pricePolicyId(pricePolicyId)
-                .quantity(quantity)
+                .quantity(InventoryQuantity.of(quantity.toString()))
                 .build();
+    }
+
+    public void reduce(int quantityToReduce) {
+        Integer reducedQuantity = quantity.reduce(quantityToReduce);
+        quantity = InventoryQuantity.of(reducedQuantity.toString());
     }
 }
 
