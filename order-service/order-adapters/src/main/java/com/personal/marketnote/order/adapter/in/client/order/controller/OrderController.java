@@ -4,13 +4,16 @@ import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.order.adapter.in.client.order.controller.apidocs.ChangeOrderStatusApiDocs;
 import com.personal.marketnote.order.adapter.in.client.order.controller.apidocs.GetOrderInfoApiDocs;
+import com.personal.marketnote.order.adapter.in.client.order.controller.apidocs.GetOrdersApiDocs;
 import com.personal.marketnote.order.adapter.in.client.order.controller.apidocs.RegisterOrderApiDocs;
 import com.personal.marketnote.order.adapter.in.client.order.mapper.OrderRequestToCommandMapper;
 import com.personal.marketnote.order.adapter.in.client.order.request.ChangeOrderStatusRequest;
 import com.personal.marketnote.order.adapter.in.client.order.request.RegisterOrderRequest;
 import com.personal.marketnote.order.adapter.in.client.order.response.GetOrderResponse;
+import com.personal.marketnote.order.adapter.in.client.order.response.GetOrdersResponse;
 import com.personal.marketnote.order.adapter.in.client.order.response.RegisterOrderResponse;
 import com.personal.marketnote.order.port.in.result.order.GetOrderResult;
+import com.personal.marketnote.order.port.in.result.order.GetOrdersResult;
 import com.personal.marketnote.order.port.in.result.order.RegisterOrderResult;
 import com.personal.marketnote.order.port.in.usecase.order.ChangeOrderStatusUseCase;
 import com.personal.marketnote.order.port.in.usecase.order.GetOrderUseCase;
@@ -92,6 +95,35 @@ public class OrderController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "주문 정보 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 회원 주문 내역 조회
+     *
+     * @param principal 인증된 사용자 정보
+     * @return 주문 내역 조회 응답 {@link GetOrdersResponse}
+     * @Author 성효빈
+     * @Date 2026-01-05
+     * @Description 주문 내역을 조회합니다.
+     */
+    @GetMapping
+    @GetOrdersApiDocs
+    public ResponseEntity<BaseResponse<GetOrdersResponse>> getOrderHistory(
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        GetOrdersResult getOrdersResult = GetOrdersResult.from(
+                getOrderUseCase.getOrders(ElementExtractor.extractUserId(principal))
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        GetOrdersResponse.from(getOrdersResult),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "주문 내역 조회 성공"
                 ),
                 HttpStatus.OK
         );
