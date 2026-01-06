@@ -24,7 +24,7 @@ import java.util.List;
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
 
 @RestController
-@RequestMapping("/api/v1/carts")
+@RequestMapping("/api/v1/cart")
 @Tag(name = "장바구니 API", description = "장바구니 관련 API")
 @RequiredArgsConstructor
 public class CartController {
@@ -44,7 +44,7 @@ public class CartController {
      * @Date 2026-01-04
      * @Description 장바구니에 상품을 추가합니다.
      */
-    @PostMapping
+    @PostMapping("/products")
     @AddCartProductApiDocs
     public ResponseEntity<BaseResponse<Void>> addCartProduct(
             @Valid @RequestBody AddCartProductRequest request,
@@ -74,7 +74,7 @@ public class CartController {
      * @Date 2026-01-04
      * @Description 회원의 장바구니 상품 목록을 조회합니다.
      */
-    @GetMapping
+    @GetMapping("/products")
     @GetMyCartProductsApiDocs
     public ResponseEntity<BaseResponse<GetMyCartProductsResponse>> getMyCartProducts(
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
@@ -104,7 +104,7 @@ public class CartController {
      * @Date 2026-01-04
      * @Description 장바구니 상품 수량을 변경합니다.
      */
-    @PatchMapping("/quantity")
+    @PatchMapping("/products/quantity")
     @UpdateCartProductQuantityApiDocs
     public ResponseEntity<BaseResponse<Void>> updateCartProductQuantity(
             @Valid @RequestBody UpdateCartProductQuantityRequest request,
@@ -138,7 +138,7 @@ public class CartController {
      * @Date 2026-01-05
      * @Description 장바구니 상품 옵션을 변경합니다.
      */
-    @PatchMapping("/options")
+    @PatchMapping("/products/options")
     @UpdateCartProductOptionApiDocs
     public ResponseEntity<BaseResponse<Void>> updateCartProductOptions(
             @Valid @RequestBody UpdateCartProductOptionsRequest request,
@@ -168,7 +168,7 @@ public class CartController {
      * @Date 2026-01-04
      * @Description 장바구니 상품을 삭제합니다.
      */
-    @DeleteMapping
+    @DeleteMapping("/products")
     @DeleteCartProductApiDocs
     public ResponseEntity<BaseResponse<Void>> deleteCartProducts(
             @Valid @RequestParam List<Long> pricePolicyIds,
@@ -197,7 +197,7 @@ public class CartController {
      * @Date 2026-01-05
      * @Description 회원의 장바구니를 비웁니다.
      */
-    @DeleteMapping("/all")
+    @DeleteMapping
     @DeleteAllCartProductsApiDocs
     public ResponseEntity<BaseResponse<Void>> deleteAllCartProducts(
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
