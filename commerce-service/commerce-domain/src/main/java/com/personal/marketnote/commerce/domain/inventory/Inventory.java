@@ -10,9 +10,9 @@ public class Inventory {
     private Long pricePolicyId;
     private Integer quantity;
 
-    public static Inventory of(Integer quantity) {
+    public static Inventory of(Long pricePolicyId) {
         return Inventory.builder()
-                .quantity(quantity)
+                .pricePolicyId(pricePolicyId)
                 .build();
     }
 

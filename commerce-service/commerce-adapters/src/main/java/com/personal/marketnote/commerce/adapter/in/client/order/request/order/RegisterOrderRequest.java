@@ -1,4 +1,4 @@
-package com.personal.marketnote.commerce.adapter.in.client.order.request;
+package com.personal.marketnote.commerce.adapter.in.client.order.request.order;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;

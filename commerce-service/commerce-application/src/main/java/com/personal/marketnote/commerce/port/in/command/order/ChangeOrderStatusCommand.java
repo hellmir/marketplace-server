@@ -1,4 +1,4 @@
-package com.personal.marketnote.commerce.port.in.command;
+package com.personal.marketnote.commerce.port.in.command.order;
 
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.order.OrderStatus;

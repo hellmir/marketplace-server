@@ -1,6 +1,6 @@
 package com.personal.marketnote.commerce.port.in.usecase.order;
 
-import com.personal.marketnote.commerce.port.in.command.ChangeOrderStatusCommand;
+import com.personal.marketnote.commerce.port.in.command.order.ChangeOrderStatusCommand;
 
 public interface ChangeOrderStatusUseCase {
     /**

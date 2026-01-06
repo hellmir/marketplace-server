@@ -1,6 +1,6 @@
 package com.personal.marketnote.commerce.service.order;
 
-import com.personal.marketnote.commerce.port.in.command.RegisterOrderCommand;
+import com.personal.marketnote.commerce.port.in.command.order.RegisterOrderCommand;
 import com.personal.marketnote.commerce.port.in.result.order.RegisterOrderResult;
 import com.personal.marketnote.commerce.port.in.usecase.order.RegisterOrderUseCase;
 import com.personal.marketnote.commerce.port.out.order.SaveOrderPort;

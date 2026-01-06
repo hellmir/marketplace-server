@@ -1,12 +1,8 @@
-package com.personal.marketnote.commerce.adapter.in.client.order.controller;
+package com.personal.marketnote.commerce.adapter.in.client.order.controller.order;
 
-import com.personal.marketnote.commerce.adapter.in.client.order.controller.apidocs.ChangeOrderStatusApiDocs;
-import com.personal.marketnote.commerce.adapter.in.client.order.controller.apidocs.GetOrderInfoApiDocs;
-import com.personal.marketnote.commerce.adapter.in.client.order.controller.apidocs.GetOrdersApiDocs;
-import com.personal.marketnote.commerce.adapter.in.client.order.controller.apidocs.RegisterOrderApiDocs;
 import com.personal.marketnote.commerce.adapter.in.client.order.mapper.OrderRequestToCommandMapper;
-import com.personal.marketnote.commerce.adapter.in.client.order.request.ChangeOrderStatusRequest;
-import com.personal.marketnote.commerce.adapter.in.client.order.request.RegisterOrderRequest;
+import com.personal.marketnote.commerce.adapter.in.client.order.request.order.ChangeOrderStatusRequest;
+import com.personal.marketnote.commerce.adapter.in.client.order.request.order.RegisterOrderRequest;
 import com.personal.marketnote.commerce.adapter.in.client.order.response.GetOrderResponse;
 import com.personal.marketnote.commerce.adapter.in.client.order.response.GetOrdersResponse;
 import com.personal.marketnote.commerce.adapter.in.client.order.response.RegisterOrderResponse;
@@ -23,13 +19,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
-import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER_PRINCIPAL_POINTCUT;
 
 @RestController
 @RequestMapping("/api/v1/orders")
@@ -51,7 +45,6 @@ public class OrderController {
      * @Description 주문을 등록합니다.
      */
     @PostMapping
-    @PreAuthorize(ADMIN_OR_SELLER_PRINCIPAL_POINTCUT)
     @RegisterOrderApiDocs
     public ResponseEntity<BaseResponse<RegisterOrderResponse>> registerOrder(
             @Valid @RequestBody RegisterOrderRequest request,
@@ -84,7 +77,6 @@ public class OrderController {
      * @Description 주문 정보를 조회합니다.
      */
     @GetMapping("/{id}")
-    @PreAuthorize(ADMIN_OR_SELLER_PRINCIPAL_POINTCUT)
     @GetOrderInfoApiDocs
     public ResponseEntity<BaseResponse<GetOrderResponse>> getOrder(@PathVariable("id") Long id) {
         GetOrderResult getOrderResult = GetOrderResult.from(getOrderUseCase.getOrder(id));
@@ -138,7 +130,6 @@ public class OrderController {
      * @Description 주문 상태를 변경합니다.
      */
     @PatchMapping("/{id}")
-    @PreAuthorize(ADMIN_OR_SELLER_PRINCIPAL_POINTCUT)
     @ChangeOrderStatusApiDocs
     public ResponseEntity<BaseResponse<Void>> changeOrderStatus(
             @PathVariable("id") Long id,

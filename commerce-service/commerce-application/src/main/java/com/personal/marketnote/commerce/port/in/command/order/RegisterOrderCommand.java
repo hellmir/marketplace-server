@@ -1,4 +1,4 @@
-package com.personal.marketnote.commerce.port.in.command;
+package com.personal.marketnote.commerce.port.in.command.order;
 
 import java.util.List;
 
