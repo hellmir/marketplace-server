@@ -17,7 +17,7 @@ public record GetOrderResult(
         Long paidAmount,
         Long couponAmount,
         Long pointAmount,
-        List<GetOrderProductResult> orderProductResults
+        List<GetOrderProductResult> orderProducts
 ) {
     public static GetOrderResult from(Order order) {
         return GetOrderResult.builder()
@@ -29,7 +29,7 @@ public record GetOrderResult(
                 .paidAmount(order.getPaidAmount())
                 .couponAmount(order.getCouponAmount())
                 .pointAmount(order.getPointAmount())
-                .orderProductResults(order.getOrderProducts().stream().map(GetOrderProductResult::from).toList())
+                .orderProducts(order.getOrderProducts().stream().map(GetOrderProductResult::from).toList())
                 .build();
     }
 }

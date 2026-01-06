@@ -13,6 +13,7 @@ import com.personal.marketnote.order.port.out.order.UpdateOrderPort;
 import com.personal.marketnote.product.domain.order.Order;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.Optional;
 
 @PersistenceAdapter
@@ -43,6 +44,16 @@ public class OrderPersistenceAdapter implements SaveOrderPort, FindOrderPort, Up
     public Optional<Order> findById(Long id) {
         return orderJpaRepository.findById(id)
                 .flatMap(OrderJpaEntityToDomainMapper::mapToDomain);
+    }
+
+    @Override
+    public List<Order> findByBuyerId(Long buyerId) {
+        return orderJpaRepository.findByBuyerId(buyerId)
+                .stream()
+                .map(OrderJpaEntityToDomainMapper::mapToDomain)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
     }
 
     @Override

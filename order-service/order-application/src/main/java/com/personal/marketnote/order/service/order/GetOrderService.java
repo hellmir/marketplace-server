@@ -8,6 +8,8 @@ import com.personal.marketnote.product.domain.order.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
 @UseCase
@@ -20,5 +22,10 @@ public class GetOrderService implements GetOrderUseCase {
     public Order getOrder(Long id) {
         return findOrderPort.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException(id));
+    }
+
+    @Override
+    public List<Order> getOrders(Long buyerId) {
+        return findOrderPort.findByBuyerId(buyerId);
     }
 }

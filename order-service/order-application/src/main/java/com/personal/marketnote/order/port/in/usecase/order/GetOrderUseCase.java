@@ -2,6 +2,8 @@ package com.personal.marketnote.order.port.in.usecase.order;
 
 import com.personal.marketnote.product.domain.order.Order;
 
+import java.util.List;
+
 public interface GetOrderUseCase {
     /**
      * @param id 주문 ID
@@ -11,4 +13,6 @@ public interface GetOrderUseCase {
      * @Description 주문 정보를 조회합니다.
      */
     Order getOrder(Long id);
+
+    List<Order> getOrders(Long buyerId);
 }
