@@ -16,10 +16,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
+import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 
 @Controller
 @RequestMapping("/api/v1/files")
@@ -94,14 +96,14 @@ public class FileController {
      * @Date 2026-01-07
      * @Description 파일을 삭제합니다.
      */
-    @DeleteMapping
+    @DeleteMapping("/{id}")
+    @PreAuthorize(ADMIN_POINTCUT)
     @DeleteFileApiDocs
     public ResponseEntity<BaseResponse<Void>> deleteFile(@PathVariable("id") Long id) {
         deleteFileUseCase.delete(id);
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        null,
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "파일 삭제 성공"

@@ -10,6 +10,8 @@ import com.personal.marketnote.product.adapter.in.client.product.request.UpdateP
 import com.personal.marketnote.product.adapter.in.client.product.response.*;
 import com.personal.marketnote.product.domain.product.ProductSearchTarget;
 import com.personal.marketnote.product.domain.product.ProductSortProperty;
+import com.personal.marketnote.product.port.in.command.DeleteProductCommand;
+import com.personal.marketnote.product.port.in.command.DeleteProductImageCommand;
 import com.personal.marketnote.product.port.in.result.product.*;
 import com.personal.marketnote.product.port.in.usecase.product.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,6 +44,7 @@ public class ProductController {
     private final GetProductUseCase getProductUseCase;
     private final UpdateProductUseCase updateProductUseCase;
     private final DeleteProductUseCase deleteProductUseCase;
+    private final DeleteProductImageUseCase deleteProductImageUseCase;
 
     /**
      * (판매자/관리자) 상품 등록
@@ -227,6 +230,37 @@ public class ProductController {
     }
 
     /**
+     * (판매자/관리자) 상품 이미지 삭제
+     *
+     * @param id 상품 ID
+     * @Author 성효빈
+     * @Date 2026-01-07
+     * @Description 상품 이미지를 삭제합니다.
+     */
+    @DeleteMapping("/{id}/images/{fileId}")
+    @PreAuthorize(ADMIN_OR_SELLER_PRINCIPAL_POINTCUT)
+    @DeleteProductImageApiDocs
+    public ResponseEntity<BaseResponse<Void>> deleteProductImage(
+            @PathVariable("id") Long id,
+            @PathVariable("fileId") Long fileId,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        deleteProductImageUseCase.delete(
+                ElementExtractor.extractUserId(principal),
+                AuthorityValidator.hasAdminRole(principal),
+                DeleteProductImageCommand.of(id, fileId)
+        );
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "상품 이미지 삭제 성공"
+                )
+        );
+    }
+
+    /**
      * (판매자/관리자) 상품 삭제
      *
      * @param id 상품 ID
@@ -244,7 +278,7 @@ public class ProductController {
         deleteProductUseCase.delete(
                 ElementExtractor.extractUserId(principal),
                 AuthorityValidator.hasAdminRole(principal),
-                com.personal.marketnote.product.port.in.command.DeleteProductCommand.of(id)
+                DeleteProductCommand.of(id)
         );
 
         return ResponseEntity.ok(

@@ -5,5 +5,3 @@ import com.personal.marketnote.product.port.in.command.DeleteProductCommand;
 public interface DeleteProductUseCase {
     void delete(Long userId, boolean isAdmin, DeleteProductCommand command);
 }
-
-
