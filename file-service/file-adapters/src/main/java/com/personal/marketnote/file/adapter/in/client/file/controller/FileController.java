@@ -2,12 +2,14 @@ package com.personal.marketnote.file.adapter.in.client.file.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.file.adapter.in.client.file.controller.apidocs.AddFilesApiDocs;
+import com.personal.marketnote.file.adapter.in.client.file.controller.apidocs.DeleteFileApiDocs;
 import com.personal.marketnote.file.adapter.in.client.file.controller.apidocs.GetFilesApiDocs;
 import com.personal.marketnote.file.adapter.in.client.file.mapper.FileRequestToCommandMapper;
 import com.personal.marketnote.file.adapter.in.client.file.request.AddFilesRequest;
 import com.personal.marketnote.file.port.in.result.GetFilesResult;
 import com.personal.marketnote.file.port.in.usecase.file.AddFileUseCase;
-import com.personal.marketnote.file.port.in.usecase.file.GetFilesUseCase;
+import com.personal.marketnote.file.port.in.usecase.file.DeleteFileUseCase;
+import com.personal.marketnote.file.port.in.usecase.file.GetFileUseCase;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,8 @@ import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFA
 @RequiredArgsConstructor
 public class FileController {
     private final AddFileUseCase addFileUseCase;
-    private final GetFilesUseCase getFilesUseCase;
+    private final GetFileUseCase getFileUseCase;
+    private final DeleteFileUseCase deleteFileUseCase;
 
     /**
      * 파일 추가
@@ -53,14 +56,24 @@ public class FileController {
         );
     }
 
-    @GetMapping()
+    /**
+     * 파일 목록 조회
+     *
+     * @param ownerType 소유 도메인 타입
+     * @param ownerId   소유 도메인 ID
+     * @param sort      파일 종류
+     * @Author 성효빈
+     * @Date 2026-01-07
+     * @Description 파일 목록을 조회합니다.
+     */
+    @GetMapping
     @GetFilesApiDocs
     public ResponseEntity<BaseResponse<GetFilesResult>> getFiles(
             @RequestParam("ownerType") String ownerType,
             @RequestParam("ownerId") Long ownerId,
             @RequestParam(value = "sort", required = false) String sort
     ) {
-        GetFilesResult result = getFilesUseCase.getFiles(ownerType, ownerId, sort);
+        GetFilesResult result = getFileUseCase.getFiles(ownerType, ownerId, sort);
 
         return new ResponseEntity<>(
                 BaseResponse.of(
@@ -68,6 +81,30 @@ public class FileController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "파일 목록 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 파일 삭제
+     *
+     * @param id 파일 ID
+     * @Author 성효빈
+     * @Date 2026-01-07
+     * @Description 파일을 삭제합니다.
+     */
+    @DeleteMapping
+    @DeleteFileApiDocs
+    public ResponseEntity<BaseResponse<Void>> deleteFile(@PathVariable("id") Long id) {
+        deleteFileUseCase.delete(id);
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        null,
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "파일 삭제 성공"
                 ),
                 HttpStatus.OK
         );

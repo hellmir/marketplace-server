@@ -4,19 +4,23 @@ import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
 import com.personal.marketnote.common.domain.file.FileSort;
 import com.personal.marketnote.common.domain.file.OwnerType;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.file.adapter.out.mapper.FileJpaEntityToDomainMapper;
 import com.personal.marketnote.file.adapter.out.persistence.file.entity.FileJpaEntity;
 import com.personal.marketnote.file.adapter.out.persistence.file.repository.FileJpaRepository;
 import com.personal.marketnote.file.domain.file.FileDomain;
-import com.personal.marketnote.file.port.out.file.FindFilesPort;
+import com.personal.marketnote.file.exception.FileNotFoundException;
+import com.personal.marketnote.file.port.out.file.FindFilePort;
 import com.personal.marketnote.file.port.out.file.SaveFilesPort;
+import com.personal.marketnote.file.port.out.file.UpdateFilePort;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class FilePersistenceAdapter implements SaveFilesPort, FindFilesPort {
+public class FilePersistenceAdapter implements SaveFilesPort, FindFilePort, UpdateFilePort {
     private final FileJpaRepository fileJpaRepository;
 
     @Override
@@ -50,6 +54,11 @@ public class FilePersistenceAdapter implements SaveFilesPort, FindFilesPort {
                         entity.getOrderNum()
                 ))
                 .toList();
+    }
+
+    @Override
+    public Optional<FileDomain> findById(Long id) {
+        return FileJpaEntityToDomainMapper.mapToDomain(fileJpaRepository.findById(id).orElse(null));
     }
 
     @Override
@@ -101,6 +110,14 @@ public class FilePersistenceAdapter implements SaveFilesPort, FindFilesPort {
         return fileJpaRepository.findTop5ByOwnerTypeAndOwnerIdAndSortOrderByOrderNumDesc(
                 ownerType, ownerId, sortName
         );
+    }
+
+    @Override
+    public void update(FileDomain file) {
+        long id = file.getId();
+        FileJpaEntity entity = fileJpaRepository.findById(id)
+                .orElseThrow(() -> new FileNotFoundException(id));
+        entity.updateFrom(file);
     }
 }
 

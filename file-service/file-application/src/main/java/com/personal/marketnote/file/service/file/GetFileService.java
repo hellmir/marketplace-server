@@ -6,9 +6,10 @@ import com.personal.marketnote.common.domain.file.OwnerType;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.file.domain.file.FileDomain;
 import com.personal.marketnote.file.domain.file.ResizedFile;
+import com.personal.marketnote.file.exception.FileNotFoundException;
 import com.personal.marketnote.file.port.in.result.GetFilesResult;
-import com.personal.marketnote.file.port.in.usecase.file.GetFilesUseCase;
-import com.personal.marketnote.file.port.out.file.FindFilesPort;
+import com.personal.marketnote.file.port.in.usecase.file.GetFileUseCase;
+import com.personal.marketnote.file.port.out.file.FindFilePort;
 import com.personal.marketnote.file.port.out.resized.FindResizedFilesPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,16 +23,22 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 @UseCase
 @RequiredArgsConstructor
 @Transactional(isolation = READ_COMMITTED, readOnly = true)
-public class GetFilesService implements GetFilesUseCase {
-    private final FindFilesPort findFilesPort;
+public class GetFileService implements GetFileUseCase {
+    private final FindFilePort findFilePort;
     private final FindResizedFilesPort findResizedFilesPort;
+
+    @Override
+    public FileDomain getFile(Long id) {
+        return findFilePort.findById(id)
+                .orElseThrow(() -> new FileNotFoundException(id));
+    }
 
     @Override
     public GetFilesResult getFiles(String ownerType, Long ownerId, String sort) {
         OwnerType type = OwnerType.from(ownerType);
         List<FileDomain> files = (!FormatValidator.hasValue(sort))
-                ? findFilesPort.findByOwner(type, ownerId)
-                : findFilesPort.findByOwnerAndSort(type, ownerId, FileSort.from(sort));
+                ? findFilePort.findByOwner(type, ownerId)
+                : findFilePort.findByOwnerAndSort(type, ownerId, FileSort.from(sort));
 
         List<Long> fileIds = files.stream().map(FileDomain::getId).toList();
         List<ResizedFile> resized = findResizedFilesPort.findByFileIds(fileIds);
