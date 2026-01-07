@@ -24,7 +24,7 @@ public class FormatConverter {
         }
     }
 
-    public static Integer parseToInteger(String number) {
+    public static Integer parseToInteger(String number) throws ParsingIntegerException {
         try {
             return Integer.parseInt(number);
         } catch (NumberFormatException nfe) {

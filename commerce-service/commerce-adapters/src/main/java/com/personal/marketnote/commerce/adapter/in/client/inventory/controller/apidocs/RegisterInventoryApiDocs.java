@@ -1,4 +1,4 @@
-package com.personal.marketnote.commerce.adapter.in.client.order.controller.order;
+package com.personal.marketnote.commerce.adapter.in.client.inventory.controller.apidocs;
 
 import com.personal.marketnote.common.adapter.in.request.RegisterInventoryRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,7 +45,8 @@ import java.lang.annotation.*;
                 | content | object | 응답 본문 | null |
                 | message | string | 처리 결과 | "재고 도메인 등록 성공" |
                 
-                """, security = {@SecurityRequirement(name = "bearer")},
+                """,
+        security = {@SecurityRequirement(name = "bearer")},
         requestBody = @RequestBody(
                 required = true,
                 content = @Content(

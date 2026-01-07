@@ -1,7 +1,7 @@
 package com.personal.marketnote.commerce.adapter.in.client.order.mapper;
 
-import com.personal.marketnote.commerce.adapter.in.client.order.request.order.ChangeOrderStatusRequest;
-import com.personal.marketnote.commerce.adapter.in.client.order.request.order.RegisterOrderRequest;
+import com.personal.marketnote.commerce.adapter.in.client.order.request.ChangeOrderStatusRequest;
+import com.personal.marketnote.commerce.adapter.in.client.order.request.RegisterOrderRequest;
 import com.personal.marketnote.commerce.port.in.command.order.ChangeOrderStatusCommand;
 import com.personal.marketnote.commerce.port.in.command.order.RegisterOrderCommand;
 
