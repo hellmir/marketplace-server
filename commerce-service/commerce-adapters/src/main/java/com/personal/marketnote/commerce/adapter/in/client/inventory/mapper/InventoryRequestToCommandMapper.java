@@ -1,4 +1,4 @@
-package com.personal.marketnote.commerce.adapter.in.client.order.mapper;
+package com.personal.marketnote.commerce.adapter.in.client.inventory.mapper;
 
 import com.personal.marketnote.commerce.port.in.command.inventory.RegisterInventoryCommand;
 import com.personal.marketnote.common.adapter.in.request.RegisterInventoryRequest;

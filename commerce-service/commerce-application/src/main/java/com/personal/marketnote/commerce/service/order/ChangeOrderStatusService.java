@@ -3,6 +3,7 @@ package com.personal.marketnote.commerce.service.order;
 import com.personal.marketnote.commerce.domain.order.Order;
 import com.personal.marketnote.commerce.domain.order.OrderProduct;
 import com.personal.marketnote.commerce.domain.order.OrderStatus;
+import com.personal.marketnote.commerce.exception.OrderStatusAlreadyChangedException;
 import com.personal.marketnote.commerce.port.in.command.order.ChangeOrderStatusCommand;
 import com.personal.marketnote.commerce.port.in.usecase.inventory.ReduceProductInventoryUseCase;
 import com.personal.marketnote.commerce.port.in.usecase.order.ChangeOrderStatusUseCase;
@@ -29,12 +30,11 @@ public class ChangeOrderStatusService implements ChangeOrderStatusUseCase {
         Order order = getOrderUseCase.getOrder(command.id());
         OrderStatus status = command.orderStatus();
 
-        if (command.isPartialProductChange()) {
-            order.changeProductsStatus(command.pricePolicyIds(), status);
-            return;
+        if (status.isMe(order.getOrderStatus())) {
+            throw new OrderStatusAlreadyChangedException(status);
         }
 
-        order.changeAllProductsStatus(status);
+        changeOrderStatus(command, order);
         updateOrderPort.update(order);
 
         // FIXME: Payment Service의 Kafka 이벤트 Consumption으로 변경(주문 상태 PAID로 변경 / 결제 금액 업데이트 / 재고 감소 / 장바구니 상품 삭제)
@@ -50,5 +50,16 @@ public class ChangeOrderStatusService implements ChangeOrderStatusUseCase {
                             .toList()
             );
         }
+    }
+
+    private void changeOrderStatus(ChangeOrderStatusCommand command, Order order) {
+        OrderStatus status = command.orderStatus();
+
+        if (command.isPartialProductChange()) {
+            order.changeProductsStatus(command.pricePolicyIds(), status);
+            return;
+        }
+
+        order.changeAllProductsStatus(status);
     }
 }

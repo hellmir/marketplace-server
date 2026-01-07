@@ -10,7 +10,12 @@ import java.util.Set;
 public interface InventoryJpaRepository extends JpaRepository<InventoryJpaEntity, Long> {
     Optional<InventoryJpaEntity> findByPricePolicyId(Long pricePolicyId);
 
-    @Query("SELECT i FROM InventoryJpaEntity i WHERE i.pricePolicyId IN :pricePolicyIds")
+    @Query("""
+            SELECT i FROM InventoryJpaEntity i
+            WHERE i.pricePolicyId
+            IN :pricePolicyIds
+            ORDER BY i.pricePolicyId ASC
+            """)
     Set<InventoryJpaEntity> findByPricePolicyIds(Set<Long> pricePolicyIds);
 }
 

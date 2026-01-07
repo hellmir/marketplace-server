@@ -38,8 +38,8 @@ public class ReduceProductInventoryService implements ReduceProductInventoryUseC
                 );
         Set<Inventory> inventories = findInventoryPort.findByPricePolicyIds(pricePolicyQuantities.keySet());
         inventories.forEach(inventory -> inventory.reduce(
-                pricePolicyQuantities.get(inventory.getPricePolicyId()))
-        );
+                pricePolicyQuantities.get(inventory.getPricePolicyId())
+        ));
 
         updateInventoryPort.update(inventories);
         saveInventoryDeductionHistoryPort.save(

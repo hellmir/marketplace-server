@@ -35,4 +35,8 @@ public enum OrderStatus {
     public boolean isPaid() {
         return this == PAID;
     }
+
+    public boolean isMe(OrderStatus orderStatus) {
+        return this == orderStatus;
+    }
 }

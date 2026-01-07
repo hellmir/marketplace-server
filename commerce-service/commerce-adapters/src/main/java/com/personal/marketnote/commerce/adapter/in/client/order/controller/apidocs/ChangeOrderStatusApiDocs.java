@@ -1,6 +1,6 @@
-package com.personal.marketnote.commerce.adapter.in.client.order.controller.order;
+package com.personal.marketnote.commerce.adapter.in.client.order.controller.apidocs;
 
-import com.personal.marketnote.commerce.adapter.in.client.order.request.order.ChangeOrderStatusRequest;
+import com.personal.marketnote.commerce.adapter.in.client.order.request.ChangeOrderStatusRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -141,6 +141,21 @@ import java.lang.annotation.*;
                                           "timestamp": "2026-01-05T12:12:30.013",
                                           "content": null,
                                           "message": "Access Denied"
+                                        }
+                                        """)
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "409",
+                        description = "이미 주문 상태 변경됨",
+                        content = @Content(
+                                examples = @ExampleObject("""
+                                        {
+                                          "statusCode": 409,
+                                          "code": "CONFLICT",
+                                          "timestamp": "2026-01-07T13:34:28.180703",
+                                          "content": null,
+                                          "message": "이미 해당 주문 상태(결제 완료)로 변경되었습니다."
                                         }
                                         """)
                         )

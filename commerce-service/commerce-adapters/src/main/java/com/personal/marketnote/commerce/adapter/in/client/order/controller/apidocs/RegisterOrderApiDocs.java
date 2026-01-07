@@ -1,6 +1,6 @@
-package com.personal.marketnote.commerce.adapter.in.client.order.controller.order;
+package com.personal.marketnote.commerce.adapter.in.client.order.controller.apidocs;
 
-import com.personal.marketnote.commerce.adapter.in.client.order.request.order.RegisterOrderRequest;
+import com.personal.marketnote.commerce.adapter.in.client.order.request.RegisterOrderRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

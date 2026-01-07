@@ -1,8 +1,12 @@
-package com.personal.marketnote.commerce.adapter.in.client.order.controller.order;
+package com.personal.marketnote.commerce.adapter.in.client.order.controller;
 
+import com.personal.marketnote.commerce.adapter.in.client.order.controller.apidocs.ChangeOrderStatusApiDocs;
+import com.personal.marketnote.commerce.adapter.in.client.order.controller.apidocs.GetOrderInfoApiDocs;
+import com.personal.marketnote.commerce.adapter.in.client.order.controller.apidocs.GetOrdersApiDocs;
+import com.personal.marketnote.commerce.adapter.in.client.order.controller.apidocs.RegisterOrderApiDocs;
 import com.personal.marketnote.commerce.adapter.in.client.order.mapper.OrderRequestToCommandMapper;
-import com.personal.marketnote.commerce.adapter.in.client.order.request.order.ChangeOrderStatusRequest;
-import com.personal.marketnote.commerce.adapter.in.client.order.request.order.RegisterOrderRequest;
+import com.personal.marketnote.commerce.adapter.in.client.order.request.ChangeOrderStatusRequest;
+import com.personal.marketnote.commerce.adapter.in.client.order.request.RegisterOrderRequest;
 import com.personal.marketnote.commerce.adapter.in.client.order.response.GetOrderResponse;
 import com.personal.marketnote.commerce.adapter.in.client.order.response.GetOrdersResponse;
 import com.personal.marketnote.commerce.adapter.in.client.order.response.RegisterOrderResponse;
