@@ -1,4 +1,4 @@
-package com.personal.marketnote.product.adapter.in.client.pricepolicy;
+package com.personal.marketnote.product.adapter.in.client.cart.controller.apidocs;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,36 +14,38 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Operation(summary = "장바구니 상품 삭제", description = """
-        작성일자: 2026-01-05
-        
-        작성자: 성효빈
-        
-        ---
-        
-        ## Description
-        
-        회원의 장바구니 상품을 삭제합니다.
-        
-        ---
-        
-        ## Request
-        
-        | **키** | **타입** | **설명** | **필수 여부** | **예시** |
-        | --- | --- | --- | --- | --- |
-        | pricePolicyIds | array | 삭제할 가격 정책 ID 목록 | Y | [1, 2, 3] |
-        ---
-        
-        ## Response
-        
-        | **키** | **타입** | **설명** | **예시** |
-        | --- | --- | --- | --- |
-        | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
-        | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
-        | timestamp | string(datetime) | 응답 일시 | "2026-01-05T12:12:30.013" |
-        | content | object | 응답 본문 | null |
-        | message | string | 처리 결과 | "장바구니 상품 삭제 성공" |
-        """,
+@Operation(
+        summary = "장바구니 상품 삭제",
+        description = """
+                작성일자: 2026-01-05
+                
+                작성자: 성효빈
+                
+                ---
+                
+                ## Description
+                
+                회원의 장바구니 상품을 삭제합니다.
+                
+                ---
+                
+                ## Request
+                
+                | **키** | **타입** | **설명** | **필수 여부** | **예시** |
+                | --- | --- | --- | --- | --- |
+                | pricePolicyIds | array | 삭제할 가격 정책 ID 목록 | Y | [1, 2, 3] |
+                ---
+                
+                ## Response
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
+                | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-01-05T12:12:30.013" |
+                | content | object | 응답 본문 | null |
+                | message | string | 처리 결과 | "장바구니 상품 삭제 성공" |
+                """,
         security = {@SecurityRequirement(name = "bearer")},
         parameters = {
                 @Parameter(name = "pricePolicyIds", in = ParameterIn.QUERY, required = true,

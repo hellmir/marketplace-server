@@ -1,4 +1,4 @@
-package com.personal.marketnote.product.adapter.in.client.pricepolicy;
+package com.personal.marketnote.product.adapter.in.client.cart.controller.apidocs;
 
 import com.personal.marketnote.product.adapter.in.client.cart.request.GetMyOrderingProductsRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,81 +14,83 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Operation(summary = "회원 주문 대기 상품 목록 조회(상품 구매하기 버튼)", description = """
-        작성일자: 2026-01-05
-        
-        작성자: 성효빈
-        
-        ---
-        
-        ## Description
-        
-        - 회원의 주문 대기 상품 목록을 조회합니다.
-        
-        - 주문 상세 페이지 또는 장바구니 페이지에서 구매 버튼 선택 시 호출합니다.
-        
-        ---
-        
-        ## Request
-        
-        | **키** | **타입** | **설명** | **필수 여부** | **예시** |
-        | --- | --- | --- | --- | --- |
-        | orderingItemRequests | array | 주문 대기 상품 목록 | Y | [ ... ] |
-        
-        ---
-        
-        ## Response
-        
-        | **키** | **타입** | **설명** | **예시** |
-        | --- | --- | --- | --- |
-        | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
-        | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
-        | timestamp | string(datetime) | 응답 일시 | "2026-01-05T12:12:30.013" |
-        | content | object | 응답 본문 | { ... } |
-        | message | string | 처리 결과 | "회원 주문 대기 상품 목록 조회 성공" |
-        
-        ---
-        
-        ### Response > content
-        
-        | **키** | **타입** | **설명** | **예시** |
-        | --- | --- | --- | --- |
-        | orderingProducts | array | 주문 대기 상품 목록 | [ ... ] |
-        
-        ---
-        
-        ### Response > content > orderingProducts
-        
-        | **키** | **타입** | **설명** | **예시** |
-        | --- | --- | --- | --- |
-        | product | object | 상품 | { ... } |
-        | pricePolicy | object | 가격 정책 | { ... } |
-        | quantity | number | 상품 수량 | 1 |
-        
-        ---
-        
-        ### Response > content > orderingProducts > product
-        
-        | **키** | **타입** | **설명** | **예시** |
-        | --- | --- | --- | --- |
-        | id | number | 상품 ID | 1 |
-        | name | string | 상품명 | "건기식테스트1" |
-        | brandName | string | 브랜드명 | "노트왕" |
-        | imageUrl | string | 상품 이미지 URL | "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png" |
-        | status | string | 상태 | "ACTIVE" |
-        
-        ---
-        
-        ### Response > content > orderingProducts > pricePolicy
-        
-        | **키** | **타입** | **설명** | **예시** |
-        | --- | --- | --- | --- |
-        | id | number | 가격 정책 ID | 1 |
-        | price | number | 기본 판매 가격(원) | 40000 |
-        | discountPrice | number | 할인 판매 가격(원) | 32000 |
-        | discountRate | number | 할인율(%, 최대 소수점 1자리) | 20 |
-        | accumulatedPoint | number | 구매 시 적립 포인트 | 800 |
-        """,
+@Operation(
+        summary = "회원 주문 대기 상품 목록 조회(상품 구매하기 버튼)",
+        description = """
+                작성일자: 2026-01-05
+                
+                작성자: 성효빈
+                
+                ---
+                
+                ## Description
+                
+                - 회원의 주문 대기 상품 목록을 조회합니다.
+                
+                - 주문 상세 페이지 또는 장바구니 페이지에서 구매 버튼 선택 시 호출합니다.
+                
+                ---
+                
+                ## Request
+                
+                | **키** | **타입** | **설명** | **필수 여부** | **예시** |
+                | --- | --- | --- | --- | --- |
+                | orderingItemRequests | array | 주문 대기 상품 목록 | Y | [ ... ] |
+                
+                ---
+                
+                ## Response
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
+                | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-01-05T12:12:30.013" |
+                | content | object | 응답 본문 | { ... } |
+                | message | string | 처리 결과 | "회원 주문 대기 상품 목록 조회 성공" |
+                
+                ---
+                
+                ### Response > content
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | orderingProducts | array | 주문 대기 상품 목록 | [ ... ] |
+                
+                ---
+                
+                ### Response > content > orderingProducts
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | product | object | 상품 | { ... } |
+                | pricePolicy | object | 가격 정책 | { ... } |
+                | quantity | number | 상품 수량 | 1 |
+                
+                ---
+                
+                ### Response > content > orderingProducts > product
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | id | number | 상품 ID | 1 |
+                | name | string | 상품명 | "건기식테스트1" |
+                | brandName | string | 브랜드명 | "노트왕" |
+                | imageUrl | string | 상품 이미지 URL | "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png" |
+                | status | string | 상태 | "ACTIVE" |
+                
+                ---
+                
+                ### Response > content > orderingProducts > pricePolicy
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | id | number | 가격 정책 ID | 1 |
+                | price | number | 기본 판매 가격(원) | 40000 |
+                | discountPrice | number | 할인 판매 가격(원) | 32000 |
+                | discountRate | number | 할인율(%, 최대 소수점 1자리) | 20 |
+                | accumulatedPoint | number | 구매 시 적립 포인트 | 800 |
+                """,
         security = {@SecurityRequirement(name = "bearer")},
         requestBody = @RequestBody(
                 required = true,

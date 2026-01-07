@@ -15,69 +15,71 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Operation(summary = "상품 옵션 카테고리 및 하위 옵션 목록 조회", description = """
-        작성일자: 2026-01-01
-        
-        작성자: 성효빈
-        
-        ---
-        
-        ## Description
-        
-        특정 상품의 옵션 카테고리 및 하위 옵션 목록을 조회합니다.
-        
-        ---
-        
-        ## Path Variables
-        
-        | **키** | **타입** | **설명** | **필수 여부** | **예시** |
-        | --- | --- | --- | --- | --- |
-        | productId | number | 상품 ID | Y | 1001 |
-        
-        ---
-        
-        ## Response
-        
-        | **키** | **타입** | **설명** | **예시** |
-        | --- | --- | --- | --- |
-        | statusCode | number | 상태 코드 | 200 |
-        | code | string | 응답 코드 | "SUC01" |
-        | timestamp | string(datetime) | 응답 일시 | "2026-01-01T10:37:32.320824" |
-        | content | object | 응답 본문 | { ... } |
-        | message | string | 처리 결과 | "상품 옵션 카테고리 및 하위 옵션 목록 조회 성공"" |
-        
-        ---
-        
-        ### Response > content
-        
-        | **키** | **타입** | **설명** | **예시** |
-        | --- | --- | --- | --- |
-        | categories | array | 옵션 카테고리 목록 | [ ... ] |
-        
-        ---
-        
-        ### Response > content > categories
-        
-        | **키** | **타입** | **설명** | **예시** |
-        | --- | --- | --- | --- |
-        | id | number | 옵션 카테고리 ID | 10 |
-        | name | string | 옵션 카테고리명 | "수량" |
-        | orderNum | number | 정렬 순서 | 1 |
-        | status | string | 상태 | "ACTIVE" |
-        | options | array | 하위 옵션 목록 | [ ... ] |
-        
-        ---
-        
-        ### Response > content > categories > options
-        
-        | **키** | **타입** | **설명** | **예시** |
-        | --- | --- | --- | --- |
-        | id | number | 옵션 ID | 101 |
-        | content | string | 옵션 내용 | "1박스" |
-        | price | number | 옵션 가격(원) | 37000 |
-        | accumulatedPoint | number | 적립 포인트 | 1200 |
-        | status | string | 상태 | "ACTIVE" |
-        """, security = {@SecurityRequirement(name = "bearer")},
+@Operation(
+        summary = "상품 옵션 카테고리 및 하위 옵션 목록 조회",
+        description = """
+                작성일자: 2026-01-01
+                
+                작성자: 성효빈
+                
+                ---
+                
+                ## Description
+                
+                특정 상품의 옵션 카테고리 및 하위 옵션 목록을 조회합니다.
+                
+                ---
+                
+                ## Path Variables
+                
+                | **키** | **타입** | **설명** | **필수 여부** | **예시** |
+                | --- | --- | --- | --- | --- |
+                | productId | number | 상품 ID | Y | 1001 |
+                
+                ---
+                
+                ## Response
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | statusCode | number | 상태 코드 | 200 |
+                | code | string | 응답 코드 | "SUC01" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-01-01T10:37:32.320824" |
+                | content | object | 응답 본문 | { ... } |
+                | message | string | 처리 결과 | "상품 옵션 카테고리 및 하위 옵션 목록 조회 성공"" |
+                
+                ---
+                
+                ### Response > content
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | categories | array | 옵션 카테고리 목록 | [ ... ] |
+                
+                ---
+                
+                ### Response > content > categories
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | id | number | 옵션 카테고리 ID | 10 |
+                | name | string | 옵션 카테고리명 | "수량" |
+                | orderNum | number | 정렬 순서 | 1 |
+                | status | string | 상태 | "ACTIVE" |
+                | options | array | 하위 옵션 목록 | [ ... ] |
+                
+                ---
+                
+                ### Response > content > categories > options
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | id | number | 옵션 ID | 101 |
+                | content | string | 옵션 내용 | "1박스" |
+                | price | number | 옵션 가격(원) | 37000 |
+                | accumulatedPoint | number | 적립 포인트 | 1200 |
+                | status | string | 상태 | "ACTIVE" |
+                """, security = {@SecurityRequirement(name = "bearer")},
         parameters = {
                 @Parameter(
                         name = "productId",
