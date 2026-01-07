@@ -62,6 +62,7 @@ import java.lang.annotation.*;
         | representativeImages | object | 상품 상세 정보 상단 대표 이미지 목록 | { ... } |
         | contentImages | object | 상품 상세 정보 본문 이미지 목록 | { ... } |
         | selectedOptionIds | array<number> | 선택된 옵션 ID 목록 | [4, 7] |
+        | stock | number | 재고 수량 | 2200 |
         
         ---
         
@@ -427,7 +428,8 @@ import java.lang.annotation.*;
                                                 "discountRate": 17.8,
                                                 "optionIds": null
                                               }
-                                            ]
+                                            ],
+                                            "stock": 2200
                                           },
                                           "message": "상품 상세 정보 조회 성공"
                                         }

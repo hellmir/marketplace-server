@@ -71,7 +71,9 @@ public class InventoryController {
     @GetMapping
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
     @GetInventoriesApiDocs
-    public ResponseEntity<BaseResponse<GetInventoriesResponse>> getInventories(@Valid @RequestParam List<Long> pricePolicyIds) {
+    public ResponseEntity<BaseResponse<GetInventoriesResponse>> getInventories(
+            @Valid @RequestParam List<Long> pricePolicyIds
+    ) {
         GetInventoriesResult getInventoriesResult
                 = GetInventoriesResult.from(getInventoryUseCase.getInventories(pricePolicyIds));
 
