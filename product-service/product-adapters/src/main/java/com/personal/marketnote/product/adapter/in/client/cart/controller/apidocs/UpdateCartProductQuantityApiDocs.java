@@ -1,6 +1,6 @@
-package com.personal.marketnote.product.adapter.in.client.pricepolicy;
+package com.personal.marketnote.product.adapter.in.client.cart.controller.apidocs;
 
-import com.personal.marketnote.product.adapter.in.client.cart.request.AddCartProductRequest;
+import com.personal.marketnote.product.adapter.in.client.cart.request.UpdateCartProductQuantityRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -14,72 +14,64 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Operation(summary = "장바구니 상품 추가", description = """
-        작성일자: 2026-01-04
-        
-        작성자: 성효빈
-        
-        ---
-        
-        ## Description
-        
-        - 회원 장바구니에 상품을 추가합니다.
-        
-        - 회원이 선택한 옵션 ID 조합에 맞는 가격 정책 ID를 전송해야 합니다.
-        
-        - 옵션 ID 조합에 맞는 가격 정책 ID가 없는 경우, 기본 가격 정책 ID를 전송합니다.
-        
-        ---
-        
-        ## Request
-        
-        | **키** | **타입** | **설명** | **필수 여부** | **예시** |
-        | --- | --- | --- | --- | --- |
-        | productId | number | 상품 ID | Y | 1 |
-        | pricePolicyId | number | 가격 정책 ID | Y | 1 |
-        | imageUrl | string | 상품 이미지 URL | Y | "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png" |
-        | quantity | number | 상품 수량 | Y | 1 |
-        ---
-        
-        ## Response
-        
-        | **키** | **타입** | **설명** | **예시** |
-        | --- | --- | --- | --- |
-        | statusCode | number | 상태 코드 | 201: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
-        | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
-        | timestamp | string(datetime) | 응답 일시 | "2026-01-04T12:12:30.013" |
-        | content | object | 응답 본문 | null |
-        | message | string | 처리 결과 | "장바구니 상품 추가 성공" |
-        
-        ---
-        """,
+@Operation(
+        summary = "장바구니 상품 수량 변경",
+        description = """
+                작성일자: 2026-01-04
+                
+                작성자: 성효빈
+                
+                ---
+                
+                ## Description
+                
+                장바구니 상품 수량을 변경합니다.
+                
+                ---
+                
+                ## Request
+                
+                | **키** | **타입** | **설명** | **필수 여부** | **예시** |
+                | --- | --- | --- | --- | --- |
+                | pricePolicyId | number | 가격 정책 ID | 필수 | 1 |
+                | newQuantity | number | 변경할 상품 수량 | 필수 | 1 |
+                ---
+                
+                ## Response
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
+                | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-01-04T12:12:30.013" |
+                | content | object | 응답 본문 | null |
+                | message | string | 처리 결과 | "장바구니 상품 수량 변경 성공" |
+                """,
         security = {@SecurityRequirement(name = "bearer")},
         requestBody = @RequestBody(
                 required = true,
                 content = @Content(
-                        schema = @Schema(implementation = AddCartProductRequest.class),
+                        schema = @Schema(implementation = UpdateCartProductQuantityRequest.class),
                         examples = @ExampleObject("""
                                 {
-                                    "productId": 1,
                                     "pricePolicyId": 1,
-                                    "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
-                                    "quantity": 1
+                                    "newQuantity": 1
                                 }
                                 """)
                 )
         ),
         responses = {
                 @ApiResponse(
-                        responseCode = "201",
-                        description = "장바구니 상품 추가 성공",
+                        responseCode = "200",
+                        description = "장바구니 상품 수량 변경 성공",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
-                                          "statusCode": 201,
+                                          "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2025-12-30T12:12:30.013",
+                                          "timestamp": "2026-01-04T16:50:53.326054",
                                           "content": null,
-                                          "message": "장바구니 상품 추가 성공"
+                                          "message": "장바구니 상품 수량 변경 성공"
                                         }
                                         """)
                         )
@@ -115,5 +107,5 @@ import java.lang.annotation.*;
                         )
                 )
         })
-public @interface AddCartProductApiDocs {
+public @interface UpdateCartProductQuantityApiDocs {
 }

@@ -12,7 +12,8 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Operation(summary = "카테고리 목록 조회",
+@Operation(
+        summary = "카테고리 목록 조회",
         description = """
                 작성일자: 2025-12-31
                 

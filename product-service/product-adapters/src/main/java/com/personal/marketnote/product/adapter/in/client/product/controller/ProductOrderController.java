@@ -1,9 +1,9 @@
 package com.personal.marketnote.product.adapter.in.client.product.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
+import com.personal.marketnote.product.adapter.in.client.cart.controller.apidocs.GetMyOrderingProductsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.cart.request.GetMyOrderingProductsRequest;
 import com.personal.marketnote.product.adapter.in.client.cart.response.GetMyOrderingProductsResponse;
-import com.personal.marketnote.product.adapter.in.client.pricepolicy.GetMyOrderingProductsApiDocs;
 import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
 import com.personal.marketnote.product.port.in.result.product.GetMyOrderProductsResult;
 import com.personal.marketnote.product.port.in.usecase.product.GetMyOrderingProductsUseCase;
