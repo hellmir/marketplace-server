@@ -23,7 +23,6 @@ public class GetProductInfoResponse {
     private List<GetFileResult> representativeImages;
     private List<GetFileResult> contentImages;
     private List<GetProductPricePolicyWithOptionsResult> pricePolicies;
-    private int stock;
 
     public static GetProductInfoResponse from(GetProductInfoWithOptionsResult getProductInfoWithOptionsResult) {
         GetFilesResult representativeImages = getProductInfoWithOptionsResult.representativeImages();
@@ -47,7 +46,6 @@ public class GetProductInfoResponse {
                                 : null
                 )
                 .pricePolicies(getProductInfoWithOptionsResult.pricePolicies())
-                .stock(getProductInfoWithOptionsResult.stock())
                 .build();
     }
 }

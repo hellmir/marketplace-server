@@ -94,25 +94,7 @@ public class GetProductService implements GetProductUseCase {
                     .orElse(defaultPricePolicy);
         }
 
-        GetProductInfoResult productInfo = GetProductInfoResult.from(product, selectedPricePolicy);
-
-        Set<String> selectedFlags = new HashSet<>();
-        if (FormatValidator.hasValue(categories) && FormatValidator.hasValue(selectedOptionIds)) {
-            Set<Long> selectedIds = new HashSet<>(selectedOptionIds);
-            for (ProductOptionCategory category : categories) {
-                for (ProductOption option : category.getOptions()) {
-                    if (selectedIds.contains(option.getId())) {
-                        selectedFlags.add(option.getContent());
-                    }
-                }
-            }
-        }
-
-        List<SelectableProductOptionCategoryItemResult> selectableCategories
-                = categories.stream()
-                .map(c -> SelectableProductOptionCategoryItemResult.from(c, selectedFlags))
-                .toList();
-
+        // 상품 재고 수량 조회
         int stock = -1;
         Long pricePolicyId = selectedPricePolicy.getId();
         try {
@@ -131,12 +113,31 @@ public class GetProductService implements GetProductUseCase {
             }
         }
 
+        GetProductInfoResult productInfo = GetProductInfoResult.from(product, selectedPricePolicy, stock);
+
+        Set<String> selectedFlags = new HashSet<>();
+        if (FormatValidator.hasValue(categories) && FormatValidator.hasValue(selectedOptionIds)) {
+            Set<Long> selectedIds = new HashSet<>(selectedOptionIds);
+            for (ProductOptionCategory category : categories) {
+                for (ProductOption option : category.getOptions()) {
+                    if (selectedIds.contains(option.getId())) {
+                        selectedFlags.add(option.getContent());
+                    }
+                }
+            }
+        }
+
+        List<SelectableProductOptionCategoryItemResult> selectableCategories
+                = categories.stream()
+                .map(c -> SelectableProductOptionCategoryItemResult.from(c, selectedFlags))
+                .toList();
+
         // 이미지 결과 대기
         GetFilesResult representativeImages = representativeFuture.join();
         GetFilesResult contentImages = contentFuture.join();
 
         return GetProductInfoWithOptionsResult.of(
-                productInfo, selectableCategories, representativeImages, contentImages, pricePolicies, stock
+                productInfo, selectableCategories, representativeImages, contentImages, pricePolicies
         );
     }
 
@@ -189,17 +190,19 @@ public class GetProductService implements GetProductUseCase {
 
         Long nextCursor = null;
         if (FormatValidator.hasValue(pageItems)) {
-            nextCursor = pageItems.getLast().pricePolicy().id();
+            nextCursor = pageItems.getLast().getPricePolicyId();
         }
 
         // 상품 카탈로그 이미지 병렬 조회
         Map<Long, GetFilesResult> productIdToImages = new ConcurrentHashMap<>();
         List<CompletableFuture<Void>> futures = pageItems.stream()
                 .map(
-                        item -> CompletableFuture.runAsync(() -> {
-                            findProductImagesPort.findImagesByProductIdAndSort(item.id(), PRODUCT_CATALOG_IMAGE)
-                                    .ifPresent(result -> productIdToImages.put(item.id(), result));
-                        })
+                        item -> CompletableFuture.runAsync(
+                                () -> findProductImagesPort.findImagesByProductIdAndSort(
+                                                item.getId(), PRODUCT_CATALOG_IMAGE
+                                        )
+                                        .ifPresent(result -> productIdToImages.put(item.getId(), result))
+                        )
                 )
                 .toList();
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
@@ -207,8 +210,8 @@ public class GetProductService implements GetProductUseCase {
         List<ProductItemResult> pageItemsWithImage = pageItems.stream()
                 .map(item -> ProductItemResult.from(
                                 item,
-                                FormatValidator.hasValue(productIdToImages.get(item.id()))
-                                        ? productIdToImages.get(item.id())
+                                FormatValidator.hasValue(productIdToImages.get(item.getId()))
+                                        ? productIdToImages.get(item.getId())
                                         .images()
                                         .getFirst()
                                         : null
@@ -221,7 +224,49 @@ public class GetProductService implements GetProductUseCase {
             totalElements = computeTotalElements(isCategorized, categoryId, searchTarget, searchKeyword);
         }
 
-        return GetProductsResult.fromItems(pageItemsWithImage, hasNext, nextCursor, totalElements);
+        // 상품 재고 수량 조회
+        List<Integer> stocks = findCacheStockPort.findByPricePolicyIds(
+                pageItemsWithImage.stream()
+                        .map(ProductItemResult::getPricePolicyId)
+                        .toList()
+        );
+
+        List<Long> pricePolicyIdsWithoutStocks = new ArrayList<>();
+        for (int i = 0; i < pageItemsWithImage.size(); i++) {
+            Integer stock = stocks.get(i);
+            ProductItemResult item = pageItemsWithImage.get(i);
+            if (!FormatValidator.hasValue(stock)) {
+                pricePolicyIdsWithoutStocks.add(item.getPricePolicyId());
+                continue;
+            }
+
+            item.addStock(stock);
+        }
+
+        if (FormatValidator.hasValue(pricePolicyIdsWithoutStocks)) {
+            // Cache Memory에 저장돼 있지 않은 재고 수량 목록은 커머스 서비스 요청을 통해 조회
+            Set<GetInventoryResult> inventories
+                    = findStockPort.findByPricePolicyIds(pricePolicyIdsWithoutStocks);
+
+            for (GetInventoryResult inventory : inventories) {
+                if (!FormatValidator.hasValue(inventory)) {
+                    continue;
+                }
+
+                Long pricePolicyId = inventory.pricePolicyId();
+                Integer stock = inventory.stock();
+
+                pageItemsWithImage.stream()
+                        .filter(item -> FormatValidator.equals(item.getPricePolicyId(), pricePolicyId))
+                        .findFirst()
+                        .ifPresent(item -> item.addStock(stock));
+
+                // Cache Memory에 재고 수량 저장
+                saveCacheStockPort.save(pricePolicyId, stock);
+            }
+        }
+
+        return GetProductsResult.from(hasNext, nextCursor, totalElements, pageItemsWithImage);
     }
 
     private List<Product> getProducts(
@@ -328,7 +373,7 @@ public class GetProductService implements GetProductUseCase {
         for (ProductOption opt : productOptionCombos.get(depth)) {
             path.add(opt);
             backtrackCartesian(productOptionCombos, depth + 1, path, result);
-            path.remove(path.size() - 1);
+            path.removeLast();
         }
     }
 }
