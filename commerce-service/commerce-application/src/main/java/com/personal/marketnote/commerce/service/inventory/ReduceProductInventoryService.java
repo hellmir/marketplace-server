@@ -5,6 +5,7 @@ import com.personal.marketnote.commerce.domain.inventory.InventoryDeductionHisto
 import com.personal.marketnote.commerce.domain.order.OrderProduct;
 import com.personal.marketnote.commerce.port.in.usecase.inventory.ReduceProductInventoryUseCase;
 import com.personal.marketnote.commerce.port.out.inventory.FindInventoryPort;
+import com.personal.marketnote.commerce.port.out.inventory.SaveCacheStockPort;
 import com.personal.marketnote.commerce.port.out.inventory.SaveInventoryDeductionHistoryPort;
 import com.personal.marketnote.commerce.port.out.inventory.UpdateInventoryPort;
 import com.personal.marketnote.common.application.UseCase;
@@ -25,6 +26,7 @@ public class ReduceProductInventoryService implements ReduceProductInventoryUseC
     private final FindInventoryPort findInventoryPort;
     private final UpdateInventoryPort updateInventoryPort;
     private final SaveInventoryDeductionHistoryPort saveInventoryDeductionHistoryPort;
+    private final SaveCacheStockPort saveCacheStockPort;
 
     @Override
     public void reduce(List<OrderProduct> orderProducts, String reason) {
@@ -35,11 +37,14 @@ public class ReduceProductInventoryService implements ReduceProductInventoryUseC
                         )
                 );
         Set<Inventory> inventories = findInventoryPort.findByPricePolicyIds(pricePolicyQuantities.keySet());
-        inventories.forEach(inventory -> inventory.reduce(pricePolicyQuantities.get(inventory.getPricePolicyId())));
+        inventories.forEach(inventory -> inventory.reduce(
+                pricePolicyQuantities.get(inventory.getPricePolicyId()))
+        );
 
         updateInventoryPort.update(inventories);
         saveInventoryDeductionHistoryPort.save(
                 InventoryDeductionHistories.from(pricePolicyQuantities, reason)
         );
+        saveCacheStockPort.save(inventories);
     }
 }
