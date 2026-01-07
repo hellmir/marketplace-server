@@ -120,7 +120,7 @@ import java.lang.annotation.*;
         responses = {
                 @ApiResponse(
                         responseCode = "200",
-                        description = "장바구니 상품 추가 성공",
+                        description = "회원 주문 대기 상품 목록 조회 성공",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
