@@ -20,7 +20,7 @@ import java.lang.annotation.*;
         
         ## Description
         
-        장바구니 상품 목록을 조회합니다.
+        - 회원의 장바구니 상품 목록을 조회합니다.
         
         ---
         
@@ -38,7 +38,7 @@ import java.lang.annotation.*;
         | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
         | timestamp | string(datetime) | 응답 일시 | "2026-01-04T12:12:30.013" |
         | content | object | 응답 본문 | { ... } |
-        | message | string | 처리 결과 | "장바구니 상품 목록 조회 성공" |
+        | message | string | 처리 결과 | "회원 장바구니 상품 목록 조회 성공" |
         
         ---
         
@@ -85,8 +85,8 @@ import java.lang.annotation.*;
         security = {@SecurityRequirement(name = "bearer")},
         responses = {
                 @ApiResponse(
-                        responseCode = "201",
-                        description = "장바구니 상품 추가 성공",
+                        responseCode = "200",
+                        description = "회원 장바구니 상품 목록 조회 성공",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {

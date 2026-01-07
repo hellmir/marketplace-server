@@ -15,7 +15,8 @@ public record GetProductInfoWithOptionsResult(
         List<SelectableProductOptionCategoryItemResult> categories,
         GetFilesResult representativeImages,
         GetFilesResult contentImages,
-        List<GetProductPricePolicyWithOptionsResult> pricePolicies
+        List<GetProductPricePolicyWithOptionsResult> pricePolicies,
+        int stock
 ) {
     public static GetProductInfoWithOptionsResult of(
             GetProductInfoResult productInfo,
@@ -32,7 +33,8 @@ public record GetProductInfoWithOptionsResult(
             List<SelectableProductOptionCategoryItemResult> categories,
             GetFilesResult representativeImages,
             GetFilesResult contentImages,
-            List<PricePolicy> pricePolicies
+            List<PricePolicy> pricePolicies,
+            int stock
     ) {
         return GetProductInfoWithOptionsResult.builder()
                 .productInfo(productInfo)
@@ -44,6 +46,7 @@ public record GetProductInfoWithOptionsResult(
                                 .map(GetProductPricePolicyWithOptionsResult::from)
                                 .toList()
                 )
+                .stock(stock)
                 .build();
     }
 }

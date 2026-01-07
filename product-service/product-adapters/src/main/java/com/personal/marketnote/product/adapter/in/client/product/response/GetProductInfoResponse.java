@@ -1,6 +1,8 @@
 package com.personal.marketnote.product.adapter.in.client.product.response;
 
 import com.personal.marketnote.common.application.file.port.in.result.GetFileResult;
+import com.personal.marketnote.common.application.file.port.in.result.GetFilesResult;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.adapter.in.client.option.response.SelectableProductOptionCategoryResponse;
 import com.personal.marketnote.product.port.in.result.pricepolicy.GetProductPricePolicyWithOptionsResult;
 import com.personal.marketnote.product.port.in.result.product.GetProductInfoResult;
@@ -21,8 +23,12 @@ public class GetProductInfoResponse {
     private List<GetFileResult> representativeImages;
     private List<GetFileResult> contentImages;
     private List<GetProductPricePolicyWithOptionsResult> pricePolicies;
+    private int stock;
 
     public static GetProductInfoResponse from(GetProductInfoWithOptionsResult getProductInfoWithOptionsResult) {
+        GetFilesResult representativeImages = getProductInfoWithOptionsResult.representativeImages();
+        GetFilesResult contentImages = getProductInfoWithOptionsResult.contentImages();
+
         return GetProductInfoResponse.builder()
                 .productInfo(getProductInfoWithOptionsResult.productInfo())
                 .categories(
@@ -30,9 +36,18 @@ public class GetProductInfoResponse {
                                 .map(SelectableProductOptionCategoryResponse::from)
                                 .toList()
                 )
-                .representativeImages(getProductInfoWithOptionsResult.representativeImages().images())
-                .contentImages(getProductInfoWithOptionsResult.contentImages().images())
+                .representativeImages(
+                        FormatValidator.hasValue(representativeImages)
+                                ? representativeImages.images()
+                                : null
+                )
+                .contentImages(
+                        FormatValidator.hasValue(contentImages)
+                                ? contentImages.images()
+                                : null
+                )
                 .pricePolicies(getProductInfoWithOptionsResult.pricePolicies())
+                .stock(getProductInfoWithOptionsResult.stock())
                 .build();
     }
 }

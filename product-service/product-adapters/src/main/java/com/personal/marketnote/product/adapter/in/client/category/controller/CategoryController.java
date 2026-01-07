@@ -6,6 +6,7 @@ import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.product.adapter.in.client.category.controller.apidocs.DeleteCategoryApiDocs;
 import com.personal.marketnote.product.adapter.in.client.category.controller.apidocs.GetCategoriesApiDocs;
 import com.personal.marketnote.product.adapter.in.client.category.controller.apidocs.RegisterCategoryApiDocs;
+import com.personal.marketnote.product.adapter.in.client.category.controller.apidocs.RegisterProductCategoriesApiDocs;
 import com.personal.marketnote.product.adapter.in.client.category.mapper.CategoryRequestToCommandMapper;
 import com.personal.marketnote.product.adapter.in.client.category.request.RegisterCategoryRequest;
 import com.personal.marketnote.product.adapter.in.client.category.request.RegisterProductCategoriesRequest;
@@ -132,7 +133,7 @@ public class CategoryController {
     }
 
     /**
-     * 상품 카테고리 등록
+     * 상품 카테고리 등록/수정
      *
      * @param productId 상품 ID
      * @param request   상품 카테고리 등록 요청
@@ -143,6 +144,7 @@ public class CategoryController {
      */
     @PutMapping("{productId}/categories")
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
+    @RegisterProductCategoriesApiDocs
     public ResponseEntity<BaseResponse<RegisterProductCategoriesResponse>> registerProductCategories(
             @PathVariable("productId") Long productId,
             @Valid @RequestBody RegisterProductCategoriesRequest request,

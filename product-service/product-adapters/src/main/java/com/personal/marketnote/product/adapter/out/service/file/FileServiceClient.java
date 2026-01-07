@@ -96,7 +96,7 @@ public class FileServiceClient implements FindProductImagesPort {
                 log.warn(e.getMessage(), e);
 
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(2000);
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
                 }

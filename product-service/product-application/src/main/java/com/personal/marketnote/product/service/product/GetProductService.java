@@ -2,6 +2,7 @@ package com.personal.marketnote.product.service.product;
 
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.application.file.port.in.result.GetFilesResult;
+import com.personal.marketnote.common.domain.exception.illegalargument.numberformat.ParsingIntegerException;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.option.ProductOption;
 import com.personal.marketnote.product.domain.option.ProductOptionCategory;
@@ -17,10 +18,14 @@ import com.personal.marketnote.product.port.in.result.product.GetProductsResult;
 import com.personal.marketnote.product.port.in.result.product.ProductItemResult;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
 import com.personal.marketnote.product.port.out.file.FindProductImagesPort;
+import com.personal.marketnote.product.port.out.inventory.FindCacheStockPort;
+import com.personal.marketnote.product.port.out.inventory.FindStockPort;
+import com.personal.marketnote.product.port.out.inventory.SaveCacheStockPort;
 import com.personal.marketnote.product.port.out.pricepolicy.FindPricePoliciesPort;
 import com.personal.marketnote.product.port.out.pricepolicy.FindPricePolicyPort;
 import com.personal.marketnote.product.port.out.product.FindProductPort;
 import com.personal.marketnote.product.port.out.productoption.FindProductOptionCategoryPort;
+import com.personal.marketnote.product.port.out.result.GetInventoryResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +49,9 @@ public class GetProductService implements GetProductUseCase {
     private final FindPricePolicyPort findPricePolicyPort;
     private final FindPricePoliciesPort findPricePoliciesPort;
     private final FindProductImagesPort findProductImagesPort;
+    private final FindCacheStockPort findCacheStockPort;
+    private final SaveCacheStockPort saveCacheStockPort;
+    private final FindStockPort findStockPort;
 
     @Override
     public GetProductInfoWithOptionsResult getProductInfo(Long id, List<Long> selectedOptionIds) {
@@ -83,7 +91,7 @@ public class GetProductService implements GetProductUseCase {
             selectedPricePolicy = pricePolicies.stream()
                     .filter(policy -> FormatValidator.equals(policy.getOptionIds(), selectedOptionIds))
                     .findFirst()
-                    .orElse(null);
+                    .orElse(defaultPricePolicy);
         }
 
         GetProductInfoResult productInfo = GetProductInfoResult.from(product, selectedPricePolicy);
@@ -105,12 +113,30 @@ public class GetProductService implements GetProductUseCase {
                 .map(c -> SelectableProductOptionCategoryItemResult.from(c, selectedFlags))
                 .toList();
 
+        int stock = -1;
+        Long pricePolicyId = selectedPricePolicy.getId();
+        try {
+            stock = findCacheStockPort.findByPricePolicyId(pricePolicyId);
+        } catch (ParsingIntegerException pie) {
+            // 현재 재고 수량이 Cache Memory에 저장돼 있지 않으므로 커머스 서비스 요청을 통해 조회
+            Set<GetInventoryResult> inventories
+                    = findStockPort.findByPricePolicyIds(List.of(pricePolicyId));
+
+            Iterator<GetInventoryResult> iterator = inventories.iterator();
+            if (iterator.hasNext()) {
+                stock = iterator.next().stock();
+
+                // Cache Memory에 재고 수량 저장
+                saveCacheStockPort.save(pricePolicyId, stock);
+            }
+        }
+
         // 이미지 결과 대기
         GetFilesResult representativeImages = representativeFuture.join();
         GetFilesResult contentImages = contentFuture.join();
 
         return GetProductInfoWithOptionsResult.of(
-                productInfo, selectableCategories, representativeImages, contentImages, pricePolicies
+                productInfo, selectableCategories, representativeImages, contentImages, pricePolicies, stock
         );
     }
 
