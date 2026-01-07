@@ -35,7 +35,6 @@ public class InventoryJpaEntity extends BaseEntity {
     }
 
     public void updateFrom(Inventory inventory) {
-        stock = inventory.getStock().getValue();
+        stock = inventory.getStockValue();
     }
 }
-

@@ -27,5 +27,8 @@ public class Inventory {
         Integer reducedStock = stock.reduce(stockToReduce);
         stock = Stock.of(reducedStock.toString());
     }
-}
 
+    public Integer getStockValue() {
+        return stock.getValue();
+    }
+}

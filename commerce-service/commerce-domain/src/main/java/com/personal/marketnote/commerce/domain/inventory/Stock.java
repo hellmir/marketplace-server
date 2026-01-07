@@ -42,7 +42,7 @@ public class Stock {
         return Objects.hash(stock);
     }
 
-    public int getValue() {
+    int getValue() {
         return stock;
     }
 

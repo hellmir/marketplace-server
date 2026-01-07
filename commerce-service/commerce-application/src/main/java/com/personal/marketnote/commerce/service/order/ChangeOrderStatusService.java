@@ -40,7 +40,7 @@ public class ChangeOrderStatusService implements ChangeOrderStatusUseCase {
         // FIXME: Payment Service의 Kafka 이벤트 Consumption으로 변경(주문 상태 PAID로 변경 / 결제 금액 업데이트 / 재고 감소 / 장바구니 상품 삭제)
         if (status.isPaid()) {
             // 결제 완료 시 재고 차감
-            reduceProductInventoryUseCase.reduce(order.getOrderProducts());
+            reduceProductInventoryUseCase.reduce(order.getOrderProducts(), status.getDescription());
 
             // 결제 완료 시 장바구니 상품 삭제
             deleteOrderedCartProductsPort.delete(
