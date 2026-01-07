@@ -25,22 +25,24 @@ public class ProductItemResponse {
     private List<ProductTag> productTags;
     private GetFileResult catalogImage;
     private List<ProductOptionItemResult> selectedOptions;
+    private Integer stock;
     private Long orderNum;
     private String status;
 
     public static ProductItemResponse from(ProductItemResult result) {
         return ProductItemResponse.builder()
-                .id(result.id())
-                .sellerId(result.sellerId())
-                .name(result.name())
-                .brandName(result.brandName())
-                .pricePolicy(result.pricePolicy())
-                .sales(result.sales())
-                .productTags(result.productTags())
-                .catalogImage(result.catalogImage())
-                .selectedOptions(result.selectedOptions())
-                .orderNum(result.orderNum())
-                .status(result.status())
+                .id(result.getId())
+                .sellerId(result.getSellerId())
+                .name(result.getName())
+                .brandName(result.getBrandName())
+                .pricePolicy(result.getPricePolicy())
+                .sales(result.getSales())
+                .productTags(result.getProductTags())
+                .catalogImage(result.getCatalogImage())
+                .selectedOptions(result.getSelectedOptions())
+                .stock(result.getStock())
+                .orderNum(result.getOrderNum())
+                .status(result.getStatus())
                 .build();
     }
 }

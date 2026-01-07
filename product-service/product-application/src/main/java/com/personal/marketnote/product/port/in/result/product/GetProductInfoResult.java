@@ -21,10 +21,11 @@ public record GetProductInfoResult(
         Long popularity,
         boolean findAllOptionsYn,
         List<ProductTag> productTags,
+        Integer stock,
         Long orderNum,
         String status
 ) {
-    public static GetProductInfoResult from(Product product, PricePolicy pricePolicy) {
+    public static GetProductInfoResult from(Product product, PricePolicy pricePolicy, Integer stock) {
         return GetProductInfoResult.builder()
                 .id(product.getId())
                 .sellerId(product.getSellerId())
@@ -37,6 +38,7 @@ public record GetProductInfoResult(
                 .popularity(product.getPopularity())
                 .findAllOptionsYn(product.isFindAllOptionsYn())
                 .productTags(product.getProductTags())
+                .stock(stock)
                 .orderNum(product.getOrderNum())
                 .status(product.getStatus().name())
                 .build();

@@ -9,23 +9,26 @@ import com.personal.marketnote.product.port.in.result.option.ProductOptionItemRe
 import com.personal.marketnote.product.port.in.result.pricepolicy.GetProductPricePolicyResult;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.util.List;
 
 @Builder(access = AccessLevel.PRIVATE)
-public record ProductItemResult(
-        Long id,
-        Long sellerId,
-        String name,
-        String brandName,
-        GetProductPricePolicyResult pricePolicy,
-        Integer sales,
-        List<ProductTag> productTags,
-        GetFileResult catalogImage,
-        List<ProductOptionItemResult> selectedOptions,
-        Long orderNum,
-        String status
-) {
+@Getter
+public class ProductItemResult {
+    private Long id;
+    private Long sellerId;
+    private String name;
+    private String brandName;
+    private GetProductPricePolicyResult pricePolicy;
+    private Integer sales;
+    private List<ProductTag> productTags;
+    private GetFileResult catalogImage;
+    private List<ProductOptionItemResult> selectedOptions;
+    private Integer stock;
+    private Long orderNum;
+    private String status;
+
     public static ProductItemResult from(Product product) {
         return ProductItemResult.builder()
                 .id(product.getId())
@@ -63,17 +66,25 @@ public record ProductItemResult(
 
     public static ProductItemResult from(ProductItemResult productItemResult, GetFileResult catalogImage) {
         return ProductItemResult.builder()
-                .id(productItemResult.id())
-                .sellerId(productItemResult.sellerId())
-                .name(productItemResult.name())
-                .brandName(productItemResult.brandName())
-                .pricePolicy(productItemResult.pricePolicy())
-                .sales(productItemResult.sales())
-                .productTags(productItemResult.productTags())
+                .id(productItemResult.getId())
+                .sellerId(productItemResult.getSellerId())
+                .name(productItemResult.getName())
+                .brandName(productItemResult.getBrandName())
+                .pricePolicy(productItemResult.getPricePolicy())
+                .sales(productItemResult.getSales())
+                .productTags(productItemResult.getProductTags())
                 .catalogImage(catalogImage)
-                .selectedOptions(productItemResult.selectedOptions())
-                .orderNum(productItemResult.orderNum())
-                .status(productItemResult.status())
+                .selectedOptions(productItemResult.getSelectedOptions())
+                .orderNum(productItemResult.getOrderNum())
+                .status(productItemResult.getStatus())
                 .build();
+    }
+
+    public Long getPricePolicyId() {
+        return pricePolicy.id();
+    }
+
+    public void addStock(Integer stock) {
+        this.stock = stock;
     }
 }

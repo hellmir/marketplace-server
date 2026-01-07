@@ -62,7 +62,6 @@ import java.lang.annotation.*;
         | representativeImages | object | 상품 상세 정보 상단 대표 이미지 목록 | { ... } |
         | contentImages | object | 상품 상세 정보 본문 이미지 목록 | { ... } |
         | selectedOptionIds | array<number> | 선택된 옵션 ID 목록 | [4, 7] |
-        | stock | number | 재고 수량 | 2200 |
         
         ---
         
@@ -81,6 +80,7 @@ import java.lang.annotation.*;
         | popularity | number | 인기도 | 0 |
         | findAllOptionsYn | boolean | 모든 옵션 선택 여부 | true |
         | productTags | array | 상품 태그 목록 | [ ... ] |
+        | stock | number | 재고 수량 | 2200 |
         | orderNum | number | 정렬 순서 | 19 |
         | status | string | 상태 | "ACTIVE" |
         ---
@@ -184,8 +184,9 @@ import java.lang.annotation.*;
                 ),
                 @Parameter(
                         name = "selectedOptionIds",
+                        description = "선택된 옵션 ID 목록",
                         in = ParameterIn.QUERY,
-                        description = "선택된 옵션 ID 목록"
+                        schema = @Schema(type = "array", example = "[1, 2, 3]")
                 )
         },
         responses = {
@@ -233,6 +234,7 @@ import java.lang.annotation.*;
                                                   "status": "ACTIVE"
                                                 }
                                               ],
+                                              "stock": 2200,
                                               "orderNum": 30,
                                               "status": "ACTIVE"
                                             },
@@ -428,8 +430,7 @@ import java.lang.annotation.*;
                                                 "discountRate": 17.8,
                                                 "optionIds": null
                                               }
-                                            ],
-                                            "stock": 2200
+                                            ]
                                           },
                                           "message": "상품 상세 정보 조회 성공"
                                         }

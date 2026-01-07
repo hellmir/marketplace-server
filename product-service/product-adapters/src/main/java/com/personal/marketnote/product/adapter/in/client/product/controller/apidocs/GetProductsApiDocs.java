@@ -218,10 +218,80 @@ import java.lang.annotation.*;
                                           "timestamp": "2026-01-04T23:35:03.051692",
                                           "content": {
                                             "products": {
-                                              "totalElements": 14,
+                                              "totalElements": 16,
                                               "hasNext": true,
-                                              "nextCursor": 30,
+                                              "nextCursor": 20,
                                               "items": [
+                                                {
+                                                  "id": 36,
+                                                  "sellerId": 1,
+                                                  "name": "스프링노트1",
+                                                  "brandName": "노트왕",
+                                                  "pricePolicy": {
+                                                    "id": 28,
+                                                    "price": 45000,
+                                                    "discountPrice": 37000,
+                                                    "discountRate": 3.2,
+                                                    "accumulatedPoint": 1200
+                                                  },
+                                                  "sales": 0,
+                                                  "productTags": [
+                                                    {
+                                                      "id": 25,
+                                                      "productId": 36,
+                                                      "name": "루테인",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    },
+                                                    {
+                                                      "id": 26,
+                                                      "productId": 36,
+                                                      "name": "아스타잔틴",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    }
+                                                  ],
+                                                  "catalogImage": null,
+                                                  "selectedOptions": null,
+                                                  "stock": 99990,
+                                                  "orderNum": 36,
+                                                  "status": "ACTIVE"
+                                                },
+                                                {
+                                                  "id": 35,
+                                                  "sellerId": 1,
+                                                  "name": "스프링노트1",
+                                                  "brandName": "노트왕",
+                                                  "pricePolicy": {
+                                                    "id": 26,
+                                                    "price": 10000,
+                                                    "discountPrice": 9000,
+                                                    "discountRate": 11.1,
+                                                    "accumulatedPoint": 1000
+                                                  },
+                                                  "sales": 0,
+                                                  "productTags": [
+                                                    {
+                                                      "id": 23,
+                                                      "productId": 35,
+                                                      "name": "루테인",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    },
+                                                    {
+                                                      "id": 24,
+                                                      "productId": 35,
+                                                      "name": "아스타잔틴",
+                                                      "orderNum": null,
+                                                      "status": "ACTIVE"
+                                                    }
+                                                  ],
+                                                  "catalogImage": null,
+                                                  "selectedOptions": null,
+                                                  "stock": null,
+                                                  "orderNum": 35,
+                                                  "status": "ACTIVE"
+                                                },
                                                 {
                                                   "id": 30,
                                                   "sellerId": 1,
@@ -274,6 +344,7 @@ import java.lang.annotation.*;
                                                       "status": "ACTIVE"
                                                     }
                                                   ],
+                                                  "stock": 2100,
                                                   "orderNum": 30,
                                                   "status": "ACTIVE"
                                                 },
@@ -329,116 +400,7 @@ import java.lang.annotation.*;
                                                       "status": "ACTIVE"
                                                     }
                                                   ],
-                                                  "orderNum": 30,
-                                                  "status": "ACTIVE"
-                                                },
-                                                {
-                                                  "id": 30,
-                                                  "sellerId": 1,
-                                                  "name": "건기식테스트1",
-                                                  "brandName": "노트왕",
-                                                  "pricePolicy": {
-                                                    "id": 23,
-                                                    "price": 43000,
-                                                    "discountPrice": 36000,
-                                                    "discountRate": 1.4,
-                                                    "accumulatedPoint": 500
-                                                  },
-                                                  "sales": 0,
-                                                  "productTags": [
-                                                    {
-                                                      "id": 13,
-                                                      "productId": 30,
-                                                      "name": "루테인",
-                                                      "orderNum": null,
-                                                      "status": "ACTIVE"
-                                                    },
-                                                    {
-                                                      "id": 14,
-                                                      "productId": 30,
-                                                      "name": "아스타잔틴",
-                                                      "orderNum": null,
-                                                      "status": "ACTIVE"
-                                                    }
-                                                  ],
-                                                  "catalogImage": {
-                                                    "id": 28,
-                                                    "sort": "PRODUCT_CATALOG_IMAGE",
-                                                    "extension": "jpg",
-                                                    "name": "스프링노트1",
-                                                    "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763521042462_grafana-icon.png",
-                                                    "resizedS3Urls": [
-                                                      "https://marketnote.s3.amazonaws.com/product/30/1763521042802_grafana-icon_300x300.png"
-                                                    ],
-                                                    "orderNum": 28
-                                                  },
-                                                  "selectedOptions": [
-                                                    {
-                                                      "id": 9,
-                                                      "content": "3박스",
-                                                      "status": "ACTIVE"
-                                                    },
-                                                    {
-                                                      "id": 10,
-                                                      "content": "30개입",
-                                                      "status": "ACTIVE"
-                                                    }
-                                                  ],
-                                                  "orderNum": 30,
-                                                  "status": "ACTIVE"
-                                                },
-                                                {
-                                                  "id": 30,
-                                                  "sellerId": 1,
-                                                  "name": "건기식테스트1",
-                                                  "brandName": "노트왕",
-                                                  "pricePolicy": {
-                                                    "id": 22,
-                                                    "price": 50000,
-                                                    "discountPrice": 40000,
-                                                    "discountRate": 5,
-                                                    "accumulatedPoint": 2000
-                                                  },
-                                                  "sales": 0,
-                                                  "productTags": [
-                                                    {
-                                                      "id": 13,
-                                                      "productId": 30,
-                                                      "name": "루테인",
-                                                      "orderNum": null,
-                                                      "status": "ACTIVE"
-                                                    },
-                                                    {
-                                                      "id": 14,
-                                                      "productId": 30,
-                                                      "name": "아스타잔틴",
-                                                      "orderNum": null,
-                                                      "status": "ACTIVE"
-                                                    }
-                                                  ],
-                                                  "catalogImage": {
-                                                    "id": 28,
-                                                    "sort": "PRODUCT_CATALOG_IMAGE",
-                                                    "extension": "jpg",
-                                                    "name": "스프링노트1",
-                                                    "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763521042462_grafana-icon.png",
-                                                    "resizedS3Urls": [
-                                                      "https://marketnote.s3.amazonaws.com/product/30/1763521042802_grafana-icon_300x300.png"
-                                                    ],
-                                                    "orderNum": 28
-                                                  },
-                                                  "selectedOptions": [
-                                                    {
-                                                      "id": 9,
-                                                      "content": "3박스",
-                                                      "status": "ACTIVE"
-                                                    },
-                                                    {
-                                                      "id": 11,
-                                                      "content": "60개입",
-                                                      "status": "ACTIVE"
-                                                    }
-                                                  ],
+                                                  "stock": 2000,
                                                   "orderNum": 30,
                                                   "status": "ACTIVE"
                                                 }
