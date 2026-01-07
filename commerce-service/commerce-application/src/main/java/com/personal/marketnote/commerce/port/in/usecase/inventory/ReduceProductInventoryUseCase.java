@@ -7,9 +7,10 @@ import java.util.List;
 public interface ReduceProductInventoryUseCase {
     /**
      * @param orderProducts 주문 상품 목록
+     * @param reason        재고 차감 이유
      * @Date 2026-01-06
      * @Author 성효빈
-     * @Description 주문 상품의 재고를 감소시킵니다.
+     * @Description 주문 상품의 재고를 차감합니다.
      */
-    void reduce(List<OrderProduct> orderProducts);
+    void reduce(List<OrderProduct> orderProducts, String reason);
 }

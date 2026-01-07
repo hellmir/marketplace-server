@@ -1,6 +1,5 @@
-package com.personal.marketnote.product.domain.inventory;
+package com.personal.marketnote.commerce.domain.inventory;
 
-import com.personal.marketnote.commerce.domain.inventory.Stock;
 import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -37,6 +36,10 @@ public class InventoryDeductionHistory {
                 .stock(Stock.of(stock.toString()))
                 .reason(reason)
                 .build();
+    }
+
+    public Integer getStockValue() {
+        return stock.getValue();
     }
 }
 

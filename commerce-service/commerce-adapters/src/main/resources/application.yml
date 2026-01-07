@@ -23,6 +23,12 @@ spring:
       schema-locations: classpath:org/springframework/batch/core/schema-postgresql.sql
       continue-on-error: true
 
+  data:
+    redis:
+      host: ${REDIS_HOST_NAME:localhost}
+      port: 6379
+      password: ${REDIS_PASSWORD:password}
+
 client:
   origin: ${CLIENT_ORIGIN:http://localhost:3000}
   cookie-domain: ${COOKIE_DOMAIN:localhost}
