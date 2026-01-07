@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
 import com.personal.marketnote.common.domain.file.OwnerType;
+import com.personal.marketnote.file.domain.file.FileDomain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -73,5 +74,44 @@ public class FileJpaEntity {
 
     public void setIdToOrderNum() {
         orderNum = id;
+    }
+
+    public void updateFrom(FileDomain file) {
+        updateActivation(file);
+        s3Url = file.getS3Url();
+        name = file.getName();
+        extension = file.getExtension();
+        sort = file.getSort().name();
+        ownerType = file.getOwnerType();
+        ownerId = file.getOwnerId();
+        orderNum = file.getOrderNum();
+        createdAt = file.getCreatedAt();
+        status = file.getStatus();
+    }
+
+    private void updateActivation(FileDomain fileDomain) {
+        if (fileDomain.isActive()) {
+            activate();
+            return;
+        }
+
+        if (fileDomain.isInactive()) {
+            deactivate();
+            return;
+        }
+
+        hide();
+    }
+
+    private void activate() {
+        status = EntityStatus.ACTIVE;
+    }
+
+    private void deactivate() {
+        status = EntityStatus.INACTIVE;
+    }
+
+    private void hide() {
+        status = EntityStatus.UNEXPOSED;
     }
 }
