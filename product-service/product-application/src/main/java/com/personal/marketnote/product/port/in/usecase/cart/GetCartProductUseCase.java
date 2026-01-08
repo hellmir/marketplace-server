@@ -9,4 +9,6 @@ public interface GetCartProductUseCase {
      * @return 장바구니 상품 {@link CartProduct}
      */
     CartProduct getCartProduct(Long userId, Long pricePolicyId);
+
+    boolean existsByUserIdAndPolicyId(Long userId, Long policyId);
 }

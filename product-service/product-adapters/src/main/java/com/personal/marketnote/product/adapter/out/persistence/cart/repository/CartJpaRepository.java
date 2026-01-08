@@ -50,4 +50,14 @@ public interface CartJpaRepository extends JpaRepository<CartProductJpaEntity, L
                     """
     )
     void deleteByUserId(Long userId);
+
+    @Query(
+            """
+                    SELECT COUNT(*) FROM CartProductJpaEntity c 
+                    WHERE 1 = 1
+                    AND c.id.userId = :userId 
+                    AND c.id.pricePolicyId = :pricePolicyId
+                    """
+    )
+    boolean existsByUserIdAndPolicyId(Long userId, Long pricePolicyId);
 }

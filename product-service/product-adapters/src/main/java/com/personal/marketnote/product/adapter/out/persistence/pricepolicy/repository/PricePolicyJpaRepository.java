@@ -10,16 +10,19 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PricePolicyJpaRepository extends JpaRepository<PricePolicyJpaEntity, Long> {
-    boolean existsByIdAndProductJpaEntity_Id(Long id, Long productId);
-
     @Query("""
-            select p from PricePolicyJpaEntity p
+            select p
+            from PricePolicyJpaEntity p
             where p.id = (
-                select popp.id.pricePolicyId
-                from ProductOptionPricePolicyJpaEntity popp
-                where popp.id.productOptionId in :optionIds
-                group by popp.id.pricePolicyId
-                having count(distinct popp.id.productOptionId) = :#{#optionIds.size()}
+                select max(matched.id.pricePolicyId)
+                from ProductOptionPricePolicyJpaEntity matched
+                where matched.id.pricePolicyId in (
+                    select popp.id.pricePolicyId
+                    from ProductOptionPricePolicyJpaEntity popp
+                    where popp.id.productOptionId in :optionIds
+                    group by popp.id.pricePolicyId
+                    having count(distinct popp.id.productOptionId) = :#{#optionIds.size()}
+                )
             )
             """)
     Optional<PricePolicyJpaEntity> findByOptionIds(List<Long> optionIds);

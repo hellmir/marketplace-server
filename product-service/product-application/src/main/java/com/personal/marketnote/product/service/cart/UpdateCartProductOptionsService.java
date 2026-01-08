@@ -3,6 +3,7 @@ package com.personal.marketnote.product.service.cart;
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.product.domain.cart.CartProduct;
 import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
+import com.personal.marketnote.product.exception.CartProductAlreadyExistsException;
 import com.personal.marketnote.product.exception.PricePolicyNotFoundException;
 import com.personal.marketnote.product.port.in.command.UpdateCartProductOptionCommand;
 import com.personal.marketnote.product.port.in.usecase.cart.GetCartProductUseCase;
@@ -26,12 +27,19 @@ public class UpdateCartProductOptionsService implements UpdateCartProductOptions
 
     @Override
     public void updateCartProductOptions(UpdateCartProductOptionCommand command) {
-        CartProduct cartProduct = getCartProductUseCase.getCartProduct(command.userId(), command.pricePolicyId());
+        Long userId = command.userId();
+        Long policyId = command.pricePolicyId();
+        CartProduct cartProduct = getCartProductUseCase.getCartProduct(userId, policyId);
 
         try {
             PricePolicy pricePolicy = getPricePolicyUseCase.getPricePolicy(command.newOptionIds());
             cartProduct.updatePricePolicy(pricePolicy);
-            updateCartProductPort.update(cartProduct, command.pricePolicyId());
+
+            if (getCartProductUseCase.existsByUserIdAndPolicyId(userId, policyId)) {
+                throw new CartProductAlreadyExistsException(userId, policyId);
+            }
+
+            updateCartProductPort.update(cartProduct, policyId);
         } catch (PricePolicyNotFoundException e) {
             log.warn("Price policy not found for options: {}", command.newOptionIds());
         }

@@ -21,4 +21,9 @@ public class GetCartProductService implements GetCartProductUseCase {
         return findCartProductPort.findCartProductByUserIdAndPricePolicyId(userId, pricePolicyId)
                 .orElseThrow(() -> new CartProductNotFoundException(pricePolicyId));
     }
+
+    @Override
+    public boolean existsByUserIdAndPolicyId(Long userId, Long policyId) {
+        return findCartProductPort.existsByUserIdAndPolicyId(userId, policyId);
+    }
 }
