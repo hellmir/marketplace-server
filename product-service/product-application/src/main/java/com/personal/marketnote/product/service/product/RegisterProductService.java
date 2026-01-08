@@ -42,6 +42,7 @@ public class RegisterProductService implements RegisterProductUseCase {
                 sellerId, false, RegisterPricePolicyCommand.from(savedProduct.getId(), registerProductCommand)
         );
 
+        // FIXME: Kafka 이벤트 Production으로 변경
         registerInventoryPort.registerInventory(registerPricePolicyResult.id());
 
         return RegisterProductResult.from(savedProduct);

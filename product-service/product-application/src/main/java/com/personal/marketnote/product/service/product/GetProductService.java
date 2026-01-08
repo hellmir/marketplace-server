@@ -2,7 +2,6 @@ package com.personal.marketnote.product.service.product;
 
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.application.file.port.in.result.GetFilesResult;
-import com.personal.marketnote.common.domain.exception.illegalargument.numberformat.ParsingIntegerException;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.option.ProductOption;
 import com.personal.marketnote.product.domain.option.ProductOptionCategory;
@@ -10,22 +9,22 @@ import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
 import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.domain.product.ProductSearchTarget;
 import com.personal.marketnote.product.domain.product.ProductSortProperty;
+import com.personal.marketnote.product.exception.PricePolicyNotFoundException;
 import com.personal.marketnote.product.exception.ProductNotFoundException;
 import com.personal.marketnote.product.port.in.result.option.SelectableProductOptionCategoryItemResult;
 import com.personal.marketnote.product.port.in.result.product.GetProductInfoResult;
 import com.personal.marketnote.product.port.in.result.product.GetProductInfoWithOptionsResult;
 import com.personal.marketnote.product.port.in.result.product.GetProductsResult;
 import com.personal.marketnote.product.port.in.result.product.ProductItemResult;
+import com.personal.marketnote.product.port.in.usecase.product.GetProductInventoryUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
 import com.personal.marketnote.product.port.out.file.FindProductImagesPort;
 import com.personal.marketnote.product.port.out.inventory.FindCacheStockPort;
-import com.personal.marketnote.product.port.out.inventory.FindStockPort;
 import com.personal.marketnote.product.port.out.inventory.SaveCacheStockPort;
 import com.personal.marketnote.product.port.out.pricepolicy.FindPricePoliciesPort;
 import com.personal.marketnote.product.port.out.pricepolicy.FindPricePolicyPort;
 import com.personal.marketnote.product.port.out.product.FindProductPort;
 import com.personal.marketnote.product.port.out.productoption.FindProductOptionCategoryPort;
-import com.personal.marketnote.product.port.out.result.GetInventoryResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
@@ -53,7 +52,7 @@ public class GetProductService implements GetProductUseCase {
     private final FindProductImagesPort findProductImagesPort;
     private final FindCacheStockPort findCacheStockPort;
     private final SaveCacheStockPort saveCacheStockPort;
-    private final FindStockPort findStockPort;
+    private final GetProductInventoryUseCase getProductInventoryUseCase;
 
     @Qualifier("productImageExecutor")
     private final Executor productImageExecutor;
@@ -101,38 +100,20 @@ public class GetProductService implements GetProductUseCase {
                     .orElse(defaultPricePolicy);
         }
 
-        // 상품 재고 수량 조회
-        int stock = -1;
+        if (!FormatValidator.hasValue(selectedPricePolicy)) {
+            throw new PricePolicyNotFoundException(null);
+        }
+
         Long pricePolicyId = selectedPricePolicy.getId();
-        try {
-            stock = findCacheStockPort.findByPricePolicyId(pricePolicyId);
-        } catch (ParsingIntegerException pie) {
-            // 현재 재고 수량이 Cache Memory에 저장돼 있지 않으므로 커머스 서비스 요청을 통해 조회
-            Set<GetInventoryResult> inventories
-                    = findStockPort.findByPricePolicyIds(List.of(pricePolicyId));
 
-            Iterator<GetInventoryResult> iterator = inventories.iterator();
-            if (iterator.hasNext()) {
-                stock = iterator.next().stock();
+        // 상품 재고 수량 조회
+        Map<Long, Integer> inventories
+                = getProductInventoryUseCase.getProductStocks(List.of(pricePolicyId));
 
-                // Cache Memory에 재고 수량 저장
-                saveCacheStockPort.save(pricePolicyId, stock);
-            }
-        }
+        GetProductInfoResult productInfo
+                = GetProductInfoResult.from(product, selectedPricePolicy, inventories.get(pricePolicyId));
 
-        GetProductInfoResult productInfo = GetProductInfoResult.from(product, selectedPricePolicy, stock);
-
-        Set<String> selectedFlags = new HashSet<>();
-        if (FormatValidator.hasValue(categories) && FormatValidator.hasValue(selectedOptionIds)) {
-            Set<Long> selectedIds = new HashSet<>(selectedOptionIds);
-            for (ProductOptionCategory category : categories) {
-                for (ProductOption option : category.getOptions()) {
-                    if (selectedIds.contains(option.getId())) {
-                        selectedFlags.add(option.getContent());
-                    }
-                }
-            }
-        }
+        Set<String> selectedFlags = getFlags(selectedOptionIds, categories);
 
         List<SelectableProductOptionCategoryItemResult> selectableCategories
                 = categories.stream()
@@ -146,6 +127,22 @@ public class GetProductService implements GetProductUseCase {
         return GetProductInfoWithOptionsResult.of(
                 productInfo, selectableCategories, representativeImages, contentImages, pricePolicies
         );
+    }
+
+    private static Set<String> getFlags(List<Long> selectedOptionIds, List<ProductOptionCategory> categories) {
+        Set<String> selectedFlags = new HashSet<>();
+        if (FormatValidator.hasValue(categories) && FormatValidator.hasValue(selectedOptionIds)) {
+            Set<Long> selectedIds = new HashSet<>(selectedOptionIds);
+            for (ProductOptionCategory category : categories) {
+                for (ProductOption option : category.getOptions()) {
+                    if (selectedIds.contains(option.getId())) {
+                        selectedFlags.add(option.getContent());
+                    }
+                }
+            }
+        }
+
+        return selectedFlags;
     }
 
     @Override
@@ -219,63 +216,28 @@ public class GetProductService implements GetProductUseCase {
                 .toList();
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
+        // 상품 재고 수량 조회
+        Map<Long, Integer> inventories = getProductInventoryUseCase.getProductStocks(
+                pagePolicies.stream()
+                        .map(PricePolicy::getId)
+                        .toList()
+        );
+
         List<ProductItemResult> pageItemsWithImage = pageItems.stream()
                 .map(item -> ProductItemResult.from(
-                                item,
-                                FormatValidator.hasValue(productIdToImages.get(item.getId()))
-                                        ? productIdToImages.get(item.getId())
-                                        .images()
-                                        .getFirst()
-                                        : null
-                        )
-                )
+                        item,
+                        FormatValidator.hasValue(productIdToImages.get(item.getId()))
+                                ? productIdToImages.get(item.getId())
+                                .images()
+                                .getFirst()
+                                : null,
+                        inventories.get(item.getPricePolicyId())
+                ))
                 .collect(Collectors.toList());
 
         Long totalElements = null;
         if (isFirstPage) {
             totalElements = computeTotalElements(isCategorized, categoryId, searchTarget, searchKeyword);
-        }
-
-        // 상품 재고 수량 조회
-        List<Integer> stocks = findCacheStockPort.findByPricePolicyIds(
-                pageItemsWithImage.stream()
-                        .map(ProductItemResult::getPricePolicyId)
-                        .toList()
-        );
-
-        List<Long> pricePolicyIdsWithoutStocks = new ArrayList<>();
-        for (int i = 0; i < pageItemsWithImage.size(); i++) {
-            Integer stock = stocks.get(i);
-            ProductItemResult item = pageItemsWithImage.get(i);
-            if (!FormatValidator.hasValue(stock)) {
-                pricePolicyIdsWithoutStocks.add(item.getPricePolicyId());
-                continue;
-            }
-
-            item.addStock(stock);
-        }
-
-        if (FormatValidator.hasValue(pricePolicyIdsWithoutStocks)) {
-            // Cache Memory에 저장돼 있지 않은 재고 수량 목록은 커머스 서비스 요청을 통해 조회
-            Set<GetInventoryResult> inventories
-                    = findStockPort.findByPricePolicyIds(pricePolicyIdsWithoutStocks);
-
-            for (GetInventoryResult inventory : inventories) {
-                if (!FormatValidator.hasValue(inventory)) {
-                    continue;
-                }
-
-                Long pricePolicyId = inventory.pricePolicyId();
-                Integer stock = inventory.stock();
-
-                pageItemsWithImage.stream()
-                        .filter(item -> FormatValidator.equals(item.getPricePolicyId(), pricePolicyId))
-                        .findFirst()
-                        .ifPresent(item -> item.addStock(stock));
-
-                // Cache Memory에 재고 수량 저장
-                saveCacheStockPort.save(pricePolicyId, stock);
-            }
         }
 
         return GetProductsResult.from(hasNext, nextCursor, totalElements, pageItemsWithImage);

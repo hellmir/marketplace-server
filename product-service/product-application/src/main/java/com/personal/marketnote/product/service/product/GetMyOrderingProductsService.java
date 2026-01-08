@@ -9,11 +9,13 @@ import com.personal.marketnote.product.port.in.result.cart.GetCartProductResult;
 import com.personal.marketnote.product.port.in.result.product.GetMyOrderProductsResult;
 import com.personal.marketnote.product.port.in.usecase.pricepolicy.GetPricePoliciesUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.GetMyOrderingProductsUseCase;
+import com.personal.marketnote.product.port.in.usecase.product.GetProductInventoryUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
@@ -22,17 +24,21 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 @Transactional(isolation = READ_COMMITTED, readOnly = true)
 public class GetMyOrderingProductsService implements GetMyOrderingProductsUseCase {
     private final GetPricePoliciesUseCase getPricePoliciesUseCase;
+    private final GetProductInventoryUseCase getProductInventoryUseCase;
 
     @Override
     public GetMyOrderProductsResult getMyOrderingProducts(
             GetMyOrderingProductsCommand getMyOrderingProductsCommand
     ) {
-        List<PricePolicy> pricePolicies = getPricePoliciesUseCase.getPricePolicies(
-                getMyOrderingProductsCommand.orderingItemCommands()
-                        .stream()
-                        .map(OrderingItemCommand::pricePolicyId)
-                        .toList()
-        );
+        List<Long> pricePolicyIds = getMyOrderingProductsCommand.orderingItemCommands()
+                .stream()
+                .map(OrderingItemCommand::pricePolicyId)
+                .toList();
+
+        List<PricePolicy> pricePolicies = getPricePoliciesUseCase.getPricePolicies(pricePolicyIds);
+
+        // 상품 재고 수량 조회
+        Map<Long, Integer> stocks = getProductInventoryUseCase.getProductStocks(pricePolicyIds);
 
         List<GetCartProductResult> orderingProducts = new ArrayList<>();
         pricePolicies.forEach(
@@ -46,8 +52,11 @@ public class GetMyOrderingProductsService implements GetMyOrderingProductsUseCas
                         .findFirst()
                         .ifPresent(
                                 command -> orderingProducts.add(
-                                        GetCartProductResult.from(
-                                                pricePolicy, command.imageUrl(), command.quantity()
+                                        GetCartProductResult.of(
+                                                pricePolicy,
+                                                command.imageUrl(),
+                                                command.quantity(),
+                                                stocks.get(pricePolicy.getId())
                                         )
                                 )
                         )

@@ -9,8 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -32,7 +33,7 @@ public class CacheStockRedisAdapter implements SaveCacheStockPort, FindCacheStoc
     }
 
     @Override
-    public List<Integer> findByPricePolicyIds(List<Long> pricePolicyIds) {
+    public Map<Long, Integer> findByPricePolicyIds(List<Long> pricePolicyIds) {
         List<String> stocks = stringRedisTemplate.opsForValue()
                 .multiGet(
                         pricePolicyIds.stream()
@@ -40,22 +41,21 @@ public class CacheStockRedisAdapter implements SaveCacheStockPort, FindCacheStoc
                                 .toList()
                 );
 
-        if (!FormatValidator.hasValue(stocks)) {
-            return new ArrayList<>();
-        }
-
-        List<Integer> result = new ArrayList<>();
-        for (String stock : stocks) {
+        int size = FormatValidator.hasValue(stocks)
+                ? stocks.size()
+                : 0;
+        Map<Long, Integer> inventories = new HashMap<>(size);
+        for (int i = 0; i < size; i++) {
             Integer parsedStock = null;
             try {
-                parsedStock = FormatConverter.parseToInteger(stock);
+                parsedStock = FormatConverter.parseToInteger(stocks.get(i));
             } catch (ParsingIntegerException e) {
             }
 
-            result.add(parsedStock);
+            inventories.put(pricePolicyIds.get(i), parsedStock);
         }
 
-        return result;
+        return inventories;
     }
 
     private String buildKey(Long pricePolicyId) {

@@ -10,5 +10,3 @@ public interface GetPricePoliciesUseCase {
 
     List<PricePolicy> getPricePolicies(List<Long> ids);
 }
-
-
