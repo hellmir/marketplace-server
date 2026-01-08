@@ -108,9 +108,9 @@ public interface PricePolicyJpaRepository extends JpaRepository<PricePolicyJpaEn
               )
             ORDER BY
                 CASE WHEN :sortProperty = 'orderNum' THEN pp.orderNum END ASC,
-                CASE WHEN :sortProperty = 'popularity' THEN pp.popularity END DESC,
+                CASE WHEN :sortProperty = 'popularity' THEN pp.popularity END ASC,
                 CASE WHEN :sortProperty = 'discountPrice' THEN pp.discountPrice END ASC,
-                CASE WHEN :sortProperty = 'accumulatedPoint' THEN pp.accumulatedPoint END DESC,
+                CASE WHEN :sortProperty = 'accumulatedPoint' THEN pp.accumulatedPoint END ASC,
                 pp.id ASC
             """)
     List<PricePolicyJpaEntity> findAllActiveByCursorAsc(
@@ -203,9 +203,9 @@ public interface PricePolicyJpaRepository extends JpaRepository<PricePolicyJpaEn
               )
             ORDER BY
                 CASE WHEN :sortProperty = 'orderNum' THEN pp.orderNum END DESC,
-                CASE WHEN :sortProperty = 'popularity' THEN pp.popularity END ASC,
+                CASE WHEN :sortProperty = 'popularity' THEN pp.popularity END DESC,
                 CASE WHEN :sortProperty = 'discountPrice' THEN pp.discountPrice END DESC,
-                CASE WHEN :sortProperty = 'accumulatedPoint' THEN pp.accumulatedPoint END ASC,
+                CASE WHEN :sortProperty = 'accumulatedPoint' THEN pp.accumulatedPoint END DESC,
                 pp.id DESC
             """)
     List<PricePolicyJpaEntity> findAllActiveByCursorDesc(
