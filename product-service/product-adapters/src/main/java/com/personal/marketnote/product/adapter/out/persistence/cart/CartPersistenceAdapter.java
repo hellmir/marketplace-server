@@ -48,6 +48,11 @@ public class CartPersistenceAdapter implements SaveCartProductPort, FindCartProd
     }
 
     @Override
+    public boolean existsByUserIdAndPolicyId(Long userId, Long pricePolicyId) {
+        return cartJpaRepository.existsByUserIdAndPolicyId(userId, pricePolicyId);
+    }
+
+    @Override
     public void update(CartProduct cartProduct, Long originalPricePolicyId) throws CartProductNotFoundException {
         CartProductJpaEntity entity = findCartProductEntity(
                 cartProduct.getUserId(),
