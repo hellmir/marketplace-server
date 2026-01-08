@@ -8,14 +8,16 @@ import java.util.List;
 public record ChangeOrderStatusCommand(
         Long id,
         List<Long> pricePolicyIds,
-        OrderStatus orderStatus
+        OrderStatus orderStatus,
+        String reason
 ) {
     public static ChangeOrderStatusCommand of(
             Long id,
             List<Long> pricePolicyIds,
-            OrderStatus orderStatus
+            OrderStatus orderStatus,
+            String reason
     ) {
-        return new ChangeOrderStatusCommand(id, pricePolicyIds, orderStatus);
+        return new ChangeOrderStatusCommand(id, pricePolicyIds, orderStatus, reason);
     }
 
     public boolean isPartialProductChange() {

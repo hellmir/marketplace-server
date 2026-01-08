@@ -21,4 +21,11 @@ public class ChangeOrderStatusRequest {
             requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
     private OrderStatus orderStatus;
+
+    @Schema(
+            name = "reason",
+            description = "변경 사유",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED
+    )
+    private String reason;
 }
