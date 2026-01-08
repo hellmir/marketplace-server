@@ -23,6 +23,7 @@ public record GetProductPricePolicyWithOptionsResult(
                 .discountPrice(pricePolicy.getDiscountPrice())
                 .accumulatedPoint(pricePolicy.getAccumulatedPoint())
                 .discountRate(pricePolicy.getDiscountRate())
+                .optionIds(pricePolicy.getOptionIds())
                 .build();
     }
 }

@@ -105,6 +105,23 @@ public class PricePolicy {
     }
 
     public static PricePolicy of(
+            Long price,
+            Long discountPrice,
+            BigDecimal discountRate,
+            Long accumulatedPoint,
+            BigDecimal accumulationRate
+    ) {
+        return PricePolicy.builder()
+                .price(price)
+                .discountPrice(discountPrice)
+                .discountRate(discountRate)
+                .accumulatedPoint(accumulatedPoint)
+                .accumulationRate(accumulationRate)
+                .status(EntityStatus.ACTIVE)
+                .build();
+    }
+
+    public static PricePolicy of(
             Long id,
             Long price,
             Long discountPrice,

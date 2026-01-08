@@ -4,14 +4,18 @@ import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.adapter.out.mapper.ProductJpaEntityToDomainMapper;
 import com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity;
+import com.personal.marketnote.product.adapter.out.persistence.pricepolicy.repository.PricePolicyJpaRepository;
 import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.product.repository.ProductJpaRepository;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionCategoryJpaEntity;
+import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionPricePolicyJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.repository.ProductOptionCategoryJpaRepository;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.repository.ProductOptionJpaRepository;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.repository.ProductOptionPricePolicyJpaRepository;
 import com.personal.marketnote.product.domain.option.ProductOptionCategory;
+import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
+import com.personal.marketnote.product.exception.ProductNotFoundException;
 import com.personal.marketnote.product.port.out.productoption.DeleteProductOptionCategoryPort;
 import com.personal.marketnote.product.port.out.productoption.FindProductOptionCategoryPort;
 import com.personal.marketnote.product.port.out.productoption.SaveProductOptionsPort;
@@ -19,6 +23,7 @@ import com.personal.marketnote.product.port.out.productoption.UpdateOptionPriceP
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,19 +34,111 @@ public class ProductOptionPersistenceAdapter implements SaveProductOptionsPort, 
     private final ProductOptionCategoryJpaRepository productOptionCategoryJpaRepository;
     private final ProductOptionJpaRepository productOptionJpaRepository;
     private final ProductOptionPricePolicyJpaRepository productOptionPricePolicyJpaRepository;
-    private final com.personal.marketnote.product.adapter.out.persistence.pricepolicy.repository.PricePolicyJpaRepository pricePolicyJpaRepository;
+    private final PricePolicyJpaRepository pricePolicyJpaRepository;
 
     @Override
     @CacheEvict(value = "product:detail", key = "#productOptionCategory.product.id")
     public ProductOptionCategory save(ProductOptionCategory productOptionCategory) {
-        ProductJpaEntity productRef = productJpaRepository.getReferenceById(
-                productOptionCategory.getProduct().getId());
+        Long productId = productOptionCategory.getProduct().getId();
+        ProductJpaEntity product = productJpaRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
 
         ProductOptionCategoryJpaEntity savedCategory = productOptionCategoryJpaRepository.save(
-                ProductOptionCategoryJpaEntity.from(productOptionCategory, productRef));
+                ProductOptionCategoryJpaEntity.from(productOptionCategory, product));
         savedCategory.addOrderNum();
 
+        // 생성된 각 옵션 및 기존 옵션과의 조합에 대해 기본 가격 정책 등록
+        PricePolicyJpaEntity defaultPricePolicy = product.getDefaultPricePolicy();
+
+        if (!FormatValidator.hasValue(defaultPricePolicy)) {
+            return ProductJpaEntityToDomainMapper.mapToDomain(savedCategory).orElse(null);
+        }
+
+        // 상품의 모든 활성 카테고리와 옵션 가져오기
+        List<ProductOptionCategoryJpaEntity> allCategories = productOptionCategoryJpaRepository
+                .findActiveWithOptionsByProductId(productId);
+
+        // 새로 생성된 카테고리의 옵션들
+        List<ProductOptionJpaEntity> newOptions = savedCategory.getProductOptionJpaEntities();
+
+        // 1. 새로 생성된 카테고리의 각 옵션에 대해 가격 정책 생성
+        for (ProductOptionJpaEntity newOption : newOptions) {
+            PricePolicyJpaEntity pricePolicy = createPricePolicyFromDefault(product, defaultPricePolicy);
+            pricePolicyJpaRepository.save(pricePolicy);
+            productOptionPricePolicyJpaRepository.save(
+                    ProductOptionPricePolicyJpaEntity.of(newOption, pricePolicy)
+            );
+        }
+
+        // 2. 모든 카테고리의 옵션 조합에 대해 가격 정책 생성
+        if (allCategories.size() > 1) {
+            List<List<ProductOptionJpaEntity>> optionGroups = allCategories.stream()
+                    .map(ProductOptionCategoryJpaEntity::getProductOptionJpaEntities)
+                    .filter(FormatValidator::hasValue)
+                    .toList();
+
+            if (FormatValidator.hasValue(optionGroups) && optionGroups.size() > 1) {
+                List<List<ProductOptionJpaEntity>> combinations = cartesianProduct(optionGroups);
+                for (List<ProductOptionJpaEntity> combination : combinations) {
+                    PricePolicyJpaEntity pricePolicy = createPricePolicyFromDefault(product, defaultPricePolicy);
+                    pricePolicyJpaRepository.save(pricePolicy);
+
+                    // 조합의 모든 옵션과 가격 정책 연결
+                    for (ProductOptionJpaEntity option : combination) {
+                        productOptionPricePolicyJpaRepository.save(
+                                ProductOptionPricePolicyJpaEntity.of(option, pricePolicy)
+                        );
+                    }
+                }
+            }
+        }
+
         return ProductJpaEntityToDomainMapper.mapToDomain(savedCategory).orElse(null);
+    }
+
+    private PricePolicyJpaEntity createPricePolicyFromDefault(
+            ProductJpaEntity product,
+            PricePolicyJpaEntity defaultPricePolicy
+    ) {
+        PricePolicy pricePolicy = PricePolicy.of(
+                defaultPricePolicy.getPrice(),
+                defaultPricePolicy.getDiscountPrice(),
+                defaultPricePolicy.getDiscountRate(),
+                defaultPricePolicy.getAccumulatedPoint(),
+                defaultPricePolicy.getAccumulationRate()
+        );
+
+        return PricePolicyJpaEntity.from(product, pricePolicy);
+    }
+
+    private List<List<ProductOptionJpaEntity>> cartesianProduct(
+            List<List<ProductOptionJpaEntity>> optionGroups
+    ) {
+        List<List<ProductOptionJpaEntity>> result = new ArrayList<>();
+        if (!FormatValidator.hasValue(optionGroups)) {
+            return result;
+        }
+
+        backtrackCartesian(optionGroups, 0, new ArrayList<>(), result);
+        return result;
+    }
+
+    private void backtrackCartesian(
+            List<List<ProductOptionJpaEntity>> optionGroups,
+            int depth,
+            List<ProductOptionJpaEntity> path,
+            List<List<ProductOptionJpaEntity>> result
+    ) {
+        if (depth == optionGroups.size()) {
+            result.add(new ArrayList<>(path));
+            return;
+        }
+
+        for (ProductOptionJpaEntity option : optionGroups.get(depth)) {
+            path.add(option);
+            backtrackCartesian(optionGroups, depth + 1, path, result);
+            path.removeLast();
+        }
     }
 
     @Override

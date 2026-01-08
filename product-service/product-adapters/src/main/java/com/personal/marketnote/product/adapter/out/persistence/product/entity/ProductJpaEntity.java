@@ -34,10 +34,10 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
     @Column(name = "seller_id", nullable = false)
     private Long sellerId;
 
-    @Column(name = "name", nullable = false, length = 255)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "brand_name", length = 255)
+    @Column(name = "brand_name")
     private String brandName;
 
     @Column(name = "detail", length = 1023)
