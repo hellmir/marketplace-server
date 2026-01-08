@@ -31,5 +31,5 @@ public interface CategoryJpaRepository extends JpaRepository<CategoryJpaEntity, 
             """)
     List<CategoryJpaEntity> findAllByIdInAndStatus(@Param("ids") List<Long> ids, @Param("status") EntityStatus status);
 
-    boolean existsByParentCategoryId(Long parentCategoryId);
+    boolean existsByParentCategoryIdAndStatus(Long parentCategoryId, EntityStatus status);
 }
