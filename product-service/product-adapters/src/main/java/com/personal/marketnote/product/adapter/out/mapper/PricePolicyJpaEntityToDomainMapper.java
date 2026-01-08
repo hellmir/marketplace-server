@@ -17,7 +17,10 @@ public class PricePolicyJpaEntityToDomainMapper {
                                     pricePolicyJpaEntity.getDiscountPrice(),
                                     pricePolicyJpaEntity.getDiscountRate(),
                                     pricePolicyJpaEntity.getAccumulatedPoint(),
-                                    pricePolicyJpaEntity.getAccumulationRate()
+                                    pricePolicyJpaEntity.getAccumulationRate(),
+                                    pricePolicyJpaEntity.getPopularity(),
+                                    pricePolicyJpaEntity.getStatus(),
+                                    pricePolicyJpaEntity.getOrderNum()
                             );
                             pricePolicy.addProduct(
                                     ProductJpaEntityToDomainMapper.mapToDomainWithoutPolicyProduct(entity.getProductJpaEntity())
@@ -40,6 +43,9 @@ public class PricePolicyJpaEntityToDomainMapper {
                                     pricePolicyJpaEntity.getDiscountRate(),
                                     pricePolicyJpaEntity.getAccumulatedPoint(),
                                     pricePolicyJpaEntity.getAccumulationRate(),
+                                    pricePolicyJpaEntity.getPopularity(),
+                                    pricePolicyJpaEntity.getStatus(),
+                                    pricePolicyJpaEntity.getOrderNum(),
                                     optionIds
                             );
                             pricePolicy.addProduct(

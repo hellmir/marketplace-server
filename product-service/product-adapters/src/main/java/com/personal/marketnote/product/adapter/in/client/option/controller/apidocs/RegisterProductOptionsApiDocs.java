@@ -87,10 +87,10 @@ import java.lang.annotation.*;
                         schema = @Schema(implementation = UpdateProductOptionsRequest.class),
                         examples = @ExampleObject("""
                                 {
-                                  "categoryName": "수량",
+                                  "categoryName": "개당 수량",
                                   "options": [
-                                    { "content": "1박스" },
-                                    { "content": "3박스" }
+                                    { "content": "30개입" },
+                                    { "content": "60개입" }
                                   ]
                                 }
                                 """)

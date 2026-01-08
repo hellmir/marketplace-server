@@ -10,18 +10,23 @@ import com.personal.marketnote.product.adapter.out.persistence.product.repositor
 import com.personal.marketnote.product.adapter.out.persistence.productoption.repository.ProductOptionPricePolicyJpaRepository;
 import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
 import com.personal.marketnote.product.domain.product.Product;
+import com.personal.marketnote.product.domain.product.ProductSearchTarget;
+import com.personal.marketnote.product.domain.product.ProductSortProperty;
 import com.personal.marketnote.product.port.out.pricepolicy.DeletePricePolicyPort;
+import com.personal.marketnote.product.port.out.pricepolicy.FindPricePoliciesPort;
 import com.personal.marketnote.product.port.out.pricepolicy.FindPricePolicyPort;
 import com.personal.marketnote.product.port.out.pricepolicy.SavePricePolicyPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindPricePolicyPort, DeletePricePolicyPort {
+public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindPricePolicyPort, FindPricePoliciesPort, DeletePricePolicyPort {
     private final ProductJpaRepository productJpaRepository;
     private final PricePolicyJpaRepository pricePolicyJpaRepository;
     private final ProductOptionPricePolicyJpaRepository productOptionPricePolicyJpaRepository;
@@ -30,8 +35,11 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
     @CacheEvict(value = {"product:detail", "product:price-policy"}, key = "#pricePolicy.product.id", beforeInvocation = false)
     public Long save(PricePolicy pricePolicy) {
         ProductJpaEntity productRef = productJpaRepository.getReferenceById(pricePolicy.getProduct().getId());
-        com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity saved = pricePolicyJpaRepository.save(com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity.from(productRef, pricePolicy));
-        return saved.getId();
+        PricePolicyJpaEntity savedPricePolicyJpaEntity
+                = pricePolicyJpaRepository.save(PricePolicyJpaEntity.from(productRef, pricePolicy));
+        savedPricePolicyJpaEntity.setIdToOrderNum();
+
+        return savedPricePolicyJpaEntity.getId();
     }
 
     @Override
@@ -100,7 +108,10 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
                 entity.getDiscountPrice(),
                 entity.getAccumulationRate(),
                 entity.getAccumulatedPoint(),
-                entity.getDiscountRate()
+                entity.getDiscountRate(),
+                entity.getPopularity(),
+                entity.getStatus(),
+                entity.getOrderNum()
         );
 
         return Optional.of(pricePolicy);
@@ -111,6 +122,127 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
         return pricePolicyJpaRepository.findByOptionIds(optionIds)
                 .map(PricePolicyJpaEntityToDomainMapper::mapToDomain)
                 .orElse(null);
+    }
+
+    @Override
+    public List<PricePolicy> findByProductId(Long productId) {
+        List<PricePolicyJpaEntity> policyEntities = pricePolicyJpaRepository.findAll().stream()
+                .filter(policyEntity -> policyEntity.getProductJpaEntity().getId().equals(productId))
+                .sorted((a, b) -> Long.compare(b.getId(), a.getId()))
+                .toList();
+
+        return policyEntities.stream()
+                .map(policyEntity -> PricePolicyJpaEntityToDomainMapper.mapToDomain(
+                        policyEntity, productOptionPricePolicyJpaRepository.findOptionIdsByPricePolicyId(policyEntity.getId())
+                ))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+    }
+
+    @Override
+    public List<PricePolicy> findByIds(List<Long> ids) {
+        return pricePolicyJpaRepository.findAllById(ids).stream()
+                .map(
+                        policyEntity -> PricePolicyJpaEntityToDomainMapper.mapToDomain(
+                                policyEntity,
+                                productOptionPricePolicyJpaRepository.findOptionIdsByPricePolicyId(policyEntity.getId())
+                        )
+                )
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+    }
+
+    @Override
+    public List<PricePolicy> findActivePage(
+            Long cursor,
+            Pageable pageable,
+            ProductSortProperty sortProperty,
+            ProductSearchTarget searchTarget,
+            String searchKeyword
+    ) {
+        boolean isAsc = pageable.getSort()
+                .stream()
+                .findFirst()
+                .map(Sort.Order::isAscending)
+                .orElse(true);
+
+        String pattern = generateSearchPattern(searchKeyword);
+
+        List<PricePolicyJpaEntity> entities = isAsc
+                ? pricePolicyJpaRepository.findAllActiveByCursorAsc(
+                cursor,
+                pageable,
+                sortProperty.getCamelCaseValue(),
+                searchTarget.getCamelCaseValue(),
+                pattern,
+                null
+        )
+                : pricePolicyJpaRepository.findAllActiveByCursorDesc(
+                cursor,
+                pageable,
+                sortProperty.getCamelCaseValue(),
+                searchTarget.getCamelCaseValue(),
+                pattern,
+                null
+        );
+
+        return entities.stream()
+                .map(PricePolicyJpaEntityToDomainMapper::mapToDomain)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+    }
+
+    @Override
+    public List<PricePolicy> findActivePageByCategoryId(
+            Long categoryId,
+            Long cursor,
+            Pageable pageable,
+            ProductSortProperty sortProperty,
+            ProductSearchTarget searchTarget,
+            String searchKeyword
+    ) {
+        boolean isAsc = pageable.getSort()
+                .stream()
+                .findFirst()
+                .map(Sort.Order::isAscending)
+                .orElse(true);
+
+        String pattern = generateSearchPattern(searchKeyword);
+
+        List<PricePolicyJpaEntity> entities = isAsc
+                ? pricePolicyJpaRepository.findAllActiveByCursorAsc(
+                cursor,
+                pageable,
+                sortProperty.getCamelCaseValue(),
+                searchTarget.getCamelCaseValue(),
+                pattern,
+                categoryId
+        )
+                : pricePolicyJpaRepository.findAllActiveByCursorDesc(
+                cursor,
+                pageable,
+                sortProperty.getCamelCaseValue(),
+                searchTarget.getCamelCaseValue(),
+                pattern,
+                categoryId
+        );
+
+        return entities.stream()
+                .map(PricePolicyJpaEntityToDomainMapper::mapToDomain)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+    }
+
+    private String generateSearchPattern(String searchKeyword) {
+        if (FormatValidator.hasValue(searchKeyword)) {
+            return "%" + searchKeyword + "%";
+        }
+
+        return null;
     }
 
     @Override

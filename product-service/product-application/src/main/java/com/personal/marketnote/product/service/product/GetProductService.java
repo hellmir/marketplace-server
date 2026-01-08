@@ -73,16 +73,15 @@ public class GetProductService implements GetProductUseCase {
         Product product = getProduct(id);
         List<ProductOptionCategory> categories
                 = findProductOptionCategoryPort.findActiveWithOptionsByProductId(product.getId());
-        PricePolicy defaultPricePolicy = product.getDefaultPricePolicy();
 
         List<PricePolicy> pricePolicies
-                = findPricePoliciesPort.findByProductId(product.getId())
-                .stream()
-                .filter(PricePolicy::hasOptions)
-                .collect(Collectors.toList());
-        pricePolicies.addFirst(defaultPricePolicy);
-
+                = findPricePoliciesPort.findByProductId(product.getId());
+        PricePolicy defaultPricePolicy = pricePolicies.stream()
+                .filter(policy -> !policy.hasOptions())
+                .findFirst()
+                .orElse(null);
         PricePolicy selectedPricePolicy = defaultPricePolicy;
+
         if (
                 product.isFindAllOptionsYn()
                         && FormatValidator.hasValue(selectedOptionIds)
@@ -157,11 +156,7 @@ public class GetProductService implements GetProductUseCase {
             ProductSearchTarget searchTarget,
             String searchKeyword
     ) {
-        // 내림차순 정렬인 경우 첫 페이지의 cursor 값을 최대 숫자로 설정
         boolean isFirstPage = !FormatValidator.hasValue(cursor);
-        if (isFirstPage && sortDirection.isDescending()) {
-            cursor = Long.MAX_VALUE;
-        }
 
         Pageable pageable = PageRequest.of(
                 0, pageSize + 1, Sort.by(sortDirection, sortProperty.getAlternativeKey())
@@ -169,9 +164,17 @@ public class GetProductService implements GetProductUseCase {
 
         boolean isCategorized = FormatValidator.hasValue(categoryId);
 
-        List<Product> products = getProducts(
-                isCategorized,
+        // 여기부터: 상품이 아니라 pricePolicy 기준으로 페이지 조회
+        List<PricePolicy> pricePolicies = isCategorized
+                ? findPricePoliciesPort.findActivePageByCategoryId(
                 categoryId,
+                cursor,
+                pageable,
+                sortProperty,
+                searchTarget,
+                searchKeyword
+        )
+                : findPricePoliciesPort.findActivePage(
                 cursor,
                 pageable,
                 sortProperty,
@@ -179,19 +182,22 @@ public class GetProductService implements GetProductUseCase {
                 searchKeyword
         );
 
-        // 옵션 조합 확장
-        List<ProductItemResult> expandedProductItems = expandProducts(products);
-
         // 무한 스크롤 페이지 설정
-        boolean hasNext = expandedProductItems.size() > pageSize;
-        List<ProductItemResult> pageItems = hasNext
-                ? expandedProductItems.subList(0, pageSize)
-                : expandedProductItems;
+        boolean hasNext = pricePolicies.size() > pageSize;
+        List<PricePolicy> pagePolicies = hasNext
+                ? pricePolicies.subList(0, pageSize)
+                : pricePolicies;
 
         Long nextCursor = null;
-        if (FormatValidator.hasValue(pageItems)) {
-            nextCursor = pageItems.getLast().getPricePolicyId();
+        if (FormatValidator.hasValue(pagePolicies)) {
+            // nextCursor = 마지막 pricePolicy의 id
+            nextCursor = pagePolicies.get(pagePolicies.size() - 1).getId();
         }
+
+        // pricePolicy 한 건을 화면에 뿌릴 ProductItemResult 한 건으로 매핑
+        List<ProductItemResult> pageItems = pagePolicies.stream()
+                .map(this::toProductItem)
+                .toList();
 
         // 상품 카탈로그 이미지 병렬 조회
         Map<Long, GetFilesResult> productIdToImages = new ConcurrentHashMap<>();
@@ -269,33 +275,38 @@ public class GetProductService implements GetProductUseCase {
         return GetProductsResult.from(hasNext, nextCursor, totalElements, pageItemsWithImage);
     }
 
-    private List<Product> getProducts(
-            boolean isCategorized,
-            Long categoryId,
-            Long cursor,
-            Pageable pageable,
-            ProductSortProperty sortProperty,
-            ProductSearchTarget searchTarget,
-            String searchKeyword
-    ) {
-        if (isCategorized) {
-            return findProductPort.findAllActiveByCategoryId(
-                    categoryId,
-                    cursor,
-                    pageable,
-                    sortProperty,
-                    searchTarget,
-                    searchKeyword
-            );
+    private ProductItemResult toProductItem(PricePolicy pricePolicy) {
+        // pricePolicy -> product 조회
+        Product product = getProduct(pricePolicy.getProductId());
+
+        // 옵션을 모두 개별 상품으로 노출하지 않는 경우: 옵션 없이 단일 상품
+        if (!product.isFindAllOptionsYn()) {
+            return ProductItemResult.from(product, pricePolicy);
         }
 
-        return findProductPort.findAllActive(
-                cursor,
-                pageable,
-                sortProperty,
-                searchTarget,
-                searchKeyword
-        );
+        List<Long> optionIds = pricePolicy.getOptionIds();
+        if (!FormatValidator.hasValue(optionIds)) {
+            return ProductItemResult.from(product, pricePolicy);
+        }
+
+        // 해당 상품의 옵션 카테고리 + 옵션 전체 조회
+        List<ProductOptionCategory> categories =
+                findProductOptionCategoryPort.findActiveWithOptionsByProductId(product.getId());
+
+        if (!FormatValidator.hasValue(categories)) {
+            return ProductItemResult.from(product, pricePolicy);
+        }
+
+        Map<Long, ProductOption> optionMap = categories.stream()
+                .flatMap(c -> c.getOptions().stream())
+                .collect(Collectors.toMap(ProductOption::getId, o -> o, (o1, o2) -> o1));
+
+        List<ProductOption> selectedOptions = optionIds.stream()
+                .map(optionMap::get)
+                .filter(Objects::nonNull)
+                .toList();
+
+        return ProductItemResult.from(product, selectedOptions, pricePolicy);
     }
 
     private Long computeTotalElements(

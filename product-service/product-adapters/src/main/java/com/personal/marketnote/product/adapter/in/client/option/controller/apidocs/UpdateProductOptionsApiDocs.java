@@ -95,8 +95,9 @@ import java.lang.annotation.*;
                                 {
                                   "categoryName": "수량",
                                   "options": [
-                                    { "content": "1박스" },
-                                    { "content": "3박스" }
+                                    { "content": "2박스" },
+                                    { "content": "4박스" },
+                                    { "content": "6박스" }
                                   ]
                                 }
                                 """)

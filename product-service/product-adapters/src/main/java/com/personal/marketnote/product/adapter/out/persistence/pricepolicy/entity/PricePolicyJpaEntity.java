@@ -1,6 +1,6 @@
 package com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity;
 
-import com.personal.marketnote.common.adapter.out.persistence.audit.BaseGeneralEntity;
+import com.personal.marketnote.common.adapter.out.persistence.audit.BaseOrderedGeneralEntity;
 import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
 import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
 import jakarta.persistence.*;
@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-public class PricePolicyJpaEntity extends BaseGeneralEntity {
+public class PricePolicyJpaEntity extends BaseOrderedGeneralEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(name = "fk_price_policy_product"))
     private ProductJpaEntity productJpaEntity;
@@ -25,27 +25,26 @@ public class PricePolicyJpaEntity extends BaseGeneralEntity {
     @Column(name = "discount_price", nullable = false)
     private Long discountPrice;
 
-    // start_at, end_at removed per latest spec
-
-    @Column(name = "accumulation_rate", nullable = false, precision = 3, scale = 1)
-    private BigDecimal accumulationRate;
+    @Column(name = "discount_rate", nullable = false, precision = 3, scale = 1)
+    private BigDecimal discountRate;
 
     @Column(name = "accumulated_point", nullable = false)
     private Long accumulatedPoint;
 
-    @Column(name = "discount_rate", nullable = false, precision = 3, scale = 1)
-    private BigDecimal discountRate;
+    @Column(name = "accumulation_rate", nullable = false, precision = 3, scale = 1)
+    private BigDecimal accumulationRate;
+
+    @Column(name = "popularity", nullable = false, insertable = false, columnDefinition = "BIGINT DEFAULT 0")
+    private Long popularity;
 
     public static PricePolicyJpaEntity from(ProductJpaEntity productRef, PricePolicy pricePolicy) {
-        return com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity.builder()
+        return PricePolicyJpaEntity.builder()
                 .productJpaEntity(productRef)
                 .price(pricePolicy.getPrice())
                 .discountPrice(pricePolicy.getDiscountPrice())
-                .accumulationRate(pricePolicy.getAccumulationRate())
-                .accumulatedPoint(pricePolicy.getAccumulatedPoint())
                 .discountRate(pricePolicy.getDiscountRate())
+                .accumulatedPoint(pricePolicy.getAccumulatedPoint())
+                .accumulationRate(pricePolicy.getAccumulationRate())
                 .build();
     }
 }
-
-

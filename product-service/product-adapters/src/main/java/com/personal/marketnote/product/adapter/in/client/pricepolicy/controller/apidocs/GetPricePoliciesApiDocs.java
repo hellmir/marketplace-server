@@ -67,8 +67,327 @@ import java.lang.annotation.*;
                                           "timestamp": "2026-01-02T10:37:32.320824",
                                           "content": {
                                             "policies": [
-                                              { "id": 12, "price": 45000, "discountPrice": 37000, "accumulatedPoint": 1200, "discountRate": 17.8, "basePolicy": true, "optionIds": [] },
-                                              { "id": 13, "price": 55000, "discountPrice": 43000, "accumulatedPoint": 1500, "discountRate": 21.8, "basePolicy": false, "optionIds": [3,7] }
+                                              {
+                                                "id": 115,
+                                                "price": 100000,
+                                                "discountPrice": 50000,
+                                                "accumulatedPoint": 30000,
+                                                "discountRate": 60,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  34,
+                                                  40
+                                                ]
+                                              },
+                                              {
+                                                "id": 114,
+                                                "price": 100000,
+                                                "discountPrice": 50000,
+                                                "accumulatedPoint": 30000,
+                                                "discountRate": 60,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  34,
+                                                  40
+                                                ]
+                                              },
+                                              {
+                                                "id": 112,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  34,
+                                                  39
+                                                ]
+                                              },
+                                              {
+                                                "id": 111,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  34,
+                                                  38
+                                                ]
+                                              },
+                                              {
+                                                "id": 110,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  33,
+                                                  40
+                                                ]
+                                              },
+                                              {
+                                                "id": 109,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  33,
+                                                  39
+                                                ]
+                                              },
+                                              {
+                                                "id": 108,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  33,
+                                                  38
+                                                ]
+                                              },
+                                              {
+                                                "id": 107,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  32,
+                                                  40
+                                                ]
+                                              },
+                                              {
+                                                "id": 106,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  32,
+                                                  39
+                                                ]
+                                              },
+                                              {
+                                                "id": 105,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  32,
+                                                  38
+                                                ]
+                                              },
+                                              {
+                                                "id": 104,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  40
+                                                ]
+                                              },
+                                              {
+                                                "id": 103,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  39
+                                                ]
+                                              },
+                                              {
+                                                "id": 102,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  38
+                                                ]
+                                              },
+                                              {
+                                                "id": 101,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  34
+                                                ]
+                                              },
+                                              {
+                                                "id": 100,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  34
+                                                ]
+                                              },
+                                              {
+                                                "id": 99,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  34
+                                                ]
+                                              },
+                                              {
+                                                "id": 98,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  33
+                                                ]
+                                              },
+                                              {
+                                                "id": 97,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  33
+                                                ]
+                                              },
+                                              {
+                                                "id": 96,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  33
+                                                ]
+                                              },
+                                              {
+                                                "id": 95,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  32
+                                                ]
+                                              },
+                                              {
+                                                "id": 94,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  32
+                                                ]
+                                              },
+                                              {
+                                                "id": 93,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  32
+                                                ]
+                                              },
+                                              {
+                                                "id": 92,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": []
+                                              },
+                                              {
+                                                "id": 91,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": []
+                                              },
+                                              {
+                                                "id": 90,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": []
+                                              },
+                                              {
+                                                "id": 89,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  34
+                                                ]
+                                              },
+                                              {
+                                                "id": 88,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  33
+                                                ]
+                                              },
+                                              {
+                                                "id": 87,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": [
+                                                  32
+                                                ]
+                                              },
+                                              {
+                                                "id": 86,
+                                                "price": 10000,
+                                                "discountPrice": 9000,
+                                                "accumulatedPoint": 1000,
+                                                "discountRate": 11.1,
+                                                "basePolicy": false,
+                                                "optionIds": []
+                                              }
                                             ]
                                           },
                                           "message": "상품 가격 정책 목록 조회 성공"
