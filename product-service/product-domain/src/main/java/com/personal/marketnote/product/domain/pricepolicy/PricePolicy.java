@@ -28,8 +28,10 @@ public class PricePolicy {
     private BigDecimal discountRate;
     private Long accumulatedPoint;
     private BigDecimal accumulationRate;
-    private List<Long> optionIds;
+    private Long popularity;
     private EntityStatus status;
+    private Long orderNum;
+    private List<Long> optionIds;
 
     @JsonCreator
     private static PricePolicy jsonCreator(
@@ -39,10 +41,15 @@ public class PricePolicy {
             @JsonProperty("discountRate") BigDecimal discountRate,
             @JsonProperty("accumulatedPoint") Long accumulatedPoint,
             @JsonProperty("accumulationRate") BigDecimal accumulationRate,
-            @JsonProperty("optionIds") List<Long> optionIds,
-            @JsonProperty("status") EntityStatus status
+            @JsonProperty("popularity") Long popularity,
+            @JsonProperty("status") EntityStatus status,
+            @JsonProperty("orderNum") Long orderNum,
+            @JsonProperty("optionIds") List<Long> optionIds
     ) {
-        return of(id, price, discountPrice, discountRate, accumulatedPoint, accumulationRate, optionIds);
+        return of(
+                id, price, discountPrice, discountRate, accumulatedPoint,
+                accumulationRate, popularity, status, orderNum, optionIds
+        );
     }
 
     public static PricePolicy of(
@@ -51,7 +58,10 @@ public class PricePolicy {
             Long discountPrice,
             BigDecimal discountRate,
             Long accumulatedPoint,
-            BigDecimal accumulationRate
+            BigDecimal accumulationRate,
+            Long popularity,
+            EntityStatus status,
+            Long orderNum
     ) {
         return PricePolicy.builder()
                 .product(product)
@@ -60,7 +70,9 @@ public class PricePolicy {
                 .discountRate(discountRate)
                 .accumulatedPoint(accumulatedPoint)
                 .accumulationRate(accumulationRate)
-                .status(EntityStatus.ACTIVE)
+                .popularity(popularity)
+                .status(status)
+                .orderNum(orderNum)
                 .build();
     }
 
@@ -71,7 +83,10 @@ public class PricePolicy {
             Long discountPrice,
             BigDecimal discountRate,
             Long accumulatedPoint,
-            BigDecimal accumulationRate
+            BigDecimal accumulationRate,
+            Long popularity,
+            EntityStatus status,
+            Long orderNum
     ) {
         return PricePolicy.builder()
                 .id(id)
@@ -81,7 +96,9 @@ public class PricePolicy {
                 .discountRate(discountRate)
                 .accumulatedPoint(accumulatedPoint)
                 .accumulationRate(accumulationRate)
-                .status(EntityStatus.ACTIVE)
+                .popularity(popularity)
+                .status(status)
+                .orderNum(orderNum)
                 .build();
     }
 
@@ -91,7 +108,10 @@ public class PricePolicy {
             Long discountPrice,
             BigDecimal discountRate,
             Long accumulatedPoint,
-            BigDecimal accumulationRate
+            BigDecimal accumulationRate,
+            Long popularity,
+            EntityStatus status,
+            Long orderNum
     ) {
         return PricePolicy.builder()
                 .id(id)
@@ -100,7 +120,9 @@ public class PricePolicy {
                 .discountRate(discountRate)
                 .accumulatedPoint(accumulatedPoint)
                 .accumulationRate(accumulationRate)
-                .status(EntityStatus.ACTIVE)
+                .popularity(popularity)
+                .status(status)
+                .orderNum(orderNum)
                 .build();
     }
 
@@ -128,6 +150,9 @@ public class PricePolicy {
             BigDecimal discountRate,
             Long accumulatedPoint,
             BigDecimal accumulationRate,
+            Long popularity,
+            EntityStatus status,
+            Long orderNum,
             List<Long> optionIds
     ) {
         return PricePolicy.builder()
@@ -137,8 +162,10 @@ public class PricePolicy {
                 .discountRate(discountRate)
                 .accumulatedPoint(accumulatedPoint)
                 .accumulationRate(accumulationRate)
+                .popularity(popularity)
+                .status(status)
+                .orderNum(orderNum)
                 .optionIds(optionIds)
-                .status(EntityStatus.ACTIVE)
                 .build();
     }
 
@@ -148,5 +175,9 @@ public class PricePolicy {
 
     public void addProduct(Product product) {
         this.product = product;
+    }
+
+    public Long getProductId() {
+        return product.getId();
     }
 }

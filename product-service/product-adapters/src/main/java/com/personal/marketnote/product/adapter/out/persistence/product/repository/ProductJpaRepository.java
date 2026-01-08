@@ -463,6 +463,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Lo
                 SELECT 1
                 FROM PricePolicyJpaEntity pp
                 WHERE 1 = 1
+                    AND pp.productJpaEntity = p
                     AND pp.id IN :pricePolicyIds
               )
             """)

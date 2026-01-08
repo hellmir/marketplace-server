@@ -45,6 +45,23 @@ public class ProductItemResult {
 
     public static ProductItemResult from(
             Product product,
+            PricePolicy pricePolicy
+    ) {
+        return ProductItemResult.builder()
+                .id(product.getId())
+                .sellerId(product.getSellerId())
+                .name(product.getName())
+                .brandName(product.getBrandName())
+                .pricePolicy(GetProductPricePolicyResult.from(pricePolicy))
+                .sales(product.getSales())
+                .productTags(product.getProductTags())
+                .orderNum(product.getOrderNum())
+                .status(product.getStatus().name())
+                .build();
+    }
+
+    public static ProductItemResult from(
+            Product product,
             List<ProductOption> selectedOptions,
             PricePolicy pricePolicy
     ) {
