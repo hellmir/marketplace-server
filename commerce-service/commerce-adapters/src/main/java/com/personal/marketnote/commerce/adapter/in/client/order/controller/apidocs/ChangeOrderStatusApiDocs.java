@@ -79,8 +79,9 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
-                | pricePolicyIds | array<number> | 가격 정책 ID 목록 | Y | [1, 2, 3] |
+                | pricePolicyIds | array<number> | 가격 정책 ID 목록 | N | [1, 2, 3] |
                 | orderStatus | string | 주문 상태 | Y | "PAYMENT_PENDING" |
+                | reason | string | 변경 사유 | N | default: 변경된 주문 상태의 디스크립션 |
                 
                 ---
                 
@@ -110,7 +111,8 @@ import java.lang.annotation.*;
                         examples = @ExampleObject("""
                                 {
                                   "pricePolicyIds": [1, 2, 3],
-                                  "orderStatus": "PAYMENT_PENDING"
+                                  "orderStatus": "PAYMENT_PENDING",
+                                  "reason": "주문 상태 변경 사유"
                                 }
                                 """)
                 )

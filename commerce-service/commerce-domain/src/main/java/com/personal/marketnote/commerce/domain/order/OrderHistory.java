@@ -1,5 +1,6 @@
 package com.personal.marketnote.commerce.domain.order;
 
+import com.personal.marketnote.common.utility.FormatValidator;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,10 @@ public class OrderHistory {
             OrderStatus orderStatus,
             String reason
     ) {
+        if (!FormatValidator.hasValue(reason)) {
+            reason = orderStatus.getDescription();
+        }
+
         return OrderHistory.builder()
                 .orderId(orderId)
                 .orderStatus(orderStatus)

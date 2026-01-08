@@ -7,6 +7,7 @@ import com.personal.marketnote.commerce.adapter.out.persistence.order.entity.Ord
 import com.personal.marketnote.commerce.adapter.out.persistence.order.repository.OrderHistoryJpaRepository;
 import com.personal.marketnote.commerce.adapter.out.persistence.order.repository.OrderJpaRepository;
 import com.personal.marketnote.commerce.domain.order.Order;
+import com.personal.marketnote.commerce.domain.order.OrderHistory;
 import com.personal.marketnote.commerce.exception.OrderNotFoundException;
 import com.personal.marketnote.commerce.port.out.order.FindOrderPort;
 import com.personal.marketnote.commerce.port.out.order.SaveOrderPort;
@@ -60,9 +61,10 @@ public class OrderPersistenceAdapter implements SaveOrderPort, FindOrderPort, Up
     }
 
     @Override
-    public void update(Order order) throws OrderNotFoundException {
-        OrderJpaEntity entity = findEntityById(order.getId());
-        entity.updateFrom(order);
+    public void update(Order order, OrderHistory orderHistory) throws OrderNotFoundException {
+        OrderJpaEntity orderJpaEntity = findEntityById(order.getId());
+        orderJpaEntity.updateFrom(order);
+        orderHistoryJpaRepository.save(OrderHistoryJpaEntity.from(orderHistory, orderJpaEntity));
     }
 
     private OrderJpaEntity findEntityById(Long id) throws OrderNotFoundException {
