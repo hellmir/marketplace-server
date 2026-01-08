@@ -50,8 +50,10 @@ public class ProductCommandToDomainMapper {
                 product,
                 command.price(),
                 command.discountPrice(),
-                accumulationRate,
+                discountRate,
                 command.accumulatedPoint(),
-                discountRate);
+                accumulationRate,
+                command.optionIds()
+        );
     }
 }

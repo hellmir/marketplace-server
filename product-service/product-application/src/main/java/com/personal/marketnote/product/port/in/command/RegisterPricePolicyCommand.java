@@ -1,11 +1,13 @@
 package com.personal.marketnote.product.port.in.command;
 
+import java.util.List;
+
 public record RegisterPricePolicyCommand(
         Long productId,
         Long price,
         Long discountPrice,
         Long accumulatedPoint,
-        java.util.List<Long> optionIds
+        List<Long> optionIds
 ) {
     public static RegisterPricePolicyCommand of(
             Long productId,

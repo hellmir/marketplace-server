@@ -144,6 +144,26 @@ public class PricePolicy {
     }
 
     public static PricePolicy of(
+            Product product,
+            Long price,
+            Long discountPrice,
+            BigDecimal discountRate,
+            Long accumulatedPoint,
+            BigDecimal accumulationRate,
+            List<Long> optionIds
+    ) {
+        return PricePolicy.builder()
+                .product(product)
+                .price(price)
+                .discountPrice(discountPrice)
+                .discountRate(discountRate)
+                .accumulatedPoint(accumulatedPoint)
+                .accumulationRate(accumulationRate)
+                .optionIds(optionIds)
+                .build();
+    }
+
+    public static PricePolicy of(
             Long id,
             Long price,
             Long discountPrice,

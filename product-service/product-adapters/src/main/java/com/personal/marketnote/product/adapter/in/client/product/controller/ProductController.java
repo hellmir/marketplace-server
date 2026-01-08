@@ -239,7 +239,7 @@ public class ProductController {
      * @Description 상품 이미지를 삭제합니다.
      */
     @DeleteMapping("/{id}/images/{fileId}")
-    @PreAuthorize(ADMIN_OR_SELLER_PRINCIPAL_POINTCUT)
+    @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
     @DeleteProductImageApiDocs
     public ResponseEntity<BaseResponse<Void>> deleteProductImage(
             @PathVariable("id") Long id,
