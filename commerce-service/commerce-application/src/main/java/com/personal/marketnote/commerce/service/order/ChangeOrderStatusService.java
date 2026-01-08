@@ -1,6 +1,7 @@
 package com.personal.marketnote.commerce.service.order;
 
 import com.personal.marketnote.commerce.domain.order.Order;
+import com.personal.marketnote.commerce.domain.order.OrderHistory;
 import com.personal.marketnote.commerce.domain.order.OrderProduct;
 import com.personal.marketnote.commerce.domain.order.OrderStatus;
 import com.personal.marketnote.commerce.exception.OrderStatusAlreadyChangedException;
@@ -35,7 +36,8 @@ public class ChangeOrderStatusService implements ChangeOrderStatusUseCase {
         }
 
         changeOrderStatus(command, order);
-        updateOrderPort.update(order);
+        OrderHistory orderHistory = OrderHistory.of(command.id(), command.orderStatus(), command.reason());
+        updateOrderPort.update(order, orderHistory);
 
         // FIXME: Payment Service의 Kafka 이벤트 Consumption으로 변경(주문 상태 PAID로 변경 / 결제 금액 업데이트 / 재고 감소 / 장바구니 상품 삭제)
         if (status.isPaid()) {
