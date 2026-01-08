@@ -27,6 +27,7 @@ import com.personal.marketnote.product.port.out.product.FindProductPort;
 import com.personal.marketnote.product.port.out.productoption.FindProductOptionCategoryPort;
 import com.personal.marketnote.product.port.out.result.GetInventoryResult;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -35,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 import static com.personal.marketnote.common.domain.file.FileSort.*;
@@ -53,21 +55,27 @@ public class GetProductService implements GetProductUseCase {
     private final SaveCacheStockPort saveCacheStockPort;
     private final FindStockPort findStockPort;
 
+    @Qualifier("productImageExecutor")
+    private final Executor productImageExecutor;
+
     @Override
     public GetProductInfoWithOptionsResult getProductInfo(Long id, List<Long> selectedOptionIds) {
         // 상단 대표 이미지 목록, 본문 이미지 목록 조회 시작
-        CompletableFuture<GetFilesResult> representativeFuture
-                = CompletableFuture.supplyAsync(
-                () -> findProductImagesPort.findImagesByProductIdAndSort(
-                        id, PRODUCT_REPRESENTATIVE_IMAGE
-                ).orElse(null)
-        );
-        CompletableFuture<GetFilesResult> contentFuture
-                = CompletableFuture.supplyAsync(
-                () -> findProductImagesPort.findImagesByProductIdAndSort(
-                        id, PRODUCT_CONTENT_IMAGE
-                ).orElse(null)
-        );
+        CompletableFuture<GetFilesResult> representativeFuture =
+                CompletableFuture.supplyAsync(
+                        () -> findProductImagesPort.findImagesByProductIdAndSort(
+                                id, PRODUCT_REPRESENTATIVE_IMAGE
+                        ).orElse(null),
+                        productImageExecutor
+                );
+
+        CompletableFuture<GetFilesResult> contentFuture =
+                CompletableFuture.supplyAsync(
+                        () -> findProductImagesPort.findImagesByProductIdAndSort(
+                                id, PRODUCT_CONTENT_IMAGE
+                        ).orElse(null),
+                        productImageExecutor
+                );
 
         // 상품 조회 (병렬 진행)
         Product product = getProduct(id);
@@ -164,7 +172,6 @@ public class GetProductService implements GetProductUseCase {
 
         boolean isCategorized = FormatValidator.hasValue(categoryId);
 
-        // 여기부터: 상품이 아니라 pricePolicy 기준으로 페이지 조회
         List<PricePolicy> pricePolicies = isCategorized
                 ? findPricePoliciesPort.findActivePageByCategoryId(
                 categoryId,
@@ -190,11 +197,9 @@ public class GetProductService implements GetProductUseCase {
 
         Long nextCursor = null;
         if (FormatValidator.hasValue(pagePolicies)) {
-            // nextCursor = 마지막 pricePolicy의 id
             nextCursor = pagePolicies.get(pagePolicies.size() - 1).getId();
         }
 
-        // pricePolicy 한 건을 화면에 뿌릴 ProductItemResult 한 건으로 매핑
         List<ProductItemResult> pageItems = pagePolicies.stream()
                 .map(this::toProductItem)
                 .toList();
@@ -208,6 +213,7 @@ public class GetProductService implements GetProductUseCase {
                                                 item.getId(), PRODUCT_CATALOG_IMAGE
                                         )
                                         .ifPresent(result -> productIdToImages.put(item.getId(), result))
+                                , productImageExecutor
                         )
                 )
                 .toList();
@@ -276,7 +282,6 @@ public class GetProductService implements GetProductUseCase {
     }
 
     private ProductItemResult toProductItem(PricePolicy pricePolicy) {
-        // pricePolicy -> product 조회
         Product product = getProduct(pricePolicy.getProductId());
 
         // 옵션을 모두 개별 상품으로 노출하지 않는 경우: 옵션 없이 단일 상품
