@@ -32,6 +32,15 @@ public class InventoryPersistenceAdapter implements SaveInventoryPort, FindInven
     }
 
     @Override
+    public void save(Set<Inventory> inventories) {
+        inventoryJpaRepository.saveAll(
+                inventories.stream()
+                        .map(InventoryJpaEntity::from)
+                        .toList()
+        );
+    }
+
+    @Override
     public Set<Inventory> findByPricePolicyIds(Set<Long> pricePolicyIds) {
         return inventoryJpaRepository.findByPricePolicyIds(pricePolicyIds)
                 .stream()

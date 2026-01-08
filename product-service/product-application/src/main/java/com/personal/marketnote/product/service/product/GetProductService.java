@@ -80,7 +80,6 @@ public class GetProductService implements GetProductUseCase {
         Product product = getProduct(id);
         List<ProductOptionCategory> categories
                 = findProductOptionCategoryPort.findActiveWithOptionsByProductId(product.getId());
-
         List<PricePolicy> pricePolicies
                 = findPricePoliciesPort.findByProductId(product.getId());
         PricePolicy defaultPricePolicy = pricePolicies.stream()
@@ -107,8 +106,7 @@ public class GetProductService implements GetProductUseCase {
         Long pricePolicyId = selectedPricePolicy.getId();
 
         // 상품 재고 수량 조회
-        Map<Long, Integer> inventories
-                = getProductInventoryUseCase.getProductStocks(List.of(pricePolicyId));
+        Map<Long, Integer> inventories = getProductInventoryUseCase.getProductStocks(List.of(pricePolicyId));
 
         GetProductInfoResult productInfo
                 = GetProductInfoResult.from(product, selectedPricePolicy, inventories.get(pricePolicyId));
