@@ -12,45 +12,47 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Operation(summary = "상품 가격 정책 목록 조회", description = """
-        작성일자: 2026-01-02
-        
-        작성자: 성효빈
-        
-        ---
-        
-        ## Description
-        
-        상품의 가격 정책 목록(기본/조합)을 조회합니다.
-        
-        ---
-        
-        ## Response
-        
-        | **키** | **타입** | **설명** | **예시** |
-        | --- | --- | --- | --- |
-        | statusCode | number | 상태 코드 | 200 |
-        | code | string | 응답 코드 | "SUC01" |
-        | timestamp | string(datetime) | 응답 일시 | "2026-01-02T10:37:32.320824" |
-        | content | object | 응답 본문 | { ... } |
-        | message | string | 처리 결과 | "상품 가격 정책 목록 조회 성공" |
-        
-        ### content
-        | **키** | **타입** | **설명** |
-        | --- | --- | --- |
-        | policies | array | 가격정책 목록 |
-        
-        ### content.policies[*]
-        | **키** | **타입** | **설명** |
-        | --- | --- | --- |
-        | id | number | 정책 ID |
-        | price | number | 정가 |
-        | discountPrice | number | 할인 판매가 |
-        | accumulatedPoint | number | 적립 포인트 |
-        | discountRate | number | 할인율 |
-        | basePolicy | boolean | 기본 정책 여부(조합 미연결) |
-        | optionIds | array<number> | 연결된 옵션 ID 목록(조합 정책일 때) |
-        """,
+@Operation(
+        summary = "상품 가격 정책 목록 조회",
+        description = """
+                작성일자: 2026-01-02
+                
+                작성자: 성효빈
+                
+                ---
+                
+                ## Description
+                
+                상품의 가격 정책 목록(기본/조합)을 조회합니다.
+                
+                ---
+                
+                ## Response
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | statusCode | number | 상태 코드 | 200 |
+                | code | string | 응답 코드 | "SUC01" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-01-02T10:37:32.320824" |
+                | content | object | 응답 본문 | { ... } |
+                | message | string | 처리 결과 | "상품 가격 정책 목록 조회 성공" |
+                
+                ### Response > content
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | policies | array | 가격 정책 목록 | [ ... ] |
+                
+                ### Response > content > policies
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | id | number | 가격 정책 ID | 12 |
+                | price | number | 정가 | 10000 |
+                | discountPrice | number | 할인 판매가 | 8000 |
+                | accumulatedPoint | number | 적립 포인트 | 100 |
+                | discountRate | number | 할인율 | 20 |
+                | basePolicy | boolean | 기본 정책 여부(조합 미연결) | true |
+                | optionIds | array<number> | 연결된 옵션 ID 목록(조합 정책일 때) | [3,7] |
+                """,
         security = {@SecurityRequirement(name = "bearer")},
         responses = {
                 @ApiResponse(

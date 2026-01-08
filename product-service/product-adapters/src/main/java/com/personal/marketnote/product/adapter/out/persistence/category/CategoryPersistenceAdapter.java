@@ -60,7 +60,7 @@ public class CategoryPersistenceAdapter implements FindCategoryPort, SaveCategor
 
     @Override
     public boolean existsChildren(Long id) {
-        return categoryJpaRepository.existsByParentCategoryId(id);
+        return categoryJpaRepository.existsByParentCategoryIdAndStatus(id, EntityStatus.ACTIVE);
     }
 
     @Override

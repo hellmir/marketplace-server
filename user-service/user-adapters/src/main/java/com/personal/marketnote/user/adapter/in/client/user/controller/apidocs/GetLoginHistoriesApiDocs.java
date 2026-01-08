@@ -14,67 +14,69 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Operation(summary = "(관리자) 회원 로그인 내역 조회", description = """
-        작성일자: 2025-12-30
-        
-        작성자: 성효빈
-        
-        ---
-        
-        ## Description
-        
-        - 회원 로그인 내역 목록을 조회합니다.
-        
-        - 관리자만 가능합니다.
-        
-        ---
-        
-        ## Request
-        
-        | **키** | **타입** | **설명** | **필수 여부** | **예시** |
-        | --- | --- | --- | --- | --- |
-        | userId | number | 회원 ID (path) | Y | 1 |
-        | pageSize | number | 페이지 크기 | N | default: 10 |
-        | pageNumber | number | 페이지 번호(1부터) | N | default: 1 |
-        | sortDirection | string | 정렬 방향 | N | default: "DESC" |
-        | userSortProperty | string | 정렬 속성 | N | default: "ID" |
-        
-        ---
-        
-        ## Response
-        
-        | **키** | **타입** | **설명** | **예시** |
-        | --- | --- | --- | --- |
-        | statusCode | number | 상태 코드 | 200 |
-        | code | string | 응답 코드 | "SUC01" |
-        | timestamp | string(datetime) | 응답 일시 | "2025-12-30T12:12:30.013" |
-        | content | object | 응답 본문 | { ... } |
-        | message | string | 처리 결과 | "회원 로그인 내역 조회 성공" |
-        
-        ---
-        
-        ### Response > content
-        
-        | **키** | **타입** | **설명** | **예시** |
-        | --- | --- | --- | --- |
-        | pageSize | number | 페이지 크기 | 10 |
-        | pageNumber | number | 현재 페이지 | 1 |
-        | totalCount | number | 총 아이템 수 | 127 |
-        | hasPrevious | boolean | 이전 페이지 존재 여부 | true / false |
-        | hasNext | boolean | 다음 페이지 존재 여부 | true / false |
-        | histories | array | 로그인 내역 목록 | [ ... ] |
-        
-        ---
-        
-        ### Response > content > histories
-        
-        | **키** | **타입** | **설명** | **예시** |
-        | --- | --- | --- | --- |
-        | id | number | 로그인 내역 ID | 1 |
-        | userId | number | 회원 ID | 1 |
-        | authVendor | string | 인증 제공자 | "NATIVE"/"KAKAO"/"GOOGLE"/"APPLE" |
-        | ipAddress | string | 로그인 IP | "203.0.113.10" |
-        """, security = {@SecurityRequirement(name = "bearer"),
+@Operation(
+        summary = "(관리자) 회원 로그인 내역 조회",
+        description = """
+                작성일자: 2025-12-30
+                
+                작성자: 성효빈
+                
+                ---
+                
+                ## Description
+                
+                - 회원 로그인 내역 목록을 조회합니다.
+                
+                - 관리자만 가능합니다.
+                
+                ---
+                
+                ## Request
+                
+                | **키** | **타입** | **설명** | **필수 여부** | **예시** |
+                | --- | --- | --- | --- | --- |
+                | userId | number | 회원 ID (path) | Y | 1 |
+                | pageSize | number | 페이지 크기 | N | default: 10 |
+                | pageNumber | number | 페이지 번호(1부터) | N | default: 1 |
+                | sortDirection | string | 정렬 방향 | N | default: "DESC" |
+                | userSortProperty | string | 정렬 속성 | N | default: "ID" |
+                
+                ---
+                
+                ## Response
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | statusCode | number | 상태 코드 | 200 |
+                | code | string | 응답 코드 | "SUC01" |
+                | timestamp | string(datetime) | 응답 일시 | "2025-12-30T12:12:30.013" |
+                | content | object | 응답 본문 | { ... } |
+                | message | string | 처리 결과 | "회원 로그인 내역 조회 성공" |
+                
+                ---
+                
+                ### Response > content
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | pageSize | number | 페이지 크기 | 10 |
+                | pageNumber | number | 현재 페이지 | 1 |
+                | totalCount | number | 총 아이템 수 | 127 |
+                | hasPrevious | boolean | 이전 페이지 존재 여부 | true / false |
+                | hasNext | boolean | 다음 페이지 존재 여부 | true / false |
+                | histories | array | 로그인 내역 목록 | [ ... ] |
+                
+                ---
+                
+                ### Response > content > histories
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | id | number | 로그인 내역 ID | 1 |
+                | userId | number | 회원 ID | 1 |
+                | authVendor | string | 인증 제공자 | "NATIVE"/"KAKAO"/"GOOGLE"/"APPLE" |
+                | ipAddress | string | 로그인 IP | "203.0.113.10" |
+                """, security = {@SecurityRequirement(name = "bearer"),
         @SecurityRequirement(name = "admin")}, parameters = {
         @Parameter(
                 name = "userId",

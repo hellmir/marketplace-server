@@ -1,10 +1,10 @@
-package com.personal.marketnote.order;
+package com.personal.marketnote.commerce;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class OrderApplicationTests {
+class CommerceApplicationTests {
     @Test
     void contextLoads() {
     }

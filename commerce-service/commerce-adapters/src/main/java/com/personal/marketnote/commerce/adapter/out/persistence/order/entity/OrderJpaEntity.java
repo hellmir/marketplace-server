@@ -1,9 +1,9 @@
 package com.personal.marketnote.commerce.adapter.out.persistence.order.entity;
 
 import com.personal.marketnote.commerce.domain.order.Order;
+import com.personal.marketnote.commerce.domain.order.OrderProduct;
 import com.personal.marketnote.commerce.domain.order.OrderStatus;
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseEntity;
-import com.personal.marketnote.common.utility.FormatValidator;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -11,6 +11,8 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static jakarta.persistence.CascadeType.MERGE;
 import static jakarta.persistence.CascadeType.PERSIST;
@@ -56,7 +58,7 @@ public class OrderJpaEntity extends BaseEntity {
     private List<OrderProductJpaEntity> orderProductJpaEntities = new ArrayList<>();
 
     public static OrderJpaEntity from(Order order) {
-        OrderJpaEntity entity = OrderJpaEntity.builder()
+        return OrderJpaEntity.builder()
                 .sellerId(order.getSellerId())
                 .buyerId(order.getBuyerId())
                 .orderStatus(order.getOrderStatus())
@@ -65,14 +67,6 @@ public class OrderJpaEntity extends BaseEntity {
                 .couponAmount(order.getCouponAmount())
                 .pointAmount(order.getPointAmount())
                 .build();
-
-        if (FormatValidator.hasValue(order.getOrderProducts())) {
-            order.getOrderProducts().forEach(orderProduct ->
-                    entity.orderProductJpaEntities.add(OrderProductJpaEntity.from(orderProduct, entity))
-            );
-        }
-
-        return entity;
     }
 
     public void addOrderProduct(OrderProductJpaEntity orderProductJpaEntity) {
@@ -85,14 +79,20 @@ public class OrderJpaEntity extends BaseEntity {
         paidAmount = order.getPaidAmount();
         couponAmount = order.getCouponAmount();
         pointAmount = order.getPointAmount();
-        order.getOrderProducts().forEach(orderProduct -> orderProductJpaEntities.forEach(
-                orderProductJpaEntity -> orderProductJpaEntity.updateFrom(
-                        order.getOrderProducts().stream()
-                                .filter(op -> op.getPricePolicyId().equals(orderProductJpaEntity.getId().getPricePolicyId()))
-                                .findFirst()
-                                .orElse(null)
-                )
-        ));
+
+        List<OrderProduct> orderProducts = order.getOrderProducts();
+        Map<Long, OrderProduct> orderProductMap = orderProducts.stream()
+                .collect(Collectors.toMap(
+                        OrderProduct::getPricePolicyId,
+                        op -> op
+                ));
+
+        orderProductJpaEntities.forEach(entity -> {
+            OrderProduct matched = orderProductMap.get(entity.getId().getPricePolicyId());
+            if (matched != null) {
+                entity.updateFrom(matched);
+            }
+        });
     }
 }
 

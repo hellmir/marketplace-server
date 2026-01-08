@@ -1,4 +1,4 @@
-package com.personal.marketnote.product.adapter.in.client.pricepolicy;
+package com.personal.marketnote.product.adapter.in.client.cart.controller.apidocs;
 
 import com.personal.marketnote.product.adapter.in.client.cart.request.UpdateCartProductOptionsRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,39 +14,41 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Operation(summary = "장바구니 상품 옵션 변경", description = """
-        작성일자: 2026-01-04
-        
-        작성자: 성효빈
-        
-        ---
-        
-        ## Description
-        
-        - 장바구니 상품에 선택된 옵션 목록을 변경합니다.
-        
-        - 기존 상품에 적용된 가격 정책 ID를 함께 전송합니다.
-        
-        ---
-        
-        ## Request
-        
-        | **키** | **타입** | **설명** | **필수 여부** | **예시** |
-        | --- | --- | --- | --- | --- |
-        | pricePolicyId | number | 가격 정책 ID | 필수 | 1 |
-        | newOptionIds | array | 변경할 상품 옵션 ID 목록 | 필수 | [1, 2, 3] |
-        ---
-        
-        ## Response
-        
-        | **키** | **타입** | **설명** | **예시** |
-        | --- | --- | --- | --- |
-        | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
-        | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
-        | timestamp | string(datetime) | 응답 일시 | "2026-01-04T12:12:30.013" |
-        | content | object | 응답 본문 | null |
-        | message | string | 처리 결과 | "장바구니 상품 옵션 변경 성공" |
-        """,
+@Operation(
+        summary = "장바구니 상품 옵션 변경",
+        description = """
+                작성일자: 2026-01-04
+                
+                작성자: 성효빈
+                
+                ---
+                
+                ## Description
+                
+                - 장바구니 상품에 선택된 옵션 목록을 변경합니다.
+                
+                - 기존 상품에 적용된 가격 정책 ID를 함께 전송합니다.
+                
+                ---
+                
+                ## Request
+                
+                | **키** | **타입** | **설명** | **필수 여부** | **예시** |
+                | --- | --- | --- | --- | --- |
+                | pricePolicyId | number | 가격 정책 ID | 필수 | 1 |
+                | newOptionIds | array | 변경할 상품 옵션 ID 목록 | 필수 | [1, 2, 3] |
+                ---
+                
+                ## Response
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
+                | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-01-04T12:12:30.013" |
+                | content | object | 응답 본문 | null |
+                | message | string | 처리 결과 | "장바구니 상품 옵션 변경 성공" |
+                """,
         security = {@SecurityRequirement(name = "bearer")},
         requestBody = @RequestBody(
                 required = true,

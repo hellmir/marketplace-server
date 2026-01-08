@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
+import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER_POINTCUT;
 import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER_PRINCIPAL_POINTCUT;
 import static com.personal.marketnote.common.utility.NumberConstant.MINUS_ONE;
 
@@ -206,7 +207,7 @@ public class ProductController {
      * @Description 상품 정보를 수정합니다.
      */
     @PutMapping("/{id}")
-    @PreAuthorize(ADMIN_OR_SELLER_PRINCIPAL_POINTCUT)
+    @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
     @UpdateProductApiDocs
     public ResponseEntity<BaseResponse<Void>> updateProduct(
             @PathVariable("id") Long id,
@@ -269,7 +270,7 @@ public class ProductController {
      * @Description 상품을 삭제합니다.
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize(ADMIN_OR_SELLER_PRINCIPAL_POINTCUT)
+    @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
     @DeleteProductApiDocs
     public ResponseEntity<BaseResponse<Void>> deleteProduct(
             @PathVariable("id") Long id,

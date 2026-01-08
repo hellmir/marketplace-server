@@ -1,10 +1,13 @@
 package com.personal.marketnote.commerce.adapter.out.persistence.order;
 
 import com.personal.marketnote.commerce.adapter.out.mapper.OrderJpaEntityToDomainMapper;
+import com.personal.marketnote.commerce.adapter.out.persistence.order.entity.OrderHistoryJpaEntity;
 import com.personal.marketnote.commerce.adapter.out.persistence.order.entity.OrderJpaEntity;
 import com.personal.marketnote.commerce.adapter.out.persistence.order.entity.OrderProductJpaEntity;
+import com.personal.marketnote.commerce.adapter.out.persistence.order.repository.OrderHistoryJpaRepository;
 import com.personal.marketnote.commerce.adapter.out.persistence.order.repository.OrderJpaRepository;
 import com.personal.marketnote.commerce.domain.order.Order;
+import com.personal.marketnote.commerce.domain.order.OrderHistory;
 import com.personal.marketnote.commerce.exception.OrderNotFoundException;
 import com.personal.marketnote.commerce.port.out.order.FindOrderPort;
 import com.personal.marketnote.commerce.port.out.order.SaveOrderPort;
@@ -20,6 +23,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OrderPersistenceAdapter implements SaveOrderPort, FindOrderPort, UpdateOrderPort {
     private final OrderJpaRepository orderJpaRepository;
+    private final OrderHistoryJpaRepository orderHistoryJpaRepository;
 
     @Override
     public Order save(Order order) {
@@ -35,9 +39,9 @@ public class OrderPersistenceAdapter implements SaveOrderPort, FindOrderPort, Up
             });
         }
 
-        OrderJpaEntity finalEntity = orderJpaRepository.save(savedOrderEntity);
+        orderHistoryJpaRepository.save(OrderHistoryJpaEntity.from(savedOrderEntity));
 
-        return OrderJpaEntityToDomainMapper.mapToDomain(finalEntity).orElse(null);
+        return OrderJpaEntityToDomainMapper.mapToDomain(savedOrderEntity).orElse(null);
     }
 
     @Override
@@ -57,9 +61,10 @@ public class OrderPersistenceAdapter implements SaveOrderPort, FindOrderPort, Up
     }
 
     @Override
-    public void update(Order order) throws OrderNotFoundException {
-        OrderJpaEntity entity = findEntityById(order.getId());
-        entity.updateFrom(order);
+    public void update(Order order, OrderHistory orderHistory) throws OrderNotFoundException {
+        OrderJpaEntity orderJpaEntity = findEntityById(order.getId());
+        orderJpaEntity.updateFrom(order);
+        orderHistoryJpaRepository.save(OrderHistoryJpaEntity.from(orderHistory, orderJpaEntity));
     }
 
     private OrderJpaEntity findEntityById(Long id) throws OrderNotFoundException {

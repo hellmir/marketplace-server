@@ -1,6 +1,6 @@
-package com.personal.marketnote.product.adapter.in.client.product.controller.apidocs;
+package com.personal.marketnote.product.adapter.in.client.cart.controller.apidocs;
 
-import com.personal.marketnote.product.adapter.in.client.product.request.UpdateProductRequest;
+import com.personal.marketnote.product.adapter.in.client.cart.request.AddCartProductRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -15,9 +15,9 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "(판매자/관리자) 상품 정보 수정",
+        summary = "장바구니 상품 추가",
         description = """
-                작성일자: 2026-01-01
+                작성일자: 2026-01-04
                 
                 작성자: 성효빈
                 
@@ -25,9 +25,11 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                - 상품 정보를 수정합니다.
+                - 회원 장바구니에 상품을 추가합니다.
                 
-                - 판매자 또는 관리자만 가능합니다.
+                - 회원이 선택한 옵션 ID 조합에 맞는 가격 정책 ID를 전송해야 합니다.
+                
+                - 옵션 ID 조합에 맞는 가격 정책 ID가 없는 경우, 기본 가격 정책 ID를 전송합니다.
                 
                 ---
                 
@@ -35,51 +37,51 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
-                | name | string | 상품명 | N | "스프링노트1" |
-                | brandName | string | 브랜드명 | N | "노트왕" |
-                | detail | string | 상품 설명 | N | "스프링노트1 설명" |
-                | isFindAllOptions | boolean | 상품 목록 조회 시 옵션마다 개별 상품으로 조회 여부 | N | true |
-                | tags | array<string> | 상품 태그 목록 | N | ["루테인", "아스타잔틴"] |
+                | productId | number | 상품 ID | Y | 1 |
+                | pricePolicyId | number | 가격 정책 ID | Y | 1 |
+                | imageUrl | string | 상품 이미지 URL | Y | "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png" |
+                | quantity | number | 상품 수량 | Y | 1 |
                 ---
                 
                 ## Response
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
-                | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
+                | statusCode | number | 상태 코드 | 201: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
                 | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
-                | timestamp | string(datetime) | 응답 일시 | "2026-01-01T12:12:30.013" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-01-04T12:12:30.013" |
                 | content | object | 응답 본문 | null |
-                | message | string | 처리 결과 | "상품 정보 수정 성공" |
+                | message | string | 처리 결과 | "장바구니 상품 추가 성공" |
+                
+                ---
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         requestBody = @RequestBody(
                 required = true,
                 content = @Content(
-                        schema = @Schema(implementation = UpdateProductRequest.class),
+                        schema = @Schema(implementation = AddCartProductRequest.class),
                         examples = @ExampleObject("""
                                 {
-                                  "name": "스프링노트1",
-                                  "brandName": "노트왕",
-                                  "detail": "스프링노트1 설명",
-                                  "isFindAllOptions": true,
-                                  "tags": ["루테인", "아스타잔틴"]
+                                    "productId": 1,
+                                    "pricePolicyId": 1,
+                                    "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
+                                    "quantity": 1
                                 }
                                 """)
                 )
         ),
         responses = {
                 @ApiResponse(
-                        responseCode = "200",
-                        description = "상품 정보 수정 성공",
+                        responseCode = "201",
+                        description = "장바구니 상품 추가 성공",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
-                                          "statusCode": 200,
+                                          "statusCode": 201,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-01T12:12:30.013",
+                                          "timestamp": "2025-12-30T12:12:30.013",
                                           "content": null,
-                                          "message": "상품 정보 수정 성공"
+                                          "message": "장바구니 상품 추가 성공"
                                         }
                                         """)
                         )
@@ -115,7 +117,5 @@ import java.lang.annotation.*;
                         )
                 )
         })
-public @interface UpdateProductApiDocs {
+public @interface AddCartProductApiDocs {
 }
-
-
