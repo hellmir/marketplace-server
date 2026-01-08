@@ -1,6 +1,9 @@
 package com.personal.marketnote.commerce.domain.inventory;
 
+import com.personal.marketnote.common.utility.FormatValidator;
 import lombok.*;
+
+import static org.hibernate.type.descriptor.java.IntegerJavaType.ZERO;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -13,6 +16,7 @@ public class Inventory {
     public static Inventory of(Long pricePolicyId) {
         return Inventory.builder()
                 .pricePolicyId(pricePolicyId)
+                .stock(Stock.of(ZERO.toString()))
                 .build();
     }
 
@@ -30,5 +34,9 @@ public class Inventory {
 
     public Integer getStockValue() {
         return stock.getValue();
+    }
+
+    public boolean isMe(Long pricePolicyId) {
+        return FormatValidator.equals(this.pricePolicyId, pricePolicyId);
     }
 }

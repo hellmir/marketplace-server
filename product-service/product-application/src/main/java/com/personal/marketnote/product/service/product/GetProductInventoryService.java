@@ -5,7 +5,6 @@ import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductInventoryUseCase;
 import com.personal.marketnote.product.port.out.inventory.FindCacheStockPort;
 import com.personal.marketnote.product.port.out.inventory.FindStockPort;
-import com.personal.marketnote.product.port.out.inventory.SaveCacheStockPort;
 import com.personal.marketnote.product.port.out.result.GetInventoryResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,6 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 @RequiredArgsConstructor
 @Transactional(isolation = READ_COMMITTED)
 public class GetProductInventoryService implements GetProductInventoryUseCase {
-    private final SaveCacheStockPort saveCacheStockPort;
     private final FindCacheStockPort findCacheStockPort;
     private final FindStockPort findStockPort;
 
@@ -42,14 +40,7 @@ public class GetProductInventoryService implements GetProductInventoryUseCase {
                 = findStockPort.findByPricePolicyIds(pricePolicyIdsWithoutStocks);
 
         restInventories.forEach(
-                restInventory -> {
-                    Long pricePolicyId = restInventory.pricePolicyId();
-                    Integer stock = restInventory.stock();
-                    inventories.put(pricePolicyId, stock);
-
-                    // Cache Memory에 재고 수량 저장
-                    saveCacheStockPort.save(pricePolicyId, stock);
-                }
+                restInventory -> inventories.put(restInventory.pricePolicyId(), restInventory.stock())
         );
 
         return inventories;
