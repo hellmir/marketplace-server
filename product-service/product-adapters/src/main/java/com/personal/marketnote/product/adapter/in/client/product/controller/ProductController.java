@@ -10,6 +10,7 @@ import com.personal.marketnote.product.adapter.in.client.product.request.UpdateP
 import com.personal.marketnote.product.adapter.in.client.product.response.*;
 import com.personal.marketnote.product.domain.product.ProductSearchTarget;
 import com.personal.marketnote.product.domain.product.ProductSortProperty;
+import com.personal.marketnote.product.port.in.command.DeleteProductCommand;
 import com.personal.marketnote.product.port.in.result.product.*;
 import com.personal.marketnote.product.port.in.usecase.product.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
+import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER_POINTCUT;
 import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER_PRINCIPAL_POINTCUT;
 import static com.personal.marketnote.common.utility.NumberConstant.MINUS_ONE;
 
@@ -203,7 +205,7 @@ public class ProductController {
      * @Description 상품 정보를 수정합니다.
      */
     @PutMapping("/{id}")
-    @PreAuthorize(ADMIN_OR_SELLER_PRINCIPAL_POINTCUT)
+    @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
     @UpdateProductApiDocs
     public ResponseEntity<BaseResponse<Void>> updateProduct(
             @PathVariable("id") Long id,
@@ -235,7 +237,7 @@ public class ProductController {
      * @Description 상품을 삭제합니다.
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize(ADMIN_OR_SELLER_PRINCIPAL_POINTCUT)
+    @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
     @DeleteProductApiDocs
     public ResponseEntity<BaseResponse<Void>> deleteProduct(
             @PathVariable("id") Long id,
@@ -244,7 +246,7 @@ public class ProductController {
         deleteProductUseCase.delete(
                 ElementExtractor.extractUserId(principal),
                 AuthorityValidator.hasAdminRole(principal),
-                com.personal.marketnote.product.port.in.command.DeleteProductCommand.of(id)
+                DeleteProductCommand.of(id)
         );
 
         return ResponseEntity.ok(
