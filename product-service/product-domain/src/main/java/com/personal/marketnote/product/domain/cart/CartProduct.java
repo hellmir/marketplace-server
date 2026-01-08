@@ -51,6 +51,10 @@ public class CartProduct extends BaseDomain {
         return cartProduct;
     }
 
+    public Long getPricePolicyId() {
+        return pricePolicy.getId();
+    }
+
     public void updateQuantity(Short newQuantity) {
         quantity = newQuantity;
     }

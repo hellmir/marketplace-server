@@ -81,7 +81,9 @@ public class ProductItemResult {
                 .build();
     }
 
-    public static ProductItemResult from(ProductItemResult productItemResult, GetFileResult catalogImage) {
+    public static ProductItemResult from(
+            ProductItemResult productItemResult, GetFileResult catalogImage, Integer stock
+    ) {
         return ProductItemResult.builder()
                 .id(productItemResult.getId())
                 .sellerId(productItemResult.getSellerId())
@@ -92,6 +94,7 @@ public class ProductItemResult {
                 .productTags(productItemResult.getProductTags())
                 .catalogImage(catalogImage)
                 .selectedOptions(productItemResult.getSelectedOptions())
+                .stock(stock)
                 .orderNum(productItemResult.getOrderNum())
                 .status(productItemResult.getStatus())
                 .build();
@@ -99,9 +102,5 @@ public class ProductItemResult {
 
     public Long getPricePolicyId() {
         return pricePolicy.id();
-    }
-
-    public void addStock(Integer stock) {
-        this.stock = stock;
     }
 }
