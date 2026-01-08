@@ -6,7 +6,9 @@ import com.personal.marketnote.common.adapter.out.ServiceAdapter;
 import com.personal.marketnote.common.application.file.port.in.result.GetFileResult;
 import com.personal.marketnote.common.application.file.port.in.result.GetFilesResult;
 import com.personal.marketnote.common.domain.file.FileSort;
+import com.personal.marketnote.common.exception.FileServiceRequestFailedException;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.product.port.out.file.DeleteProductImagesPort;
 import com.personal.marketnote.product.port.out.file.FindProductImagesPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +32,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_MA
 @ServiceAdapter
 @RequiredArgsConstructor
 @Slf4j
-public class FileServiceClient implements FindProductImagesPort {
+public class FileServiceClient implements FindProductImagesPort, DeleteProductImagesPort {
     @Value("${file-service.base-url:http://localhost:9000}")
     private String fileServiceBaseUrl;
 
@@ -105,6 +108,28 @@ public class FileServiceClient implements FindProductImagesPort {
 
         log.error("Failed to find images by product id: {} and sort: {}", productId, sort);
         return Optional.empty();
+    }
+
+    @Override
+    public void delete(Long fileId) {
+        URI uri = UriComponentsBuilder
+                .fromUriString(fileServiceBaseUrl)
+                .path("/api/v1/files/{id}")
+                .buildAndExpand(fileId)
+                .toUri();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(adminAccessToken);
+        sendRequest(uri, new HttpEntity<>(headers));
+    }
+
+    public void sendRequest(URI uri, HttpEntity<Void> httpEntity) {
+        try {
+            restTemplate.exchange(uri, HttpMethod.DELETE, httpEntity, Void.class);
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+            throw new FileServiceRequestFailedException(new IOException());
+        }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
