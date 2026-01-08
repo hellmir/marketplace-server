@@ -1,8 +1,10 @@
 package com.personal.marketnote.commerce.adapter.out.persistence.order;
 
 import com.personal.marketnote.commerce.adapter.out.mapper.OrderJpaEntityToDomainMapper;
+import com.personal.marketnote.commerce.adapter.out.persistence.order.entity.OrderHistoryJpaEntity;
 import com.personal.marketnote.commerce.adapter.out.persistence.order.entity.OrderJpaEntity;
 import com.personal.marketnote.commerce.adapter.out.persistence.order.entity.OrderProductJpaEntity;
+import com.personal.marketnote.commerce.adapter.out.persistence.order.repository.OrderHistoryJpaRepository;
 import com.personal.marketnote.commerce.adapter.out.persistence.order.repository.OrderJpaRepository;
 import com.personal.marketnote.commerce.domain.order.Order;
 import com.personal.marketnote.commerce.exception.OrderNotFoundException;
@@ -20,6 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OrderPersistenceAdapter implements SaveOrderPort, FindOrderPort, UpdateOrderPort {
     private final OrderJpaRepository orderJpaRepository;
+    private final OrderHistoryJpaRepository orderHistoryJpaRepository;
 
     @Override
     public Order save(Order order) {
@@ -35,9 +38,9 @@ public class OrderPersistenceAdapter implements SaveOrderPort, FindOrderPort, Up
             });
         }
 
-        OrderJpaEntity finalEntity = orderJpaRepository.save(savedOrderEntity);
+        orderHistoryJpaRepository.save(OrderHistoryJpaEntity.from(savedOrderEntity));
 
-        return OrderJpaEntityToDomainMapper.mapToDomain(finalEntity).orElse(null);
+        return OrderJpaEntityToDomainMapper.mapToDomain(savedOrderEntity).orElse(null);
     }
 
     @Override
