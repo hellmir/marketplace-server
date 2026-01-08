@@ -162,7 +162,7 @@ public class GetProductService implements GetProductUseCase {
         boolean isFirstPage = !FormatValidator.hasValue(cursor);
 
         Pageable pageable = PageRequest.of(
-                0, pageSize + 1, Sort.by(sortDirection, sortProperty.getAlternativeKey())
+                0, pageSize + 1, Sort.by(sortDirection, sortProperty.getCamelCaseValue())
         );
 
         boolean isCategorized = FormatValidator.hasValue(categoryId);
@@ -282,46 +282,6 @@ public class GetProductService implements GetProductUseCase {
         }
 
         return findProductPort.countActive(searchTarget, searchKeyword);
-    }
-
-    private List<ProductItemResult> expandProducts(List<Product> products) {
-        List<ProductItemResult> results = new ArrayList<>();
-        for (Product product : products) {
-            if (!product.isFindAllOptionsYn()) {
-                results.add(ProductItemResult.from(product));
-                continue;
-            }
-
-            List<ProductOptionCategory> categories
-                    = findProductOptionCategoryPort.findActiveWithOptionsByProductId(product.getId());
-
-            if (
-                    !FormatValidator.hasValue(categories)
-                            || categories.stream().anyMatch(c -> !FormatValidator.hasValue(c.getOptions()))
-            ) {
-                results.add(ProductItemResult.from(product));
-                continue;
-            }
-
-            List<List<ProductOption>> optionGroups = categories.stream()
-                    .sorted(Comparator.comparing(ProductOptionCategory::getOrderNum))
-                    .map(ProductOptionCategory::getOptions)
-                    .toList();
-
-            // 선택된 옵션 조합 추출
-            for (List<ProductOption> selectedOptions : cartesianProduct(optionGroups)) {
-                List<Long> optionIds = selectedOptions.stream().map(ProductOption::getId).toList();
-                PricePolicy pricePolicy
-                        = findPricePolicyPort.findByProductAndOptionIds(product.getId(), optionIds)
-                        .orElse(product.getDefaultPricePolicy());
-
-                results.add(
-                        ProductItemResult.from(product, selectedOptions, pricePolicy)
-                );
-            }
-        }
-
-        return results;
     }
 
     private List<List<ProductOption>> cartesianProduct(List<List<ProductOption>> productOptionCombos) {
