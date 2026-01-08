@@ -27,8 +27,8 @@ public class PricePolicyReadPersistenceAdapter implements FindPricePoliciesPort 
 
         return policyEntities.stream()
                 .map(policyEntity -> PricePolicyJpaEntityToDomainMapper.mapToDomain(
-                        policyEntity, productOptionPricePolicyJpaRepository.findOptionIdsByPricePolicyId(policyEntity.getId()
-                        )))
+                        policyEntity, productOptionPricePolicyJpaRepository.findOptionIdsByPricePolicyId(policyEntity.getId())
+                ))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
