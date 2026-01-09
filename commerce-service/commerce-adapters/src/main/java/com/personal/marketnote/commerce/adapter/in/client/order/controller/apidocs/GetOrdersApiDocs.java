@@ -14,7 +14,7 @@ import java.lang.annotation.*;
 @Operation(
         summary = "회원 주문 내역 조회",
         description = """
-                작성일자: 2026-01-09
+                작성일자: 2026-01-06
                 
                 작성자: 성효빈
                 
@@ -32,7 +32,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- | --- |
                 | period | string | 조회 기간(ONE_MONTH, THREE_MONTHS, SIX_MONTHS, ONE_YEAR, ALL) | N | ONE_YEAR |
                 | status | string | 주문 상태 필터(SHIPPING, DELIVERED, CONFIRMED, CANCEL_EXCHANGE_REFUND, ALL) | N | SHIPPING |
-                | productName | string | 상품명 검색 키워드(부분 일치) | N | "밀토스테놀" |
+                | productName | string | 상품명 검색 키워드 | N | "공책" |
                 
                 ---
                 
@@ -42,7 +42,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 201: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
                 | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
-                | timestamp | string(datetime) | 응답 일시 | "2026-01-09T12:12:30.013" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-01-06T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
                 | message | string | 처리 결과 | "회원 주문 내역 조회 성공" |
                 
@@ -55,7 +55,7 @@ import java.lang.annotation.*;
                 | orderHistories | array | 날짜별 주문 내역 묶음 | [ ... ] |
                 
                 ---
-                ### Response > orderHistories
+                ### Response > content > orderHistories
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
@@ -65,7 +65,7 @@ import java.lang.annotation.*;
                 
                 ---
                 
-                ### Response > orders
+                ### Response > content > orderHistories > orders
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
@@ -81,7 +81,7 @@ import java.lang.annotation.*;
                 
                 ---
                 
-                ### Response > orderProducts
+                ### Response > content > orderHistories > orders > orderProducts
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
@@ -103,11 +103,11 @@ import java.lang.annotation.*;
                                         {
                                                 "statusCode": 200,
                                                 "code": "SUC01",
-                                                "timestamp": "2026-01-09T11:18:48.109239",
+                                                "timestamp": "2026-01-06T11:18:48.109239",
                                                 "content": {
                                                   "orderHistories": [
                                                     {
-                                                      "orderDate": "2026-01-09",
+                                                      "orderDate": "2026-01-06",
                                                       "count": 2,
                                                       "orders": [
                                                         {
@@ -165,7 +165,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 401,
                                           "code": "UNAUTHORIZED",
-                                          "timestamp": "2026-01-09T12:12:30.013",
+                                          "timestamp": "2026-01-06T12:12:30.013",
                                           "content": null,
                                           "message": "Invalid token"
                                         }
@@ -180,7 +180,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 403,
                                           "code": "FORBIDDEN",
-                                          "timestamp": "2026-01-09T12:12:30.013",
+                                          "timestamp": "2026-01-06T12:12:30.013",
                                           "content": null,
                                           "message": "Access Denied"
                                         }
