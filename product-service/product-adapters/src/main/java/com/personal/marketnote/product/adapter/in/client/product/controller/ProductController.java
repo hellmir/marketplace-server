@@ -126,12 +126,14 @@ public class ProductController {
     /**
      * 상품 목록 조회
      *
-     * @param cursor
-     * @param pageSize      페이지 크기
-     * @param sortDirection 정렬 방향
-     * @param sortProperty  정렬 속성
-     * @param searchTarget  검색 대상
-     * @param searchKeyword 검색 키워드
+     * @param categoryId     카테고리 ID
+     * @param pricePolicyIds 가격 정책 ID 목록
+     * @param cursor         커서(무한 스크롤 페이지 설정)
+     * @param pageSize       페이지 크기
+     * @param sortDirection  정렬 방향
+     * @param sortProperty   정렬 속성
+     * @param searchTarget   검색 대상
+     * @param searchKeyword  검색 키워드
      * @return 상품 목록 조회 응답 {@link GetProductsResponse}
      * @Author 성효빈
      * @Date 2025-12-31
@@ -141,6 +143,7 @@ public class ProductController {
     @GetProductsApiDocs
     public ResponseEntity<BaseResponse<GetProductsResponse>> getProducts(
             @RequestParam(value = "categoryId", required = false) Long categoryId,
+            @RequestParam(value = "pricePolicyIds", required = false) List<Long> pricePolicyIds,
             @RequestParam(value = "cursor", required = false, defaultValue = MINUS_ONE) Long cursor,
             @RequestParam(value = "page-size", defaultValue = GET_PRODUCTS_DEFAULT_PAGE_SIZE) int pageSize,
             @RequestParam(required = false, defaultValue = "DESC") Sort.Direction sortDirection,
@@ -150,6 +153,7 @@ public class ProductController {
     ) {
         GetProductsResult result = getProductUseCase.getProducts(
                 categoryId,
+                pricePolicyIds,
                 cursor,
                 pageSize,
                 sortDirection,

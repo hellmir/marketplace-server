@@ -156,6 +156,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
 
     @Override
     public List<PricePolicy> findActivePage(
+            List<Long> pricePolicyIds,
             Long cursor,
             Pageable pageable,
             ProductSortProperty sortProperty,
@@ -172,6 +173,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
 
         List<PricePolicyJpaEntity> entities = isAsc
                 ? pricePolicyJpaRepository.findAllActiveByCursorAsc(
+                pricePolicyIds,
                 cursor,
                 pageable,
                 sortProperty.getCamelCaseValue(),
@@ -180,6 +182,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
                 null
         )
                 : pricePolicyJpaRepository.findAllActiveByCursorDesc(
+                pricePolicyIds,
                 cursor,
                 pageable,
                 sortProperty.getCamelCaseValue(),
@@ -198,6 +201,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
     @Override
     public List<PricePolicy> findActivePageByCategoryId(
             Long categoryId,
+            List<Long> pricePolicyIds,
             Long cursor,
             Pageable pageable,
             ProductSortProperty sortProperty,
@@ -214,6 +218,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
 
         List<PricePolicyJpaEntity> entities = isAsc
                 ? pricePolicyJpaRepository.findAllActiveByCursorAsc(
+                pricePolicyIds,
                 cursor,
                 pageable,
                 sortProperty.getCamelCaseValue(),
@@ -222,6 +227,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
                 categoryId
         )
                 : pricePolicyJpaRepository.findAllActiveByCursorDesc(
+                pricePolicyIds,
                 cursor,
                 pageable,
                 sortProperty.getCamelCaseValue(),
