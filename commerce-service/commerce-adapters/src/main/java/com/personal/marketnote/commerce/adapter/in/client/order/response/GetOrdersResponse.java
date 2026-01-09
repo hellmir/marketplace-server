@@ -1,15 +1,15 @@
 package com.personal.marketnote.commerce.adapter.in.client.order.response;
 
-import com.personal.marketnote.commerce.port.in.result.order.GetOrdersResult;
+import com.personal.marketnote.commerce.port.in.result.order.GetOrderHistoryResult;
 
 import java.util.List;
 
 public record GetOrdersResponse(
-        List<OrderHistoryByDateResponse> orderHistories
+        List<OrderHistoryByDateResponse> orderHistory
 ) {
-    public static GetOrdersResponse from(GetOrdersResult getOrdersResult) {
+    public static GetOrdersResponse from(GetOrderHistoryResult getOrderHistoryResult) {
         return new GetOrdersResponse(
-                getOrdersResult.orderHistories().stream()
+                getOrderHistoryResult.orderHistory().stream()
                         .map(OrderHistoryByDateResponse::from)
                         .toList()
         );

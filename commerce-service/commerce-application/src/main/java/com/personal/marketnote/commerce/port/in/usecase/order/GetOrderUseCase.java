@@ -1,8 +1,8 @@
 package com.personal.marketnote.commerce.port.in.usecase.order;
 
 import com.personal.marketnote.commerce.domain.order.Order;
-import com.personal.marketnote.commerce.port.in.command.order.GetOrdersQuery;
-import com.personal.marketnote.commerce.port.in.result.order.GetOrdersDomainResult;
+import com.personal.marketnote.commerce.port.in.command.order.GetBuyerOrderHistoryCommand;
+import com.personal.marketnote.commerce.port.in.result.order.GetOrdersResult;
 
 public interface GetOrderUseCase {
     /**
@@ -14,5 +14,5 @@ public interface GetOrderUseCase {
      */
     Order getOrder(Long id);
 
-    GetOrdersDomainResult getOrders(GetOrdersQuery query);
+    GetOrdersResult getBuyerOrderHistory(GetBuyerOrderHistoryCommand query);
 }

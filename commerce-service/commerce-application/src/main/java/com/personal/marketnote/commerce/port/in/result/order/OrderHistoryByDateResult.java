@@ -1,7 +1,7 @@
 package com.personal.marketnote.commerce.port.in.result.order;
 
 import com.personal.marketnote.commerce.domain.order.Order;
-import com.personal.marketnote.commerce.port.out.result.product.GetOrderedProductResult;
+import com.personal.marketnote.commerce.port.out.result.product.ProductInfoResult;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,9 +15,9 @@ public record OrderHistoryByDateResult(
     public static OrderHistoryByDateResult of(
             LocalDate orderDate,
             List<Order> orders,
-            Map<Long, GetOrderedProductResult> productSummaries
+            Map<Long, ProductInfoResult> productSummaries
     ) {
-        Map<Long, GetOrderedProductResult> summaries =
+        Map<Long, ProductInfoResult> summaries =
                 com.personal.marketnote.common.utility.FormatValidator.hasValue(
                         productSummaries != null ? productSummaries.values() : null
                 ) ? productSummaries : Map.of();

@@ -2,37 +2,63 @@ package com.personal.marketnote.commerce.port.in.result.order;
 
 import com.personal.marketnote.commerce.domain.order.OrderProduct;
 import com.personal.marketnote.commerce.domain.order.OrderStatus;
-import com.personal.marketnote.commerce.port.out.result.product.GetOrderedProductResult;
+import com.personal.marketnote.commerce.port.out.product.result.ProductOptionInfoResult;
+import com.personal.marketnote.commerce.port.out.result.product.ProductInfoResult;
 import com.personal.marketnote.common.utility.FormatValidator;
+import lombok.AccessLevel;
+import lombok.Builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Builder(access = AccessLevel.PRIVATE)
 public record GetOrderProductResult(
         Long pricePolicyId,
         Integer quantity,
         Long unitAmount,
         String imageUrl,
         OrderStatus orderStatus,
-        Long productId,
-        String productName
+        String productName,
+        List<ProductOptionInfoResult> selectedOptions
 ) {
-    public static GetOrderProductResult from(OrderProduct orderProduct) {
-        return from(orderProduct, null);
-    }
-
     public static GetOrderProductResult from(
             OrderProduct orderProduct,
-            GetOrderedProductResult productSummary
+            ProductInfoResult productInfo,
+            OrderStatus defaultOrderStatus
     ) {
-        Long productId = FormatValidator.hasValue(productSummary) ? productSummary.productId() : null;
-        String productName = FormatValidator.hasValue(productSummary) ? productSummary.name() : null;
+        OrderStatus resolvedStatus = resolveOrderStatus(orderProduct, defaultOrderStatus);
+        boolean orderedProductExists = FormatValidator.hasValue(productInfo);
 
-        return new GetOrderProductResult(
-                orderProduct.getPricePolicyId(),
-                orderProduct.getQuantity(),
-                orderProduct.getUnitAmount(),
-                orderProduct.getImageUrl(),
-                orderProduct.getOrderStatus(),
-                productId,
-                productName
-        );
+        return GetOrderProductResult.builder()
+                .pricePolicyId(orderProduct.getPricePolicyId())
+                .quantity(orderProduct.getQuantity())
+                .unitAmount(orderProduct.getUnitAmount())
+                .imageUrl(orderProduct.getImageUrl())
+                .orderStatus(resolvedStatus)
+                .productName(
+                        orderedProductExists
+                                ? productInfo.name()
+                                : null
+                )
+                .selectedOptions(
+                        orderedProductExists
+                                ? productInfo.selectedOptions()
+                                : new ArrayList<>()
+                )
+                .build();
+    }
+
+    private static OrderStatus resolveOrderStatus(
+            OrderProduct orderProduct,
+            OrderStatus defaultOrderStatus
+    ) {
+        OrderStatus status = orderProduct.getOrderStatus();
+        if (!FormatValidator.hasValue(status) || status.isPending()) {
+            return FormatValidator.hasValue(defaultOrderStatus)
+                    ? defaultOrderStatus
+                    : OrderStatus.PAYMENT_PENDING;
+        }
+
+        return status;
     }
 }

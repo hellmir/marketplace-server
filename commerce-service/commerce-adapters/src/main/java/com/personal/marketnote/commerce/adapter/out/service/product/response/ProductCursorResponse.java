@@ -1,4 +1,4 @@
-package com.personal.marketnote.commerce.adapter.out.service.product.dto;
+package com.personal.marketnote.commerce.adapter.out.service.product.response;
 
 import java.util.List;
 

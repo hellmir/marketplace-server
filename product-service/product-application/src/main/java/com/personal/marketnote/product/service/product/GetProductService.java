@@ -234,7 +234,7 @@ public class GetProductService implements GetProductUseCase {
                                 : null,
                         inventories.get(item.getPricePolicyId())
                 ))
-                .collect(Collectors.toList());
+                .toList();
 
         Long totalElements = null;
         if (isFirstPage) {

@@ -25,4 +25,8 @@ public class FormatValidator {
     public static boolean equals(Object value1, Object value2) {
         return hasValue(value1) && hasValue(value2) && value1.equals(value2);
     }
+
+    public static boolean containsKeyword(String target, String keyword) {
+        return target.toLowerCase().contains(keyword.toLowerCase());
+    }
 }

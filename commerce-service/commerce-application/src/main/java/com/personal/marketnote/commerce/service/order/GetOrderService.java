@@ -1,13 +1,14 @@
 package com.personal.marketnote.commerce.service.order;
 
 import com.personal.marketnote.commerce.domain.order.Order;
+import com.personal.marketnote.commerce.domain.order.OrderProduct;
 import com.personal.marketnote.commerce.exception.OrderNotFoundException;
-import com.personal.marketnote.commerce.port.in.command.order.GetOrdersQuery;
-import com.personal.marketnote.commerce.port.in.result.order.GetOrdersDomainResult;
+import com.personal.marketnote.commerce.port.in.command.order.GetBuyerOrderHistoryCommand;
+import com.personal.marketnote.commerce.port.in.result.order.GetOrdersResult;
 import com.personal.marketnote.commerce.port.in.usecase.order.GetOrderUseCase;
 import com.personal.marketnote.commerce.port.out.order.FindOrderPort;
 import com.personal.marketnote.commerce.port.out.product.FindProductByPricePolicyPort;
-import com.personal.marketnote.commerce.port.out.result.product.GetOrderedProductResult;
+import com.personal.marketnote.commerce.port.out.result.product.ProductInfoResult;
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.utility.FormatValidator;
 import lombok.RequiredArgsConstructor;
@@ -34,48 +35,47 @@ public class GetOrderService implements GetOrderUseCase {
     }
 
     @Override
-    public GetOrdersDomainResult getOrders(GetOrdersQuery query) {
+    public GetOrdersResult getBuyerOrderHistory(GetBuyerOrderHistoryCommand command) {
         List<Order> orders = findOrderPort.findByBuyerId(
-                query.buyerId(),
-                query.calculateStartDate(now()),
-                query.calculateEndDate(now()),
-                query.resolveStatuses()
+                command.buyerId(),
+                command.calculateStartDate(now()),
+                command.calculateEndDate(now()),
+                command.resolveStatuses()
         );
 
         if (!FormatValidator.hasValue(orders)) {
-            return GetOrdersDomainResult.of(List.of(), Map.of());
+            return GetOrdersResult.of(List.of(), Map.of());
         }
 
         List<Long> pricePolicyIds = orders.stream()
                 .flatMap(order -> order.getOrderProducts().stream())
-                .map(orderProduct -> orderProduct.getPricePolicyId())
+                .map(OrderProduct::getPricePolicyId)
                 .filter(FormatValidator::hasValue)
                 .distinct()
                 .toList();
 
-        Map<Long, GetOrderedProductResult> productSummaryMap =
-                Optional.ofNullable(findProductByPricePolicyPort.findByPricePolicyIds(pricePolicyIds))
-                        .orElse(Map.of());
+        Map<Long, ProductInfoResult> orderedProducts = Optional.ofNullable(
+                        findProductByPricePolicyPort.findByPricePolicyIds(pricePolicyIds)
+                )
+                .orElse(Map.of());
 
-        String productNameKeyword = query.resolvedProductName();
+        String productNameKeyword = command.resolvedProductName();
         if (FormatValidator.hasValue(productNameKeyword)) {
-
             String keyword = productNameKeyword.toLowerCase();
 
             orders = orders.stream()
                     .filter(order -> order.getOrderProducts().stream()
                             .anyMatch(orderProduct -> {
-                                GetOrderedProductResult summary =
-                                        productSummaryMap.get(orderProduct.getPricePolicyId());
+                                ProductInfoResult summary = orderedProducts.get(orderProduct.getPricePolicyId());
 
-                                return summary != null
-                                        && summary.name() != null
-                                        && summary.name().toLowerCase().contains(keyword);
+                                return FormatValidator.hasValue(summary)
+                                        && FormatValidator.hasValue(summary.name())
+                                        && FormatValidator.containsKeyword(summary.name(), keyword);
                             })
                     )
                     .toList();
         }
 
-        return GetOrdersDomainResult.of(orders, productSummaryMap);
+        return GetOrdersResult.of(orders, orderedProducts);
     }
 }

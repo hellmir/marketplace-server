@@ -192,7 +192,9 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
         );
 
         return entities.stream()
-                .map(PricePolicyJpaEntityToDomainMapper::mapToDomain)
+                .map(policyEntity -> PricePolicyJpaEntityToDomainMapper.mapToDomain(
+                        policyEntity, productOptionPricePolicyJpaRepository.findOptionIdsByPricePolicyId(policyEntity.getId())
+                ))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
@@ -237,7 +239,9 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
         );
 
         return entities.stream()
-                .map(PricePolicyJpaEntityToDomainMapper::mapToDomain)
+                .map(policyEntity -> PricePolicyJpaEntityToDomainMapper.mapToDomain(
+                        policyEntity, productOptionPricePolicyJpaRepository.findOptionIdsByPricePolicyId(policyEntity.getId())
+                ))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();

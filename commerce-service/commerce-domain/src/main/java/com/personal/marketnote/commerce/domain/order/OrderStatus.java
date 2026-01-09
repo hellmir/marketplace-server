@@ -46,4 +46,8 @@ public enum OrderStatus {
     public boolean isMe(OrderStatus orderStatus) {
         return this == orderStatus;
     }
+
+    public boolean isPending() {
+        return this == PAYMENT_PENDING;
+    }
 }
