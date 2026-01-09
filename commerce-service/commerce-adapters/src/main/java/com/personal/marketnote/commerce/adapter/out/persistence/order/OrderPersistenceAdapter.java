@@ -8,6 +8,7 @@ import com.personal.marketnote.commerce.adapter.out.persistence.order.repository
 import com.personal.marketnote.commerce.adapter.out.persistence.order.repository.OrderJpaRepository;
 import com.personal.marketnote.commerce.domain.order.Order;
 import com.personal.marketnote.commerce.domain.order.OrderHistory;
+import com.personal.marketnote.commerce.domain.order.OrderStatus;
 import com.personal.marketnote.commerce.exception.OrderNotFoundException;
 import com.personal.marketnote.commerce.port.out.order.FindOrderPort;
 import com.personal.marketnote.commerce.port.out.order.SaveOrderPort;
@@ -16,6 +17,8 @@ import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,12 +54,44 @@ public class OrderPersistenceAdapter implements SaveOrderPort, FindOrderPort, Up
     }
 
     @Override
-    public List<Order> findByBuyerId(Long buyerId) {
-        return orderJpaRepository.findByBuyerId(buyerId)
-                .stream()
+    public List<Order> findByBuyerId(
+            Long buyerId,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            List<OrderStatus> statuses
+    ) {
+        List<String> statusNames = FormatValidator.hasValue(statuses)
+                ? statuses.stream().map(Enum::name).toList()
+                : List.of();
+        List<String> statusParam = statusNames.isEmpty() ? List.of("IGNORED") : statusNames;
+
+        List<Long> orderIds = orderJpaRepository.findIdsByBuyerIdWithFilters(
+                buyerId,
+                startDate,
+                endDate,
+                statusParam,
+                statusNames.size()
+        );
+
+        if (!FormatValidator.hasValue(orderIds)) {
+            return List.of();
+        }
+
+        List<OrderJpaEntity> entities = orderJpaRepository.findWithProductsByIds(orderIds);
+
+        var orderIndex = new java.util.HashMap<Long, Integer>();
+        for (int i = 0; i < orderIds.size(); i++) {
+            orderIndex.put(orderIds.get(i), i);
+        }
+
+        return entities.stream()
+                .sorted(Comparator.comparingInt(
+                        entity -> orderIndex.getOrDefault(entity.getId(), Integer.MAX_VALUE))
+                )
                 .map(OrderJpaEntityToDomainMapper::mapToDomain)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
+                .filter(order -> order.getOrderStatus() != OrderStatus.PAYMENT_PENDING)
                 .toList();
     }
 
