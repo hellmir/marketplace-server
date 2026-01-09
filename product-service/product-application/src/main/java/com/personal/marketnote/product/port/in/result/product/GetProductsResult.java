@@ -12,13 +12,13 @@ public record GetProductsResult(
             boolean hasNext,
             Long nextCursor,
             Long totalElements,
-            List<ProductItemResult> items
+            List<ProductItemResult> products
     ) {
         return new GetProductsResult(
                 totalElements,
                 nextCursor,
                 hasNext,
-                items
+                products
         );
     }
 }

@@ -89,9 +89,19 @@ import java.lang.annotation.*;
                 | quantity | number | 주문 수량 | 2 |
                 | unitAmount | number | 단위 금액(원) | 50000 |
                 | imageUrl | string | 상품 이미지 URL | "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png" |
-                | orderStatus | string | 주문 상태 | "PAYMENT_PENDING" |
-                | productId | number | 상품 ID | 10 |
-                | productName | string | 상품명 | "밀토스테놀" |
+                | orderStatus | string | 주문 상태 | "PAID" |
+                | productName | string | 상품명 | "공책" |
+                | selectedOptions | array | 선택 옵션 목록 | [ ... ] |
+                
+                ---
+                
+                ### Response > content > orderHistories > orders > orderProducts > selectedOptions
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | id | number | 옵션 ID | 1 |
+                | content | string | 옵션 내용 | "1박스" |
+                | status | string | 상태 | "ACTIVE" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         responses = {
@@ -101,59 +111,184 @@ import java.lang.annotation.*;
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
-                                                "statusCode": 200,
-                                                "code": "SUC01",
-                                                "timestamp": "2026-01-06T11:18:48.109239",
-                                                "content": {
-                                                  "orderHistories": [
-                                                    {
-                                                      "orderDate": "2026-01-06",
-                                                      "count": 2,
-                                                      "orders": [
-                                                        {
-                                                          "id": 3,
-                                                          "sellerId": 1,
-                                                          "buyerId": 4,
-                                                          "orderStatus": "DELIVERED",
-                                                          "totalAmount": 120000,
-                                                          "paidAmount": 120000,
-                                                          "couponAmount": 5000,
-                                                          "pointAmount": 5000,
-                                                          "orderProducts": [
-                                                            {
-                                                              "pricePolicyId": 13,
-                                                              "quantity": 2,
-                                                              "unitAmount": 50000,
-                                                              "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
-                                                              "orderStatus": "DELIVERED"
-                                                            }
-                                                          ]
-                                                        },
-                                                        {
-                                                          "id": 2,
-                                                          "sellerId": 1,
-                                                          "buyerId": 4,
-                                                          "orderStatus": "CONFIRMED",
-                                                          "totalAmount": 120000,
-                                                          "paidAmount": 120000,
-                                                          "couponAmount": 5000,
-                                                          "pointAmount": 5000,
-                                                          "orderProducts": [
-                                                            {
-                                                              "pricePolicyId": 14,
-                                                              "quantity": 10,
-                                                              "unitAmount": 70000,
-                                                              "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763533916081_image_600.png",
-                                                              "orderStatus": "CONFIRMED"
-                                                            }
-                                                          ]
-                                                        }
-                                                      ]
-                                                    }
-                                                  ]
-                                                },
-                                                "message": "회원 주문 내역 조회 성공"
+                                          "statusCode": 200,
+                                          "code": "SUC01",
+                                          "timestamp": "2026-01-09T22:55:19.633942",
+                                          "content": {
+                                            "orderHistory": [
+                                              {
+                                                "orderDate": "2026-01-09",
+                                                "count": 1,
+                                                "orders": [
+                                                  {
+                                                    "id": 15,
+                                                    "sellerId": 12,
+                                                    "buyerId": 17,
+                                                    "orderStatus": "PAID",
+                                                    "totalAmount": 120000,
+                                                    "paidAmount": 120000,
+                                                    "couponAmount": 5000,
+                                                    "pointAmount": 5000,
+                                                    "orderProducts": [
+                                                      {
+                                                        "pricePolicyId": 166,
+                                                        "quantity": 2,
+                                                        "unitAmount": 50000,
+                                                        "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
+                                                        "orderStatus": "PAID",
+                                                        "productName": "스프링노트12345",
+                                                        "selectedOptions": [
+                                                          {
+                                                            "id": 55,
+                                                            "content": "4박스",
+                                                            "status": "ACTIVE"
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "pricePolicyId": 180,
+                                                        "quantity": 10,
+                                                        "unitAmount": 70000,
+                                                        "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763533916081_image_600.png",
+                                                        "orderStatus": "PAID",
+                                                        "productName": "스프링노트1234",
+                                                        "selectedOptions": [
+                                                          {
+                                                            "id": 60,
+                                                            "content": "3박스",
+                                                            "status": "ACTIVE"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "orderDate": "2026-01-06",
+                                                "count": 1,
+                                                "orders": [
+                                                  {
+                                                    "id": 3,
+                                                    "sellerId": 1,
+                                                    "buyerId": 17,
+                                                    "orderStatus": "CONFIRMED",
+                                                    "totalAmount": 50000,
+                                                    "paidAmount": null,
+                                                    "couponAmount": 5000,
+                                                    "pointAmount": 5000,
+                                                    "orderProducts": [
+                                                      {
+                                                        "pricePolicyId": 144,
+                                                        "quantity": 10,
+                                                        "unitAmount": 70000,
+                                                        "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763533916081_image_600.png",
+                                                        "orderStatus": "PAID",
+                                                        "productName": "스프링노트111",
+                                                        "selectedOptions": [
+                                                          {
+                                                            "id": 42,
+                                                            "content": "4박스",
+                                                            "status": "ACTIVE"
+                                                          },
+                                                          {
+                                                            "id": 46,
+                                                            "content": "상",
+                                                            "status": "ACTIVE"
+                                                          },
+                                                          {
+                                                            "id": 47,
+                                                            "content": "30개입",
+                                                            "status": "ACTIVE"
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "pricePolicyId": 189,
+                                                        "quantity": 2,
+                                                        "unitAmount": 50000,
+                                                        "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
+                                                        "orderStatus": "PAID",
+                                                        "productName": "스프링노트1234",
+                                                        "selectedOptions": [
+                                                          {
+                                                            "id": 60,
+                                                            "content": "3박스",
+                                                            "status": "ACTIVE"
+                                                          },
+                                                          {
+                                                            "id": 63,
+                                                            "content": "90개입",
+                                                            "status": "ACTIVE"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "orderDate": "2026-01-05",
+                                                "count": 1,
+                                                "orders": [
+                                                  {
+                                                    "id": 2,
+                                                    "sellerId": 1,
+                                                    "buyerId": 17,
+                                                    "orderStatus": "DELIVERED",
+                                                    "totalAmount": 100000,
+                                                    "paidAmount": null,
+                                                    "couponAmount": 5000,
+                                                    "pointAmount": 5000,
+                                                    "orderProducts": [
+                                                      {
+                                                        "pricePolicyId": 159,
+                                                        "quantity": 2,
+                                                        "unitAmount": 50000,
+                                                        "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
+                                                        "orderStatus": "PAID",
+                                                        "productName": "스프링노트123",
+                                                        "selectedOptions": [
+                                                          {
+                                                            "id": 49,
+                                                            "content": "30개입",
+                                                            "status": "ACTIVE"
+                                                          },
+                                                          {
+                                                            "id": 52,
+                                                            "content": "4박스",
+                                                            "status": "ACTIVE"
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "pricePolicyId": 185,
+                                                        "quantity": 10,
+                                                        "unitAmount": 70000,
+                                                        "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763533916081_image_600.png",
+                                                        "orderStatus": "PAID",
+                                                        "productName": "스프링노트1234",
+                                                        "selectedOptions": [
+                                                          {
+                                                            "id": 59,
+                                                            "content": "1박스",
+                                                            "status": "ACTIVE"
+                                                          },
+                                                          {
+                                                            "id": 62,
+                                                            "content": "60개입",
+                                                            "status": "ACTIVE"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
                                               }
+                                            ]
+                                          },
+                                          "message": "회원 주문 내역 조회 성공"
+                                        }
                                         """)
                         )
                 ),

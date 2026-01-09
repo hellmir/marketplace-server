@@ -9,14 +9,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-public class OrderHistory {
+public class OrderStatusHistory {
     private Long id;
     private Long orderId;
     private OrderStatus orderStatus;
     private String reason;
     private LocalDateTime createdAt;
 
-    public static OrderHistory of(
+    public static OrderStatusHistory of(
             Long orderId,
             OrderStatus orderStatus,
             String reason
@@ -25,7 +25,7 @@ public class OrderHistory {
             reason = orderStatus.getDescription();
         }
 
-        return OrderHistory.builder()
+        return OrderStatusHistory.builder()
                 .orderId(orderId)
                 .orderStatus(orderStatus)
                 .reason(reason)
@@ -33,14 +33,14 @@ public class OrderHistory {
                 .build();
     }
 
-    public static OrderHistory of(
+    public static OrderStatusHistory of(
             Long id,
             Long orderId,
             OrderStatus orderStatus,
             String reason,
             LocalDateTime createdAt
     ) {
-        return OrderHistory.builder()
+        return OrderStatusHistory.builder()
                 .id(id)
                 .orderId(orderId)
                 .orderStatus(orderStatus)

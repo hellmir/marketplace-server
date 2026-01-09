@@ -1,11 +1,11 @@
 package com.personal.marketnote.commerce.adapter.out.service.product;
 
-import com.personal.marketnote.commerce.adapter.out.service.product.dto.ProductCursorResponse;
-import com.personal.marketnote.commerce.adapter.out.service.product.dto.ProductItemResponse;
-import com.personal.marketnote.commerce.adapter.out.service.product.dto.ProductListResponse;
+import com.personal.marketnote.commerce.adapter.out.service.product.response.OrderedProductsResponse;
+import com.personal.marketnote.commerce.adapter.out.service.product.response.ProductsInfoResponse;
 import com.personal.marketnote.commerce.port.out.product.FindProductByPricePolicyPort;
-import com.personal.marketnote.commerce.port.out.result.product.GetOrderedProductResult;
+import com.personal.marketnote.commerce.port.out.result.product.ProductInfoResult;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
+import com.personal.marketnote.common.adapter.in.response.CursorResponse;
 import com.personal.marketnote.common.adapter.out.ServiceAdapter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import lombok.RequiredArgsConstructor;
@@ -37,14 +37,15 @@ public class ProductServiceClient implements FindProductByPricePolicyPort {
     private final RestTemplate restTemplate;
 
     @Override
-    public Map<Long, GetOrderedProductResult> findByPricePolicyIds(List<Long> pricePolicyIds) {
+    public Map<Long, ProductInfoResult> findByPricePolicyIds(List<Long> pricePolicyIds) {
         if (!FormatValidator.hasValue(pricePolicyIds)) {
             return Map.of();
         }
 
         URI uri = UriComponentsBuilder.fromUriString(productServiceBaseUrl)
                 .path("/api/v1/products")
-                .queryParam("pricePolicyIds", pricePolicyIds)
+                .queryParam("pricePolicyIds", pricePolicyIds.toArray())
+                .queryParam("pageSize", pricePolicyIds.size())
                 .build()
                 .toUri();
 
@@ -52,8 +53,12 @@ public class ProductServiceClient implements FindProductByPricePolicyPort {
         headers.setBearerAuth(adminAccessToken);
         HttpEntity<Void> request = new HttpEntity<>(headers);
 
+        return sendRequest(uri, request);
+    }
+
+    private Map<Long, ProductInfoResult> sendRequest(URI uri, HttpEntity<Void> request) {
         try {
-            ResponseEntity<BaseResponse<ProductListResponse>> response = restTemplate.exchange(
+            ResponseEntity<BaseResponse<OrderedProductsResponse>> response = restTemplate.exchange(
                     uri,
                     HttpMethod.GET,
                     request,
@@ -61,45 +66,56 @@ public class ProductServiceClient implements FindProductByPricePolicyPort {
                     }
             );
 
-            BaseResponse<ProductListResponse> baseResponse = response.getBody();
-            ProductListResponse content = FormatValidator.hasValue(baseResponse)
-                    ? baseResponse.getContent()
-                    : null;
-            if (!FormatValidator.hasValue(content)) {
-                return Map.of();
-            }
+            List<ProductsInfoResponse> productsInfo = unboxResponse(response);
 
-            ProductCursorResponse<ProductItemResponse> products = content.products();
-            List<ProductItemResponse> productItems = FormatValidator.hasValue(products)
-                    && FormatValidator.hasValue(products.contents())
-                    ? products.contents()
-                    : List.of();
+            Map<Long, ProductInfoResult> productInfoResult = new HashMap<>();
+            generateResult(productInfoResult, productsInfo);
 
-            Map<Long, GetOrderedProductResult> result = new HashMap<>();
-            for (ProductItemResponse item : productItems) {
-                if (!FormatValidator.hasValue(item) || !FormatValidator.hasValue(item.pricePolicy())) {
-                    continue;
-                }
-
-                Long policyId = item.pricePolicy().id();
-                if (!FormatValidator.hasValue(policyId) || result.containsKey(policyId)) {
-                    continue;
-                }
-
-                result.put(
-                        policyId,
-                        new GetOrderedProductResult(
-                                item.id(),
-                                item.name(),
-                                item.brandName()
-                        )
-                );
-            }
-
-            return result;
+            return productInfoResult;
         } catch (Exception e) {
             log.warn("Failed to fetch product info from product-service: {}", e.getMessage(), e);
             return Map.of();
+        }
+    }
+
+    private List<ProductsInfoResponse> unboxResponse(ResponseEntity<BaseResponse<OrderedProductsResponse>> response) {
+        BaseResponse<OrderedProductsResponse> body = response.getBody();
+        if (!FormatValidator.hasValue(body)) {
+            return List.of();
+        }
+
+        OrderedProductsResponse content = body.getContent();
+        if (!FormatValidator.hasValue(content)) {
+            return List.of();
+        }
+
+        CursorResponse<ProductsInfoResponse> products = content.products();
+        if (!FormatValidator.hasValue(products)) {
+            return List.of();
+        }
+
+        return products.items();
+    }
+
+    private void generateResult(Map<Long, ProductInfoResult> productInfoResult, List<ProductsInfoResponse> productsInfo) {
+        for (ProductsInfoResponse productInfo : productsInfo) {
+            if (!FormatValidator.hasValue(productInfo) || !FormatValidator.hasValue(productInfo.pricePolicy())) {
+                continue;
+            }
+
+            Long policyId = productInfo.getPricePolicyId();
+            if (!FormatValidator.hasValue(policyId) || productInfoResult.containsKey(policyId)) {
+                continue;
+            }
+
+            productInfoResult.put(
+                    policyId,
+                    new ProductInfoResult(
+                            productInfo.name(),
+                            productInfo.brandName(),
+                            productInfo.selectedOptions()
+                    )
+            );
         }
     }
 }

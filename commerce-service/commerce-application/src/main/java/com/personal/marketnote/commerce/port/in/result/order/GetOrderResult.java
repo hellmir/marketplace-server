@@ -2,7 +2,7 @@ package com.personal.marketnote.commerce.port.in.result.order;
 
 import com.personal.marketnote.commerce.domain.order.Order;
 import com.personal.marketnote.commerce.domain.order.OrderStatus;
-import com.personal.marketnote.commerce.port.out.result.product.GetOrderedProductResult;
+import com.personal.marketnote.commerce.port.out.result.product.ProductInfoResult;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -27,7 +27,7 @@ public record GetOrderResult(
 
     public static GetOrderResult from(
             Order order,
-            Map<Long, GetOrderedProductResult> productSummaries
+            Map<Long, ProductInfoResult> productInfo
     ) {
         return GetOrderResult.builder()
                 .id(order.getId())
@@ -40,11 +40,12 @@ public record GetOrderResult(
                 .pointAmount(order.getPointAmount())
                 .orderProducts(order.getOrderProducts().stream()
                         .map(orderProduct -> {
-                            GetOrderedProductResult summary =
-                                    productSummaries.get(orderProduct.getPricePolicyId());
+                            ProductInfoResult summary =
+                                    productInfo.get(orderProduct.getPricePolicyId());
                             return GetOrderProductResult.from(
                                     orderProduct,
-                                    summary
+                                    summary,
+                                    order.getOrderStatus()
                             );
                         })
                         .toList())

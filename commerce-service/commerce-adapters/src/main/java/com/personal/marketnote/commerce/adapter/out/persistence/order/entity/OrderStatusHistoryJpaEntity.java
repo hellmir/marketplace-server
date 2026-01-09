@@ -1,7 +1,7 @@
 package com.personal.marketnote.commerce.adapter.out.persistence.order.entity;
 
-import com.personal.marketnote.commerce.domain.order.OrderHistory;
 import com.personal.marketnote.commerce.domain.order.OrderStatus;
+import com.personal.marketnote.commerce.domain.order.OrderStatusHistory;
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,14 +9,14 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
-@Table(name = "order_history")
+@Table(name = "order_status_history")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
 @DynamicInsert
 @DynamicUpdate
-public class OrderHistoryJpaEntity extends BaseEntity {
+public class OrderStatusHistoryJpaEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -33,21 +33,21 @@ public class OrderHistoryJpaEntity extends BaseEntity {
     @Column(name = "reason", nullable = false, length = 63)
     private String reason;
 
-    public static OrderHistoryJpaEntity from(OrderJpaEntity orderJpaEntity) {
+    public static OrderStatusHistoryJpaEntity from(OrderJpaEntity orderJpaEntity) {
         OrderStatus orderStatus = orderJpaEntity.getOrderStatus();
 
-        return OrderHistoryJpaEntity.builder()
+        return OrderStatusHistoryJpaEntity.builder()
                 .orderJpaEntity(orderJpaEntity)
                 .orderStatus(orderStatus)
                 .reason(orderStatus.getDescription())
                 .build();
     }
 
-    public static OrderHistoryJpaEntity from(OrderHistory orderHistory, OrderJpaEntity orderJpaEntity) {
-        return OrderHistoryJpaEntity.builder()
+    public static OrderStatusHistoryJpaEntity from(OrderStatusHistory orderStatusHistory, OrderJpaEntity orderJpaEntity) {
+        return OrderStatusHistoryJpaEntity.builder()
                 .orderJpaEntity(orderJpaEntity)
-                .orderStatus(orderHistory.getOrderStatus())
-                .reason(orderHistory.getReason())
+                .orderStatus(orderStatusHistory.getOrderStatus())
+                .reason(orderStatusHistory.getReason())
                 .build();
     }
 }

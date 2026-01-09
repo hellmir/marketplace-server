@@ -10,23 +10,26 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-public record GetOrdersQuery(
+public record GetBuyerOrderHistoryCommand(
         Long buyerId,
         OrderPeriod period,
         OrderStatusFilter status,
         String productName
 ) {
-    public static GetOrdersQuery of(
+    public static GetBuyerOrderHistoryCommand of(
             Long buyerId,
             OrderPeriod period,
             OrderStatusFilter status,
             String productName
     ) {
-        return new GetOrdersQuery(buyerId, period, status, productName);
+        return new GetBuyerOrderHistoryCommand(buyerId, period, status, productName);
     }
 
     public LocalDateTime calculateStartDate(LocalDate now) {
-        OrderPeriod resolved = period != null ? period : OrderPeriod.ALL;
+        OrderPeriod resolved = FormatValidator.hasValue(period)
+                ? period
+                : OrderPeriod.ALL;
+
         return resolved.startDate(now);
     }
 
@@ -35,11 +38,16 @@ public record GetOrdersQuery(
     }
 
     public List<OrderStatus> resolveStatuses() {
-        OrderStatusFilter resolved = status != null ? status : OrderStatusFilter.ALL;
+        OrderStatusFilter resolved = FormatValidator.hasValue(status)
+                ? status
+                : OrderStatusFilter.ALL;
+
         return resolved.toStatuses();
     }
 
     public String resolvedProductName() {
-        return FormatValidator.hasValue(productName) ? productName.trim() : null;
+        return FormatValidator.hasValue(productName)
+                ? productName.trim()
+                : null;
     }
 }

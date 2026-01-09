@@ -12,9 +12,9 @@ import com.personal.marketnote.commerce.adapter.in.client.order.response.GetOrde
 import com.personal.marketnote.commerce.adapter.in.client.order.response.RegisterOrderResponse;
 import com.personal.marketnote.commerce.domain.order.OrderPeriod;
 import com.personal.marketnote.commerce.domain.order.OrderStatusFilter;
-import com.personal.marketnote.commerce.port.in.command.order.GetOrdersQuery;
+import com.personal.marketnote.commerce.port.in.command.order.GetBuyerOrderHistoryCommand;
+import com.personal.marketnote.commerce.port.in.result.order.GetOrderHistoryResult;
 import com.personal.marketnote.commerce.port.in.result.order.GetOrderResult;
-import com.personal.marketnote.commerce.port.in.result.order.GetOrdersDomainResult;
 import com.personal.marketnote.commerce.port.in.result.order.GetOrdersResult;
 import com.personal.marketnote.commerce.port.in.result.order.RegisterOrderResult;
 import com.personal.marketnote.commerce.port.in.usecase.order.ChangeOrderStatusUseCase;
@@ -107,35 +107,35 @@ public class OrderController {
      * @return 주문 내역 조회 응답 {@link GetOrdersResponse}
      * @Author 성효빈
      * @Date 2026-01-05
-     * @Description 주문 내역을 조회합니다.
+     * @Description 회원 주문 내역을 조회합니다.
      */
     @GetMapping
     @GetOrdersApiDocs
-    public ResponseEntity<BaseResponse<GetOrdersResponse>> getOrderHistory(
+    public ResponseEntity<BaseResponse<GetOrdersResponse>> getBuyerOrderHistory(
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal,
             @RequestParam(value = "period", required = false) OrderPeriod period,
             @RequestParam(value = "status", required = false) OrderStatusFilter statusFilter,
             @RequestParam(value = "productName", required = false) String productName
     ) {
-        GetOrdersDomainResult domainResult = getOrderUseCase.getOrders(
-                GetOrdersQuery.of(
+        GetOrdersResult domainResult = getOrderUseCase.getBuyerOrderHistory(
+                GetBuyerOrderHistoryCommand.of(
                         ElementExtractor.extractUserId(principal),
                         period,
                         statusFilter,
                         productName
                 )
         );
-        GetOrdersResult getOrdersResult = GetOrdersResult.from(
+        GetOrderHistoryResult getOrderHistoryResult = GetOrderHistoryResult.from(
                 domainResult.orders(),
-                domainResult.productSummaries()
+                domainResult.orderedProducts()
         );
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        GetOrdersResponse.from(getOrdersResult),
+                        GetOrdersResponse.from(getOrderHistoryResult),
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
-                        "주문 내역 조회 성공"
+                        "회원 주문 내역 조회 성공"
                 ),
                 HttpStatus.OK
         );
