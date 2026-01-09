@@ -40,6 +40,8 @@ import java.lang.annotation.*;
                 
                     - 리뷰 이미지: "REVIEW_IMAGE"
                 
+                    - 환불 사유 이미지: "REFUND_REASON_IMAGE"
+                
                     - 아이콘: "ICON"
                 
                     - 기타: "ETC"
@@ -50,7 +52,7 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
-                | ownerType | string | 소유 도메인 타입 | Y | "PRODUCT": 상품 / "REVIEW": 리뷰 |
+                | ownerType | string | 소유 도메인 타입 | Y | "PRODUCT": 상품 / "ORDER": 주문 / "REVIEW": 리뷰 |
                 | ownerId | number | 소유 도메인 ID | Y | 1 |
                 | file | file[] | 업로드할 파일 목록 | Y | [file1, file2] |
                 | sort | string[] | 파일 종류 목록 | Y | ["PRODUCT_CATALOG_IMAGE", "PRODUCT_REPRESENTATIVE_IMAGE", "REVIEW_IMAGE"] |
