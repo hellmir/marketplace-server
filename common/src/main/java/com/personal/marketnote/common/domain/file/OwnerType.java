@@ -10,6 +10,7 @@ import java.util.Arrays;
 @Getter
 public enum OwnerType {
     PRODUCT("상품"),
+    ORDER("주문"),
     REVIEW("사용자 후기");
 
     private final String description;

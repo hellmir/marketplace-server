@@ -37,6 +37,8 @@ import java.lang.annotation.*;
                 
                         - 상품 상세 정보 본문 이미지: "PRODUCT_CONTENT_IMAGE"
                 
+                    - 환불 사유 이미지: "REFUND_REASON_IMAGE"
+                
                     - 리뷰 이미지: "REVIEW_IMAGE"
                 
                     - 아이콘: "ICON"
@@ -53,7 +55,7 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
-                | ownerType | string | 소유 도메인 타입 | Y | "PRODUCT": 상품 / "REVIEW": 리뷰 |
+                | ownerType | string | 소유 도메인 타입 | Y | "PRODUCT": 상품 / "ORDER": 주문 / "REVIEW": 리뷰 |
                 | ownerId | number | 소유 도메인 ID | Y | 1 |
                 | sort | string | 파일 종류 | N | "PRODUCT_CATALOG_IMAGE" |
                 
