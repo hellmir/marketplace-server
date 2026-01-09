@@ -117,9 +117,7 @@ pipeline {
 						}
 					}
 
-					def commonChanged = changed.any {
-						it.startsWith("common/")
-					}
+                    def commonChanged = false
 
 					def candidates = commonChanged
 					? (targetAdapters.keySet() as List)
