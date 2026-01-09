@@ -48,60 +48,34 @@ public interface PricePolicyJpaRepository extends JpaRepository<PricePolicyJpaEn
                           AND pc.categoryId = :categoryId
                  )
               )
+              /* >>> 변경 부분 시작: pricePolicyIds 조건 추가 */
+              AND (
+                    :pricePolicyIds IS NULL
+                    OR pp.id IN (:pricePolicyIds)
+              )
+              /* <<< 변경 부분 끝 */
               AND (
                     :cursor IS NULL
                  OR NOT EXISTS (SELECT 1 FROM PricePolicyJpaEntity pp0 WHERE pp0.id = :cursor)
                  OR (
                         (:sortProperty = 'orderNum' AND (
-                              pp.orderNum > (
-                                  SELECT pp2.orderNum
-                                  FROM PricePolicyJpaEntity pp2
-                                  WHERE pp2.id = :cursor
-                              )
-                           OR (pp.orderNum = (
-                                    SELECT pp2.orderNum
-                                    FROM PricePolicyJpaEntity pp2
-                                    WHERE pp2.id = :cursor
-                                )
+                              pp.orderNum > (SELECT pp2.orderNum FROM PricePolicyJpaEntity pp2 WHERE pp2.id = :cursor)
+                           OR (pp.orderNum = (SELECT pp2.orderNum FROM PricePolicyJpaEntity pp2 WHERE pp2.id = :cursor)
                                AND pp.id > :cursor)
                         ))
                      OR (:sortProperty = 'popularity' AND (
-                              pp.popularity > (
-                                  SELECT pp3.popularity
-                                  FROM PricePolicyJpaEntity pp3
-                                  WHERE pp3.id = :cursor
-                              )
-                           OR (pp.popularity = (
-                                    SELECT pp3.popularity
-                                    FROM PricePolicyJpaEntity pp3
-                                    WHERE pp3.id = :cursor
-                                )
+                              pp.popularity > (SELECT pp3.popularity FROM PricePolicyJpaEntity pp3 WHERE pp3.id = :cursor)
+                           OR (pp.popularity = (SELECT pp3.popularity FROM PricePolicyJpaEntity pp3 WHERE pp3.id = :cursor)
                                AND pp.id > :cursor)
                         ))
                      OR (:sortProperty = 'discountPrice' AND (
-                              pp.discountPrice > (
-                                  SELECT pp4.discountPrice
-                                  FROM PricePolicyJpaEntity pp4
-                                  WHERE pp4.id = :cursor
-                              )
-                           OR (pp.discountPrice = (
-                                    SELECT pp4.discountPrice
-                                    FROM PricePolicyJpaEntity pp4
-                                    WHERE pp4.id = :cursor
-                                )
+                              pp.discountPrice > (SELECT pp4.discountPrice FROM PricePolicyJpaEntity pp4 WHERE pp4.id = :cursor)
+                           OR (pp.discountPrice = (SELECT pp4.discountPrice FROM PricePolicyJpaEntity pp4 WHERE pp4.id = :cursor)
                                AND pp.id > :cursor)
                         ))
                      OR (:sortProperty = 'accumulatedPoint' AND (
-                              pp.accumulatedPoint > (
-                                  SELECT pp5.accumulatedPoint
-                                  FROM PricePolicyJpaEntity pp5
-                                  WHERE pp5.id = :cursor
-                              )
-                           OR (pp.accumulatedPoint = (
-                                    SELECT pp5.accumulatedPoint
-                                    FROM PricePolicyJpaEntity pp5
-                                    WHERE pp5.id = :cursor
-                                )
+                              pp.accumulatedPoint > (SELECT pp5.accumulatedPoint FROM PricePolicyJpaEntity pp5 WHERE pp5.id = :cursor)
+                           OR (pp.accumulatedPoint = (SELECT pp5.accumulatedPoint FROM PricePolicyJpaEntity pp5 WHERE pp5.id = :cursor)
                                AND pp.id > :cursor)
                         ))
                  )
@@ -114,6 +88,7 @@ public interface PricePolicyJpaRepository extends JpaRepository<PricePolicyJpaEn
                 pp.id ASC
             """)
     List<PricePolicyJpaEntity> findAllActiveByCursorAsc(
+            @Param("pricePolicyIds") List<Long> pricePolicyIds,
             @Param("cursor") Long cursor,
             Pageable pageable,
             @Param("sortProperty") String sortProperty,
@@ -142,6 +117,10 @@ public interface PricePolicyJpaRepository extends JpaRepository<PricePolicyJpaEn
                         WHERE pc.productId = p.id
                           AND pc.categoryId = :categoryId
                  )
+              )
+              AND (
+                    :pricePolicyIds IS NULL
+                 OR pp.id IN :pricePolicyIds
               )
               AND (
                     :cursor IS NULL
@@ -209,6 +188,7 @@ public interface PricePolicyJpaRepository extends JpaRepository<PricePolicyJpaEn
                 pp.id DESC
             """)
     List<PricePolicyJpaEntity> findAllActiveByCursorDesc(
+            @Param("pricePolicyIds") List<Long> pricePolicyIds,
             @Param("cursor") Long cursor,
             Pageable pageable,
             @Param("sortProperty") String sortProperty,
@@ -216,5 +196,4 @@ public interface PricePolicyJpaRepository extends JpaRepository<PricePolicyJpaEn
             @Param("pattern") String pattern,
             @Param("categoryId") Long categoryId
     );
-
 }

@@ -152,6 +152,7 @@ public class GetProductService implements GetProductUseCase {
     @Override
     public GetProductsResult getProducts(
             Long categoryId,
+            List<Long> pricePolicyIds,
             Long cursor,
             int pageSize,
             Sort.Direction sortDirection,
@@ -170,6 +171,7 @@ public class GetProductService implements GetProductUseCase {
         List<PricePolicy> pricePolicies = isCategorized
                 ? findPricePoliciesPort.findActivePageByCategoryId(
                 categoryId,
+                pricePolicyIds,
                 cursor,
                 pageable,
                 sortProperty,
@@ -177,6 +179,7 @@ public class GetProductService implements GetProductUseCase {
                 searchKeyword
         )
                 : findPricePoliciesPort.findActivePage(
+                pricePolicyIds,
                 cursor,
                 pageable,
                 sortProperty,
@@ -192,7 +195,7 @@ public class GetProductService implements GetProductUseCase {
 
         Long nextCursor = null;
         if (FormatValidator.hasValue(pagePolicies)) {
-            nextCursor = pagePolicies.get(pagePolicies.size() - 1).getId();
+            nextCursor = pagePolicies.getLast().getId();
         }
 
         List<ProductItemResult> pageItems = pagePolicies.stream()

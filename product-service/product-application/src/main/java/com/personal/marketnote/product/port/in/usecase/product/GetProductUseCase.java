@@ -30,13 +30,14 @@ public interface GetProductUseCase {
     GetProductInfoWithOptionsResult getProductInfo(Long id, List<Long> selectedOptionIds);
 
     /**
-     * @param categoryId    카테고리 ID
-     * @param cursor        커서
-     * @param pageSize      페이지 크기
-     * @param sortDirection 정렬 방향
-     * @param sortProperty  정렬 속성
-     * @param searchTarget  검색 대상
-     * @param searchKeyword 검색 키워드
+     * @param categoryId     카테고리 ID
+     * @param pricePolicyIds 가격 정책 ID 목록
+     * @param cursor         커서(무한 스크롤 페이지 설정)
+     * @param pageSize       페이지 크기
+     * @param sortDirection  정렬 방향
+     * @param sortProperty   정렬 속성
+     * @param searchTarget   검색 대상
+     * @param searchKeyword  검색 키워드
      * @return 상품 목록 조회 결과 {@link GetProductsResult}
      * @Date 2025-12-31
      * @Author 성효빈
@@ -44,6 +45,7 @@ public interface GetProductUseCase {
      */
     GetProductsResult getProducts(
             Long categoryId,
+            List<Long> pricePolicyIds,
             Long cursor,
             int pageSize,
             Sort.Direction sortDirection,

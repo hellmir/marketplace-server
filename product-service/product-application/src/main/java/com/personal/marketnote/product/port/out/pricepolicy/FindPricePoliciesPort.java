@@ -13,6 +13,7 @@ public interface FindPricePoliciesPort {
     List<PricePolicy> findByIds(List<Long> ids);
 
     List<PricePolicy> findActivePage(
+            List<Long> pricePolicyIds,
             Long cursor,
             Pageable pageable,
             ProductSortProperty sortProperty,
@@ -22,6 +23,7 @@ public interface FindPricePoliciesPort {
 
     List<PricePolicy> findActivePageByCategoryId(
             Long categoryId,
+            List<Long> pricePolicyIds,
             Long cursor,
             Pageable pageable,
             ProductSortProperty sortProperty,

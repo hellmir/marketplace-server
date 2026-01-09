@@ -46,6 +46,7 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
+                | pricePolicyIds | array<number> | 가격 정책 ID 목록 | N | 1, 2 |
                 | categoryId | number | 카테고리 ID | N | 1001 |
                 | cursor | number | 이전 페이지의 nextCursor 값, 전송하지 않는 경우 첫 데이터부터 조회 | N | default: -1 |
                 | page-size | number | 페이지 크기 | N | 4 |
@@ -146,6 +147,12 @@ import java.lang.annotation.*;
         @SecurityRequirement(name = "bearer")
 },
         parameters = {
+                @Parameter(
+                        name = "pricePolicyIds",
+                        description = "가격 정책 ID 목록",
+                        in = ParameterIn.QUERY,
+                        schema = @Schema(type = "array")
+                ),
                 @Parameter(
                         name = "categoryId",
                         in = ParameterIn.QUERY,
