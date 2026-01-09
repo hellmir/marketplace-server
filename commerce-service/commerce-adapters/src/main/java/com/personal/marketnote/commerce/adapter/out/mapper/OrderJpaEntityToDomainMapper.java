@@ -27,7 +27,9 @@ public class OrderJpaEntityToDomainMapper {
                             entity.getPaidAmount(),
                             entity.getCouponAmount(),
                             entity.getPointAmount(),
-                            orderProducts
+                            orderProducts,
+                            entity.getCreatedAt(),
+                            entity.getModifiedAt()
                     );
                 });
     }
@@ -35,8 +37,8 @@ public class OrderJpaEntityToDomainMapper {
     private static Optional<OrderProduct> mapToDomain(OrderProductJpaEntity orderProductJpaEntity) {
         return Optional.ofNullable(orderProductJpaEntity)
                 .map(entity -> OrderProduct.of(
-                        entity.getId().getPricePolicyId(),
                         entity.getId().getOrderId(),
+                        entity.getId().getPricePolicyId(),
                         entity.getQuantity(),
                         entity.getUnitAmount(),
                         entity.getImageUrl(),
@@ -44,4 +46,3 @@ public class OrderJpaEntityToDomainMapper {
                 ));
     }
 }
-

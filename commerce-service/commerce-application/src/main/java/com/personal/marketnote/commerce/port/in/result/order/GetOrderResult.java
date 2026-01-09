@@ -2,10 +2,12 @@ package com.personal.marketnote.commerce.port.in.result.order;
 
 import com.personal.marketnote.commerce.domain.order.Order;
 import com.personal.marketnote.commerce.domain.order.OrderStatus;
+import com.personal.marketnote.commerce.port.out.result.product.GetOrderedProductResult;
 import lombok.AccessLevel;
 import lombok.Builder;
 
 import java.util.List;
+import java.util.Map;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record GetOrderResult(
@@ -20,6 +22,13 @@ public record GetOrderResult(
         List<GetOrderProductResult> orderProducts
 ) {
     public static GetOrderResult from(Order order) {
+        return from(order, Map.of());
+    }
+
+    public static GetOrderResult from(
+            Order order,
+            Map<Long, GetOrderedProductResult> productSummaries
+    ) {
         return GetOrderResult.builder()
                 .id(order.getId())
                 .sellerId(order.getSellerId())
@@ -29,7 +38,16 @@ public record GetOrderResult(
                 .paidAmount(order.getPaidAmount())
                 .couponAmount(order.getCouponAmount())
                 .pointAmount(order.getPointAmount())
-                .orderProducts(order.getOrderProducts().stream().map(GetOrderProductResult::from).toList())
+                .orderProducts(order.getOrderProducts().stream()
+                        .map(orderProduct -> {
+                            GetOrderedProductResult summary =
+                                    productSummaries.get(orderProduct.getPricePolicyId());
+                            return GetOrderProductResult.from(
+                                    orderProduct,
+                                    summary
+                            );
+                        })
+                        .toList())
                 .build();
     }
 }

@@ -7,8 +7,8 @@ import lombok.*;
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
 public class OrderProduct {
-    private Long pricePolicyId;
     private Long orderId;
+    private Long pricePolicyId;
     private Integer quantity;
     private Long unitAmount;
     private String imageUrl;
@@ -30,16 +30,16 @@ public class OrderProduct {
     }
 
     public static OrderProduct of(
-            Long pricePolicyId,
             Long orderId,
+            Long pricePolicyId,
             Integer quantity,
             Long unitAmount,
             String imageUrl,
             OrderStatus orderStatus
     ) {
         return OrderProduct.builder()
-                .pricePolicyId(pricePolicyId)
                 .orderId(orderId)
+                .pricePolicyId(pricePolicyId)
                 .quantity(quantity)
                 .unitAmount(unitAmount)
                 .imageUrl(imageUrl)

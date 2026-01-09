@@ -2,6 +2,7 @@ package com.personal.marketnote.commerce.domain.order;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,6 +19,8 @@ public class Order {
     private Long couponAmount;
     private Long pointAmount;
     private List<OrderProduct> orderProducts;
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
 
     public static Order of(
             Long sellerId,
@@ -62,6 +65,34 @@ public class Order {
                 .build();
     }
 
+    public static Order of(
+            Long id,
+            Long sellerId,
+            Long buyerId,
+            OrderStatus orderStatus,
+            Long totalAmount,
+            Long paidAmount,
+            Long couponAmount,
+            Long pointAmount,
+            List<OrderProduct> orderProducts,
+            LocalDateTime createdAt,
+            LocalDateTime modifiedAt
+    ) {
+        return Order.builder()
+                .id(id)
+                .sellerId(sellerId)
+                .buyerId(buyerId)
+                .orderStatus(orderStatus)
+                .totalAmount(totalAmount)
+                .paidAmount(paidAmount)
+                .couponAmount(couponAmount)
+                .pointAmount(pointAmount)
+                .orderProducts(orderProducts)
+                .createdAt(createdAt)
+                .modifiedAt(modifiedAt)
+                .build();
+    }
+
     public void changeProductsStatus(List<Long> pricePolicyIds, OrderStatus orderStatus) {
         orderProducts.stream()
                 .filter(orderProduct -> pricePolicyIds.contains(orderProduct.getPricePolicyId()))
@@ -80,4 +111,3 @@ public class Order {
         this.orderStatus = orderStatus;
     }
 }
-

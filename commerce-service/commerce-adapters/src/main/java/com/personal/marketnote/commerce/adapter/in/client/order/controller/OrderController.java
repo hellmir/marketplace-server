@@ -10,7 +10,11 @@ import com.personal.marketnote.commerce.adapter.in.client.order.request.Register
 import com.personal.marketnote.commerce.adapter.in.client.order.response.GetOrderResponse;
 import com.personal.marketnote.commerce.adapter.in.client.order.response.GetOrdersResponse;
 import com.personal.marketnote.commerce.adapter.in.client.order.response.RegisterOrderResponse;
+import com.personal.marketnote.commerce.domain.order.OrderPeriod;
+import com.personal.marketnote.commerce.domain.order.OrderStatusFilter;
+import com.personal.marketnote.commerce.port.in.command.order.GetOrdersQuery;
 import com.personal.marketnote.commerce.port.in.result.order.GetOrderResult;
+import com.personal.marketnote.commerce.port.in.result.order.GetOrdersDomainResult;
 import com.personal.marketnote.commerce.port.in.result.order.GetOrdersResult;
 import com.personal.marketnote.commerce.port.in.result.order.RegisterOrderResult;
 import com.personal.marketnote.commerce.port.in.usecase.order.ChangeOrderStatusUseCase;
@@ -108,10 +112,22 @@ public class OrderController {
     @GetMapping
     @GetOrdersApiDocs
     public ResponseEntity<BaseResponse<GetOrdersResponse>> getOrderHistory(
-            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal,
+            @RequestParam(value = "period", required = false) OrderPeriod period,
+            @RequestParam(value = "status", required = false) OrderStatusFilter statusFilter,
+            @RequestParam(value = "productName", required = false) String productName
     ) {
+        GetOrdersDomainResult domainResult = getOrderUseCase.getOrders(
+                GetOrdersQuery.of(
+                        ElementExtractor.extractUserId(principal),
+                        period,
+                        statusFilter,
+                        productName
+                )
+        );
         GetOrdersResult getOrdersResult = GetOrdersResult.from(
-                getOrderUseCase.getOrders(ElementExtractor.extractUserId(principal))
+                domainResult.orders(),
+                domainResult.productSummaries()
         );
 
         return new ResponseEntity<>(
