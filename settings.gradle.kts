@@ -17,6 +17,11 @@ include("commerce-service:commerce-adapters")
 include("commerce-service:commerce-application")
 include("commerce-service:commerce-domain")
 
+include("community-service")
+include("community-service:community-adapters")
+include("community-service:community-application")
+include("community-service:community-domain")
+
 include("file-service")
 include("file-service:file-adapters")
 include("file-service:file-application")

@@ -47,6 +47,7 @@ def buildMarketNoteTaskDefinition(env) {
                 [name: "FILE_SERVICE_SERVER_ORIGIN",     value: env.FILE_SERVICE_SERVER_ORIGIN],
                 [name: "PRODUCT_SERVICE_SERVER_ORIGIN",  value: env.PRODUCT_SERVICE_SERVER_ORIGIN],
                 [name: "COMMERCE_SERVICE_SERVER_ORIGIN", value: env.COMMERCE_SERVICE_SERVER_ORIGIN],
+                [name: "COMMUNITY_SERVICE_SERVER_ORIGIN",value: env.COMMUNITY_SERVICE_SERVER_ORIGIN],
                 [name: "JWT_ADMIN_ACCESS_TOKEN",         value: env.JWT_ADMIN_ACCESS_TOKEN],
             ],
             logConfiguration: [
@@ -73,7 +74,7 @@ pipeline {
 	agent any
 
 	parameters {
-		choice(name: 'SERVICE', choices: ['auto','user-service','product-service','commerce-service','file-service'], description: '배포 대상 서비스')
+		choice(name: 'SERVICE', choices: ['auto','user-service','product-service','commerce-service','community-service','file-service'], description: '배포 대상 서비스')
 	}
 
 	environment {
@@ -95,10 +96,11 @@ pipeline {
 					} as List
 
 					def targetAdapters = [
-						'user-service'   : 'user-adapters',
-						'product-service': 'product-adapters',
-						'commerce-service': 'commerce-adapters',
-						'file-service': 'file-adapters',
+						'user-service'     : 'user-adapters',
+						'product-service'  : 'product-adapters',
+						'commerce-service' : 'commerce-adapters',
+						'community-service': 'community-adapters',
+						'file-service'     : 'file-adapters',
 					]
 
 					def serviceTouched = {
@@ -264,32 +266,38 @@ pipeline {
 					withCredentials([
 						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_ECR_REPOSITORY',      variable: 'USER_SERVICE_ECR_REPOSITORY'),
 						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_ECR_REPOSITORY',   variable: 'PRODUCT_SERVICE_ECR_REPOSITORY'),
-						string(credentialsId: 'MARKETNOTE_QA_ORDER_SERVICE_ECR_REPOSITORY',     variable: 'ORDER_SERVICE_ECR_REPOSITORY'),
+						string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_ECR_REPOSITORY',     variable: 'COMMERCE_SERVICE_ECR_REPOSITORY'),
+						string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_ECR_REPOSITORY',     variable: 'COMMUNITY_SERVICE_ECR_REPOSITORY'),
 						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_ECR_REPOSITORY',      variable: 'FILE_SERVICE_ECR_REPOSITORY'),
 
 						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_ECS_SERVICE_NAME',    variable: 'USER_SERVICE_ECS_SERVICE_NAME'),
 						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_ECS_SERVICE_NAME', variable: 'PRODUCT_SERVICE_ECS_SERVICE_NAME'),
-						string(credentialsId: 'MARKETNOTE_QA_ORDER_SERVICE_ECS_SERVICE_NAME',   variable: 'ORDER_SERVICE_ECS_SERVICE_NAME'),
+						string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_ECS_SERVICE_NAME',   variable: 'COMMERCE_SERVICE_ECS_SERVICE_NAME'),
+						string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_ECS_SERVICE_NAME',   variable: 'COMMUNITY_SERVICE_ECS_SERVICE_NAME'),
 						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_ECS_SERVICE_NAME',    variable: 'FILE_SERVICE_ECS_SERVICE_NAME'),
 
 						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_TARGET_GROUP_ARN',    variable: 'USER_SERVICE_TARGET_GROUP_ARN'),
 						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_TARGET_GROUP_ARN', variable: 'PRODUCT_SERVICE_TARGET_GROUP_ARN'),
-						string(credentialsId: 'MARKETNOTE_QA_ORDER_SERVICE_TARGET_GROUP_ARN',   variable: 'ORDER_SERVICE_TARGET_GROUP_ARN'),
+						string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_TARGET_GROUP_ARN',   variable: 'COMMERCE_SERVICE_TARGET_GROUP_ARN'),
+						string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_TARGET_GROUP_ARN',   variable: 'COMMUNITY_SERVICE_TARGET_GROUP_ARN'),
 						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_TARGET_GROUP_ARN',    variable: 'FILE_SERVICE_TARGET_GROUP_ARN'),
 
 						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_SERVER_ORIGIN',       variable: 'USER_SERVICE_SERVER_ORIGIN'),
 						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_SERVER_ORIGIN',    variable: 'PRODUCT_SERVICE_SERVER_ORIGIN'),
-						string(credentialsId: 'MARKETNOTE_QA_ORDER_SERVICE_SERVER_ORIGIN',      variable: 'ORDER_SERVICE_SERVER_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_SERVER_ORIGIN',      variable: 'COMMERCE_SERVICE_SERVER_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_SERVER_ORIGIN',      variable: 'COMMUNITY_SERVICE_SERVER_ORIGIN'),
 						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_SERVER_ORIGIN',       variable: 'FILE_SERVICE_SERVER_ORIGIN'),
 
 						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_DB_URL',              variable: 'USER_SERVICE_DB_URL'),
                         string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_DB_URL',           variable: 'PRODUCT_SERVICE_DB_URL'),
-                        string(credentialsId: 'MARKETNOTE_QA_ORDER_SERVICE_DB_URL',             variable: 'ORDER_SERVICE_DB_URL'),
+                        string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_DB_URL',             variable: 'COMMERCE_SERVICE_DB_URL'),
+                        string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_DB_URL',             variable: 'COMMUNITY_SERVICE_DB_URL'),
                         string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_DB_URL',              variable: 'FILE_SERVICE_DB_URL'),
 
                         string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_DB_PASSWORD',         variable: 'USER_SERVICE_DB_PASSWORD'),
                         string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_DB_PASSWORD',      variable: 'PRODUCT_SERVICE_DB_PASSWORD'),
-                        string(credentialsId: 'MARKETNOTE_QA_ORDER_SERVICE_DB_PASSWORD',        variable: 'ORDER_SERVICE_DB_PASSWORD'),
+                        string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_DB_PASSWORD',        variable: 'COMMERCE_SERVICE_DB_PASSWORD'),
+                        string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_DB_PASSWORD',        variable: 'COMMUNITY_SERVICE_DB_PASSWORD'),
                         string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_DB_PASSWORD',         variable: 'FILE_SERVICE_DB_PASSWORD'),
 					]) {
 						def svc = env.SERVICE_NAME
@@ -308,12 +316,19 @@ pipeline {
 							env.DB_URL = PRODUCT_SERVICE_DB_URL
                         	env.DB_PASSWORD = PRODUCT_SERVICE_DB_PASSWORD
                         } else if (svc == 'commerce-service') {
-                           	env.ECR_REPOSITORY = ORDER_SERVICE_ECR_REPOSITORY
-                           	env.ECS_SERVICE_NAME = ORDER_SERVICE_ECS_SERVICE_NAME
-                           	env.TARGET_GROUP_ARN = ORDER_SERVICE_TARGET_GROUP_ARN
-                           	env.SERVER_ORIGIN = ORDER_SERVICE_SERVER_ORIGIN
-                           	env.DB_URL = ORDER_SERVICE_DB_URL
-                            env.DB_PASSWORD = ORDER_SERVICE_DB_PASSWORD
+                           	env.ECR_REPOSITORY = COMMERCE_SERVICE_ECR_REPOSITORY
+                           	env.ECS_SERVICE_NAME = COMMERCE_SERVICE_ECS_SERVICE_NAME
+                           	env.TARGET_GROUP_ARN = COMMERCE_SERVICE_TARGET_GROUP_ARN
+                           	env.SERVER_ORIGIN = COMMERCE_SERVICE_SERVER_ORIGIN
+                           	env.DB_URL = COMMERCE_SERVICE_DB_URL
+                            env.DB_PASSWORD = COMMERCE_SERVICE_DB_PASSWORD
+                        } else if (svc == 'community-service') {
+                           	env.ECR_REPOSITORY = COMMUNITY_SERVICE_ECR_REPOSITORY
+                           	env.ECS_SERVICE_NAME = COMMUNITY_SERVICE_ECS_SERVICE_NAME
+                           	env.TARGET_GROUP_ARN = COMMUNITY_SERVICE_TARGET_GROUP_ARN
+                           	env.SERVER_ORIGIN = COMMUNITY_SERVICE_SERVER_ORIGIN
+                           	env.DB_URL = COMMUNITY_SERVICE_DB_URL
+                            env.DB_PASSWORD = COMMUNITY_SERVICE_DB_PASSWORD
                         } else if (svc == 'file-service') {
                            	env.ECR_REPOSITORY = FILE_SERVICE_ECR_REPOSITORY
                            	env.ECS_SERVICE_NAME = FILE_SERVICE_ECS_SERVICE_NAME
@@ -560,7 +575,8 @@ pipeline {
 						string(credentialsId: 'MARKETNOTE_REDIS_EMAIL_VERIFICATION_PREFIX',   variable: 'REDIS_EMAIL_VERIFICATION_PREFIX'),
 						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_SERVER_ORIGIN',     variable: 'FILE_SERVICE_SERVER_ORIGIN'),
 						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_SERVER_ORIGIN',  variable: 'PRODUCT_SERVICE_SERVER_ORIGIN'),
-						string(credentialsId: 'MARKETNOTE_QA_ORDER_SERVICE_SERVER_ORIGIN',    variable: 'COMMERCE_SERVICE_SERVER_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_SERVER_ORIGIN', variable: 'COMMERCE_SERVICE_SERVER_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_SERVER_ORIGIN', variable: 'COMMUNITY_SERVICE_SERVER_ORIGIN'),
 						string(credentialsId: 'MARKETNOTE_QA_JWT_ADMIN_ACCESS_TOKEN',         variable: 'JWT_ADMIN_ACCESS_TOKEN'),
 					]) {
 						sh '''
