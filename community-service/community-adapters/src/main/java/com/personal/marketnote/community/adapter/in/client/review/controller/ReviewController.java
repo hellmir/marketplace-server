@@ -88,9 +88,11 @@ public class ReviewController {
             @RequestParam(value = "cursor", required = false) Long cursor,
             @RequestParam(value = "pageSize", required = false, defaultValue = GET_PRODUCT_REVIEWS_DEFAULT_PAGE_SIZE) int pageSize,
             @RequestParam(required = false, defaultValue = "DESC") Sort.Direction sortDirection,
-            @RequestParam(required = false, defaultValue = "ID") ReviewSortProperty sortProperty
+            @RequestParam(required = false, defaultValue = "ID") ReviewSortProperty sortProperty,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
         GetReviewsResult result = getReviewUseCase.getProductReviews(
+                ElementExtractor.extractUserId(principal),
                 productId,
                 isPhoto,
                 cursor,

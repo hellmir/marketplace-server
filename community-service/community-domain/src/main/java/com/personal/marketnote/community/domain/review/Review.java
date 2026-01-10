@@ -6,6 +6,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.personal.marketnote.common.utility.CharacterConstant.WILD_CARD;
 
@@ -26,6 +27,8 @@ public class Review {
     private String content;
     private Boolean photoYn;
     private Boolean editedYn;
+    private List<Long> likeUserIds;
+    private Boolean isUserLiked;
     private EntityStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
@@ -89,6 +92,7 @@ public class Review {
             String content,
             Boolean photoYn,
             Boolean editedYn,
+            List<Long> likeUserIds,
             EntityStatus status,
             LocalDateTime createdAt,
             LocalDateTime modifiedAt,
@@ -107,10 +111,15 @@ public class Review {
                 .content(content)
                 .photoYn(photoYn)
                 .editedYn(editedYn)
+                .likeUserIds(likeUserIds)
                 .status(status)
                 .createdAt(createdAt)
                 .modifiedAt(modifiedAt)
                 .orderNum(orderNum)
                 .build();
+    }
+
+    public void updateIsUserLiked(Long userId) {
+        isUserLiked = likeUserIds.contains(userId);
     }
 }

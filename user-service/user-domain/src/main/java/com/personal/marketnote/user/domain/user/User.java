@@ -40,14 +40,14 @@ public class User extends BaseDomain {
     private boolean withdrawalYn;
     private Long orderNum;
 
-    public static User from(AuthVendor authVendor, String oidcId) {
+    public static User of(AuthVendor authVendor, String oidcId) {
         return User.builder()
                 .userOauth2Vendors(List.of(UserOauth2Vendor.of(authVendor, oidcId)))
                 .role(Role.getGuest())
                 .build();
     }
 
-    public static User from(
+    public static User of(
             AuthVendor targetAuthVendor,
             String oidcId,
             String nickname,
@@ -97,7 +97,7 @@ public class User extends BaseDomain {
         return user;
     }
 
-    public static User from(
+    public static User of(
             Long id,
             String nickname,
             String email,

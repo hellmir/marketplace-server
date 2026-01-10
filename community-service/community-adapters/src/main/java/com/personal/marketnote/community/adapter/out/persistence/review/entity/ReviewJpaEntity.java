@@ -8,6 +8,9 @@ import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Formula;
+
+import java.util.List;
 
 @Entity
 @Table(name = "review")
@@ -50,6 +53,16 @@ public class ReviewJpaEntity extends BaseOrderedGeneralEntity {
 
     @Column(name = "edited_yn", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean editedYn;
+
+    @Formula("""
+            (
+                SELECT COALESCE(array_agg(l.user_id), '{}'::bigint[])
+                FROM likes l
+                WHERE l.target_type = 'REVIEW'
+                  AND l.target_id = id
+            )
+            """)
+    private List<Long> likeUserIds;
 
     public static ReviewJpaEntity from(Review review) {
         return ReviewJpaEntity.builder()
