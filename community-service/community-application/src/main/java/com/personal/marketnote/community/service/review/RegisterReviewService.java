@@ -40,7 +40,7 @@ public class RegisterReviewService implements RegisterReviewUseCase {
 
     private Float roundScore(Float score) {
         return BigDecimal.valueOf(score)
-                .setScale(1, RoundingMode.HALF_UP)
+                .setScale(0, RoundingMode.HALF_UP)
                 .floatValue();
     }
 }

@@ -28,13 +28,13 @@ public class RegisterReviewRequest {
 
     @Schema(
             name = "score",
-            description = "리뷰 평점(소수점 한 자리)",
+            description = "리뷰 평점(1 ~ 5 정수)",
             requiredMode = Schema.RequiredMode.REQUIRED
     )
     @NotNull(message = "리뷰 평점은 필수값입니다.")
-    @DecimalMin(value = "0.0", inclusive = true, message = "리뷰 평점은 0.0 이상이어야 합니다.")
-    @DecimalMax(value = "5.0", inclusive = true, message = "리뷰 평점은 5.0 이하여야 합니다.")
-    @Digits(integer = 1, fraction = 1, message = "리뷰 평점은 소수점 한 자리까지 입력 가능합니다.")
+    @DecimalMin(value = "0.0", message = "리뷰 평점은 0.0 이상이어야 합니다.")
+    @DecimalMax(value = "5.0", message = "리뷰 평점은 5.0 이하여야 합니다.")
+    @Digits(integer = 1, fraction = 0, message = "리뷰 평점은 정수만 입력 가능합니다.")
     private Float score;
 
     @Schema(
