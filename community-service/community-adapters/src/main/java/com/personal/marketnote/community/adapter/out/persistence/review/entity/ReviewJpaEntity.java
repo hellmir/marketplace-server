@@ -6,9 +6,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Table(name = "review")
+@DynamicInsert
+@DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
@@ -28,6 +32,9 @@ public class ReviewJpaEntity extends BaseGeneralEntity {
 
     @Column(name = "content", nullable = false, length = 8192)
     private String content;
+
+    @Column(name = "edited_yn", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean edited_yn;
 
     public static ReviewJpaEntity from(Review review) {
         return ReviewJpaEntity.builder()

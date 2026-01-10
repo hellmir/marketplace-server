@@ -12,6 +12,8 @@ public enum FileSort {
     PRODUCT_CATALOG_IMAGE("상품 카탈로그 이미지"),
     PRODUCT_REPRESENTATIVE_IMAGE("상품 대표 이미지"),
     PRODUCT_CONTENT_IMAGE("상품 본문 이미지"),
+    CANCEL_REASON_IMAGE("취소 사유 이미지"),
+    EXCHANGE_REASON_IMAGE("교환 사유 이미지"),
     REFUND_REASON_IMAGE("환불 사유 이미지"),
     REVIEW_IMAGE("리뷰 이미지"),
     ICON("아이콘"),

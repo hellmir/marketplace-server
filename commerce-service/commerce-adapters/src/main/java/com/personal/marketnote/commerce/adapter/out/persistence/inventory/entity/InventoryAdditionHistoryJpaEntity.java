@@ -10,12 +10,12 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Table(name = "inventory_addition_history")
+@DynamicInsert
+@DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-@DynamicInsert
-@DynamicUpdate
 public class InventoryAdditionHistoryJpaEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)

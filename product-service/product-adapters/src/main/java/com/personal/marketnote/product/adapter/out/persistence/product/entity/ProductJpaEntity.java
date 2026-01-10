@@ -24,12 +24,12 @@ import static jakarta.persistence.CascadeType.PERSIST;
 
 @Entity
 @Table(name = "product")
+@DynamicInsert
+@DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-@DynamicInsert
-@DynamicUpdate
 public class ProductJpaEntity extends BaseOrderedGeneralEntity {
     @Column(name = "seller_id", nullable = false)
     private Long sellerId;
