@@ -31,7 +31,8 @@ public class CommunitySwaggerConfig {
     private String serverOrigin;
 
     private static final List<String> TAGS_ORDER = List.of(
-            "리뷰 API"
+            "리뷰 API",
+            "좋아요 API"
     );
 
     private static final Map<String, Integer> ORDER_MAP = new ConcurrentHashMap<>();
