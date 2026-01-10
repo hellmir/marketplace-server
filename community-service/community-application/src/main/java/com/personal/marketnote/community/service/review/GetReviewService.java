@@ -37,6 +37,7 @@ public class GetReviewService implements GetReviewUseCase {
 
     @Override
     public GetReviewsResult getProductReviews(
+            Long userId,
             Long productId,
             Boolean isPhoto,
             Long cursor,
@@ -67,8 +68,10 @@ public class GetReviewService implements GetReviewUseCase {
         Long totalElements = null;
         if (isFirstPage) {
             totalElements = findReviewPort.countActive(productId, isPhoto);
-
         }
+
+        // 요청 사용자가 각 리뷰에 좋아요를 눌렀는지 여부 업데이트
+        pagedReviews.forEach(review -> review.updateIsUserLiked(userId));
 
         return GetReviewsResult.from(hasNext, nextCursor, totalElements, pagedReviews);
     }

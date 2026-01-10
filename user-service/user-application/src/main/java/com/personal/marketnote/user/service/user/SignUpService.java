@@ -59,7 +59,7 @@ public class SignUpService implements SignUpUseCase {
         String referenceCode = RandomCodeGenerator.generateReferenceCode();
 
         User signedUpUser = saveUserPort.save(
-                User.from(
+                User.of(
                         authVendor,
                         oidcId,
                         signUpCommand.getNickname(),

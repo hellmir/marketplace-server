@@ -26,6 +26,7 @@ public class ReviewJpaEntityToDomainMapper {
                         entity.getContent(),
                         entity.getPhotoYn(),
                         entity.getEditedYn(),
+                        entity.getLikeUserIds(),
                         entity.getStatus(),
                         entity.getCreatedAt(),
                         entity.getModifiedAt(),

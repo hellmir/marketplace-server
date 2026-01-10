@@ -24,7 +24,7 @@ public class UserJpaEntityToDomainMapper {
                     List<UserTerms> userTerms = mapToDomain(entity.getUserTermsJpaEntities()).get();
                     List<UserOauth2Vendor> vendors = mapToVendorDomainWithoutUser(entity.getUserOauth2VendorsJpaEntities()).get();
 
-                    User user = User.from(
+                    User user = User.of(
                             entity.getId(),
                             entity.getNickname(),
                             entity.getEmail(),

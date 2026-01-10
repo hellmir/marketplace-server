@@ -15,6 +15,7 @@ public interface GetReviewUseCase {
     void validateDuplicateReview(RegisterReviewCommand command);
 
     /**
+     * @param userId        회원 ID
      * @param productId     상품 ID
      * @param isPhoto       포토 리뷰 여부
      * @param cursor        커서(무한 스크롤 페이지 설정)
@@ -27,6 +28,7 @@ public interface GetReviewUseCase {
      * @Description 상품 리뷰 목록을 조회합니다.
      */
     GetReviewsResult getProductReviews(
+            Long userId,
             Long productId,
             Boolean isPhoto,
             Long cursor,
