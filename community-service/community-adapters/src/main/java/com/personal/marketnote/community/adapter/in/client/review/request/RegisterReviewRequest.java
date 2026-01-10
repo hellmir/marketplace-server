@@ -68,7 +68,7 @@ public class RegisterReviewRequest {
     private String reviewerName;
 
     @Schema(
-            name = "score",
+            name = "rating",
             description = "리뷰 평점(1 ~ 5 정수)",
             requiredMode = Schema.RequiredMode.REQUIRED
     )
@@ -76,7 +76,7 @@ public class RegisterReviewRequest {
     @Digits(integer = 1, fraction = 0, message = "리뷰 평점은 정수만 입력 가능합니다.")
     @DecimalMin(value = "0.0", message = "리뷰 평점은 0.0 이상이어야 합니다.")
     @DecimalMax(value = "5.0", message = "리뷰 평점은 5.0 이하여야 합니다.")
-    private Float score;
+    private Float rating;
 
     @Schema(
             name = "content",

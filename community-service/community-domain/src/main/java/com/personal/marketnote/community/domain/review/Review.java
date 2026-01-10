@@ -22,7 +22,7 @@ public class Review {
     private String selectedOptions;
     private Integer quantity;
     private String reviewerName;
-    private Float score;
+    private Float rating;
     private String content;
     private Boolean photoYn;
     private Boolean editedYn;
@@ -39,7 +39,7 @@ public class Review {
             String selectedOptions,
             Integer quantity,
             String reviewerName,
-            Float score,
+            Float rating,
             String content,
             Boolean photoYn
     ) {
@@ -51,7 +51,7 @@ public class Review {
                 .selectedOptions(selectedOptions)
                 .quantity(quantity)
                 .reviewerName(mask(reviewerName))
-                .score(round(score))
+                .rating(round(rating))
                 .content(content)
                 .photoYn(photoYn)
                 .status(EntityStatus.ACTIVE)
@@ -85,7 +85,7 @@ public class Review {
             String selectedOptions,
             Integer quantity,
             String reviewerName,
-            Float score,
+            Float rating,
             String content,
             Boolean photoYn,
             Boolean editedYn,
@@ -103,7 +103,7 @@ public class Review {
                 .selectedOptions(selectedOptions)
                 .quantity(quantity)
                 .reviewerName(reviewerName)
-                .score(score)
+                .rating(rating)
                 .content(content)
                 .photoYn(photoYn)
                 .editedYn(editedYn)

@@ -41,7 +41,7 @@ import java.lang.annotation.*;
                 | selectedOptions | string | 선택된 옵션 목록 | N | "30개입, 5박스" |
                 | quantity | number | 주문 수량 | Y | 2 |
                 | reviewerName | string | 리뷰 작성자 이름 | Y | "홍길동" |
-                | score | number | 리뷰 평점(0.0~5.0, 소수점 1자리) | Y | 4.5 |
+                | rating | number | 리뷰 평점(0.0~5.0, 소수점 1자리) | Y | 4.5 |
                 | content | string | 리뷰 내용(10자 이상) | Y | "배송이 빠르고 포장 상태도 좋았습니다." |
                 | isPhoto | boolean | 포토 리뷰 여부 | Y | false |
                 
@@ -76,7 +76,7 @@ import java.lang.annotation.*;
                                   "selectedOptions": "30개입, 5박스",
                                   "quantity": 2,
                                   "reviewerName": "홍길동",
-                                  "score": 5,
+                                  "rating": 5,
                                   "content": "배송이 빠르고 포장 상태도 좋았습니다.",
                                   "isPhoto": false
                                 }

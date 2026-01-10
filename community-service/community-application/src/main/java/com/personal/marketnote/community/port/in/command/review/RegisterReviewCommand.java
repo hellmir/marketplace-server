@@ -8,7 +8,7 @@ public record RegisterReviewCommand(
         String selectedOptions,
         Integer quantity,
         String reviewerName,
-        Float score,
+        Float rating,
         String content,
         Boolean isPhoto
 ) {
@@ -20,13 +20,13 @@ public record RegisterReviewCommand(
             String selectedOptions,
             Integer quantity,
             String reviewerName,
-            Float score,
+            Float rating,
             String content,
             Boolean isPhoto
     ) {
         return new RegisterReviewCommand(
                 reviewerId, orderId, productId, pricePolicyId, selectedOptions,
-                quantity, reviewerName, score, content, isPhoto
+                quantity, reviewerName, rating, content, isPhoto
         );
     }
 }

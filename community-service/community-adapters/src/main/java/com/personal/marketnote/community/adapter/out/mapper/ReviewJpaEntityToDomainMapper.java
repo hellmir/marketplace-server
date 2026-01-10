@@ -22,7 +22,7 @@ public class ReviewJpaEntityToDomainMapper {
                         entity.getSelectedOptions(),
                         entity.getQuantity(),
                         entity.getReviewerName(),
-                        entity.getScore(),
+                        entity.getRating(),
                         entity.getContent(),
                         entity.getPhotoYn(),
                         entity.getEditedYn(),
