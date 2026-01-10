@@ -1,6 +1,6 @@
 package com.personal.marketnote.community.adapter.out.persistence.review.entity;
 
-import com.personal.marketnote.common.adapter.out.persistence.audit.BaseGeneralEntity;
+import com.personal.marketnote.common.adapter.out.persistence.audit.BaseOrderedGeneralEntity;
 import com.personal.marketnote.community.domain.review.Review;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,15 +17,27 @@ import org.hibernate.annotations.DynamicUpdate;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-public class ReviewJpaEntity extends BaseGeneralEntity {
+public class ReviewJpaEntity extends BaseOrderedGeneralEntity {
+    @Column(name = "reviewer_id", nullable = false)
+    private Long reviewerId;
+
     @Column(name = "order_id", nullable = false)
     private Long orderId;
+
+    @Column(name = "product_id", nullable = false)
+    private Long productId;
 
     @Column(name = "price_policy_id", nullable = false)
     private Long pricePolicyId;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @Column(name = "selected_options", length = 127)
+    private String selectedOptions;
+
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
+
+    @Column(name = "reviewer_name", nullable = false, length = 15)
+    private String reviewerName;
 
     @Column(name = "score", nullable = false)
     private Float score;
@@ -33,16 +45,24 @@ public class ReviewJpaEntity extends BaseGeneralEntity {
     @Column(name = "content", nullable = false, length = 8192)
     private String content;
 
+    @Column(name = "photo_yn", nullable = false)
+    private Boolean photoYn;
+
     @Column(name = "edited_yn", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private Boolean edited_yn;
+    private Boolean editedYn;
 
     public static ReviewJpaEntity from(Review review) {
         return ReviewJpaEntity.builder()
+                .reviewerId(review.getReviewerId())
                 .orderId(review.getOrderId())
+                .productId(review.getProductId())
                 .pricePolicyId(review.getPricePolicyId())
-                .userId(review.getUserId())
+                .selectedOptions(review.getSelectedOptions())
+                .quantity(review.getQuantity())
+                .reviewerName(review.getReviewerName())
                 .score(review.getScore())
                 .content(review.getContent())
+                .photoYn(review.getPhotoYn())
                 .build();
     }
 }

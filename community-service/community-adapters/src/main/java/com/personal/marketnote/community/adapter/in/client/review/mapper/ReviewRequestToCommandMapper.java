@@ -6,11 +6,16 @@ import com.personal.marketnote.community.port.in.command.review.RegisterReviewCo
 public class ReviewRequestToCommandMapper {
     public static RegisterReviewCommand mapToCommand(RegisterReviewRequest request, Long userId) {
         return RegisterReviewCommand.of(
-                request.getOrderId(),
-                request.getPricePolicyId(),
                 userId,
+                request.getOrderId(),
+                request.getProductId(),
+                request.getPricePolicyId(),
+                request.getSelectedOptions(),
+                request.getQuantity(),
+                request.getReviewerName(),
                 request.getScore(),
-                request.getContent()
+                request.getContent(),
+                request.getIsPhoto()
         );
     }
 }

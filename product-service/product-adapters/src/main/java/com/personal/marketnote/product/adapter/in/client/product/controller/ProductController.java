@@ -145,7 +145,7 @@ public class ProductController {
             @RequestParam(value = "categoryId", required = false) Long categoryId,
             @RequestParam(value = "pricePolicyIds", required = false) List<Long> pricePolicyIds,
             @RequestParam(value = "cursor", required = false, defaultValue = MINUS_ONE) Long cursor,
-            @RequestParam(value = "pageSize", defaultValue = GET_PRODUCTS_DEFAULT_PAGE_SIZE) int pageSize,
+            @RequestParam(value = "pageSize", required = false, defaultValue = GET_PRODUCTS_DEFAULT_PAGE_SIZE) int pageSize,
             @RequestParam(required = false, defaultValue = "DESC") Sort.Direction sortDirection,
             @RequestParam(required = false, defaultValue = "ORDER_NUM") ProductSortProperty sortProperty,
             @RequestParam(required = false, defaultValue = "NAME") ProductSearchTarget searchTarget,

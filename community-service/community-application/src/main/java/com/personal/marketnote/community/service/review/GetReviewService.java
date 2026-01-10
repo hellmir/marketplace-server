@@ -1,12 +1,21 @@
 package com.personal.marketnote.community.service.review;
 
 import com.personal.marketnote.common.application.UseCase;
+import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.community.domain.review.Review;
+import com.personal.marketnote.community.domain.review.ReviewSortProperty;
 import com.personal.marketnote.community.exception.ReviewAlreadyExistsException;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
+import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
 import com.personal.marketnote.community.port.in.usecase.review.GetReviewUseCase;
 import com.personal.marketnote.community.port.out.review.FindReviewPort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
@@ -24,6 +33,43 @@ public class GetReviewService implements GetReviewUseCase {
         if (findReviewPort.existsByOrderIdAndPricePolicyId(orderId, pricePolicyId)) {
             throw new ReviewAlreadyExistsException(orderId, pricePolicyId);
         }
-        ;
+    }
+
+    @Override
+    public GetReviewsResult getProductReviews(
+            Long productId,
+            Boolean isPhoto,
+            Long cursor,
+            int pageSize,
+            Sort.Direction sortDirection,
+            ReviewSortProperty sortProperty
+    ) {
+        Pageable pageable = PageRequest.of(
+                0, pageSize + 1, Sort.by(sortDirection, sortProperty.getCamelCaseValue())
+        );
+
+        List<Review> productReviews = findReviewPort.findProductReviews(
+                productId, isPhoto, cursor, pageable, sortProperty
+        );
+
+        // 무한 스크롤 페이지 설정
+        boolean hasNext = productReviews.size() > pageSize;
+        List<Review> pagedReviews = hasNext
+                ? productReviews.subList(0, pageSize)
+                : productReviews;
+
+        Long nextCursor = null;
+        if (FormatValidator.hasValue(pagedReviews)) {
+            nextCursor = pagedReviews.getLast().getId();
+        }
+
+        boolean isFirstPage = !FormatValidator.hasValue(cursor);
+        Long totalElements = null;
+        if (isFirstPage) {
+            totalElements = findReviewPort.countActive(productId, isPhoto);
+
+        }
+
+        return GetReviewsResult.from(hasNext, nextCursor, totalElements, pagedReviews);
     }
 }

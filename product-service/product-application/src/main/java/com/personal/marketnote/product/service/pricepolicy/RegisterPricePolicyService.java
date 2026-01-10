@@ -1,6 +1,7 @@
 package com.personal.marketnote.product.service.pricepolicy;
 
 import com.personal.marketnote.common.application.UseCase;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
 import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.exception.NotProductOwnerException;
@@ -15,6 +16,8 @@ import com.personal.marketnote.product.port.out.product.FindProductPort;
 import com.personal.marketnote.product.port.out.productoption.UpdateOptionPricePolicyPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.FIRST_ERROR_CODE;
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
@@ -43,8 +46,9 @@ public class RegisterPricePolicyService implements RegisterPricePolicyUseCase {
         PricePolicy pricePolicy = ProductCommandToDomainMapper.mapToDomain(product, command);
         Long id = savePricePolicyPort.save(pricePolicy);
 
-        if (command.optionIds() != null && !command.optionIds().isEmpty()) {
-            updateOptionPricePolicyPort.assignPricePolicyToOptions(id, command.optionIds());
+        List<Long> optionIds = command.optionIds();
+        if (FormatValidator.hasValue(optionIds)) {
+            updateOptionPricePolicyPort.assignPricePolicyToOptions(id, optionIds);
         }
 
         registerInventoryPort.registerInventory(id);

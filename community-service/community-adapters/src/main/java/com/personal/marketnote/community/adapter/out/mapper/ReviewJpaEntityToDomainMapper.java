@@ -15,14 +15,21 @@ public class ReviewJpaEntityToDomainMapper {
         return Optional.of(
                 Review.of(
                         entity.getId(),
+                        entity.getReviewerId(),
                         entity.getOrderId(),
+                        entity.getProductId(),
                         entity.getPricePolicyId(),
-                        entity.getUserId(),
+                        entity.getSelectedOptions(),
+                        entity.getQuantity(),
+                        entity.getReviewerName(),
                         entity.getScore(),
                         entity.getContent(),
+                        entity.getPhotoYn(),
+                        entity.getEditedYn(),
                         entity.getStatus(),
                         entity.getCreatedAt(),
-                        entity.getModifiedAt()
+                        entity.getModifiedAt(),
+                        entity.getOrderNum()
                 )
         );
     }

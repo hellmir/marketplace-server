@@ -169,7 +169,7 @@ public class GetProductService implements GetProductUseCase {
         boolean isCategorized = FormatValidator.hasValue(categoryId);
 
         List<PricePolicy> pricePolicies = isCategorized
-                ? findPricePoliciesPort.findActivePageByCategoryId(
+                ? findPricePoliciesPort.findPricePoliciesByCategoryId(
                 categoryId,
                 pricePolicyIds,
                 cursor,
@@ -178,7 +178,7 @@ public class GetProductService implements GetProductUseCase {
                 searchTarget,
                 searchKeyword
         )
-                : findPricePoliciesPort.findActivePage(
+                : findPricePoliciesPort.findPricePolicies(
                 pricePolicyIds,
                 cursor,
                 pageable,
@@ -189,22 +189,22 @@ public class GetProductService implements GetProductUseCase {
 
         // 무한 스크롤 페이지 설정
         boolean hasNext = pricePolicies.size() > pageSize;
-        List<PricePolicy> pagePolicies = hasNext
+        List<PricePolicy> pagedPolicies = hasNext
                 ? pricePolicies.subList(0, pageSize)
                 : pricePolicies;
 
         Long nextCursor = null;
-        if (FormatValidator.hasValue(pagePolicies)) {
-            nextCursor = pagePolicies.getLast().getId();
+        if (FormatValidator.hasValue(pagedPolicies)) {
+            nextCursor = pagedPolicies.getLast().getId();
         }
 
-        List<ProductItemResult> pageItems = pagePolicies.stream()
+        List<ProductItemResult> productItems = pagedPolicies.stream()
                 .map(this::toProductItem)
                 .toList();
 
         // 상품 카탈로그 이미지 병렬 조회
         Map<Long, GetFilesResult> productIdToImages = new ConcurrentHashMap<>();
-        List<CompletableFuture<Void>> futures = pageItems.stream()
+        List<CompletableFuture<Void>> futures = productItems.stream()
                 .map(
                         item -> CompletableFuture.runAsync(
                                 () -> findProductImagesPort.findImagesByProductIdAndSort(
@@ -219,12 +219,12 @@ public class GetProductService implements GetProductUseCase {
 
         // 상품 재고 수량 조회
         Map<Long, Integer> inventories = getProductInventoryUseCase.getProductStocks(
-                pagePolicies.stream()
+                pagedPolicies.stream()
                         .map(PricePolicy::getId)
                         .toList()
         );
 
-        List<ProductItemResult> pageItemsWithImage = pageItems.stream()
+        List<ProductItemResult> productItemsWithImage = productItems.stream()
                 .map(item -> ProductItemResult.from(
                         item,
                         FormatValidator.hasValue(productIdToImages.get(item.getId()))
@@ -241,7 +241,7 @@ public class GetProductService implements GetProductUseCase {
             totalElements = computeTotalElements(isCategorized, categoryId, searchTarget, searchKeyword);
         }
 
-        return GetProductsResult.from(hasNext, nextCursor, totalElements, pageItemsWithImage);
+        return GetProductsResult.from(hasNext, nextCursor, totalElements, productItemsWithImage);
     }
 
     private ProductItemResult toProductItem(PricePolicy pricePolicy) {

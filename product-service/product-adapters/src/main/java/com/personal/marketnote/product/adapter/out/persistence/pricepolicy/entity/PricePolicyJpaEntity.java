@@ -47,4 +47,8 @@ public class PricePolicyJpaEntity extends BaseOrderedGeneralEntity {
                 .accumulationRate(pricePolicy.getAccumulationRate())
                 .build();
     }
+
+    public void deactivate() {
+        deactivate();
+    }
 }

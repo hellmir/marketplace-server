@@ -119,7 +119,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
 
     @Override
     public Optional<PricePolicy> findByOptionIds(List<Long> optionIds) {
-        return pricePolicyJpaRepository.findByOptionIds(optionIds)
+        return pricePolicyJpaRepository.findOneByOptionIds(optionIds)
                 .map(PricePolicyJpaEntityToDomainMapper::mapToDomain)
                 .orElse(null);
     }
@@ -155,7 +155,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
     }
 
     @Override
-    public List<PricePolicy> findActivePage(
+    public List<PricePolicy> findPricePolicies(
             List<Long> pricePolicyIds,
             Long cursor,
             Pageable pageable,
@@ -201,7 +201,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
     }
 
     @Override
-    public List<PricePolicy> findActivePageByCategoryId(
+    public List<PricePolicy> findPricePoliciesByCategoryId(
             Long categoryId,
             List<Long> pricePolicyIds,
             Long cursor,
