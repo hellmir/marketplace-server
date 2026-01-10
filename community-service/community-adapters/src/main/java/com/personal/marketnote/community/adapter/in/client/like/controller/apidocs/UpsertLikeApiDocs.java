@@ -1,6 +1,6 @@
-package com.personal.marketnote.community.adapter.in.client.review.controller.apidocs;
+package com.personal.marketnote.community.adapter.in.client.like.controller.apidocs;
 
-import com.personal.marketnote.community.adapter.in.client.review.request.RegisterLikeRequest;
+import com.personal.marketnote.community.adapter.in.client.like.request.UpsertLikeRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -15,7 +15,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "좋아요 등록",
+        summary = "좋아요 등록/취소",
         description = """
                 작성일자: 2026-01-10
                 
@@ -25,7 +25,9 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                - 대상에 좋아요를 등록합니다.
+                - 대상에 좋아요를 등록하거나 활성화/비활성화합니다.
+                
+                - 최초 요청 시 데이터를 생성하며, 이후 요청 시 기존 데이터를 활성화/비활성화합니다.
                 
                 - 대상: 리뷰/게시글
                 
@@ -48,21 +50,21 @@ import java.lang.annotation.*;
                 | code | string | 응답 코드 | "SUC01" |
                 | timestamp | string(datetime) | 응답 일시 | "2026-01-10T11:00:00.000" |
                 | content | object | 응답 본문 | { ... } |
-                | message | string | 처리 결과 | "좋아요 등록 성공" |
+                | message | string | 처리 결과 | "좋아요 등록/취소 성공" |
+                
+                ---
                 
                 ### Response > content
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
-                | targetType | string | 대상 유형 | "REVIEW" |
-                | targetId | number | 대상 ID | 10 |
-                | userId | number | 회원 ID | 5 |
+                | isLiked | boolean | 변경된 좋아요 상태 | true |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         requestBody = @RequestBody(
                 required = true,
                 content = @Content(
-                        schema = @Schema(implementation = RegisterLikeRequest.class),
+                        schema = @Schema(implementation = UpsertLikeRequest.class),
                         examples = @ExampleObject("""
                                 {
                                   "targetType": "REVIEW",
@@ -74,24 +76,39 @@ import java.lang.annotation.*;
         responses = {
                 @ApiResponse(
                         responseCode = "201",
-                        description = "좋아요 등록 성공",
+                        description = "좋아요 등록 성공(신규 생성)",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 201,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-10T11:00:00.000",
+                                          "timestamp": "2026-01-10T11:43:58.303943",
                                           "content": {
-                                            "targetType": "REVIEW",
-                                            "targetId": 10,
-                                            "userId": 5
+                                            "isLiked": true
                                           },
                                           "message": "좋아요 등록 성공"
+                                        }
+                                        """)
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "좋아요 활성화/비활성화 성공",
+                        content = @Content(
+                                examples = @ExampleObject("""
+                                        {
+                                          "statusCode": 200,
+                                          "code": "SUC01",
+                                          "timestamp": "2026-01-10T11:43:58.303943",
+                                          "content": {
+                                            "isLiked": false
+                                          },
+                                          "message": "좋아요 활성화/비활성화 성공"
                                         }
                                         """)
                         )
                 )
         }
 )
-public @interface RegisterLikeApiDocs {
+public @interface UpsertLikeApiDocs {
 }
