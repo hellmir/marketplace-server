@@ -44,93 +44,74 @@ public class Product extends BaseDomain {
             @JsonProperty("orderNum") Long orderNum,
             @JsonProperty("status") EntityStatus status
     ) {
-        return of(
-                id, sellerId, name, brandName, detail, defaultPricePolicy, sales, viewCount,
-                popularity, findAllOptionsYn, productTags, orderNum, status
+        return from(
+                ProductSnapshotState.builder()
+                        .id(id)
+                        .sellerId(sellerId)
+                        .name(name)
+                        .brandName(brandName)
+                        .detail(detail)
+                        .defaultPricePolicy(defaultPricePolicy)
+                        .sales(sales)
+                        .viewCount(viewCount)
+                        .popularity(popularity)
+                        .findAllOptionsYn(findAllOptionsYn)
+                        .productTags(productTags)
+                        .orderNum(orderNum)
+                        .status(status)
+                        .build()
         );
     }
 
-    public static Product of(
-            Long sellerId, String name, String brandName, String detail, boolean isFindAllOptions, List<String> tags
-    ) {
+    public static Product from(ProductCreateState state) {
+        List<ProductTag> tags = state.getTags() == null
+                ? List.of()
+                : state.getTags()
+                .stream()
+                .map(ProductTag::from)
+                .collect(Collectors.toList());
+
         return Product.builder()
-                .sellerId(sellerId)
-                .name(name)
-                .brandName(brandName)
-                .detail(detail)
-                .findAllOptionsYn(isFindAllOptions)
-                .productTags(
-                        tags.stream()
-                                .map(ProductTag::of)
-                                .collect(Collectors.toList())
-                )
+                .sellerId(state.getSellerId())
+                .name(state.getName())
+                .brandName(state.getBrandName())
+                .detail(state.getDetail())
+                .findAllOptionsYn(state.isFindAllOptionsYn())
+                .productTags(tags)
                 .build();
     }
 
-    public static Product of(
-            Long id, Long sellerId, String name, String brandName, String detail, PricePolicy defaultPricePolicy,
-            Integer sales, Long viewCount, Long popularity, boolean findAllOptionsYn, List<ProductTag> productTags,
-            Long orderNum, EntityStatus status
-    ) {
+    public static Product from(ProductSnapshotState state) {
         Product product = Product.builder()
-                .id(id)
-                .sellerId(sellerId)
-                .name(name)
-                .brandName(brandName)
-                .detail(detail)
-                .defaultPricePolicy(defaultPricePolicy)
-                .sales(sales)
-                .viewCount(viewCount)
-                .popularity(popularity)
-                .findAllOptionsYn(findAllOptionsYn)
-                .productTags(productTags)
-                .orderNum(orderNum)
+                .id(state.getId())
+                .sellerId(state.getSellerId())
+                .name(state.getName())
+                .brandName(state.getBrandName())
+                .detail(state.getDetail())
+                .defaultPricePolicy(state.getDefaultPricePolicy())
+                .sales(state.getSales())
+                .viewCount(state.getViewCount())
+                .popularity(state.getPopularity())
+                .findAllOptionsYn(state.isFindAllOptionsYn())
+                .productTags(state.getProductTags())
+                .orderNum(state.getOrderNum())
                 .build();
 
-        if (status.isActive()) {
-            product.activate();
-            return product;
+        if (state.getDefaultPricePolicy() != null) {
+            state.getDefaultPricePolicy().addProduct(product);
         }
 
-        if (status.isInactive()) {
-            product.deactivate();
-            return product;
+        EntityStatus status = state.getStatus();
+        if (status != null) {
+            if (status.isActive()) {
+                product.activate();
+            } else if (status.isInactive()) {
+                product.deactivate();
+            } else {
+                product.hide();
+            }
         }
 
-        product.hide();
-        return product;
-    }
-
-    public static Product of(
-            Long id, Long sellerId, String name, String brandName, String detail,
-            Integer sales, Long viewCount, Long popularity, boolean findAllOptionsYn, List<ProductTag> productTags,
-            Long orderNum, EntityStatus status
-    ) {
-        Product product = Product.builder()
-                .id(id)
-                .sellerId(sellerId)
-                .name(name)
-                .brandName(brandName)
-                .detail(detail)
-                .sales(sales)
-                .viewCount(viewCount)
-                .popularity(popularity)
-                .findAllOptionsYn(findAllOptionsYn)
-                .productTags(productTags)
-                .orderNum(orderNum)
-                .build();
-
-        if (status.isActive()) {
-            product.activate();
-            return product;
-        }
-
-        if (status.isInactive()) {
-            product.deactivate();
-            return product;
-        }
-
-        product.hide();
         return product;
     }
 
@@ -140,7 +121,12 @@ public class Product extends BaseDomain {
         this.detail = detail;
         findAllOptionsYn = isFindAllOptions;
         productTags = tags.stream()
-                .map(tag -> ProductTag.of(id, tag))
+                .map(tag -> ProductTag.from(
+                        ProductTagCreateState.builder()
+                                .productId(id)
+                                .name(tag)
+                                .build()
+                ))
                 .toList();
     }
 

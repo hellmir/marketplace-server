@@ -2,6 +2,8 @@ package com.personal.marketnote.product.service.product;
 
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.product.domain.product.Product;
+import com.personal.marketnote.product.domain.product.ProductCreateState;
+import com.personal.marketnote.product.domain.product.ProductTagCreateState;
 import com.personal.marketnote.product.port.in.command.RegisterPricePolicyCommand;
 import com.personal.marketnote.product.port.in.command.RegisterProductCommand;
 import com.personal.marketnote.product.port.in.result.pricepolicy.RegisterPricePolicyResult;
@@ -28,13 +30,20 @@ public class RegisterProductService implements RegisterProductUseCase {
         Long sellerId = registerProductCommand.sellerId();
 
         Product savedProduct = saveProductPort.save(
-                Product.of(
-                        sellerId,
-                        registerProductCommand.name(),
-                        registerProductCommand.brandName(),
-                        registerProductCommand.detail(),
-                        registerProductCommand.isFindAllOptions(),
-                        registerProductCommand.tags()
+                Product.from(
+                        ProductCreateState.builder()
+                                .sellerId(sellerId)
+                                .name(registerProductCommand.name())
+                                .brandName(registerProductCommand.brandName())
+                                .detail(registerProductCommand.detail())
+                                .findAllOptionsYn(registerProductCommand.isFindAllOptions())
+                                .tags(
+                                        registerProductCommand.tags()
+                                                .stream()
+                                                .map(tag -> ProductTagCreateState.builder().name(tag).build())
+                                                .toList()
+                                )
+                                .build()
                 )
         );
 

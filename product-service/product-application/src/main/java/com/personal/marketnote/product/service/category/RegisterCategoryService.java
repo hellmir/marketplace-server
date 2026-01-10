@@ -4,6 +4,7 @@ import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.category.Category;
+import com.personal.marketnote.product.domain.category.CategoryCreateState;
 import com.personal.marketnote.product.exception.CategoryNotFoundException;
 import com.personal.marketnote.product.port.in.command.RegisterCategoryCommand;
 import com.personal.marketnote.product.port.in.result.category.RegisterCategoryResult;
@@ -40,7 +41,13 @@ public class RegisterCategoryService implements RegisterCategoryUseCase {
         }
 
         Category savedCategory = saveCategoryPort.save(
-                Category.of(parentCategoryId, name, EntityStatus.ACTIVE)
+                Category.from(
+                        CategoryCreateState.builder()
+                                .parentCategoryId(parentCategoryId)
+                                .name(name)
+                                .status(EntityStatus.ACTIVE)
+                                .build()
+                )
         );
 
         return RegisterCategoryResult.from(savedCategory);

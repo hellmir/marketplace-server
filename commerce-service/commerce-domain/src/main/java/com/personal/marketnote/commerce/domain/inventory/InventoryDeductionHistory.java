@@ -12,29 +12,20 @@ public class InventoryDeductionHistory {
     private Stock stock;
     private String reason;
 
-    public static InventoryDeductionHistory of(
-            Long pricePolicyId,
-            Integer stock,
-            String reason
-    ) {
+    public static InventoryDeductionHistory from(InventoryDeductionHistoryCreateState state) {
         return InventoryDeductionHistory.builder()
-                .pricePolicyId(pricePolicyId)
-                .stock(Stock.of(stock.toString()))
-                .reason(reason)
+                .pricePolicyId(state.getPricePolicyId())
+                .stock(Stock.of(state.getStock().toString()))
+                .reason(state.getReason())
                 .build();
     }
 
-    public static InventoryDeductionHistory of(
-            Long id,
-            Long pricePolicyId,
-            Integer stock,
-            String reason
-    ) {
+    public static InventoryDeductionHistory from(InventoryDeductionHistorySnapshotState state) {
         return InventoryDeductionHistory.builder()
-                .id(id)
-                .pricePolicyId(pricePolicyId)
-                .stock(Stock.of(stock.toString()))
-                .reason(reason)
+                .id(state.getId())
+                .pricePolicyId(state.getPricePolicyId())
+                .stock(Stock.of(state.getStock().toString()))
+                .reason(state.getReason())
                 .build();
     }
 

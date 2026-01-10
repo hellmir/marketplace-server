@@ -15,32 +15,20 @@ public class ProductOption {
     private String content;
     private EntityStatus status;
 
-    public static ProductOption of(ProductOptionCategory category, String content) {
+    public static ProductOption from(ProductOptionCreateState state) {
         return ProductOption.builder()
-                .category(category)
-                .content(content)
+                .category(state.getCategory())
+                .content(state.getContent())
                 .status(EntityStatus.ACTIVE)
                 .build();
     }
 
-    public static ProductOption of(
-            Long id,
-            ProductOptionCategory category,
-            String content,
-            EntityStatus status
-    ) {
+    public static ProductOption from(ProductOptionSnapshotState state) {
         return ProductOption.builder()
-                .id(id)
-                .category(category)
-                .content(content)
-                .status(status)
-                .build();
-    }
-
-    public static ProductOption of(String content) {
-        return ProductOption.builder()
-                .content(content)
-                .status(EntityStatus.ACTIVE)
+                .id(state.getId())
+                .category(state.getCategory())
+                .content(state.getContent())
+                .status(state.getStatus())
                 .build();
     }
 }

@@ -6,10 +6,7 @@ import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserJpaE
 import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserOauth2VendorJpaEntity;
 import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserTermsJpaEntity;
 import com.personal.marketnote.user.domain.authentication.Role;
-import com.personal.marketnote.user.domain.user.Terms;
-import com.personal.marketnote.user.domain.user.User;
-import com.personal.marketnote.user.domain.user.UserOauth2Vendor;
-import com.personal.marketnote.user.domain.user.UserTerms;
+import com.personal.marketnote.user.domain.user.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,27 +17,29 @@ public class UserJpaEntityToDomainMapper {
     public static Optional<User> mapToDomain(UserJpaEntity userJpaEntity) {
         return Optional.ofNullable(userJpaEntity)
                 .map(entity -> {
-                    Role role = mapToDomain(entity.getRoleJpaEntity()).get();
-                    List<UserTerms> userTerms = mapToDomain(entity.getUserTermsJpaEntities()).get();
-                    List<UserOauth2Vendor> vendors = mapToVendorDomainWithoutUser(entity.getUserOauth2VendorsJpaEntities()).get();
+                    Role role = mapToDomain(entity.getRoleJpaEntity()).orElse(null);
+                    List<UserTerms> userTerms = mapToDomain(entity.getUserTermsJpaEntities()).orElse(List.of());
+                    List<UserOauth2Vendor> vendors = mapToVendorDomainWithoutUser(entity.getUserOauth2VendorsJpaEntities()).orElse(List.of());
 
-                    User user = User.of(
-                            entity.getId(),
-                            entity.getNickname(),
-                            entity.getEmail(),
-                            entity.getPassword(),
-                            entity.getFullName(),
-                            entity.getPhoneNumber(),
-                            entity.getReferenceCode(),
-                            entity.getReferredUserCode(),
-                            role,
-                            vendors,
-                            userTerms,
-                            entity.getSignedUpAt(),
-                            entity.getLastLoggedInAt(),
-                            entity.getStatus(),
-                            entity.getWithdrawalYn(),
-                            entity.getOrderNum()
+                    User user = User.from(
+                            UserSnapshotState.builder()
+                                    .id(entity.getId())
+                                    .nickname(entity.getNickname())
+                                    .email(entity.getEmail())
+                                    .password(entity.getPassword())
+                                    .fullName(entity.getFullName())
+                                    .phoneNumber(entity.getPhoneNumber())
+                                    .referenceCode(entity.getReferenceCode())
+                                    .referredUserCode(entity.getReferredUserCode())
+                                    .role(role)
+                                    .userOauth2Vendors(vendors)
+                                    .userTerms(userTerms)
+                                    .signedUpAt(entity.getSignedUpAt())
+                                    .lastLoggedInAt(entity.getLastLoggedInAt())
+                                    .status(entity.getStatus())
+                                    .withdrawalYn(entity.getWithdrawalYn())
+                                    .orderNum(entity.getOrderNum())
+                                    .build()
                     );
 
                     vendors.forEach(v -> v.addUser(user));
@@ -67,30 +66,40 @@ public class UserJpaEntityToDomainMapper {
         return Optional.ofNullable(userTermsJpaEntities)
                 .filter(Objects::nonNull)
                 .map(entities -> entities.stream()
-                        .map(entity -> UserTerms.of(
-                                Terms.of(
-                                        entity.getTermsJpaEntity().getId(),
-                                        entity.getTermsJpaEntity().getContent(),
-                                        entity.getTermsJpaEntity().getRequiredYn(),
-                                        entity.getCreatedAt(),
-                                        entity.getModifiedAt(),
-                                        entity.getStatus()
-                                ), entity.getAgreementYn(), entity.getCreatedAt(), entity.getModifiedAt())
-                        )
+                        .map(entity -> UserTerms.from(
+                                UserTermsSnapshotState.builder()
+                                        .terms(
+                                                Terms.from(
+                                                        TermsSnapshotState.builder()
+                                                                .id(entity.getTermsJpaEntity().getId())
+                                                                .content(entity.getTermsJpaEntity().getContent())
+                                                                .requiredYn(entity.getTermsJpaEntity().getRequiredYn())
+                                                                .createdAt(entity.getCreatedAt())
+                                                                .modifiedAt(entity.getModifiedAt())
+                                                                .status(entity.getStatus())
+                                                                .build()
+                                                )
+                                        )
+                                        .agreementYn(entity.getAgreementYn())
+                                        .createdAt(entity.getCreatedAt())
+                                        .modifiedAt(entity.getModifiedAt())
+                                        .build()
+                        ))
                         .collect(Collectors.toList()));
     }
 
     public static Optional<Terms> mapToDomain(TermsJpaEntity termsJpaEntity) {
         return Optional.ofNullable(termsJpaEntity)
                 .filter(Objects::nonNull)
-                .map(
-                        entity -> Terms.of(
-                                termsJpaEntity.getId(),
-                                termsJpaEntity.getContent(),
-                                termsJpaEntity.getRequiredYn(),
-                                termsJpaEntity.getCreatedAt(),
-                                termsJpaEntity.getModifiedAt(),
-                                termsJpaEntity.getStatus())
-                );
+                .map(entity -> Terms.from(
+                        TermsSnapshotState.builder()
+                                .id(entity.getId())
+                                .content(entity.getContent())
+                                .requiredYn(entity.getRequiredYn())
+                                .createdAt(entity.getCreatedAt())
+                                .modifiedAt(entity.getModifiedAt())
+                                .status(entity.getStatus())
+                                .build()
+                ));
     }
 }

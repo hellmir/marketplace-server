@@ -3,7 +3,8 @@ package com.personal.marketnote.commerce.adapter.out.mapper;
 import com.personal.marketnote.commerce.adapter.out.persistence.order.entity.OrderJpaEntity;
 import com.personal.marketnote.commerce.adapter.out.persistence.order.entity.OrderProductJpaEntity;
 import com.personal.marketnote.commerce.domain.order.Order;
-import com.personal.marketnote.commerce.domain.order.OrderProduct;
+import com.personal.marketnote.commerce.domain.order.OrderProductSnapshotState;
+import com.personal.marketnote.commerce.domain.order.OrderSnapshotState;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,37 +13,39 @@ public class OrderJpaEntityToDomainMapper {
     public static Optional<Order> mapToDomain(OrderJpaEntity orderJpaEntity) {
         return Optional.ofNullable(orderJpaEntity)
                 .map(entity -> {
-                    List<OrderProduct> orderProducts = entity.getOrderProductJpaEntities().stream()
-                            .map(OrderJpaEntityToDomainMapper::mapToDomain)
+                    List<OrderProductSnapshotState> productStates = entity.getOrderProductJpaEntities().stream()
+                            .map(OrderJpaEntityToDomainMapper::mapToSnapshotState)
                             .filter(Optional::isPresent)
                             .map(Optional::get)
                             .toList();
 
-                    return Order.of(
-                            entity.getId(),
-                            entity.getSellerId(),
-                            entity.getBuyerId(),
-                            entity.getOrderStatus(),
-                            entity.getTotalAmount(),
-                            entity.getPaidAmount(),
-                            entity.getCouponAmount(),
-                            entity.getPointAmount(),
-                            orderProducts,
-                            entity.getCreatedAt(),
-                            entity.getModifiedAt()
+                    return Order.from(
+                            OrderSnapshotState.builder()
+                                    .id(entity.getId())
+                                    .sellerId(entity.getSellerId())
+                                    .buyerId(entity.getBuyerId())
+                                    .orderStatus(entity.getOrderStatus())
+                                    .totalAmount(entity.getTotalAmount())
+                                    .paidAmount(entity.getPaidAmount())
+                                    .couponAmount(entity.getCouponAmount())
+                                    .pointAmount(entity.getPointAmount())
+                                    .orderProductStates(productStates)
+                                    .createdAt(entity.getCreatedAt())
+                                    .modifiedAt(entity.getModifiedAt())
+                                    .build()
                     );
                 });
     }
 
-    private static Optional<OrderProduct> mapToDomain(OrderProductJpaEntity orderProductJpaEntity) {
+    private static Optional<OrderProductSnapshotState> mapToSnapshotState(OrderProductJpaEntity orderProductJpaEntity) {
         return Optional.ofNullable(orderProductJpaEntity)
-                .map(entity -> OrderProduct.of(
-                        entity.getId().getOrderId(),
-                        entity.getId().getPricePolicyId(),
-                        entity.getQuantity(),
-                        entity.getUnitAmount(),
-                        entity.getImageUrl(),
-                        entity.getOrderStatus()
-                ));
+                .map(entity -> OrderProductSnapshotState.builder()
+                        .orderId(entity.getId().getOrderId())
+                        .pricePolicyId(entity.getId().getPricePolicyId())
+                        .quantity(entity.getQuantity())
+                        .unitAmount(entity.getUnitAmount())
+                        .imageUrl(entity.getImageUrl())
+                        .orderStatus(entity.getOrderStatus())
+                        .build());
     }
 }

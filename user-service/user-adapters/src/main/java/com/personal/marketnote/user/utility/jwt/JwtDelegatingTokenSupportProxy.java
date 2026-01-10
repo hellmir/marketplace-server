@@ -5,6 +5,7 @@ import com.personal.marketnote.common.domain.exception.token.InvalidRefreshToken
 import com.personal.marketnote.common.domain.exception.token.UnsupportedCodeException;
 import com.personal.marketnote.common.utility.FormatConverter;
 import com.personal.marketnote.user.domain.user.User;
+import com.personal.marketnote.user.domain.user.UserCreateState;
 import com.personal.marketnote.user.port.out.user.FindUserPort;
 import com.personal.marketnote.user.security.token.dto.GrantedTokenInfo;
 import com.personal.marketnote.user.security.token.dto.OAuth2AuthenticationInfo;
@@ -42,7 +43,13 @@ public class JwtDelegatingTokenSupportProxy extends DelegatingTokenSupport {
         GrantedTokenInfo tokenFrom3rdParty = super.grantToken(code, redirectUri, authVendor);
         String oidcId = tokenFrom3rdParty.id();
         User user = findUserPort.findByAuthVendorAndOidcId(authVendor, oidcId)
-                .orElse(User.of(authVendor, oidcId));
+                .orElse(User.from(
+                        UserCreateState.builder()
+                                .authVendor(authVendor)
+                                .oidcId(oidcId)
+                                .guest(true)
+                                .build()
+                ));
 
         OAuth2UserInfo userInfo = user.isGuest()
                 ? retrieveUserInfo(tokenFrom3rdParty.accessToken())

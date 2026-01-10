@@ -40,25 +40,14 @@ public class User extends BaseDomain {
     private boolean withdrawalYn;
     private Long orderNum;
 
-    public static User of(AuthVendor authVendor, String oidcId) {
-        return User.builder()
-                .userOauth2Vendors(List.of(UserOauth2Vendor.of(authVendor, oidcId)))
-                .role(Role.getGuest())
-                .build();
-    }
+    public static User from(UserCreateState state) {
+        if (state.isGuest()) {
+            return createGuest(state);
+        }
 
-    public static User of(
-            AuthVendor targetAuthVendor,
-            String oidcId,
-            String nickname,
-            String email,
-            String password,
-            PasswordEncoder passwordEncoder,
-            String fullName,
-            String phoneNumber,
-            List<Terms> terms,
-            String referenceCode
-    ) {
+        AuthVendor targetAuthVendor = state.getAuthVendor();
+        List<Terms> terms = state.getTerms() == null ? List.of() : state.getTerms();
+
         List<UserOauth2Vendor> userOauth2Vendors = new ArrayList<>(AuthVendor.size());
         AuthVendor[] allAuthVendors = AuthVendor.values();
 
@@ -69,76 +58,65 @@ public class User extends BaseDomain {
 
             // 실제 가입한 공급업체만 OIDC ID 삽입
             if (authVendor.isMe(targetAuthVendor)) {
-                userOauth2Vendor.addOidcId(targetAuthVendor, oidcId, email);
+                userOauth2Vendor.addOidcId(targetAuthVendor, state.getOidcId(), state.getEmail());
             }
         }
 
         User user = User.builder()
                 .userOauth2Vendors(userOauth2Vendors)
-                .nickname(nickname)
-                .email(email)
-                .fullName(fullName)
-                .phoneNumber(phoneNumber)
-                .referenceCode(referenceCode)
+                .nickname(state.getNickname())
+                .email(state.getEmail())
+                .fullName(state.getFullName())
+                .phoneNumber(state.getPhoneNumber())
+                .referenceCode(state.getReferenceCode())
                 .role(Role.getBuyer())
                 .lastLoggedInAt(LocalDateTime.now())
                 .build();
 
         // 일반 회원 가입인 경우 비밀번호 설정
-        if (targetAuthVendor.isNative() && FormatValidator.hasValue(password)) {
-            user.password = passwordEncoder.encode(password);
+        if (targetAuthVendor.isNative() && state.hasPassword()) {
+            user.password = state.getEncodedPassword();
         }
 
         // 최초 회원 가입 시 모든 이용 약관 튜플 추가
         user.userTerms = terms.stream()
-                .map(term -> UserTerms.of(user, term))
+                .map(term -> UserTerms.from(
+                        UserTermsCreateState.builder()
+                                .user(user)
+                                .terms(term)
+                                .build()
+                ))
                 .collect(Collectors.toList());
 
         return user;
     }
 
-    public static User of(
-            Long id,
-            String nickname,
-            String email,
-            String password,
-            String fullName,
-            String phoneNumber,
-            String referenceCode,
-            String referredUserCode,
-            Role role,
-            List<UserOauth2Vendor> userOauth2Vendors,
-            List<UserTerms> userTerms,
-            LocalDateTime signedUpAt,
-            LocalDateTime lastLoggedInAt,
-            EntityStatus status,
-            boolean withdrawalYn,
-            Long orderNum
-    ) {
+    public static User from(UserSnapshotState state) {
         User user = User.builder()
-                .id(id)
-                .nickname(nickname)
-                .email(email)
-                .password(password)
-                .fullName(fullName)
-                .phoneNumber(phoneNumber)
-                .referenceCode(referenceCode)
-                .referredUserCode(referredUserCode)
-                .role(role)
-                .userOauth2Vendors(userOauth2Vendors)
-                .userTerms(userTerms)
-                .signedUpAt(signedUpAt)
-                .lastLoggedInAt(lastLoggedInAt)
-                .withdrawalYn(withdrawalYn)
-                .orderNum(orderNum)
+                .id(state.getId())
+                .nickname(state.getNickname())
+                .email(state.getEmail())
+                .password(state.getPassword())
+                .fullName(state.getFullName())
+                .phoneNumber(state.getPhoneNumber())
+                .referenceCode(state.getReferenceCode())
+                .referredUserCode(state.getReferredUserCode())
+                .role(state.getRole())
+                .userOauth2Vendors(state.getUserOauth2Vendors())
+                .userTerms(state.getUserTerms())
+                .signedUpAt(state.getSignedUpAt())
+                .lastLoggedInAt(state.getLastLoggedInAt())
+                .withdrawalYn(Boolean.TRUE.equals(state.getWithdrawalYn()))
+                .orderNum(state.getOrderNum())
                 .build();
 
-        if (status.isActive()) {
+        EntityStatus status = state.getStatus();
+        if (status != null && status.isActive()) {
             user.activate();
             return user;
         }
 
-        if (status.isInactive()) {
+        if (status != null && status.isInactive()) {
             user.deactivate();
             return user;
         }
@@ -153,6 +131,13 @@ public class User extends BaseDomain {
                 .role(Role.getGuest())
                 .userOauth2Vendors(new ArrayList<>())
                 .userTerms(new ArrayList<>())
+                .build();
+    }
+
+    private static User createGuest(UserCreateState state) {
+        return User.builder()
+                .userOauth2Vendors(List.of(UserOauth2Vendor.of(state.getAuthVendor(), state.getOidcId())))
+                .role(Role.getGuest())
                 .build();
     }
 

@@ -18,7 +18,13 @@ public class InventoryDeductionHistories {
         return new InventoryDeductionHistories(
                 pricePolicyQuantities.entrySet()
                         .stream()
-                        .map(entry -> InventoryDeductionHistory.of(entry.getKey(), entry.getValue(), reason))
+                        .map(entry -> InventoryDeductionHistory.from(
+                                InventoryDeductionHistoryCreateState.builder()
+                                        .pricePolicyId(entry.getKey())
+                                        .stock(entry.getValue())
+                                        .reason(reason)
+                                        .build()
+                        ))
                         .toList()
         );
     }

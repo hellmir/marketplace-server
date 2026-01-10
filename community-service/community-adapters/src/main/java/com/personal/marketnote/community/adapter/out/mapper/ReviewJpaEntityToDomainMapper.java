@@ -3,6 +3,7 @@ package com.personal.marketnote.community.adapter.out.mapper;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.adapter.out.persistence.review.entity.ReviewJpaEntity;
 import com.personal.marketnote.community.domain.review.Review;
+import com.personal.marketnote.community.domain.review.ReviewSnapshotState;
 
 import java.util.Optional;
 
@@ -13,24 +14,26 @@ public class ReviewJpaEntityToDomainMapper {
         }
 
         return Optional.of(
-                Review.of(
-                        entity.getId(),
-                        entity.getReviewerId(),
-                        entity.getOrderId(),
-                        entity.getProductId(),
-                        entity.getPricePolicyId(),
-                        entity.getSelectedOptions(),
-                        entity.getQuantity(),
-                        entity.getReviewerName(),
-                        entity.getRating(),
-                        entity.getContent(),
-                        entity.getPhotoYn(),
-                        entity.getEditedYn(),
-                        entity.getLikeUserIds(),
-                        entity.getStatus(),
-                        entity.getCreatedAt(),
-                        entity.getModifiedAt(),
-                        entity.getOrderNum()
+                Review.from(
+                        ReviewSnapshotState.builder()
+                                .id(entity.getId())
+                                .reviewerId(entity.getReviewerId())
+                                .orderId(entity.getOrderId())
+                                .productId(entity.getProductId())
+                                .pricePolicyId(entity.getPricePolicyId())
+                                .selectedOptions(entity.getSelectedOptions())
+                                .quantity(entity.getQuantity())
+                                .reviewerName(entity.getReviewerName())
+                                .rating(entity.getRating())
+                                .content(entity.getContent())
+                                .photoYn(entity.getPhotoYn())
+                                .editedYn(entity.getEditedYn())
+                                .likeUserIds(entity.getLikeUserIds())
+                                .status(entity.getStatus())
+                                .createdAt(entity.getCreatedAt())
+                                .modifiedAt(entity.getModifiedAt())
+                                .orderNum(entity.getOrderNum())
+                                .build()
                 )
         );
     }

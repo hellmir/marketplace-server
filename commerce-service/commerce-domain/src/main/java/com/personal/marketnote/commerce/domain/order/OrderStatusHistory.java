@@ -16,36 +16,26 @@ public class OrderStatusHistory {
     private String reason;
     private LocalDateTime createdAt;
 
-    public static OrderStatusHistory of(
-            Long orderId,
-            OrderStatus orderStatus,
-            String reason
-    ) {
-        if (!FormatValidator.hasValue(reason)) {
-            reason = orderStatus.getDescription();
-        }
+    public static OrderStatusHistory from(OrderStatusHistoryCreateState state) {
+        String reason = FormatValidator.hasValue(state.getReason())
+                ? state.getReason()
+                : state.getOrderStatus().getDescription();
 
         return OrderStatusHistory.builder()
-                .orderId(orderId)
-                .orderStatus(orderStatus)
+                .orderId(state.getOrderId())
+                .orderStatus(state.getOrderStatus())
                 .reason(reason)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public static OrderStatusHistory of(
-            Long id,
-            Long orderId,
-            OrderStatus orderStatus,
-            String reason,
-            LocalDateTime createdAt
-    ) {
+    public static OrderStatusHistory from(OrderStatusHistorySnapshotState state) {
         return OrderStatusHistory.builder()
-                .id(id)
-                .orderId(orderId)
-                .orderStatus(orderStatus)
-                .reason(reason)
-                .createdAt(createdAt)
+                .id(state.getId())
+                .orderId(state.getOrderId())
+                .orderStatus(state.getOrderStatus())
+                .reason(state.getReason())
+                .createdAt(state.getCreatedAt())
                 .build();
     }
 }

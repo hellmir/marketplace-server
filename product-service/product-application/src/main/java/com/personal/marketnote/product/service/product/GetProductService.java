@@ -19,10 +19,7 @@ import com.personal.marketnote.product.port.in.result.product.ProductItemResult;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductInventoryUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
 import com.personal.marketnote.product.port.out.file.FindProductImagesPort;
-import com.personal.marketnote.product.port.out.inventory.FindCacheStockPort;
-import com.personal.marketnote.product.port.out.inventory.SaveCacheStockPort;
 import com.personal.marketnote.product.port.out.pricepolicy.FindPricePoliciesPort;
-import com.personal.marketnote.product.port.out.pricepolicy.FindPricePolicyPort;
 import com.personal.marketnote.product.port.out.product.FindProductPort;
 import com.personal.marketnote.product.port.out.productoption.FindProductOptionCategoryPort;
 import lombok.RequiredArgsConstructor;
@@ -47,11 +44,8 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 public class GetProductService implements GetProductUseCase {
     private final FindProductPort findProductPort;
     private final FindProductOptionCategoryPort findProductOptionCategoryPort;
-    private final FindPricePolicyPort findPricePolicyPort;
     private final FindPricePoliciesPort findPricePoliciesPort;
     private final FindProductImagesPort findProductImagesPort;
-    private final FindCacheStockPort findCacheStockPort;
-    private final SaveCacheStockPort saveCacheStockPort;
     private final GetProductInventoryUseCase getProductInventoryUseCase;
 
     @Qualifier("productImageExecutor")
@@ -281,38 +275,9 @@ public class GetProductService implements GetProductUseCase {
             boolean isCategorized, Long categoryId, ProductSearchTarget searchTarget, String searchKeyword
     ) {
         if (isCategorized) {
-            return findProductPort.countActiveByCategoryId(categoryId, searchTarget, searchKeyword);
+            return findProductPort.countActivePricePoliciesByCategoryId(categoryId, searchTarget, searchKeyword);
         }
 
         return findProductPort.countActive(searchTarget, searchKeyword);
-    }
-
-    private List<List<ProductOption>> cartesianProduct(List<List<ProductOption>> productOptionCombos) {
-        List<List<ProductOption>> result = new ArrayList<>();
-        if (!FormatValidator.hasValue(productOptionCombos)) {
-            return result;
-        }
-
-        backtrackCartesian(productOptionCombos, 0, new ArrayList<>(), result);
-
-        return result;
-    }
-
-    private void backtrackCartesian(
-            List<List<ProductOption>> productOptionCombos,
-            int depth,
-            List<ProductOption> path,
-            List<List<ProductOption>> result
-    ) {
-        if (depth == productOptionCombos.size()) {
-            result.add(new ArrayList<>(path));
-            return;
-        }
-
-        for (ProductOption opt : productOptionCombos.get(depth)) {
-            path.add(opt);
-            backtrackCartesian(productOptionCombos, depth + 1, path, result);
-            path.removeLast();
-        }
     }
 }

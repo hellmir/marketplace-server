@@ -1,5 +1,7 @@
 package com.personal.marketnote.product.domain.inventory;
 
+import com.personal.marketnote.commerce.domain.inventory.InventoryAdditionHistoryCreateState;
+import com.personal.marketnote.commerce.domain.inventory.InventoryAdditionHistorySnapshotState;
 import com.personal.marketnote.commerce.domain.inventory.Stock;
 import lombok.*;
 
@@ -15,37 +17,24 @@ public class InventoryAdditionHistory {
     private Long unitPrice;
     private String supplier;
 
-    public static InventoryAdditionHistory of(
-            Long pricePolicyId,
-            Integer stock,
-            String reason,
-            Long unitPrice,
-            String supplier
-    ) {
+    public static InventoryAdditionHistory from(InventoryAdditionHistoryCreateState state) {
         return InventoryAdditionHistory.builder()
-                .pricePolicyId(pricePolicyId)
-                .stock(Stock.of(stock.toString()))
-                .reason(reason)
-                .unitPrice(unitPrice)
-                .supplier(supplier)
+                .pricePolicyId(state.getPricePolicyId())
+                .stock(Stock.of(state.getStock().toString()))
+                .reason(state.getReason())
+                .unitPrice(state.getUnitPrice())
+                .supplier(state.getSupplier())
                 .build();
     }
 
-    public static InventoryAdditionHistory of(
-            Long id,
-            Long pricePolicyId,
-            Integer stock,
-            String reason,
-            Long unitPrice,
-            String supplier
-    ) {
+    public static InventoryAdditionHistory from(InventoryAdditionHistorySnapshotState state) {
         return InventoryAdditionHistory.builder()
-                .id(id)
-                .pricePolicyId(pricePolicyId)
-                .stock(Stock.of(stock.toString()))
-                .reason(reason)
-                .unitPrice(unitPrice)
-                .supplier(supplier)
+                .id(state.getId())
+                .pricePolicyId(state.getPricePolicyId())
+                .stock(Stock.of(state.getStock().toString()))
+                .reason(state.getReason())
+                .unitPrice(state.getUnitPrice())
+                .supplier(state.getSupplier())
                 .build();
     }
 }

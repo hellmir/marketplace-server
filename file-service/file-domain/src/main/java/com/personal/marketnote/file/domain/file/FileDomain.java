@@ -25,45 +25,28 @@ public class FileDomain {
     private EntityStatus status;
     private Long orderNum;
 
-    public static FileDomain of(
-            String ownerType,
-            Long ownerId,
-            String sort,
-            String extension,
-            String name
-    ) {
+    public static FileDomain from(FileDomainCreateState state) {
         return FileDomain.builder()
-                .ownerType(OwnerType.from(ownerType))
-                .ownerId(ownerId)
-                .sort(FileSort.from(sort))
-                .extension(extension)
-                .name(name)
+                .ownerType(state.getOwnerType())
+                .ownerId(state.getOwnerId())
+                .sort(state.getSort())
+                .extension(state.getExtension())
+                .name(state.getName())
                 .build();
     }
 
-    public static FileDomain of(
-            Long id,
-            OwnerType ownerType,
-            Long ownerId,
-            String sort,
-            String extension,
-            String name,
-            String s3Url,
-            LocalDateTime createdAt,
-            EntityStatus status,
-            Long orderNum
-    ) {
+    public static FileDomain from(FileDomainSnapshotState state) {
         return FileDomain.builder()
-                .id(id)
-                .ownerType(ownerType)
-                .ownerId(ownerId)
-                .sort(FileSort.from(sort))
-                .extension(extension)
-                .name(name)
-                .s3Url(s3Url)
-                .createdAt(createdAt)
-                .status(status)
-                .orderNum(orderNum)
+                .id(state.getId())
+                .ownerType(state.getOwnerType())
+                .ownerId(state.getOwnerId())
+                .sort(state.getSort())
+                .extension(state.getExtension())
+                .name(state.getName())
+                .s3Url(state.getS3Url())
+                .createdAt(state.getCreatedAt())
+                .status(state.getStatus())
+                .orderNum(state.getOrderNum())
                 .build();
     }
 

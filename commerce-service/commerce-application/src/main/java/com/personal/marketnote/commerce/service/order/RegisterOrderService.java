@@ -1,7 +1,8 @@
 package com.personal.marketnote.commerce.service.order;
 
 import com.personal.marketnote.commerce.domain.order.Order;
-import com.personal.marketnote.commerce.domain.order.OrderProduct;
+import com.personal.marketnote.commerce.domain.order.OrderCreateState;
+import com.personal.marketnote.commerce.domain.order.OrderProductCreateState;
 import com.personal.marketnote.commerce.port.in.command.order.RegisterOrderCommand;
 import com.personal.marketnote.commerce.port.in.result.order.RegisterOrderResult;
 import com.personal.marketnote.commerce.port.in.usecase.order.RegisterOrderUseCase;
@@ -22,23 +23,25 @@ public class RegisterOrderService implements RegisterOrderUseCase {
 
     @Override
     public RegisterOrderResult registerOrder(RegisterOrderCommand command) {
-        List<OrderProduct> orderProducts = command.orderProducts().stream()
-                .map(item -> OrderProduct.of(
-                        item.pricePolicyId(),
-                        item.quantity(),
-                        item.unitAmount(),
-                        item.imageUrl()
-                ))
+        List<OrderProductCreateState> orderProductStates = command.orderProducts().stream()
+                .map(item -> OrderProductCreateState.builder()
+                        .pricePolicyId(item.pricePolicyId())
+                        .quantity(item.quantity())
+                        .unitAmount(item.unitAmount())
+                        .imageUrl(item.imageUrl())
+                        .build())
                 .toList();
 
         Order savedOrder = saveOrderPort.save(
-                Order.of(
-                        command.sellerId(),
-                        command.buyerId(),
-                        command.totalAmount(),
-                        command.couponAmount(),
-                        command.pointAmount(),
-                        orderProducts
+                Order.from(
+                        OrderCreateState.builder()
+                                .sellerId(command.sellerId())
+                                .buyerId(command.buyerId())
+                                .totalAmount(command.totalAmount())
+                                .couponAmount(command.couponAmount())
+                                .pointAmount(command.pointAmount())
+                                .orderProductStates(orderProductStates)
+                                .build()
                 )
         );
 

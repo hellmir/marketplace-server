@@ -17,30 +17,23 @@ public class Like {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public static Like of(LikeTargetType targetType, Long targetId, Long userId) {
+    public static Like from(LikeCreateState state) {
         return Like.builder()
-                .targetType(targetType)
-                .targetId(targetId)
-                .userId(userId)
+                .targetType(state.getTargetType())
+                .targetId(state.getTargetId())
+                .userId(state.getUserId())
                 .status(EntityStatus.ACTIVE)
                 .build();
     }
 
-    public static Like of(
-            LikeTargetType targetType,
-            Long targetId,
-            Long userId,
-            EntityStatus status,
-            LocalDateTime createdAt,
-            LocalDateTime modifiedAt
-    ) {
+    public static Like from(LikeSnapshotState state) {
         return Like.builder()
-                .targetType(targetType)
-                .targetId(targetId)
-                .userId(userId)
-                .status(status)
-                .createdAt(createdAt)
-                .modifiedAt(modifiedAt)
+                .targetType(state.getTargetType())
+                .targetId(state.getTargetId())
+                .userId(state.getUserId())
+                .status(state.getStatus())
+                .createdAt(state.getCreatedAt())
+                .modifiedAt(state.getModifiedAt())
                 .build();
     }
 

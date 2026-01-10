@@ -4,12 +4,14 @@ import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.domain.exception.illegalargument.novalue.PasswordNoValueException;
 import com.personal.marketnote.common.utility.RandomCodeGenerator;
 import com.personal.marketnote.user.domain.user.LoginHistory;
+import com.personal.marketnote.user.domain.user.LoginHistoryCreateState;
 import com.personal.marketnote.user.domain.user.Terms;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.exception.InvalidVerificationCodeException;
 import com.personal.marketnote.user.exception.UserExistsException;
 import com.personal.marketnote.user.exception.UserNotActiveException;
 import com.personal.marketnote.user.port.in.command.SignUpCommand;
+import com.personal.marketnote.user.port.in.mapper.UserCommandToDomainMapper;
 import com.personal.marketnote.user.port.in.result.SignUpResult;
 import com.personal.marketnote.user.port.in.usecase.user.GetUserUseCase;
 import com.personal.marketnote.user.port.in.usecase.user.SignUpUseCase;
@@ -59,21 +61,25 @@ public class SignUpService implements SignUpUseCase {
         String referenceCode = RandomCodeGenerator.generateReferenceCode();
 
         User signedUpUser = saveUserPort.save(
-                User.of(
+                UserCommandToDomainMapper.mapToDomain(
+                        signUpCommand,
                         authVendor,
                         oidcId,
-                        signUpCommand.getNickname(),
-                        email,
-                        password,
-                        passwordEncoder,
-                        signUpCommand.getFullName(),
-                        signUpCommand.getPhoneNumber(),
                         terms,
-                        referenceCode
+                        referenceCode,
+                        passwordEncoder
                 )
         );
 
-        saveLoginHistoryPort.saveLoginHistory(LoginHistory.of(signedUpUser, authVendor, ipAddress));
+        saveLoginHistoryPort.saveLoginHistory(
+                LoginHistory.from(
+                        LoginHistoryCreateState.builder()
+                                .user(signedUpUser)
+                                .authVendor(authVendor)
+                                .ipAddress(ipAddress)
+                                .build()
+                )
+        );
 
         return SignUpResult.from(signedUpUser, true);
     }
@@ -125,7 +131,15 @@ public class SignUpService implements SignUpUseCase {
         if (signedUpUser.isActive()) {
             signedUpUser.addLoginAccountInfo(authVendor, oidcId, password, passwordEncoder);
             updateUserPort.update(signedUpUser);
-            saveLoginHistoryPort.saveLoginHistory(LoginHistory.of(signedUpUser, authVendor, ipAddress));
+            saveLoginHistoryPort.saveLoginHistory(
+                    LoginHistory.from(
+                            LoginHistoryCreateState.builder()
+                                    .user(signedUpUser)
+                                    .authVendor(authVendor)
+                                    .ipAddress(ipAddress)
+                                    .build()
+                    )
+            );
 
             return signedUpUser;
         }

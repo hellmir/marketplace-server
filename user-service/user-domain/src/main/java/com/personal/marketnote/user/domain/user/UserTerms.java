@@ -17,19 +17,23 @@ public class UserTerms {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public static UserTerms of(Terms terms, Boolean agreementYn, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    public static UserTerms from(UserTermsCreateState state) {
         return UserTerms.builder()
-                .terms(terms)
-                .agreementYn(agreementYn)
-                .createdAt(createdAt)
-                .modifiedAt(modifiedAt)
+                .user(state.getUser())
+                .terms(state.getTerms())
+                .agreementYn(state.getAgreementYn())
+                .createdAt(state.getCreatedAt())
+                .modifiedAt(state.getModifiedAt())
                 .build();
     }
 
-    public static UserTerms of(User user, Terms terms) {
+    public static UserTerms from(UserTermsSnapshotState state) {
         return UserTerms.builder()
-                .user(user)
-                .terms(terms)
+                .user(state.getUser())
+                .terms(state.getTerms())
+                .agreementYn(state.getAgreementYn())
+                .createdAt(state.getCreatedAt())
+                .modifiedAt(state.getModifiedAt())
                 .build();
     }
 
