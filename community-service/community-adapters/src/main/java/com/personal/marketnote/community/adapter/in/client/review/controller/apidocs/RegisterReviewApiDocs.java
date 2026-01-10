@@ -27,7 +27,7 @@ import java.lang.annotation.*;
                 
                 - 주문 상품에 대한 리뷰를 등록합니다.
                 
-                - 평점은 최대 소수점 한 자리까지 가능합니다.
+                - 평점은 1 ~ 5의 정수만 가능합니다.
                 
                 ---
                 
@@ -67,7 +67,7 @@ import java.lang.annotation.*;
                                 {
                                   "orderId": 1,
                                   "pricePolicyId": 11,
-                                  "score": 4.5,
+                                  "score": 5,
                                   "content": "배송이 빠르고 포장 상태도 좋았습니다."
                                 }
                                 """)
