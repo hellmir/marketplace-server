@@ -1,19 +1,32 @@
 package com.personal.marketnote.community.port.in.command.review;
 
 public record RegisterReviewCommand(
+        Long reviewerId,
         Long orderId,
+        Long productId,
         Long pricePolicyId,
-        Long userId,
+        String selectedOptions,
+        Integer quantity,
+        String reviewerName,
         Float score,
-        String content
+        String content,
+        Boolean isPhoto
 ) {
     public static RegisterReviewCommand of(
+            Long reviewerId,
             Long orderId,
+            Long productId,
             Long pricePolicyId,
-            Long userId,
+            String selectedOptions,
+            Integer quantity,
+            String reviewerName,
             Float score,
-            String content
+            String content,
+            Boolean isPhoto
     ) {
-        return new RegisterReviewCommand(orderId, pricePolicyId, userId, score, content);
+        return new RegisterReviewCommand(
+                reviewerId, orderId, productId, pricePolicyId, selectedOptions,
+                quantity, reviewerName, score, content, isPhoto
+        );
     }
 }

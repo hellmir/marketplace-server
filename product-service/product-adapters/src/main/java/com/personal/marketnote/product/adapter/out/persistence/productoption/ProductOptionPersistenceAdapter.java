@@ -171,18 +171,17 @@ public class ProductOptionPersistenceAdapter implements SaveProductOptionsPort, 
     }
 
     @Override
-    public void assignPricePolicyToOptions(Long pricePolicyId, List<Long> optionIds) {
-        ProductJpaEntity productOfPolicy = pricePolicyJpaRepository.getReferenceById(pricePolicyId).getProductJpaEntity();
-        assignPricePolicyToOptionsInternal(productOfPolicy.getId(), pricePolicyId, optionIds);
-    }
-
     @CacheEvict(value = "product:detail", key = "#productId")
-    public void assignPricePolicyToOptionsInternal(Long productId, Long pricePolicyId, List<Long> optionIds) {
+    public void assignPricePolicyToOptions(Long pricePolicyId, List<Long> optionIds) {
+        // 기존 동일 옵션 조합 가격 정책 삭제
+        List<PricePolicyJpaEntity> existentPricePolicies = pricePolicyJpaRepository.findByOptionIds(optionIds);
+        existentPricePolicies.forEach(PricePolicyJpaEntity::deactivate);
+
         PricePolicyJpaEntity pricePolicyRef = pricePolicyJpaRepository.getReferenceById(pricePolicyId);
         for (Long optionId : optionIds) {
-            var optionRef = productOptionJpaRepository.getReferenceById(optionId);
-            var mapping = ProductOptionPricePolicyJpaEntity.of(optionRef, pricePolicyRef);
-            productOptionPricePolicyJpaRepository.save(mapping);
+            ProductOptionJpaEntity optionRef = productOptionJpaRepository.getReferenceById(optionId);
+            ProductOptionPricePolicyJpaEntity optionPricePolicy = ProductOptionPricePolicyJpaEntity.of(optionRef, pricePolicyRef);
+            productOptionPricePolicyJpaRepository.save(optionPricePolicy);
         }
     }
 }

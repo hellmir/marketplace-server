@@ -27,11 +27,16 @@ public class RegisterReviewService implements RegisterReviewUseCase {
         getReviewUseCase.validateDuplicateReview(command);
         Review savedReview = saveReviewPort.save(
                 Review.of(
+                        command.reviewerId(),
                         command.orderId(),
+                        command.productId(),
                         command.pricePolicyId(),
-                        command.userId(),
+                        command.selectedOptions(),
+                        command.quantity(),
+                        command.reviewerName(),
                         roundScore(command.score()),
-                        command.content()
+                        command.content(),
+                        command.isPhoto()
                 )
         );
 

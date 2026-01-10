@@ -26,8 +26,8 @@ public class ProductItemResult {
     private GetFileResult catalogImage;
     private List<ProductOptionItemResult> selectedOptions;
     private Integer stock;
-    private Long orderNum;
     private String status;
+    private Long orderNum;
 
     public static ProductItemResult from(Product product) {
         return ProductItemResult.builder()
@@ -38,8 +38,8 @@ public class ProductItemResult {
                 .pricePolicy(GetProductPricePolicyResult.from(product.getDefaultPricePolicy()))
                 .sales(product.getSales())
                 .productTags(product.getProductTags())
-                .orderNum(product.getOrderNum())
                 .status(product.getStatus().name())
+                .orderNum(product.getOrderNum())
                 .build();
     }
 
@@ -55,8 +55,8 @@ public class ProductItemResult {
                 .pricePolicy(GetProductPricePolicyResult.from(pricePolicy))
                 .sales(product.getSales())
                 .productTags(product.getProductTags())
-                .orderNum(product.getOrderNum())
                 .status(product.getStatus().name())
+                .orderNum(product.getOrderNum())
                 .build();
     }
 
@@ -76,8 +76,8 @@ public class ProductItemResult {
                 .selectedOptions(selectedOptions.stream()
                         .map(ProductOptionItemResult::from)
                         .toList())
-                .orderNum(product.getOrderNum())
                 .status(product.getStatus().name())
+                .orderNum(product.getOrderNum())
                 .build();
     }
 
@@ -95,8 +95,8 @@ public class ProductItemResult {
                 .catalogImage(catalogImage)
                 .selectedOptions(productItemResult.getSelectedOptions())
                 .stock(stock)
-                .orderNum(productItemResult.getOrderNum())
                 .status(productItemResult.getStatus())
+                .orderNum(productItemResult.getOrderNum())
                 .build();
     }
 

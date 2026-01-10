@@ -48,7 +48,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- | --- |
                 | categoryId | number | 카테고리 ID | N | 1001 |
                 | pricePolicyIds | array<number> | 가격 정책 ID 목록 | N | 1, 2 |
-                | cursor | number | 이전 페이지의 nextCursor 값, 전송하지 않는 경우 첫 데이터부터 조회 | N | default: -1 |
+                | cursor | number | 이전 페이지의 nextCursor 값, 전송하지 않는 경우 첫 데이터부터 조회 | N | 1 |
                 | page-size | number | 페이지 크기 | N | 4 |
                 | sortDirection | string | 정렬 방향(ASC, DESC) | N | DESC |
                 | sortProperty | string | 정렬 속성(ORDER_NUM, POPULARITY, DISCOUNT_PRICE, ACCUMULATED_POINT) | N | ORDER_NUM |
@@ -166,7 +166,7 @@ import java.lang.annotation.*;
                         schema = @Schema(type = "number")
                 ),
                 @Parameter(
-                        name = "page-size",
+                        name = "pageSize",
                         in = ParameterIn.QUERY,
                         description = "페이지 크기",
                         schema = @Schema(

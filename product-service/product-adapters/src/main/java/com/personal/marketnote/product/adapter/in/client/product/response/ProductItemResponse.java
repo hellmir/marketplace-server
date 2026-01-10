@@ -26,8 +26,8 @@ public class ProductItemResponse {
     private GetFileResult catalogImage;
     private List<ProductOptionItemResult> selectedOptions;
     private Integer stock;
-    private Long orderNum;
     private String status;
+    private Long orderNum;
 
     public static ProductItemResponse from(ProductItemResult result) {
         return ProductItemResponse.builder()
@@ -41,8 +41,8 @@ public class ProductItemResponse {
                 .catalogImage(result.getCatalogImage())
                 .selectedOptions(result.getSelectedOptions())
                 .stock(result.getStock())
-                .orderNum(result.getOrderNum())
                 .status(result.getStatus())
+                .orderNum(result.getOrderNum())
                 .build();
     }
 }

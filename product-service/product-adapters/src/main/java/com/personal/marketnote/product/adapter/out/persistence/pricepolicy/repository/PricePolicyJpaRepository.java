@@ -13,6 +13,19 @@ public interface PricePolicyJpaRepository extends JpaRepository<PricePolicyJpaEn
     @Query("""
             select p
             from PricePolicyJpaEntity p
+            where p.id in (
+                select popp.id.pricePolicyId
+                from ProductOptionPricePolicyJpaEntity popp
+                where popp.id.productOptionId in :optionIds
+                group by popp.id.pricePolicyId
+                having count(distinct popp.id.productOptionId) = :#{#optionIds.size()}
+            )
+            """)
+    List<PricePolicyJpaEntity> findByOptionIds(List<Long> optionIds);
+
+    @Query("""
+            select p
+            from PricePolicyJpaEntity p
             where p.id = (
                 select max(matched.id.pricePolicyId)
                 from ProductOptionPricePolicyJpaEntity matched
@@ -25,7 +38,7 @@ public interface PricePolicyJpaRepository extends JpaRepository<PricePolicyJpaEn
                 )
             )
             """)
-    Optional<PricePolicyJpaEntity> findByOptionIds(List<Long> optionIds);
+    Optional<PricePolicyJpaEntity> findOneByOptionIds(List<Long> optionIds);
 
     @Query("""
             SELECT pp
@@ -48,12 +61,10 @@ public interface PricePolicyJpaRepository extends JpaRepository<PricePolicyJpaEn
                           AND pc.categoryId = :categoryId
                  )
               )
-              /* >>> 변경 부분 시작: pricePolicyIds 조건 추가 */
               AND (
                     :pricePolicyIds IS NULL
                     OR pp.id IN (:pricePolicyIds)
               )
-              /* <<< 변경 부분 끝 */
               AND (
                     :cursor IS NULL
                  OR NOT EXISTS (SELECT 1 FROM PricePolicyJpaEntity pp0 WHERE pp0.id = :cursor)
