@@ -1,5 +1,7 @@
 package com.personal.marketnote.product.domain.inventory;
 
+import com.personal.marketnote.commerce.domain.inventory.WarehouseMapperCreateState;
+import com.personal.marketnote.commerce.domain.inventory.WarehouseMapperSnapshotState;
 import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -12,29 +14,21 @@ public class WarehouseMapper {
     private String wmsProductKey;
     private Integer stock;
 
-    public static WarehouseMapper of(
-            String wmsKey,
-            String wmsProductKey,
-            Integer stock
-    ) {
+    public static WarehouseMapper from(WarehouseMapperCreateState state) {
         return WarehouseMapper.builder()
-                .wmsKey(wmsKey)
-                .wmsProductKey(wmsProductKey)
-                .stock(stock)
+                .productId(state.getProductId())
+                .wmsKey(state.getWmsKey())
+                .wmsProductKey(state.getWmsProductKey())
+                .stock(state.getStock())
                 .build();
     }
 
-    public static WarehouseMapper of(
-            Long productId,
-            String wmsKey,
-            String wmsProductKey,
-            Integer stock
-    ) {
+    public static WarehouseMapper from(WarehouseMapperSnapshotState state) {
         return WarehouseMapper.builder()
-                .productId(productId)
-                .wmsKey(wmsKey)
-                .wmsProductKey(wmsProductKey)
-                .stock(stock)
+                .productId(state.getProductId())
+                .wmsKey(state.getWmsKey())
+                .wmsProductKey(state.getWmsProductKey())
+                .stock(state.getStock())
                 .build();
     }
 }

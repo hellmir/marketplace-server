@@ -2,6 +2,7 @@ package com.personal.marketnote.product.adapter.out.mapper;
 
 import com.personal.marketnote.product.adapter.out.persistence.pricepolicy.entity.PricePolicyJpaEntity;
 import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
+import com.personal.marketnote.product.domain.pricepolicy.PricePolicySnapshotState;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,16 +12,18 @@ public class PricePolicyJpaEntityToDomainMapper {
         return Optional.ofNullable(pricePolicyJpaEntity)
                 .map(
                         entity -> {
-                            PricePolicy pricePolicy = PricePolicy.of(
-                                    pricePolicyJpaEntity.getId(),
-                                    pricePolicyJpaEntity.getPrice(),
-                                    pricePolicyJpaEntity.getDiscountPrice(),
-                                    pricePolicyJpaEntity.getDiscountRate(),
-                                    pricePolicyJpaEntity.getAccumulatedPoint(),
-                                    pricePolicyJpaEntity.getAccumulationRate(),
-                                    pricePolicyJpaEntity.getPopularity(),
-                                    pricePolicyJpaEntity.getStatus(),
-                                    pricePolicyJpaEntity.getOrderNum()
+                            PricePolicy pricePolicy = PricePolicy.from(
+                                    PricePolicySnapshotState.builder()
+                                            .id(pricePolicyJpaEntity.getId())
+                                            .price(pricePolicyJpaEntity.getPrice())
+                                            .discountPrice(pricePolicyJpaEntity.getDiscountPrice())
+                                            .discountRate(pricePolicyJpaEntity.getDiscountRate())
+                                            .accumulatedPoint(pricePolicyJpaEntity.getAccumulatedPoint())
+                                            .accumulationRate(pricePolicyJpaEntity.getAccumulationRate())
+                                            .popularity(pricePolicyJpaEntity.getPopularity())
+                                            .status(pricePolicyJpaEntity.getStatus())
+                                            .orderNum(pricePolicyJpaEntity.getOrderNum())
+                                            .build()
                             );
                             pricePolicy.addProduct(
                                     ProductJpaEntityToDomainMapper.mapToDomainWithoutPolicyProduct(entity.getProductJpaEntity())
@@ -36,17 +39,19 @@ public class PricePolicyJpaEntityToDomainMapper {
         return Optional.ofNullable(pricePolicyJpaEntity)
                 .map(
                         entity -> {
-                            PricePolicy pricePolicy = PricePolicy.of(
-                                    pricePolicyJpaEntity.getId(),
-                                    pricePolicyJpaEntity.getPrice(),
-                                    pricePolicyJpaEntity.getDiscountPrice(),
-                                    pricePolicyJpaEntity.getDiscountRate(),
-                                    pricePolicyJpaEntity.getAccumulatedPoint(),
-                                    pricePolicyJpaEntity.getAccumulationRate(),
-                                    pricePolicyJpaEntity.getPopularity(),
-                                    pricePolicyJpaEntity.getStatus(),
-                                    pricePolicyJpaEntity.getOrderNum(),
-                                    optionIds
+                            PricePolicy pricePolicy = PricePolicy.from(
+                                    PricePolicySnapshotState.builder()
+                                            .id(pricePolicyJpaEntity.getId())
+                                            .price(pricePolicyJpaEntity.getPrice())
+                                            .discountPrice(pricePolicyJpaEntity.getDiscountPrice())
+                                            .discountRate(pricePolicyJpaEntity.getDiscountRate())
+                                            .accumulatedPoint(pricePolicyJpaEntity.getAccumulatedPoint())
+                                            .accumulationRate(pricePolicyJpaEntity.getAccumulationRate())
+                                            .popularity(pricePolicyJpaEntity.getPopularity())
+                                            .status(pricePolicyJpaEntity.getStatus())
+                                            .orderNum(pricePolicyJpaEntity.getOrderNum())
+                                            .optionIds(optionIds)
+                                            .build()
                             );
                             pricePolicy.addProduct(
                                     ProductJpaEntityToDomainMapper.mapToDomain(entity.getProductJpaEntity())

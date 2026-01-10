@@ -107,5 +107,5 @@ public interface FindProductPort {
      * @Author 성효빈
      * @Description 카테고리 상품 총 개수를 조회합니다.
      */
-    long countActiveByCategoryId(Long categoryId, ProductSearchTarget searchTarget, String searchKeyword);
+    long countActivePricePoliciesByCategoryId(Long categoryId, ProductSearchTarget searchTarget, String searchKeyword);
 }

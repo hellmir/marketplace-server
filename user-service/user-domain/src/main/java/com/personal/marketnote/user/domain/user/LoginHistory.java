@@ -1,37 +1,36 @@
 package com.personal.marketnote.user.domain.user;
 
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PRIVATE)
 @Getter
 public class LoginHistory {
     private Long id;
-    private final User user;
-    private final AuthVendor authVendor;
-    private final String ipAddress;
+    private User user;
+    private AuthVendor authVendor;
+    private String ipAddress;
     private LocalDateTime createdAt;
 
-    private LoginHistory(Long id, User user, AuthVendor authVendor, String ipAddress, LocalDateTime createdAt) {
-        this.id = id;
-        this.user = user;
-        this.authVendor = authVendor;
-        this.ipAddress = ipAddress;
-        this.createdAt = createdAt;
+    public static LoginHistory from(LoginHistoryCreateState state) {
+        return LoginHistory.builder()
+                .user(state.getUser())
+                .authVendor(state.getAuthVendor())
+                .ipAddress(state.getIpAddress())
+                .build();
     }
 
-    private LoginHistory(User user, AuthVendor authVendor, String ipAddress) {
-        this.user = user;
-        this.authVendor = authVendor;
-        this.ipAddress = ipAddress;
-    }
-
-    public static LoginHistory of(User user, AuthVendor authVendor, String ipAddress) {
-        return new LoginHistory(user, authVendor, ipAddress);
-    }
-
-    public static LoginHistory of(Long id, User user, AuthVendor authVendor, String ipAddress, LocalDateTime createdAt) {
-        return new LoginHistory(id, user, authVendor, ipAddress, createdAt);
+    public static LoginHistory from(LoginHistorySnapshotState state) {
+        return LoginHistory.builder()
+                .id(state.getId())
+                .user(state.getUser())
+                .authVendor(state.getAuthVendor())
+                .ipAddress(state.getIpAddress())
+                .createdAt(state.getCreatedAt())
+                .build();
     }
 }

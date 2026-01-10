@@ -20,30 +20,30 @@ public class ProductOptionCategory {
     private Long orderNum;
     private EntityStatus status;
 
-    public static ProductOptionCategory of(Product product, String name, List<ProductOption> options) {
+    public static ProductOptionCategory from(ProductOptionCategoryCreateState state) {
+        List<ProductOption> optionList = state.getOptionStates() == null
+                ? List.of()
+                : state.getOptionStates()
+                .stream()
+                .map(ProductOption::from)
+                .toList();
+
         return ProductOptionCategory.builder()
-                .product(product)
-                .name(name)
-                .options(options)
+                .product(state.getProduct())
+                .name(state.getName())
+                .options(optionList)
                 .status(EntityStatus.ACTIVE)
                 .build();
     }
 
-    public static ProductOptionCategory of(
-            Long id,
-            Product product,
-            String name,
-            List<ProductOption> options,
-            Long orderNum,
-            EntityStatus status
-    ) {
+    public static ProductOptionCategory from(ProductOptionCategorySnapshotState state) {
         return ProductOptionCategory.builder()
-                .id(id)
-                .product(product)
-                .name(name)
-                .options(options)
-                .orderNum(orderNum)
-                .status(status)
+                .id(state.getId())
+                .product(state.getProduct())
+                .name(state.getName())
+                .options(state.getOptions())
+                .orderNum(state.getOrderNum())
+                .status(state.getStatus())
                 .build();
     }
 }

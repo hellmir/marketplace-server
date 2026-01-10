@@ -1,51 +1,43 @@
-//package com.personal.marketnote.user.port.in.mapper;
-//
-//import com.greenbowl.greenbowlserver.recipe.domain.Nutrition;
-//import com.greenbowl.greenbowlserver.recipe.domain.Recipe;
-//import com.greenbowl.greenbowlserver.recipe.domain.RecipeIngredient;
-//import com.greenbowl.greenbowlserver.recipe.port.in.command.CreateDetailedRecipeCommand;
-//import com.greenbowl.greenbowlserver.recipe.port.in.command.CreateRecipeCommand;
-//import com.greenbowl.greenbowlserver.recipe.port.in.command.NutritionCommand;
-//
-//import java.util.stream.Collectors;
-//
-//public class RecipeCommandToDomainMapper {
-//    public static Recipe mapToDomainEntity(CreateRecipeCommand createRecipeCommand) {
-//        return Recipe.of(
-//                createRecipeCommand.getUserId(),
-//                createRecipeCommand.getName(),
-//                createRecipeCommand.getImageUrl(),
-//                createRecipeCommand.getCookingTime(),
-//                createRecipeCommand.getCalories()
-//        );
-//    }
-//
-//    public static Recipe mapToDomainEntity(CreateDetailedRecipeCommand createDetailedRecipeCommand) {
-//        return Recipe.of(
-//                createDetailedRecipeCommand.getUserId(),
-//                createDetailedRecipeCommand.getName(),
-//                createDetailedRecipeCommand.getImageUrl(),
-//                createDetailedRecipeCommand.getCookingTime(),
-//                createDetailedRecipeCommand.getCalories(),
-//                createDetailedRecipeCommand.getOneLineIntroduction(),
-//                createDetailedRecipeCommand.getIngredients()
-//                        .stream().
-//                        map(ingredient -> RecipeIngredient.of(
-//                                ingredient.getName(), ingredient.getWeight())
-//                        )
-//                        .collect(Collectors.toList()),
-//                createDetailedRecipeCommand.getIntroduction(),
-//                mapToDomain(createDetailedRecipeCommand.getNutrition())
-//        );
-//    }
-//
-//    public static Nutrition mapToDomain(NutritionCommand nutritionCommand) {
-//        return Nutrition.of(
-//                nutritionCommand.getCarbohydrate(),
-//                nutritionCommand.getProtein(),
-//                nutritionCommand.getFat(),
-//                nutritionCommand.getSodium(),
-//                nutritionCommand.getSugar()
-//        );
-//    }
-//}
+package com.personal.marketnote.user.port.in.mapper;
+
+import com.personal.marketnote.user.domain.user.Terms;
+import com.personal.marketnote.user.domain.user.User;
+import com.personal.marketnote.user.domain.user.UserCreateState;
+import com.personal.marketnote.user.port.in.command.SignUpCommand;
+import com.personal.marketnote.user.security.token.vendor.AuthVendor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.List;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class UserCommandToDomainMapper {
+    public static User mapToDomain(
+            SignUpCommand command,
+            AuthVendor authVendor,
+            String oidcId,
+            List<Terms> terms,
+            String referenceCode,
+            PasswordEncoder passwordEncoder
+    ) {
+        String encodedPassword = null;
+        if (authVendor.isNative() && command.hasPassword()) {
+            encodedPassword = passwordEncoder.encode(command.getPassword());
+        }
+
+        return User.from(
+                UserCreateState.builder()
+                        .authVendor(authVendor)
+                        .oidcId(oidcId)
+                        .nickname(command.getNickname())
+                        .email(command.getEmail())
+                        .encodedPassword(encodedPassword)
+                        .fullName(command.getFullName())
+                        .phoneNumber(command.getPhoneNumber())
+                        .terms(terms)
+                        .referenceCode(referenceCode)
+                        .build()
+        );
+    }
+}

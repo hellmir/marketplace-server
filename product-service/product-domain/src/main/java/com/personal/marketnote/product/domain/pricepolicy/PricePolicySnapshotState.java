@@ -1,0 +1,29 @@
+package com.personal.marketnote.product.domain.pricepolicy;
+
+import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
+import com.personal.marketnote.product.domain.product.Product;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class PricePolicySnapshotState {
+    private final Long id;
+    private final Product product;
+    private final Long price;
+    private final Long discountPrice;
+    private final BigDecimal discountRate;
+    private final Long accumulatedPoint;
+    private final BigDecimal accumulationRate;
+    private final Long popularity;
+    private final EntityStatus status;
+    private final Long orderNum;
+    private final List<Long> optionIds;
+}
+

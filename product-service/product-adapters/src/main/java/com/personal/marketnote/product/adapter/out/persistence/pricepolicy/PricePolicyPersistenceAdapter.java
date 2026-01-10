@@ -9,8 +9,10 @@ import com.personal.marketnote.product.adapter.out.persistence.product.entity.Pr
 import com.personal.marketnote.product.adapter.out.persistence.product.repository.ProductJpaRepository;
 import com.personal.marketnote.product.adapter.out.persistence.productoption.repository.ProductOptionPricePolicyJpaRepository;
 import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
+import com.personal.marketnote.product.domain.pricepolicy.PricePolicySnapshotState;
 import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.domain.product.ProductSearchTarget;
+import com.personal.marketnote.product.domain.product.ProductSnapshotState;
 import com.personal.marketnote.product.domain.product.ProductSortProperty;
 import com.personal.marketnote.product.port.out.pricepolicy.DeletePricePolicyPort;
 import com.personal.marketnote.product.port.out.pricepolicy.FindPricePoliciesPort;
@@ -84,34 +86,40 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
         }
 
         ProductJpaEntity productJpaEntity = entity.getProductJpaEntity();
-        Product product = Product.of(
-                productJpaEntity.getId(),
-                productJpaEntity.getSellerId(),
-                productJpaEntity.getName(),
-                productJpaEntity.getBrandName(),
-                productJpaEntity.getDetail(),
-                PricePolicyJpaEntityToDomainMapper.mapToDomain(productJpaEntity.getDefaultPricePolicy())
-                        .orElse(null),
-                productJpaEntity.getSales(),
-                productJpaEntity.getViewCount(),
-                productJpaEntity.getPopularity(),
-                productJpaEntity.isFindAllOptionsYn(),
-                java.util.List.of(),
-                productJpaEntity.getOrderNum(),
-                productJpaEntity.getStatus()
+        Product product = Product.from(
+                ProductSnapshotState.builder()
+                        .id(productJpaEntity.getId())
+                        .sellerId(productJpaEntity.getSellerId())
+                        .name(productJpaEntity.getName())
+                        .brandName(productJpaEntity.getBrandName())
+                        .detail(productJpaEntity.getDetail())
+                        .defaultPricePolicy(
+                                PricePolicyJpaEntityToDomainMapper.mapToDomain(productJpaEntity.getDefaultPricePolicy())
+                                        .orElse(null)
+                        )
+                        .sales(productJpaEntity.getSales())
+                        .viewCount(productJpaEntity.getViewCount())
+                        .popularity(productJpaEntity.getPopularity())
+                        .findAllOptionsYn(productJpaEntity.isFindAllOptionsYn())
+                        .productTags(java.util.List.of())
+                        .orderNum(productJpaEntity.getOrderNum())
+                        .status(productJpaEntity.getStatus())
+                        .build()
         );
 
-        PricePolicy pricePolicy = PricePolicy.of(
-                entity.getId(),
-                product,
-                entity.getPrice(),
-                entity.getDiscountPrice(),
-                entity.getAccumulationRate(),
-                entity.getAccumulatedPoint(),
-                entity.getDiscountRate(),
-                entity.getPopularity(),
-                entity.getStatus(),
-                entity.getOrderNum()
+        PricePolicy pricePolicy = PricePolicy.from(
+                PricePolicySnapshotState.builder()
+                        .id(entity.getId())
+                        .product(product)
+                        .price(entity.getPrice())
+                        .discountPrice(entity.getDiscountPrice())
+                        .discountRate(entity.getDiscountRate())
+                        .accumulatedPoint(entity.getAccumulatedPoint())
+                        .accumulationRate(entity.getAccumulationRate())
+                        .popularity(entity.getPopularity())
+                        .status(entity.getStatus())
+                        .orderNum(entity.getOrderNum())
+                        .build()
         );
 
         return Optional.of(pricePolicy);

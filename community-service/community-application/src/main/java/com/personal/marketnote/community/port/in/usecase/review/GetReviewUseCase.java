@@ -1,5 +1,6 @@
 package com.personal.marketnote.community.port.in.usecase.review;
 
+import com.personal.marketnote.community.domain.review.ProductReviewAggregate;
 import com.personal.marketnote.community.domain.review.ReviewSortProperty;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
@@ -36,4 +37,22 @@ public interface GetReviewUseCase {
             Sort.Direction sortDirection,
             ReviewSortProperty sortProperty
     );
+
+    /**
+     * @param productId 상품 ID
+     * @return 리뷰 개수가 100개 미만인지 여부 {@link boolean}
+     * @Date 2026-01-10
+     * @Author 성효빈
+     * @Description 리뷰 개수가 100개 미만인지 여부를 조회합니다.
+     */
+    boolean isReviewCountUnderHundred(Long productId);
+
+    /**
+     * @param productId 상품 ID
+     * @return 상품 리뷰 집계 정보 {@link ProductReviewAggregate}
+     * @Date 2026-01-10
+     * @Author 성효빈
+     * @Description 상품 리뷰 집계 정보를 조회합니다.
+     */
+    ProductReviewAggregate getProductReviewAggregate(Long productId);
 }

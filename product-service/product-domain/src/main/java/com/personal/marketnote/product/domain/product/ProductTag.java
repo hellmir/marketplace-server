@@ -27,30 +27,21 @@ public class ProductTag {
         return of(id, productId, name, orderNum, status);
     }
 
-    public static ProductTag of(String name) {
+    public static ProductTag from(ProductTagCreateState state) {
         return ProductTag.builder()
-                .name(name)
+                .productId(state.getProductId())
+                .name(state.getName())
                 .status(EntityStatus.ACTIVE)
                 .build();
     }
 
-    public static ProductTag of(Long productId, String name) {
+    public static ProductTag from(ProductTagSnapshotState state) {
         return ProductTag.builder()
-                .productId(productId)
-                .name(name)
-                .status(EntityStatus.ACTIVE)
-                .build();
-    }
-
-    public static ProductTag of(
-            Long id, Long productId, String name, Long orderNum, EntityStatus status
-    ) {
-        return ProductTag.builder()
-                .id(id)
-                .productId(productId)
-                .name(name)
-                .orderNum(orderNum)
-                .status(status)
+                .id(state.getId())
+                .productId(state.getProductId())
+                .name(state.getName())
+                .orderNum(state.getOrderNum())
+                .status(state.getStatus())
                 .build();
     }
 }

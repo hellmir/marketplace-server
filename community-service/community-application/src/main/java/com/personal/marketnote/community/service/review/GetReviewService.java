@@ -2,8 +2,10 @@ package com.personal.marketnote.community.service.review;
 
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.community.domain.review.ProductReviewAggregate;
 import com.personal.marketnote.community.domain.review.Review;
 import com.personal.marketnote.community.domain.review.ReviewSortProperty;
+import com.personal.marketnote.community.exception.ProductReviewAggregateNotFoundException;
 import com.personal.marketnote.community.exception.ReviewAlreadyExistsException;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
+import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 
 @UseCase
 @RequiredArgsConstructor
@@ -74,5 +77,17 @@ public class GetReviewService implements GetReviewUseCase {
         pagedReviews.forEach(review -> review.updateIsUserLiked(userId));
 
         return GetReviewsResult.from(hasNext, nextCursor, totalElements, pagedReviews);
+    }
+
+    @Override
+    public boolean isReviewCountUnderHundred(Long productId) {
+        return findReviewPort.countActive(productId, false) < 100;
+    }
+
+    @Override
+    @Transactional(isolation = READ_COMMITTED, readOnly = true, propagation = REQUIRES_NEW)
+    public ProductReviewAggregate getProductReviewAggregate(Long productId) {
+        return findReviewPort.findProductReviewAggregateByProductId(productId)
+                .orElseThrow(() -> new ProductReviewAggregateNotFoundException(productId));
     }
 }

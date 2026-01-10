@@ -41,18 +41,8 @@ public class FilePersistenceAdapter implements SaveFilesPort, FindFilePort, Upda
         savedList.forEach(FileJpaEntity::setIdToOrderNum);
 
         return savedList.stream()
-                .map(entity -> FileDomain.of(
-                        entity.getId(),
-                        entity.getOwnerType(),
-                        entity.getOwnerId(),
-                        entity.getSort(),
-                        entity.getExtension(),
-                        entity.getName(),
-                        entity.getS3Url(),
-                        entity.getCreatedAt(),
-                        entity.getStatus(),
-                        entity.getOrderNum()
-                ))
+                .map(FileJpaEntityToDomainMapper::mapToDomain)
+                .flatMap(Optional::stream)
                 .toList();
     }
 
@@ -64,18 +54,8 @@ public class FilePersistenceAdapter implements SaveFilesPort, FindFilePort, Upda
     @Override
     public List<FileDomain> findByOwner(OwnerType ownerType, Long ownerId) {
         return fileJpaRepository.findAllByOwnerTypeAndOwnerIdOrderByIdAsc(ownerType, ownerId).stream()
-                .map(entity -> FileDomain.of(
-                        entity.getId(),
-                        entity.getOwnerType(),
-                        entity.getOwnerId(),
-                        entity.getSort(),
-                        entity.getExtension(),
-                        entity.getName(),
-                        entity.getS3Url(),
-                        entity.getCreatedAt(),
-                        entity.getStatus(),
-                        entity.getOrderNum()
-                ))
+                .map(FileJpaEntityToDomainMapper::mapToDomain)
+                .flatMap(Optional::stream)
                 .toList();
     }
 
@@ -84,18 +64,8 @@ public class FilePersistenceAdapter implements SaveFilesPort, FindFilePort, Upda
         List<FileJpaEntity> entities = getEntities(ownerType, ownerId, sort);
 
         return entities.stream()
-                .map(entity -> FileDomain.of(
-                        entity.getId(),
-                        entity.getOwnerType(),
-                        entity.getOwnerId(),
-                        entity.getSort(),
-                        entity.getExtension(),
-                        entity.getName(),
-                        entity.getS3Url(),
-                        entity.getCreatedAt(),
-                        entity.getStatus(),
-                        entity.getOrderNum()
-                ))
+                .map(FileJpaEntityToDomainMapper::mapToDomain)
+                .flatMap(Optional::stream)
                 .toList();
     }
 

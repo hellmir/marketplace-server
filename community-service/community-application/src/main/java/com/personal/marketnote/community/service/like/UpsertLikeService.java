@@ -2,6 +2,7 @@ package com.personal.marketnote.community.service.like;
 
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.community.domain.like.Like;
+import com.personal.marketnote.community.domain.like.LikeCreateState;
 import com.personal.marketnote.community.exception.LikeNotFoundException;
 import com.personal.marketnote.community.port.in.command.like.UpsertLikeCommand;
 import com.personal.marketnote.community.port.in.result.like.UpsertLikeResult;
@@ -31,7 +32,13 @@ public class UpsertLikeService implements UpsertLikeUseCase {
 
             return UpsertLikeResult.from(like, false);
         } catch (LikeNotFoundException lnfe) {
-            Like like = Like.of(command.targetType(), command.targetId(), command.userId());
+            Like like = Like.from(
+                    LikeCreateState.builder()
+                            .targetType(command.targetType())
+                            .targetId(command.targetId())
+                            .userId(command.userId())
+                            .build()
+            );
             saveLikePort.save(like);
 
             return UpsertLikeResult.from(like, true);

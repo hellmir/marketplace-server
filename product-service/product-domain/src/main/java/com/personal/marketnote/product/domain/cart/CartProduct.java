@@ -15,39 +15,36 @@ public class CartProduct extends BaseDomain {
     private String imageUrl;
     private Short quantity;
 
-    public static CartProduct of(Long userId, PricePolicy pricePolicy, String imageUrl, Short quantity) {
+    public static CartProduct from(CartProductCreateState state) {
         CartProduct cartProduct = CartProduct.builder()
-                .userId(userId)
-                .pricePolicy(pricePolicy)
-                .imageUrl(imageUrl)
-                .quantity(quantity)
+                .userId(state.getUserId())
+                .pricePolicy(state.getPricePolicy())
+                .imageUrl(state.getImageUrl())
+                .quantity(state.getQuantity())
                 .build();
         cartProduct.activate();
-
         return cartProduct;
     }
 
-    public static CartProduct of(
-            Long userId, PricePolicy pricePolicy, String imageUrl, Short quantity, EntityStatus status
-    ) {
+    public static CartProduct from(CartProductSnapshotState state) {
         CartProduct cartProduct = CartProduct.builder()
-                .userId(userId)
-                .pricePolicy(pricePolicy)
-                .imageUrl(imageUrl)
-                .quantity(quantity)
+                .userId(state.getUserId())
+                .pricePolicy(state.getPricePolicy())
+                .imageUrl(state.getImageUrl())
+                .quantity(state.getQuantity())
                 .build();
 
-        if (status.isActive()) {
-            cartProduct.activate();
-            return cartProduct;
+        EntityStatus status = state.getStatus();
+        if (status != null) {
+            if (status.isActive()) {
+                cartProduct.activate();
+            } else if (status.isInactive()) {
+                cartProduct.deactivate();
+            } else {
+                cartProduct.hide();
+            }
         }
 
-        if (status.isInactive()) {
-            cartProduct.deactivate();
-            return cartProduct;
-        }
-
-        cartProduct.hide();
         return cartProduct;
     }
 

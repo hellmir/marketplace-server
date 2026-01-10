@@ -14,36 +14,24 @@ public class OrderProduct {
     private String imageUrl;
     private OrderStatus orderStatus;
 
-    public static OrderProduct of(
-            Long pricePolicyId,
-            Integer quantity,
-            Long unitAmount,
-            String imageUrl
-    ) {
+    public static OrderProduct from(OrderProductCreateState state) {
         return OrderProduct.builder()
-                .pricePolicyId(pricePolicyId)
-                .quantity(quantity)
-                .unitAmount(unitAmount)
-                .imageUrl(imageUrl)
+                .pricePolicyId(state.getPricePolicyId())
+                .quantity(state.getQuantity())
+                .unitAmount(state.getUnitAmount())
+                .imageUrl(state.getImageUrl())
                 .orderStatus(OrderStatus.PAYMENT_PENDING)
                 .build();
     }
 
-    public static OrderProduct of(
-            Long orderId,
-            Long pricePolicyId,
-            Integer quantity,
-            Long unitAmount,
-            String imageUrl,
-            OrderStatus orderStatus
-    ) {
+    public static OrderProduct from(OrderProductSnapshotState state) {
         return OrderProduct.builder()
-                .orderId(orderId)
-                .pricePolicyId(pricePolicyId)
-                .quantity(quantity)
-                .unitAmount(unitAmount)
-                .imageUrl(imageUrl)
-                .orderStatus(orderStatus)
+                .orderId(state.getOrderId())
+                .pricePolicyId(state.getPricePolicyId())
+                .quantity(state.getQuantity())
+                .unitAmount(state.getUnitAmount())
+                .imageUrl(state.getImageUrl())
+                .orderStatus(state.getOrderStatus())
                 .build();
     }
 

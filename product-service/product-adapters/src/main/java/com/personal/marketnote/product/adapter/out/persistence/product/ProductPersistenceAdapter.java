@@ -208,7 +208,7 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
     }
 
     @Override
-    public long countActiveByCategoryId(Long categoryId, ProductSearchTarget searchTarget, String searchKeyword) {
+    public long countActivePricePoliciesByCategoryId(Long categoryId, ProductSearchTarget searchTarget, String searchKeyword) {
         String searchPattern = generateSearchPattern(searchKeyword);
 
         return productJpaRepository.countActiveByCategoryId(

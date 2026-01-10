@@ -15,7 +15,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "좋아요 등록/취소",
+        summary = "좋아요 등록/활성화/비활성화",
         description = """
                 작성일자: 2026-01-10
                 
@@ -50,7 +50,7 @@ import java.lang.annotation.*;
                 | code | string | 응답 코드 | "SUC01" |
                 | timestamp | string(datetime) | 응답 일시 | "2026-01-10T11:00:00.000" |
                 | content | object | 응답 본문 | { ... } |
-                | message | string | 처리 결과 | "좋아요 등록/취소 성공" |
+                | message | string | 처리 결과 | "좋아요 활성화/비활성화 성공" |
                 
                 ---
                 

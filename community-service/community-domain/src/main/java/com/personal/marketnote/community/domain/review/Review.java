@@ -34,29 +34,18 @@ public class Review {
     private LocalDateTime modifiedAt;
     private Long orderNum;
 
-    public static Review of(
-            Long reviewerId,
-            Long orderId,
-            Long productId,
-            Long pricePolicyId,
-            String selectedOptions,
-            Integer quantity,
-            String reviewerName,
-            Float rating,
-            String content,
-            Boolean photoYn
-    ) {
+    public static Review from(ReviewCreateState state) {
         return Review.builder()
-                .reviewerId(reviewerId)
-                .orderId(orderId)
-                .productId(productId)
-                .pricePolicyId(pricePolicyId)
-                .selectedOptions(selectedOptions)
-                .quantity(quantity)
-                .reviewerName(mask(reviewerName))
-                .rating(round(rating))
-                .content(content)
-                .photoYn(photoYn)
+                .reviewerId(state.getReviewerId())
+                .orderId(state.getOrderId())
+                .productId(state.getProductId())
+                .pricePolicyId(state.getPricePolicyId())
+                .selectedOptions(state.getSelectedOptions())
+                .quantity(state.getQuantity())
+                .reviewerName(mask(state.getReviewerName()))
+                .rating(round(state.getRating()))
+                .content(state.getContent())
+                .photoYn(state.getPhotoYn())
                 .status(EntityStatus.ACTIVE)
                 .build();
     }
@@ -79,43 +68,26 @@ public class Review {
                 .floatValue();
     }
 
-    public static Review of(
-            Long id,
-            Long reviewerId,
-            Long orderId,
-            Long productId,
-            Long pricePolicyId,
-            String selectedOptions,
-            Integer quantity,
-            String reviewerName,
-            Float rating,
-            String content,
-            Boolean photoYn,
-            Boolean editedYn,
-            List<Long> likeUserIds,
-            EntityStatus status,
-            LocalDateTime createdAt,
-            LocalDateTime modifiedAt,
-            Long orderNum
-    ) {
+    public static Review from(ReviewSnapshotState state) {
         return Review.builder()
-                .id(id)
-                .reviewerId(reviewerId)
-                .orderId(orderId)
-                .productId(productId)
-                .pricePolicyId(pricePolicyId)
-                .selectedOptions(selectedOptions)
-                .quantity(quantity)
-                .reviewerName(reviewerName)
-                .rating(rating)
-                .content(content)
-                .photoYn(photoYn)
-                .editedYn(editedYn)
-                .likeUserIds(likeUserIds)
-                .status(status)
-                .createdAt(createdAt)
-                .modifiedAt(modifiedAt)
-                .orderNum(orderNum)
+                .id(state.getId())
+                .reviewerId(state.getReviewerId())
+                .orderId(state.getOrderId())
+                .productId(state.getProductId())
+                .pricePolicyId(state.getPricePolicyId())
+                .selectedOptions(state.getSelectedOptions())
+                .quantity(state.getQuantity())
+                .reviewerName(state.getReviewerName())
+                .rating(state.getRating())
+                .content(state.getContent())
+                .photoYn(state.getPhotoYn())
+                .editedYn(state.getEditedYn())
+                .likeUserIds(state.getLikeUserIds())
+                .isUserLiked(state.getIsUserLiked())
+                .status(state.getStatus())
+                .createdAt(state.getCreatedAt())
+                .modifiedAt(state.getModifiedAt())
+                .orderNum(state.getOrderNum())
                 .build();
     }
 

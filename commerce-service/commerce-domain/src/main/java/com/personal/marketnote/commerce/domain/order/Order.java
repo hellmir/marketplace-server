@@ -22,74 +22,43 @@ public class Order {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public static Order of(
-            Long sellerId,
-            Long buyerId,
-            Long totalAmount,
-            Long couponAmount,
-            Long pointAmount,
-            List<OrderProduct> orderProducts
-    ) {
+    public static Order from(OrderCreateState state) {
+        List<OrderProduct> orderProducts = state.getOrderProductStates() == null
+                ? List.of()
+                : state.getOrderProductStates().stream()
+                .map(OrderProduct::from)
+                .toList();
+
         return Order.builder()
-                .sellerId(sellerId)
-                .buyerId(buyerId)
+                .sellerId(state.getSellerId())
+                .buyerId(state.getBuyerId())
                 .orderStatus(OrderStatus.PAYMENT_PENDING)
-                .totalAmount(totalAmount)
-                .couponAmount(couponAmount)
-                .pointAmount(pointAmount)
+                .totalAmount(state.getTotalAmount())
+                .couponAmount(state.getCouponAmount())
+                .pointAmount(state.getPointAmount())
                 .orderProducts(orderProducts)
                 .build();
     }
 
-    public static Order of(
-            Long id,
-            Long sellerId,
-            Long buyerId,
-            OrderStatus orderStatus,
-            Long totalAmount,
-            Long paidAmount,
-            Long couponAmount,
-            Long pointAmount,
-            List<OrderProduct> orderProducts
-    ) {
-        return Order.builder()
-                .id(id)
-                .sellerId(sellerId)
-                .buyerId(buyerId)
-                .orderStatus(orderStatus)
-                .totalAmount(totalAmount)
-                .paidAmount(paidAmount)
-                .couponAmount(couponAmount)
-                .pointAmount(pointAmount)
-                .orderProducts(orderProducts)
-                .build();
-    }
+    public static Order from(OrderSnapshotState state) {
+        List<OrderProduct> orderProducts = state.getOrderProductStates() == null
+                ? List.of()
+                : state.getOrderProductStates().stream()
+                .map(OrderProduct::from)
+                .toList();
 
-    public static Order of(
-            Long id,
-            Long sellerId,
-            Long buyerId,
-            OrderStatus orderStatus,
-            Long totalAmount,
-            Long paidAmount,
-            Long couponAmount,
-            Long pointAmount,
-            List<OrderProduct> orderProducts,
-            LocalDateTime createdAt,
-            LocalDateTime modifiedAt
-    ) {
         return Order.builder()
-                .id(id)
-                .sellerId(sellerId)
-                .buyerId(buyerId)
-                .orderStatus(orderStatus)
-                .totalAmount(totalAmount)
-                .paidAmount(paidAmount)
-                .couponAmount(couponAmount)
-                .pointAmount(pointAmount)
+                .id(state.getId())
+                .sellerId(state.getSellerId())
+                .buyerId(state.getBuyerId())
+                .orderStatus(state.getOrderStatus())
+                .totalAmount(state.getTotalAmount())
+                .paidAmount(state.getPaidAmount())
+                .couponAmount(state.getCouponAmount())
+                .pointAmount(state.getPointAmount())
                 .orderProducts(orderProducts)
-                .createdAt(createdAt)
-                .modifiedAt(modifiedAt)
+                .createdAt(state.getCreatedAt())
+                .modifiedAt(state.getModifiedAt())
                 .build();
     }
 

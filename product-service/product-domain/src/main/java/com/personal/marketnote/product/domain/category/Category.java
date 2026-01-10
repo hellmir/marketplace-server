@@ -15,20 +15,21 @@ public class Category {
     private String name;
     private EntityStatus status;
 
-    public static Category of(Long parentCategoryId, String name, EntityStatus status) {
+    public static Category from(CategoryCreateState state) {
+        EntityStatus status = state.getStatus() != null ? state.getStatus() : EntityStatus.ACTIVE;
         return Category.builder()
-                .parentCategoryId(parentCategoryId)
-                .name(name)
+                .parentCategoryId(state.getParentCategoryId())
+                .name(state.getName())
                 .status(status)
                 .build();
     }
 
-    public static Category of(Long id, Long parentCategoryId, String name, EntityStatus status) {
+    public static Category from(CategorySnapshotState state) {
         return Category.builder()
-                .id(id)
-                .parentCategoryId(parentCategoryId)
-                .name(name)
-                .status(status)
+                .id(state.getId())
+                .parentCategoryId(state.getParentCategoryId())
+                .name(state.getName())
+                .status(state.getStatus())
                 .build();
     }
 

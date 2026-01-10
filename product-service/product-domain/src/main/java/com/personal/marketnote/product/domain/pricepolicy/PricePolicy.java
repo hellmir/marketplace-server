@@ -46,146 +46,51 @@ public class PricePolicy {
             @JsonProperty("orderNum") Long orderNum,
             @JsonProperty("optionIds") List<Long> optionIds
     ) {
-        return of(
-                id, price, discountPrice, discountRate, accumulatedPoint,
-                accumulationRate, popularity, status, orderNum, optionIds
+        return from(
+                PricePolicySnapshotState.builder()
+                        .id(id)
+                        .price(price)
+                        .discountPrice(discountPrice)
+                        .discountRate(discountRate)
+                        .accumulatedPoint(accumulatedPoint)
+                        .accumulationRate(accumulationRate)
+                        .popularity(popularity)
+                        .status(status)
+                        .orderNum(orderNum)
+                        .optionIds(optionIds)
+                        .build()
         );
     }
 
-    public static PricePolicy of(
-            Product product,
-            Long price,
-            Long discountPrice,
-            BigDecimal discountRate,
-            Long accumulatedPoint,
-            BigDecimal accumulationRate,
-            Long popularity,
-            EntityStatus status,
-            Long orderNum
-    ) {
+    public static PricePolicy from(PricePolicyCreateState state) {
+        EntityStatus status = state.getStatus() != null ? state.getStatus() : EntityStatus.ACTIVE;
         return PricePolicy.builder()
-                .product(product)
-                .price(price)
-                .discountPrice(discountPrice)
-                .discountRate(discountRate)
-                .accumulatedPoint(accumulatedPoint)
-                .accumulationRate(accumulationRate)
-                .popularity(popularity)
+                .product(state.getProduct())
+                .price(state.getPrice())
+                .discountPrice(state.getDiscountPrice())
+                .discountRate(state.getDiscountRate())
+                .accumulatedPoint(state.getAccumulatedPoint())
+                .accumulationRate(state.getAccumulationRate())
+                .popularity(state.getPopularity())
                 .status(status)
-                .orderNum(orderNum)
+                .orderNum(state.getOrderNum())
+                .optionIds(state.getOptionIds())
                 .build();
     }
 
-    public static PricePolicy of(
-            Long id,
-            Product product,
-            Long price,
-            Long discountPrice,
-            BigDecimal discountRate,
-            Long accumulatedPoint,
-            BigDecimal accumulationRate,
-            Long popularity,
-            EntityStatus status,
-            Long orderNum
-    ) {
+    public static PricePolicy from(PricePolicySnapshotState state) {
         return PricePolicy.builder()
-                .id(id)
-                .product(product)
-                .price(price)
-                .discountPrice(discountPrice)
-                .discountRate(discountRate)
-                .accumulatedPoint(accumulatedPoint)
-                .accumulationRate(accumulationRate)
-                .popularity(popularity)
-                .status(status)
-                .orderNum(orderNum)
-                .build();
-    }
-
-    public static PricePolicy of(
-            Long id,
-            Long price,
-            Long discountPrice,
-            BigDecimal discountRate,
-            Long accumulatedPoint,
-            BigDecimal accumulationRate,
-            Long popularity,
-            EntityStatus status,
-            Long orderNum
-    ) {
-        return PricePolicy.builder()
-                .id(id)
-                .price(price)
-                .discountPrice(discountPrice)
-                .discountRate(discountRate)
-                .accumulatedPoint(accumulatedPoint)
-                .accumulationRate(accumulationRate)
-                .popularity(popularity)
-                .status(status)
-                .orderNum(orderNum)
-                .build();
-    }
-
-    public static PricePolicy of(
-            Long price,
-            Long discountPrice,
-            BigDecimal discountRate,
-            Long accumulatedPoint,
-            BigDecimal accumulationRate
-    ) {
-        return PricePolicy.builder()
-                .price(price)
-                .discountPrice(discountPrice)
-                .discountRate(discountRate)
-                .accumulatedPoint(accumulatedPoint)
-                .accumulationRate(accumulationRate)
-                .status(EntityStatus.ACTIVE)
-                .build();
-    }
-
-    public static PricePolicy of(
-            Product product,
-            Long price,
-            Long discountPrice,
-            BigDecimal discountRate,
-            Long accumulatedPoint,
-            BigDecimal accumulationRate,
-            List<Long> optionIds
-    ) {
-        return PricePolicy.builder()
-                .product(product)
-                .price(price)
-                .discountPrice(discountPrice)
-                .discountRate(discountRate)
-                .accumulatedPoint(accumulatedPoint)
-                .accumulationRate(accumulationRate)
-                .optionIds(optionIds)
-                .build();
-    }
-
-    public static PricePolicy of(
-            Long id,
-            Long price,
-            Long discountPrice,
-            BigDecimal discountRate,
-            Long accumulatedPoint,
-            BigDecimal accumulationRate,
-            Long popularity,
-            EntityStatus status,
-            Long orderNum,
-            List<Long> optionIds
-    ) {
-        return PricePolicy.builder()
-                .id(id)
-                .price(price)
-                .discountPrice(discountPrice)
-                .discountRate(discountRate)
-                .accumulatedPoint(accumulatedPoint)
-                .accumulationRate(accumulationRate)
-                .popularity(popularity)
-                .status(status)
-                .orderNum(orderNum)
-                .optionIds(optionIds)
+                .id(state.getId())
+                .product(state.getProduct())
+                .price(state.getPrice())
+                .discountPrice(state.getDiscountPrice())
+                .discountRate(state.getDiscountRate())
+                .accumulatedPoint(state.getAccumulatedPoint())
+                .accumulationRate(state.getAccumulationRate())
+                .popularity(state.getPopularity())
+                .status(state.getStatus())
+                .orderNum(state.getOrderNum())
+                .optionIds(state.getOptionIds())
                 .build();
     }
 

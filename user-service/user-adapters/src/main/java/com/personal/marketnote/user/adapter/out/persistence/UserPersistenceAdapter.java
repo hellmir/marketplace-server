@@ -7,10 +7,7 @@ import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserJpaE
 import com.personal.marketnote.user.adapter.out.persistence.user.repository.LoginHistoryJpaRepository;
 import com.personal.marketnote.user.adapter.out.persistence.user.repository.TermsJpaRepository;
 import com.personal.marketnote.user.adapter.out.persistence.user.repository.UserJpaRepository;
-import com.personal.marketnote.user.domain.user.LoginHistory;
-import com.personal.marketnote.user.domain.user.Terms;
-import com.personal.marketnote.user.domain.user.User;
-import com.personal.marketnote.user.domain.user.UserSearchTarget;
+import com.personal.marketnote.user.domain.user.*;
 import com.personal.marketnote.user.exception.UserNotFoundException;
 import com.personal.marketnote.user.port.out.user.*;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
@@ -164,14 +161,17 @@ public class UserPersistenceAdapter
         Page<LoginHistoryJpaEntity> page = loginHistoryJpaRepository.findLoginHistoriesByUserId(pageable, userId);
 
         List<LoginHistory> histories = page.stream()
-                .map(e -> LoginHistory.of(
-                        e.getId(),
-                        UserJpaEntityToDomainMapper.mapToDomain(e.getUserJpaEntity()).orElseGet(
-                                () -> com.personal.marketnote.user.domain.user.User.referenceOf(e.getUserJpaEntity().getId())),
-                        e.getAuthVendor(),
-                        e.getIpAddress(),
-                        e.getCreatedAt())
-                )
+                .map(e -> LoginHistory.from(
+                        LoginHistorySnapshotState.builder()
+                                .id(e.getId())
+                                .user(UserJpaEntityToDomainMapper.mapToDomain(e.getUserJpaEntity()).orElseGet(
+                                        () -> com.personal.marketnote.user.domain.user.User.referenceOf(e.getUserJpaEntity().getId())
+                                ))
+                                .authVendor(e.getAuthVendor())
+                                .ipAddress(e.getIpAddress())
+                                .createdAt(e.getCreatedAt())
+                                .build()
+                ))
                 .collect(Collectors.toList());
 
         return new PageImpl<>(histories, pageable, page.getTotalElements());

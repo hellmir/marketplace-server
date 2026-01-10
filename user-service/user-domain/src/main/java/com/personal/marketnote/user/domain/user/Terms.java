@@ -19,21 +19,24 @@ public class Terms {
     private final LocalDateTime modifiedAt;
     private final EntityStatus status;
 
-    public static Terms of(
-            Long id,
-            String content,
-            Boolean requiredYn,
-            LocalDateTime createdAt,
-            LocalDateTime modifiedAt,
-            EntityStatus status
-    ) {
+    public static Terms from(TermsCreateState state) {
         return Terms.builder()
-                .id(id)
-                .content(content)
-                .requiredYn(requiredYn)
-                .createdAt(createdAt)
-                .modifiedAt(modifiedAt)
-                .status(status)
+                .content(state.getContent())
+                .requiredYn(state.getRequiredYn())
+                .createdAt(state.getCreatedAt())
+                .modifiedAt(state.getModifiedAt())
+                .status(state.getStatus())
+                .build();
+    }
+
+    public static Terms from(TermsSnapshotState state) {
+        return Terms.builder()
+                .id(state.getId())
+                .content(state.getContent())
+                .requiredYn(state.getRequiredYn())
+                .createdAt(state.getCreatedAt())
+                .modifiedAt(state.getModifiedAt())
+                .status(state.getStatus())
                 .build();
     }
 
