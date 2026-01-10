@@ -31,7 +31,7 @@ public class RegisterReviewService implements RegisterReviewUseCase {
                         command.selectedOptions(),
                         command.quantity(),
                         command.reviewerName(),
-                        command.score(),
+                        command.rating(),
                         command.content(),
                         command.isPhoto()
                 )

@@ -86,7 +86,7 @@ import java.lang.annotation.*;
                 | selectedOptions | string | 선택된 옵션 목록 | "30개입, 5박스" |
                 | quantity | number | 주문 수량 | 2 |
                 | reviewerName | string | 리뷰 작성자 이름 | "홍*동" |
-                | score | number | 평점 | 4 |
+                | rating | number | 평점 | 4 |
                 | content | string | 리뷰 내용 | "배송이 빠르고 포장 상태도 좋았습니다." |
                 | photoYn | boolean | 포토 리뷰 여부 | false |
                 | editedYn | boolean | 수정 여부 | false |
@@ -172,7 +172,7 @@ import java.lang.annotation.*;
                                                   "selectedOptions": "30개입, 5박스",
                                                   "quantity": 2,
                                                   "reviewerName": "홍*동",
-                                                  "score": 5,
+                                                  "rating": 5,
                                                   "content": "배송이 빠르고 포장 상태도 좋았습니다.",
                                                   "photoYn": false,
                                                   "editedYn": false,
@@ -189,7 +189,7 @@ import java.lang.annotation.*;
                                                   "selectedOptions": "30개입, 5박스",
                                                   "quantity": 2,
                                                   "reviewerName": "홍*동",
-                                                  "score": 5,
+                                                  "rating": 5,
                                                   "content": "배송이 빠르고 포장 상태도 좋았습니다.",
                                                   "photoYn": true,
                                                   "editedYn": false,
@@ -206,7 +206,7 @@ import java.lang.annotation.*;
                                                   "selectedOptions": "30개입, 5박스",
                                                   "quantity": 2,
                                                   "reviewerName": "김*",
-                                                  "score": 5,
+                                                  "rating": 5,
                                                   "content": "배송이 빠르고 포장 상태도 좋았습니다.",
                                                   "photoYn": true,
                                                   "editedYn": false,
@@ -223,7 +223,7 @@ import java.lang.annotation.*;
                                                   "selectedOptions": null,
                                                   "quantity": 2,
                                                   "reviewerName": "고*동",
-                                                  "score": 5,
+                                                  "rating": 5,
                                                   "content": "배송이 빠르고 포장 상태도 좋았습니다.",
                                                   "photoYn": false,
                                                   "editedYn": false,

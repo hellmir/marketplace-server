@@ -13,7 +13,7 @@ public class ReviewRequestToCommandMapper {
                 request.getSelectedOptions(),
                 request.getQuantity(),
                 request.getReviewerName(),
-                request.getScore(),
+                request.getRating(),
                 request.getContent(),
                 request.getIsPhoto()
         );
