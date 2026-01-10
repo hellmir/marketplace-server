@@ -16,6 +16,7 @@ public class Review {
     private Long userId;
     private Float score;
     private String content;
+    private Boolean edited_yn;
     private EntityStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;

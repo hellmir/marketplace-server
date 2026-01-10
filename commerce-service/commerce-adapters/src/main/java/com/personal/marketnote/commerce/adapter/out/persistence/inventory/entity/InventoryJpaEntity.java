@@ -14,10 +14,10 @@ import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Table(name = "inventory")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
 @DynamicInsert
 @DynamicUpdate
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class InventoryJpaEntity extends BaseEntity {
     @Id
     @Column(name = "price_policy_id", nullable = false)

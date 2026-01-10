@@ -10,12 +10,12 @@ import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Table(name = "order_status_history")
+@DynamicInsert
+@DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-@DynamicInsert
-@DynamicUpdate
 public class OrderStatusHistoryJpaEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

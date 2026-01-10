@@ -19,12 +19,12 @@ import static jakarta.persistence.CascadeType.PERSIST;
 
 @Entity
 @Table(name = "orders")
+@DynamicInsert
+@DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-@DynamicInsert
-@DynamicUpdate
 public class OrderJpaEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -11,12 +11,12 @@ import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Table(name = "warehouse_mapper")
+@DynamicInsert
+@DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-@DynamicInsert
-@DynamicUpdate
 public class WarehouseMapperJpaEntity extends BaseEntity {
     @Id
     @Column(name = "price_policy_id", nullable = false)

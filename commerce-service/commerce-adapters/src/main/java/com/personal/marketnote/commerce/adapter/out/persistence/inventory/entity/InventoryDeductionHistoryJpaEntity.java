@@ -13,10 +13,10 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Table(name = "inventory_deduction_history")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
 @DynamicInsert
 @DynamicUpdate
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class InventoryDeductionHistoryJpaEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
