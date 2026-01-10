@@ -3,7 +3,11 @@ package com.personal.marketnote.community.domain.review;
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
 import lombok.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
+
+import static com.personal.marketnote.common.utility.CharacterConstant.WILD_CARD;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -46,12 +50,30 @@ public class Review {
                 .pricePolicyId(pricePolicyId)
                 .selectedOptions(selectedOptions)
                 .quantity(quantity)
-                .reviewerName(reviewerName)
-                .score(score)
+                .reviewerName(mask(reviewerName))
+                .score(round(score))
                 .content(content)
                 .photoYn(photoYn)
                 .status(EntityStatus.ACTIVE)
                 .build();
+    }
+
+    private static String mask(String value) {
+        int length = value.length();
+        String firstChar = value.substring(0, 1);
+        String lastChar = value.substring(length - 1, length);
+
+        if (length < 3) {
+            return firstChar + WILD_CARD;
+        }
+
+        return firstChar + WILD_CARD + lastChar;
+    }
+
+    private static Float round(Float value) {
+        return BigDecimal.valueOf(value)
+                .setScale(0, RoundingMode.HALF_UP)
+                .floatValue();
     }
 
     public static Review of(

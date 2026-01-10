@@ -64,7 +64,7 @@ public class RegisterReviewRequest {
             requiredMode = Schema.RequiredMode.REQUIRED
     )
     @NotNull(message = "리뷰 작성자 이름은 필수값입니다.")
-    @Size(min = 1, max = 15, message = "리뷰 작성자 이름은 1자 이상 15자 이하로 입력해야 합니다.")
+    @Size(min = 2, max = 15, message = "리뷰 작성자 이름은 2자 이상 15자 이하로 입력해야 합니다.")
     private String reviewerName;
 
     @Schema(

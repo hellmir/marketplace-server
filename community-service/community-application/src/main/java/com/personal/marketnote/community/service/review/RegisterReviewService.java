@@ -10,9 +10,6 @@ import com.personal.marketnote.community.port.out.review.SaveReviewPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
 @UseCase
@@ -34,18 +31,12 @@ public class RegisterReviewService implements RegisterReviewUseCase {
                         command.selectedOptions(),
                         command.quantity(),
                         command.reviewerName(),
-                        roundScore(command.score()),
+                        command.score(),
                         command.content(),
                         command.isPhoto()
                 )
         );
 
         return RegisterReviewResult.from(savedReview);
-    }
-
-    private Float roundScore(Float score) {
-        return BigDecimal.valueOf(score)
-                .setScale(0, RoundingMode.HALF_UP)
-                .floatValue();
     }
 }

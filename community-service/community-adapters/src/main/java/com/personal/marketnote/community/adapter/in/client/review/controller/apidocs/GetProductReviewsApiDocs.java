@@ -85,7 +85,7 @@ import java.lang.annotation.*;
                 | pricePolicyId | number | 가격 정책 ID | 11 |
                 | selectedOptions | string | 선택된 옵션 목록 | "30개입, 5박스" |
                 | quantity | number | 주문 수량 | 2 |
-                | reviewerName | string | 리뷰 작성자 이름 | "홍길동" |
+                | reviewerName | string | 리뷰 작성자 이름 | "홍*동" |
                 | score | number | 평점 | 4 |
                 | content | string | 리뷰 내용 | "배송이 빠르고 포장 상태도 좋았습니다." |
                 | photoYn | boolean | 포토 리뷰 여부 | false |
@@ -171,7 +171,7 @@ import java.lang.annotation.*;
                                                   "pricePolicyId": 57,
                                                   "selectedOptions": "30개입, 5박스",
                                                   "quantity": 2,
-                                                  "reviewerName": "홍길동",
+                                                  "reviewerName": "홍*동",
                                                   "score": 5,
                                                   "content": "배송이 빠르고 포장 상태도 좋았습니다.",
                                                   "photoYn": false,
@@ -188,7 +188,7 @@ import java.lang.annotation.*;
                                                   "pricePolicyId": 56,
                                                   "selectedOptions": "30개입, 5박스",
                                                   "quantity": 2,
-                                                  "reviewerName": "홍길동",
+                                                  "reviewerName": "홍*동",
                                                   "score": 5,
                                                   "content": "배송이 빠르고 포장 상태도 좋았습니다.",
                                                   "photoYn": true,
@@ -205,7 +205,7 @@ import java.lang.annotation.*;
                                                   "pricePolicyId": 55,
                                                   "selectedOptions": "30개입, 5박스",
                                                   "quantity": 2,
-                                                  "reviewerName": "홍길동",
+                                                  "reviewerName": "김*",
                                                   "score": 5,
                                                   "content": "배송이 빠르고 포장 상태도 좋았습니다.",
                                                   "photoYn": true,
@@ -222,7 +222,7 @@ import java.lang.annotation.*;
                                                   "pricePolicyId": 18,
                                                   "selectedOptions": null,
                                                   "quantity": 2,
-                                                  "reviewerName": "고길동",
+                                                  "reviewerName": "고*동",
                                                   "score": 5,
                                                   "content": "배송이 빠르고 포장 상태도 좋았습니다.",
                                                   "photoYn": false,
