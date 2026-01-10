@@ -37,4 +37,8 @@ public class LikeJpaEntity extends BaseEntity {
                 .status(like.getStatus())
                 .build();
     }
+
+    public void updateFrom(Like like) {
+        status = like.getStatus();
+    }
 }
