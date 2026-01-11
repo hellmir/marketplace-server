@@ -1,10 +1,11 @@
-package com.personal.marketnote.product.configuration;
+package com.personal.marketnote.community.configuration;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.hibernate5.jakarta.Hibernate5JakartaModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -44,8 +45,14 @@ public class CacheConfig {
 
     private ObjectMapper objectMapper() {
         ObjectMapper mapper = new ObjectMapper();
-
-        mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+        BasicPolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
+                .allowIfSubType(Object.class)
+                .build();
+        mapper.activateDefaultTyping(
+                ptv,
+                ObjectMapper.DefaultTyping.NON_FINAL,
+                JsonTypeInfo.As.PROPERTY
+        );
         mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
         mapper.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE);
         mapper.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
@@ -60,16 +67,19 @@ public class CacheConfig {
 
     @Bean
     public CacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper());
+
         RedisCacheConfiguration redisCacheConfiguration = defaultCacheConfig()
-                .serializeKeysWith(RedisSerializationContext
-                        .SerializationPair.fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(RedisSerializationContext
-                        .SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper())))
+                .serializeKeysWith(
+                        RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer())
+                )
+                .serializeValuesWith(
+                        RedisSerializationContext.SerializationPair.fromSerializer(serializer)
+                )
                 .entryTtl(Duration.ofMinutes(10));
 
         Map<String, RedisCacheConfiguration> perCacheTtl = new HashMap<>();
-        // 상품 목록 첫 페이지 전용 캐시: 2분 TTL
-        perCacheTtl.put("pricePolicy:list:first", redisCacheConfiguration.entryTtl(Duration.ofMinutes(2)));
+        perCacheTtl.put("review:photo:list:first", redisCacheConfiguration.entryTtl(Duration.ofMinutes(10)));
 
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(redisCacheConfiguration)
@@ -87,5 +97,3 @@ public class CacheConfig {
         return new LettuceConnectionFactory(standalone);
     }
 }
-
-

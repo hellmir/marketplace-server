@@ -2,6 +2,7 @@ package com.personal.marketnote.community.adapter.in.client.review.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.ElementExtractor;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.adapter.in.client.review.controller.apidocs.GetProductReviewAggregateApiDocs;
 import com.personal.marketnote.community.adapter.in.client.review.controller.apidocs.GetProductReviewsApiDocs;
 import com.personal.marketnote.community.adapter.in.client.review.controller.apidocs.RegisterReviewApiDocs;
@@ -94,8 +95,13 @@ public class ReviewController {
             @RequestParam(required = false, defaultValue = "ID") ReviewSortProperty sortProperty,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
+        Long userId = null;
+        if (FormatValidator.hasValue(principal)) {
+            userId = ElementExtractor.extractUserId(principal);
+        }
+
         GetReviewsResult result = getReviewUseCase.getProductReviews(
-                ElementExtractor.extractUserId(principal),
+                userId,
                 productId,
                 isPhoto,
                 cursor,

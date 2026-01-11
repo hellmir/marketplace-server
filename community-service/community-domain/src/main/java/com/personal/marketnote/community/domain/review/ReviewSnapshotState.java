@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Builder
@@ -25,8 +24,7 @@ public class ReviewSnapshotState {
     private final String content;
     private final Boolean photoYn;
     private final Boolean editedYn;
-    private final List<Long> likeUserIds;
-    private final Boolean isUserLiked;
+    private final Integer likeCount;
     private final EntityStatus status;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;

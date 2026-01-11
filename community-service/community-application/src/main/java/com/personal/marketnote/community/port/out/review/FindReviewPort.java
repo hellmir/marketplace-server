@@ -3,6 +3,7 @@ package com.personal.marketnote.community.port.out.review;
 import com.personal.marketnote.community.domain.review.ProductReviewAggregate;
 import com.personal.marketnote.community.domain.review.Review;
 import com.personal.marketnote.community.domain.review.ReviewSortProperty;
+import com.personal.marketnote.community.domain.review.Reviews;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public interface FindReviewPort {
      * @Author 성효빈
      * @Description 상품 리뷰 목록을 조회합니다.
      */
-    List<Review> findProductReviews(
+    Reviews findProductReviews(
             Long productId, Boolean isPhoto, Long cursor, Pageable pageable, ReviewSortProperty sortProperty
     );
 

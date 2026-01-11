@@ -21,7 +21,7 @@ public record ReviewItemResponse(
         Boolean photoYn,
         Boolean editedYn,
         Integer likeCount,
-        Boolean isUserLiked,
+        boolean isUserLiked,
         String status,
         LocalDateTime createdAt,
         LocalDateTime modifiedAt,
