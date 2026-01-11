@@ -81,54 +81,16 @@ public class ProductJpaEntityToDomainMapper {
                 );
     }
 
-    public static Optional<ProductOptionCategory> mapToDomain(
-            ProductOptionCategoryJpaEntity productOptionCategoryJpaEntity
-    ) {
-        return Optional.ofNullable(productOptionCategoryJpaEntity)
-                .map(entity -> {
-                    Product product = ProductJpaEntityToDomainMapper
-                            .mapToDomain(entity.getProductJpaEntity()).orElse(null);
-                    ProductOptionCategory shallowCategory = ProductOptionCategory.from(
-                            ProductOptionCategorySnapshotState.builder()
-                                    .id(entity.getId())
-                                    .product(product)
-                                    .name(entity.getName())
-                                    .options(null)
-                                    .orderNum(entity.getOrderNum())
-                                    .status(entity.getStatus())
-                                    .build()
-                    );
-
-                    List<ProductOption> options = entity.getProductOptionJpaEntities()
-                            .stream()
-                            .map(optEntity -> mapToDomain(optEntity, shallowCategory))
-                            .filter(Optional::isPresent)
-                            .map(Optional::get)
-                            .toList();
-
-                    return ProductOptionCategory.from(
-                            ProductOptionCategorySnapshotState.builder()
-                                    .id(entity.getId())
-                                    .product(product)
-                                    .name(entity.getName())
-                                    .options(options)
-                                    .orderNum(entity.getOrderNum())
-                                    .status(entity.getStatus())
-                                    .build()
-                    );
-                });
-    }
-
     private static Optional<ProductOption> mapToDomain(
             ProductOptionJpaEntity productOptionJpaEntity,
-            ProductOptionCategory shallowCategory
+            ProductOptionCategory productOptionCategory
     ) {
         return Optional.ofNullable(productOptionJpaEntity)
                 .map(
                         entity -> ProductOption.from(
                                 ProductOptionSnapshotState.builder()
                                         .id(entity.getId())
-                                        .category(shallowCategory)
+                                        .category(productOptionCategory)
                                         .content(entity.getContent())
                                         .status(entity.getStatus())
                                         .build()
@@ -147,5 +109,60 @@ public class ProductJpaEntityToDomainMapper {
                                 .status(entity.getStatus())
                                 .build()
                 ));
+    }
+
+    public static Optional<ProductOption> mapToDomain(ProductOptionJpaEntity productOptionJpaEntity) {
+        return Optional.ofNullable(productOptionJpaEntity)
+                .map(
+                        entity -> ProductOption.from(
+                                ProductOptionSnapshotState.builder()
+                                        .id(entity.getId())
+                                        .category(
+                                                mapToDomain(productOptionJpaEntity.getProductOptionCategoryJpaEntity())
+                                                        .orElse(null)
+                                        )
+                                        .content(entity.getContent())
+                                        .status(entity.getStatus())
+                                        .build()
+                        )
+                );
+    }
+
+    public static Optional<ProductOptionCategory> mapToDomain(
+            ProductOptionCategoryJpaEntity productOptionCategoryJpaEntity
+    ) {
+        return Optional.ofNullable(productOptionCategoryJpaEntity)
+                .map(entity -> {
+                    Product product = ProductJpaEntityToDomainMapper
+                            .mapToDomain(entity.getProductJpaEntity()).orElse(null);
+                    ProductOptionCategory productOptionCategory = ProductOptionCategory.from(
+                            ProductOptionCategorySnapshotState.builder()
+                                    .id(entity.getId())
+                                    .product(product)
+                                    .name(entity.getName())
+                                    .options(null)
+                                    .orderNum(entity.getOrderNum())
+                                    .status(entity.getStatus())
+                                    .build()
+                    );
+
+                    List<ProductOption> options = entity.getProductOptionJpaEntities()
+                            .stream()
+                            .map(optEntity -> mapToDomain(optEntity, productOptionCategory))
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .toList();
+
+                    return ProductOptionCategory.from(
+                            ProductOptionCategorySnapshotState.builder()
+                                    .id(entity.getId())
+                                    .product(product)
+                                    .name(entity.getName())
+                                    .options(options)
+                                    .orderNum(entity.getOrderNum())
+                                    .status(entity.getStatus())
+                                    .build()
+                    );
+                });
     }
 }

@@ -29,7 +29,7 @@ import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFA
 @RequiredArgsConstructor
 public class CartController {
     private final AddCartProductUseCase addCartProductUseCase;
-    private final GetMyCartProductsUseCase getMyCartProductsUseCase;
+    private final GetCartProductUseCase getCartProductUseCase;
     private final UpdateCartProductQuantityUseCase updateCartProductQuantityUseCase;
     private final UpdateCartProductOptionsUseCase updateCartProductOptionsUseCase;
     private final DeleteCartProductUseCase deleteCartProductsUseCase;
@@ -79,7 +79,7 @@ public class CartController {
     public ResponseEntity<BaseResponse<GetMyCartProductsResponse>> getMyCartProducts(
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
-        GetMyCartProductsResult result = getMyCartProductsUseCase.getMyCartProducts(
+        GetMyCartProductsResult result = getCartProductUseCase.getMyCartProducts(
                 ElementExtractor.extractUserId(principal)
         );
 

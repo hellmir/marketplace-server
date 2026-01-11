@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.product.domain.option.ProductOption;
 import com.personal.marketnote.product.domain.product.Product;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,7 @@ public class PricePolicy {
     private EntityStatus status;
     private Long orderNum;
     private List<Long> optionIds;
+    private List<ProductOption> productOptions;
 
     @JsonCreator
     private static PricePolicy jsonCreator(
@@ -91,6 +93,7 @@ public class PricePolicy {
                 .status(state.getStatus())
                 .orderNum(state.getOrderNum())
                 .optionIds(state.getOptionIds())
+                .productOptions(state.getProductOptions())
                 .build();
     }
 

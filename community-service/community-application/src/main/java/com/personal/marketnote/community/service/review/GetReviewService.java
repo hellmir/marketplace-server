@@ -11,7 +11,6 @@ import com.personal.marketnote.community.exception.ReviewAlreadyExistsException;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
 import com.personal.marketnote.community.port.in.usecase.review.GetReviewUseCase;
-import com.personal.marketnote.community.port.out.like.FindLikePort;
 import com.personal.marketnote.community.port.out.review.FindReviewPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -29,7 +28,6 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRES_NE
 @Transactional(isolation = READ_COMMITTED, readOnly = true)
 public class GetReviewService implements GetReviewUseCase {
     private final FindReviewPort findReviewPort;
-    private final FindLikePort findLikePort;
 
     @Override
     public void validateDuplicateReview(RegisterReviewCommand command) {
