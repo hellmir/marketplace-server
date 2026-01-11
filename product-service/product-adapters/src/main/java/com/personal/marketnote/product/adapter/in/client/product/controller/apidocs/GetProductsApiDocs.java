@@ -28,7 +28,7 @@ import java.lang.annotation.*;
                 
                 - 상품 목록을 조회합니다.
                 
-                - 각 카테고리, 정렬 기준 별 첫 페이지에 Redis Cache 적용되어 있습니다. TTL: 2분
+                - 각 카테고리, 정렬 기준별 첫 페이지에 Redis Cache 적용되어 있습니다. TTL: 2분
                 
                 - categoryId 미 전송 시 전체 상품 목록을 반환합니다.
                 
@@ -38,7 +38,7 @@ import java.lang.annotation.*;
                 
                 - 페이로드에 cursor 값이 있는 경우(더 보기): 총 상품 개수 반환 X
                 
-                - 옵션 별 상품 목록 조회 설정된 상품은 모든 옵션 카테고리 조합에 대해 개별 상품으로 조회되며, selectedOptions 배열이 추가로 제공됩니다.
+                - 옵션별 상품 목록 조회 설정된 상품은 모든 옵션 카테고리 조합에 대해 개별 상품으로 조회되며, selectedOptions 배열이 추가로 제공됩니다.
                 
                 ---
                 

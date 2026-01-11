@@ -26,6 +26,8 @@ import java.lang.annotation.*;
                 
                 - 상품 리뷰 목록을 조회합니다.
                 
+                - 포토 리뷰 목록 첫 페이지에 Redis Cache 적용되어 있습니다. TTL: 10분
+                
                 - 페이로드에 cursor 값이 없는 경우(첫 페이지): 총 리뷰 개수 반환 O
                 
                 - 페이로드에 cursor 값이 있는 경우(더 보기): 총 리뷰 개수 반환 X
