@@ -24,7 +24,7 @@ public class ProductTag {
             @JsonProperty("orderNum") Long orderNum,
             @JsonProperty("status") EntityStatus status
     ) {
-        return of(id, productId, name, orderNum, status);
+        return new ProductTag(id, productId, name, orderNum, status);
     }
 
     public static ProductTag from(ProductTagCreateState state) {

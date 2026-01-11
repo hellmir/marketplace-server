@@ -232,7 +232,7 @@ public class GetProductService implements GetProductUseCase {
 
         Long totalElements = null;
         if (isFirstPage) {
-            totalElements = computeTotalElements(isCategorized, categoryId, searchTarget, searchKeyword);
+            totalElements = computeTotalElements(categoryId, searchTarget, searchKeyword);
         }
 
         return GetProductsResult.from(hasNext, nextCursor, totalElements, productItemsWithImage);
@@ -271,13 +271,7 @@ public class GetProductService implements GetProductUseCase {
         return ProductItemResult.from(product, selectedOptions, pricePolicy);
     }
 
-    private Long computeTotalElements(
-            boolean isCategorized, Long categoryId, ProductSearchTarget searchTarget, String searchKeyword
-    ) {
-        if (isCategorized) {
-            return findProductPort.countActivePricePoliciesByCategoryId(categoryId, searchTarget, searchKeyword);
-        }
-
-        return findProductPort.countActive(searchTarget, searchKeyword);
+    private Long computeTotalElements(Long categoryId, ProductSearchTarget searchTarget, String searchKeyword) {
+        return findPricePoliciesPort.countActivePricePoliciesByCategoryId(categoryId, searchTarget, searchKeyword);
     }
 }

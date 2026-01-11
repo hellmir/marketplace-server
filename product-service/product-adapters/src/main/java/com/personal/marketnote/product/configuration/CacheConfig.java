@@ -46,16 +46,15 @@ public class CacheConfig {
         ObjectMapper mapper = new ObjectMapper();
 
         mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
-        // Prefer field-based (no getters/setters involvement) to avoid synthetic props like "active"
         mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
         mapper.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE);
         mapper.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-        // Be tolerant to unknown props from older cache payloads
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.registerModule(new Jdk8Module());
         mapper.registerModule(new Hibernate5JakartaModule());
         mapper.registerModule(new JavaTimeModule());
+
         return mapper;
     }
 
@@ -84,6 +83,7 @@ public class CacheConfig {
         standalone.setHostName(host);
         standalone.setPort(port);
         standalone.setPassword(password);
+
         return new LettuceConnectionFactory(standalone);
     }
 }

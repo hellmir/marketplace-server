@@ -207,4 +207,45 @@ public interface PricePolicyJpaRepository extends JpaRepository<PricePolicyJpaEn
             @Param("pattern") String pattern,
             @Param("categoryId") Long categoryId
     );
+
+    @Query("""
+            SELECT COUNT(pp)
+            FROM PricePolicyJpaEntity pp
+              JOIN pp.productJpaEntity p
+            WHERE 1 = 1
+              AND p.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+              AND EXISTS (
+                SELECT 1
+                FROM ProductCategoryJpaEntity pc
+                WHERE 1 = 1
+                    AND pc.productId = p.id
+                    AND pc.categoryId = :categoryId
+              )
+              AND (
+                    :pattern IS NULL
+                 OR (:searchTarget = 'name' AND p.name LIKE :pattern)
+                 OR (:searchTarget = 'brandName' AND p.brandName LIKE :pattern)
+                 OR (:searchTarget <> 'name' AND :searchTarget <> 'brandName' AND (p.name LIKE :pattern OR p.brandName LIKE :pattern))
+              )
+            """)
+    long countActiveByCategoryId(
+            @Param("categoryId") Long categoryId,
+            @Param("searchTarget") String searchTarget,
+            @Param("pattern") String pattern
+    );
+
+    @Query("""
+            SELECT COUNT(pp)
+            FROM PricePolicyJpaEntity pp
+              JOIN pp.productJpaEntity p
+            WHERE 1 = 1
+              AND p.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+              AND (
+                    :pattern IS NULL
+                 OR (:searchTarget = 'name' AND p.name LIKE :pattern)
+                 OR (:searchTarget = 'brandName' AND p.brandName LIKE :pattern)
+                 OR (:searchTarget <> 'name' AND :searchTarget <> 'brandName' AND (p.name LIKE :pattern OR p.brandName LIKE :pattern))
+              )
+            """)
+    long countActive(@Param("searchTarget") String searchTarget, @Param("pattern") String pattern);
 }

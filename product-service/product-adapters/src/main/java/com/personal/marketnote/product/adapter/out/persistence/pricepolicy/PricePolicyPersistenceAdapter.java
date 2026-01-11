@@ -255,6 +255,24 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
                 .toList();
     }
 
+    @Override
+    public long countActivePricePoliciesByCategoryId(Long categoryId, ProductSearchTarget searchTarget, String searchKeyword) {
+        String searchPattern = generateSearchPattern(searchKeyword);
+
+        if (FormatValidator.hasValue(categoryId)) {
+            return pricePolicyJpaRepository.countActiveByCategoryId(
+                    categoryId,
+                    searchTarget.getCamelCaseValue(),
+                    searchPattern
+            );
+        }
+
+        return pricePolicyJpaRepository.countActive(
+                searchTarget.getCamelCaseValue(),
+                searchPattern
+        );
+    }
+
     private String generateSearchPattern(String searchKeyword) {
         if (FormatValidator.hasValue(searchKeyword)) {
             return "%" + searchKeyword + "%";

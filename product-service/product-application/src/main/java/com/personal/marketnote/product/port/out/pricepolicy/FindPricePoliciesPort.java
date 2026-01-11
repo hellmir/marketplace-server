@@ -30,4 +30,15 @@ public interface FindPricePoliciesPort {
             ProductSearchTarget searchTarget,
             String searchKeyword
     );
+
+    /**
+     * @param categoryId    카테고리 ID
+     * @param searchTarget  검색 대상
+     * @param searchKeyword 검색 키워드
+     * @return 카테고리 가격 정책 총 개수 {@link long}
+     * @Date 2026-01-01
+     * @Author 성효빈
+     * @Description 카테고리 가격 정책 총 개수를 조회합니다.
+     */
+    long countActivePricePoliciesByCategoryId(Long categoryId, ProductSearchTarget searchTarget, String searchKeyword);
 }
