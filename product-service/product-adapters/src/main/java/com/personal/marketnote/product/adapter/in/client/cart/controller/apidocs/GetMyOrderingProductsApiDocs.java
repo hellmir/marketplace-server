@@ -65,6 +65,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | product | object | 상품 | { ... } |
                 | pricePolicy | object | 가격 정책 | { ... } |
+                | stock | number | 재고 수량 | 10 |
                 | quantity | number | 상품 수량 | 1 |
                 
                 ---
@@ -90,6 +91,17 @@ import java.lang.annotation.*;
                 | discountPrice | number | 할인 판매 가격(원) | 32000 |
                 | discountRate | number | 할인율(%, 최대 소수점 1자리) | 20 |
                 | accumulatedPoint | number | 구매 시 적립 포인트 | 800 |
+                | options | array | 옵션 목록 | [ ... ] |
+                
+                ---
+                
+                ### Response > content > orderingProducts > pricePolicy > options
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | id | number | 옵션 ID | 1 |
+                | content | string | 옵션 내용 | "하" |
+                | status | string | 옵션 상태 | "ACTIVE" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         requestBody = @RequestBody(
@@ -128,58 +140,100 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-05T13:57:41.052347",
+                                          "timestamp": "2026-01-05T11:19:19.771364",
                                           "content": {
                                             "orderingProducts": [
                                               {
                                                 "product": {
                                                   "id": 30,
+                                                  "sellerId": 1,
                                                   "name": "건기식테스트1",
                                                   "brandName": "노트왕",
                                                   "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763533914954_image_600.png",
-                                                  "status": "ACTIVE"
+                                                  "status": "INACTIVE"
                                                 },
                                                 "pricePolicy": {
                                                   "id": 20,
                                                   "price": 45000,
                                                   "discountPrice": 37000,
                                                   "discountRate": 17.8,
-                                                  "accumulatedPoint": 1200
+                                                  "accumulatedPoint": 1200,
+                                                  "options": [
+                                                    {
+                                                      "id": 8,
+                                                      "content": "1박스",
+                                                      "status": "INACTIVE"
+                                                    },
+                                                    {
+                                                      "id": 11,
+                                                      "content": "60개입",
+                                                      "status": "INACTIVE"
+                                                    }
+                                                  ]
                                                 },
+                                                "stock": 2000,
                                                 "quantity": 1
                                               },
                                               {
                                                 "product": {
                                                   "id": 30,
+                                                  "sellerId": 1,
                                                   "name": "건기식테스트1",
                                                   "brandName": "노트왕",
                                                   "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763533916081_image_600.png",
-                                                  "status": "ACTIVE"
+                                                  "status": "INACTIVE"
                                                 },
                                                 "pricePolicy": {
                                                   "id": 21,
                                                   "price": 40000,
                                                   "discountPrice": 32000,
                                                   "discountRate": 20,
-                                                  "accumulatedPoint": 800
+                                                  "accumulatedPoint": 800,
+                                                  "options": [
+                                                    {
+                                                      "id": 8,
+                                                      "content": "1박스",
+                                                      "status": "INACTIVE"
+                                                    },
+                                                    {
+                                                      "id": 10,
+                                                      "content": "30개입",
+                                                      "status": "INACTIVE"
+                                                    }
+                                                  ]
                                                 },
+                                                "stock": 2100,
                                                 "quantity": 10
                                               },
                                               {
                                                 "product": {
                                                   "id": 30,
+                                                  "sellerId": 1,
                                                   "name": "건기식테스트1",
                                                   "brandName": "노트왕",
                                                   "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
-                                                  "status": "ACTIVE"
+                                                  "status": "INACTIVE"
                                                 },
                                                 "pricePolicy": {
                                                   "id": 23,
                                                   "price": 43000,
                                                   "discountPrice": 36000,
                                                   "discountRate": 16.3,
-                                                  "accumulatedPoint": 500
+                                                  "accumulatedPoint": 500,
+                                                  "options": [
+                                                    {
+                                                      "id": 9,
+                                                      "content": "3박스",
+                                                      "status": "INACTIVE"
+                                                    },
+                                                    {
+                                                      "id": 10,
+                                                      "content": "30개입",
+                                                      "status": "INACTIVE"
+                                                    }
+                                                  ]
                                                 },
+                                                "stock": 2298,
                                                 "quantity": 5
                                               }
                                             ]

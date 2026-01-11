@@ -74,7 +74,7 @@ public class PricePolicyController {
     public ResponseEntity<BaseResponse<GetPricePoliciesResponse>> getPricePolicies(
             @PathVariable("productId") Long productId
     ) {
-        GetPricePoliciesResult result = getPricePoliciesUseCase.getPricePolicies(productId);
+        GetPricePoliciesResult result = getPricePoliciesUseCase.getPricePoliciesAndOptions(productId);
         return ResponseEntity.ok(
                 BaseResponse.of(
                         GetPricePoliciesResponse.from(result),

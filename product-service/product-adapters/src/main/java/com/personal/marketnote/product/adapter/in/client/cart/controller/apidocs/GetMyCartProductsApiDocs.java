@@ -58,6 +58,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | product | object | 상품 | { ... } |
                 | pricePolicy | object | 가격 정책 | { ... } |
+                | stock | number | 재고 수량 | 10 |
                 | quantity | number | 상품 수량 | 1 |
                 
                 ---
@@ -83,6 +84,17 @@ import java.lang.annotation.*;
                 | discountPrice | number | 할인 판매 가격(원) | 32000 |
                 | discountRate | number | 할인율(%, 최대 소수점 1자리) | 20 |
                 | accumulatedPoint | number | 구매 시 적립 포인트 | 800 |
+                | options | array | 옵션 목록 | [ ... ] |
+                
+                ---
+                
+                ### Response > content > cartProducts > pricePolicy > options
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | id | number | 옵션 ID | 1 |
+                | content | string | 옵션 내용 | "하" |
+                | status | string | 옵션 상태 | "ACTIVE" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         responses = {

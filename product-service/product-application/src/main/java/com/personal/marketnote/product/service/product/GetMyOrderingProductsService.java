@@ -35,7 +35,7 @@ public class GetMyOrderingProductsService implements GetMyOrderingProductsUseCas
                 .map(OrderingItemCommand::pricePolicyId)
                 .toList();
 
-        List<PricePolicy> pricePolicies = getPricePoliciesUseCase.getPricePolicies(pricePolicyIds);
+        List<PricePolicy> pricePolicies = getPricePoliciesUseCase.getPricePoliciesAndOptions(pricePolicyIds);
 
         // 상품 재고 수량 조회
         Map<Long, Integer> stocks = getProductInventoryUseCase.getProductStocks(pricePolicyIds);
