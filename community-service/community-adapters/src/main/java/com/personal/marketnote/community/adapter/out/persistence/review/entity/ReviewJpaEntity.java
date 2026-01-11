@@ -10,8 +10,6 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Formula;
 
-import java.util.List;
-
 @Entity
 @Table(name = "review")
 @DynamicInsert
@@ -56,13 +54,13 @@ public class ReviewJpaEntity extends BaseOrderedGeneralEntity {
 
     @Formula("""
             (
-                SELECT COALESCE(array_agg(l.user_id), '{}'::bigint[])
+                SELECT count(l.user_id)
                 FROM likes l
                 WHERE l.target_type = 'REVIEW'
                   AND l.target_id = id
             )
             """)
-    private List<Long> likeUserIds;
+    private Integer likeCount;
 
     public static ReviewJpaEntity from(Review review) {
         return ReviewJpaEntity.builder()

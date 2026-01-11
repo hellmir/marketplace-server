@@ -21,7 +21,7 @@ public record ReviewItemResult(
         Boolean photoYn,
         Boolean editedYn,
         Integer likeCount,
-        Boolean isUserLiked,
+        boolean isUserLiked,
         String status,
         LocalDateTime createdAt,
         LocalDateTime modifiedAt,
@@ -41,8 +41,8 @@ public record ReviewItemResult(
                 .content(review.getContent())
                 .photoYn(review.getPhotoYn())
                 .editedYn(review.getEditedYn())
-                .likeCount(review.getLikeUserIds().size())
-                .isUserLiked(review.getIsUserLiked())
+                .likeCount(review.getLikeCount())
+                .isUserLiked(review.isUserLiked())
                 .status(review.getStatus().name())
                 .createdAt(review.getCreatedAt())
                 .modifiedAt(review.getModifiedAt())

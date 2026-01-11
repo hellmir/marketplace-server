@@ -1,10 +1,11 @@
-package com.personal.marketnote.product.configuration;
+package com.personal.marketnote.community.configuration;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.hibernate5.jakarta.Hibernate5JakartaModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -67,13 +68,8 @@ public class CacheConfig {
                         .SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper())))
                 .entryTtl(Duration.ofMinutes(10));
 
-        Map<String, RedisCacheConfiguration> perCacheTtl = new HashMap<>();
-        // 상품 목록 첫 페이지 전용 캐시: 2분 TTL
-        perCacheTtl.put("pricePolicy:list:first", redisCacheConfiguration.entryTtl(Duration.ofMinutes(2)));
-
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(redisCacheConfiguration)
-                .withInitialCacheConfigurations(perCacheTtl)
                 .build();
     }
 
@@ -87,5 +83,3 @@ public class CacheConfig {
         return new LettuceConnectionFactory(standalone);
     }
 }
-
-

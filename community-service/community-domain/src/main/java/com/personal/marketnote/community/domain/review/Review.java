@@ -1,12 +1,19 @@
 package com.personal.marketnote.community.domain.review;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
+import com.personal.marketnote.common.utility.FormatValidator;
+import jakarta.persistence.Column;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static com.personal.marketnote.common.utility.CharacterConstant.WILD_CARD;
 
@@ -27,11 +34,21 @@ public class Review {
     private String content;
     private Boolean photoYn;
     private Boolean editedYn;
-    private List<Long> likeUserIds;
-    private Boolean isUserLiked;
+    private Integer likeCount;
+    private boolean isUserLiked;
     private EntityStatus status;
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime modifiedAt;
+
     private Long orderNum;
 
     public static Review from(ReviewCreateState state) {
@@ -82,8 +99,7 @@ public class Review {
                 .content(state.getContent())
                 .photoYn(state.getPhotoYn())
                 .editedYn(state.getEditedYn())
-                .likeUserIds(state.getLikeUserIds())
-                .isUserLiked(state.getIsUserLiked())
+                .likeCount(state.getLikeCount())
                 .status(state.getStatus())
                 .createdAt(state.getCreatedAt())
                 .modifiedAt(state.getModifiedAt())
@@ -92,6 +108,6 @@ public class Review {
     }
 
     public void updateIsUserLiked(Long userId) {
-        isUserLiked = likeUserIds.contains(userId);
+        isUserLiked = FormatValidator.equals(userId, reviewerId);
     }
 }

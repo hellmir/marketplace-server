@@ -20,6 +20,7 @@ import com.personal.marketnote.product.port.out.pricepolicy.FindPricePolicyPort;
 import com.personal.marketnote.product.port.out.pricepolicy.SavePricePolicyPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
@@ -163,6 +164,11 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
     }
 
     @Override
+    @Cacheable(
+            value = "pricePolicy:list:first",
+            key = "#pageable.getPageSize() + ':' + #sortProperty.name() + ':' + #searchTarget.name()",
+            condition = "#cursor == null && (#searchKeyword == null || #searchKeyword.isBlank())"
+    )
     public List<PricePolicy> findPricePolicies(
             List<Long> pricePolicyIds,
             Long cursor,
@@ -209,6 +215,11 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
     }
 
     @Override
+    @Cacheable(
+            value = "pricePolicy:list:first",
+            key = "#categoryId + ':' + #pageable.getPageSize() + ':' + #sortProperty.name() + ':' + #searchTarget.name()",
+            condition = "#cursor == null && (#searchKeyword == null || #searchKeyword.isBlank())"
+    )
     public List<PricePolicy> findPricePoliciesByCategoryId(
             Long categoryId,
             List<Long> pricePolicyIds,

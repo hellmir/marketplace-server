@@ -26,6 +26,8 @@ import java.lang.annotation.*;
                 
                 - 상품 리뷰 목록을 조회합니다.
                 
+                - 포토 리뷰 목록 첫 페이지에 Redis Cache 적용되어 있습니다. TTL: 10분
+                
                 - 페이로드에 cursor 값이 없는 경우(첫 페이지): 총 리뷰 개수 반환 O
                 
                 - 페이로드에 cursor 값이 있는 경우(더 보기): 총 리뷰 개수 반환 X
@@ -89,6 +91,8 @@ import java.lang.annotation.*;
                 | content | string | 리뷰 내용 | "배송이 빠르고 포장 상태도 좋았습니다." |
                 | photoYn | boolean | 포토 리뷰 여부 | false |
                 | editedYn | boolean | 수정 여부 | false |
+                | likeCount | number | 좋아요 개수 | 0 |
+                | isUserLiked | boolean | 로그인 사용자가 좋아요를 눌렀는지 여부 | false |
                 | status | string | 상태 | "ACTIVE" |
                 | createdAt | string(datetime) | 생성 일시 | "2026-01-10T16:57:59.792312" |
                 | modifiedAt | string(datetime) | 수정 일시 | "2026-01-10T16:57:59.805601" |
@@ -155,18 +159,19 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-10T17:22:32.44981",
+                                          "timestamp": "2026-01-10T07:06:09.309111888",
                                           "content": {
                                             "reviews": {
-                                              "totalElements": 4,
-                                              "hasNext": false,
-                                              "nextCursor": 7,
+                                              "totalElements": 8,
+                                              "hasNext": true,
+                                              "nextCursor": 11,
                                               "items": [
                                                 {
-                                                  "id": 10,
+                                                  "id": 14,
                                                   "reviewerId": 17,
                                                   "orderId": 1,
-                                                  "pricePolicyId": 57,
+                                                  "productId": 1,
+                                                  "pricePolicyId": 1111,
                                                   "selectedOptions": "30개입, 5박스",
                                                   "quantity": 2,
                                                   "reviewerName": "홍*동",
@@ -174,61 +179,72 @@ import java.lang.annotation.*;
                                                   "content": "배송이 빠르고 포장 상태도 좋았습니다.",
                                                   "photoYn": false,
                                                   "editedYn": false,
+                                                  "likeCount": 0,
+                                                  "isUserLiked": false,
                                                   "status": "ACTIVE",
-                                                  "createdAt": "2026-01-10T16:57:59.792312",
-                                                  "modifiedAt": "2026-01-10T16:57:59.805601",
-                                                  "orderNum": 10
+                                                  "createdAt": "2026-01-09T17:15:49.093522",
+                                                  "modifiedAt": "2026-01-09T17:15:49.120129",
+                                                  "orderNum": 14
                                                 },
                                                 {
-                                                  "id": 9,
+                                                  "id": 13,
                                                   "reviewerId": 17,
                                                   "orderId": 1,
-                                                  "pricePolicyId": 56,
+                                                  "productId": 1,
+                                                  "pricePolicyId": 111,
+                                                  "selectedOptions": "30개입, 5박스",
+                                                  "quantity": 2,
+                                                  "reviewerName": "홍*",
+                                                  "rating": 5,
+                                                  "content": "배송이 빠르고 포장 상태도 좋았습니다.",
+                                                  "photoYn": false,
+                                                  "editedYn": false,
+                                                  "likeCount": 1,
+                                                  "isUserLiked": true,
+                                                  "status": "ACTIVE",
+                                                  "createdAt": "2026-01-09T16:30:29.659278",
+                                                  "modifiedAt": "2026-01-09T16:30:29.670121",
+                                                  "orderNum": 13
+                                                },
+                                                {
+                                                  "id": 12,
+                                                  "reviewerId": 17,
+                                                  "orderId": 1,
+                                                  "productId": 1,
+                                                  "pricePolicyId": 23,
+                                                  "selectedOptions": "30개입, 5박스",
+                                                  "quantity": 2,
+                                                  "reviewerName": "홍*개",
+                                                  "rating": 5,
+                                                  "content": "배송이 빠르고 포장 상태도 좋았습니다.",
+                                                  "photoYn": false,
+                                                  "editedYn": false,
+                                                  "likeCount": 0,
+                                                  "isUserLiked": false,
+                                                  "status": "ACTIVE",
+                                                  "createdAt": "2026-01-09T16:29:57.266311",
+                                                  "modifiedAt": "2026-01-09T16:29:57.277006",
+                                                  "orderNum": 12
+                                                },
+                                                {
+                                                  "id": 11,
+                                                  "reviewerId": 17,
+                                                  "orderId": 1,
+                                                  "productId": 1,
+                                                  "pricePolicyId": 22,
                                                   "selectedOptions": "30개입, 5박스",
                                                   "quantity": 2,
                                                   "reviewerName": "홍*동",
                                                   "rating": 5,
                                                   "content": "배송이 빠르고 포장 상태도 좋았습니다.",
-                                                  "photoYn": true,
-                                                  "editedYn": false,
-                                                  "status": "ACTIVE",
-                                                  "createdAt": "2026-01-10T16:57:08.416608",
-                                                  "modifiedAt": "2026-01-10T16:57:08.428746",
-                                                  "orderNum": 9
-                                                },
-                                                {
-                                                  "id": 8,
-                                                  "reviewerId": 17,
-                                                  "orderId": 1,
-                                                  "pricePolicyId": 55,
-                                                  "selectedOptions": "30개입, 5박스",
-                                                  "quantity": 2,
-                                                  "reviewerName": "김*",
-                                                  "rating": 5,
-                                                  "content": "배송이 빠르고 포장 상태도 좋았습니다.",
-                                                  "photoYn": true,
-                                                  "editedYn": false,
-                                                  "status": "ACTIVE",
-                                                  "createdAt": "2026-01-10T16:56:56.858441",
-                                                  "modifiedAt": "2026-01-10T16:56:56.895422",
-                                                  "orderNum": 8
-                                                },
-                                                {
-                                                  "id": 7,
-                                                  "reviewerId": 17,
-                                                  "orderId": 1,
-                                                  "pricePolicyId": 18,
-                                                  "selectedOptions": null,
-                                                  "quantity": 2,
-                                                  "reviewerName": "고*동",
-                                                  "rating": 5,
-                                                  "content": "배송이 빠르고 포장 상태도 좋았습니다.",
                                                   "photoYn": false,
                                                   "editedYn": false,
+                                                  "likeCount": 0,
+                                                  "isUserLiked": false,
                                                   "status": "ACTIVE",
-                                                  "createdAt": "2026-01-10T15:24:50.005394",
-                                                  "modifiedAt": "2026-01-10T15:24:50.005394",
-                                                  "orderNum": 7
+                                                  "createdAt": "2026-01-09T16:29:33.747024",
+                                                  "modifiedAt": "2026-01-09T16:29:33.778714",
+                                                  "orderNum": 11
                                                 }
                                               ]
                                             }

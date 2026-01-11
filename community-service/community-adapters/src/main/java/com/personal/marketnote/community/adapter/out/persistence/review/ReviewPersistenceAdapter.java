@@ -10,11 +10,14 @@ import com.personal.marketnote.community.adapter.out.persistence.review.reposito
 import com.personal.marketnote.community.domain.review.ProductReviewAggregate;
 import com.personal.marketnote.community.domain.review.Review;
 import com.personal.marketnote.community.domain.review.ReviewSortProperty;
+import com.personal.marketnote.community.domain.review.Reviews;
 import com.personal.marketnote.community.exception.ProductReviewAggregateNotFoundException;
 import com.personal.marketnote.community.port.out.review.FindReviewPort;
 import com.personal.marketnote.community.port.out.review.SaveReviewPort;
 import com.personal.marketnote.community.port.out.review.UpdateReviewPort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -27,6 +30,7 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
     private final ProductReviewAggregateJpaRepository productReviewAggregateJpaRepository;
 
     @Override
+    @CacheEvict(value = "review:photo:list:first", allEntries = true, condition = "T(java.lang.Boolean).TRUE.equals(#review.photoYn)")
     public Review save(Review review) {
         ReviewJpaEntity savedEntity = reviewJpaRepository.save(ReviewJpaEntity.from(review));
         savedEntity.setIdToOrderNum();
@@ -45,7 +49,12 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
     }
 
     @Override
-    public List<Review> findProductReviews(
+    @Cacheable(
+            value = "review:photo:list:first",
+            key = "#productId + ':' + #pageable.getPageSize() + ':' + #sortProperty.name() + ':' + #pageable.getSort().iterator().next().getDirection().name()",
+            condition = "#isPhoto != null && #isPhoto && #cursor == null"
+    )
+    public Reviews findProductReviews(
             Long productId, Boolean isPhoto, Long cursor, Pageable pageable, ReviewSortProperty sortProperty
     ) {
         if (isPhoto) {
@@ -56,9 +65,9 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
                     sortProperty.getCamelCaseValue()
             );
 
-            return entities.stream()
+            return Reviews.from(entities.stream()
                     .map(entity -> ReviewJpaEntityToDomainMapper.mapToDomain(entity).orElse(null))
-                    .toList();
+                    .toList());
         }
 
         List<ReviewJpaEntity> entities = reviewJpaRepository.findProductReviewsByCursor(
@@ -68,9 +77,9 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
                 sortProperty.getCamelCaseValue()
         );
 
-        return entities.stream()
+        return Reviews.from(entities.stream()
                 .map(entity -> ReviewJpaEntityToDomainMapper.mapToDomain(entity).orElse(null))
-                .toList();
+                .toList());
     }
 
     @Override

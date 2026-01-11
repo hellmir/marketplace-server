@@ -5,11 +5,13 @@ import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.domain.review.ProductReviewAggregate;
 import com.personal.marketnote.community.domain.review.Review;
 import com.personal.marketnote.community.domain.review.ReviewSortProperty;
+import com.personal.marketnote.community.domain.review.Reviews;
 import com.personal.marketnote.community.exception.ProductReviewAggregateNotFoundException;
 import com.personal.marketnote.community.exception.ReviewAlreadyExistsException;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
 import com.personal.marketnote.community.port.in.usecase.review.GetReviewUseCase;
+import com.personal.marketnote.community.port.out.like.FindLikePort;
 import com.personal.marketnote.community.port.out.review.FindReviewPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +29,7 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRES_NE
 @Transactional(isolation = READ_COMMITTED, readOnly = true)
 public class GetReviewService implements GetReviewUseCase {
     private final FindReviewPort findReviewPort;
+    private final FindLikePort findLikePort;
 
     @Override
     public void validateDuplicateReview(RegisterReviewCommand command) {
@@ -52,7 +55,7 @@ public class GetReviewService implements GetReviewUseCase {
                 0, pageSize + 1, Sort.by(sortDirection, sortProperty.getCamelCaseValue())
         );
 
-        List<Review> productReviews = findReviewPort.findProductReviews(
+        Reviews productReviews = findReviewPort.findProductReviews(
                 productId, isPhoto, cursor, pageable, sortProperty
         );
 
@@ -60,7 +63,7 @@ public class GetReviewService implements GetReviewUseCase {
         boolean hasNext = productReviews.size() > pageSize;
         List<Review> pagedReviews = hasNext
                 ? productReviews.subList(0, pageSize)
-                : productReviews;
+                : productReviews.getReviews();
 
         Long nextCursor = null;
         if (FormatValidator.hasValue(pagedReviews)) {
@@ -73,8 +76,10 @@ public class GetReviewService implements GetReviewUseCase {
             totalElements = findReviewPort.countActive(productId, isPhoto);
         }
 
-        // 요청 사용자가 각 리뷰에 좋아요를 눌렀는지 여부 업데이트
-        pagedReviews.forEach(review -> review.updateIsUserLiked(userId));
+        if (!isPhoto && FormatValidator.hasValue(userId)) {
+            // 로그인 사용자가 각 리뷰에 좋아요를 눌렀는지 여부 업데이트
+            pagedReviews.forEach(review -> review.updateIsUserLiked(userId));
+        }
 
         return GetReviewsResult.from(hasNext, nextCursor, totalElements, pagedReviews);
     }

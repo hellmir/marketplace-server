@@ -41,13 +41,10 @@ public class CacheConfig {
 
     private ObjectMapper objectMapper() {
         ObjectMapper mapper = new ObjectMapper();
-
         mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
-
         mapper.registerModule(new Jdk8Module());
         mapper.registerModule(new Hibernate5JakartaModule());
         mapper.registerModule(new JavaTimeModule());
-
         mapper.addMixIn(Collection.class, HibernateCollectionMixIn.class);
 
         return mapper;
