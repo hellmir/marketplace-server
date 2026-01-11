@@ -197,27 +197,6 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
                 .toList();
     }
 
-    @Override
-    public long countActive(ProductSearchTarget searchTarget, String searchKeyword) {
-        String searchPattern = generateSearchPattern(searchKeyword);
-
-        return productJpaRepository.countActive(
-                searchTarget.getCamelCaseValue(),
-                searchPattern
-        );
-    }
-
-    @Override
-    public long countActivePricePoliciesByCategoryId(Long categoryId, ProductSearchTarget searchTarget, String searchKeyword) {
-        String searchPattern = generateSearchPattern(searchKeyword);
-
-        return productJpaRepository.countActiveByCategoryId(
-                categoryId,
-                searchTarget.getCamelCaseValue(),
-                searchPattern
-        );
-    }
-
     private String generateSearchPattern(String searchKeyword) {
         if (FormatValidator.hasValue(searchKeyword)) {
             return "%" + searchKeyword + "%";

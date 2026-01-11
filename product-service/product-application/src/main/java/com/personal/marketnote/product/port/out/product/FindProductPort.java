@@ -87,25 +87,4 @@ public interface FindProductPort {
      * @Description 가격 정책 ID 목록에 해당하는 상품 목록을 조회합니다.
      */
     List<Product> findByPricePolicyIds(List<Long> pricePolicyIds);
-
-    /**
-     * @param searchTarget  검색 대상
-     * @param searchKeyword 검색 키워드
-     * @return 상품 총 개수 {@link long}
-     * @Date 2026-01-01
-     * @Author 성효빈
-     * @Description 상품 총 개수를 조회합니다.
-     */
-    long countActive(ProductSearchTarget searchTarget, String searchKeyword);
-
-    /**
-     * @param categoryId    카테고리 ID
-     * @param searchTarget  검색 대상
-     * @param searchKeyword 검색 키워드
-     * @return 카테고리 상품 총 개수 {@link long}
-     * @Date 2026-01-01
-     * @Author 성효빈
-     * @Description 카테고리 상품 총 개수를 조회합니다.
-     */
-    long countActivePricePoliciesByCategoryId(Long categoryId, ProductSearchTarget searchTarget, String searchKeyword);
 }
