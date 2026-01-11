@@ -20,7 +20,7 @@ public class GetPricePoliciesService implements GetPricePoliciesUseCase {
     private final FindPricePoliciesPort findPricePoliciesPort;
 
     @Override
-    public GetPricePoliciesResult getPricePolicies(Long productId) {
+    public GetPricePoliciesResult getPricePoliciesAndOptions(Long productId) {
         List<GetProductPricePolicyWithOptionsResult> items = findPricePoliciesPort.findByProductId(productId)
                 .stream()
                 .map(
@@ -39,7 +39,7 @@ public class GetPricePoliciesService implements GetPricePoliciesUseCase {
     }
 
     @Override
-    public List<PricePolicy> getPricePolicies(List<Long> ids) {
+    public List<PricePolicy> getPricePoliciesAndOptions(List<Long> ids) {
         return findPricePoliciesPort.findByIds(ids);
     }
 }

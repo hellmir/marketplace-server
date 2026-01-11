@@ -152,12 +152,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
     @Override
     public List<PricePolicy> findByIds(List<Long> ids) {
         return pricePolicyJpaRepository.findAllById(ids).stream()
-                .map(
-                        policyEntity -> PricePolicyJpaEntityToDomainMapper.mapToDomain(
-                                policyEntity,
-                                productOptionPricePolicyJpaRepository.findOptionIdsByPricePolicyId(policyEntity.getId())
-                        )
-                )
+                .map(PricePolicyJpaEntityToDomainMapper::mapToDomainWithOptions)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();

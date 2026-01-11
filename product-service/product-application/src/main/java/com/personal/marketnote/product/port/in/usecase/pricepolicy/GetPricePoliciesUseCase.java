@@ -6,7 +6,7 @@ import com.personal.marketnote.product.port.in.result.pricepolicy.GetPricePolici
 import java.util.List;
 
 public interface GetPricePoliciesUseCase {
-    GetPricePoliciesResult getPricePolicies(Long productId);
+    GetPricePoliciesResult getPricePoliciesAndOptions(Long productId);
 
-    List<PricePolicy> getPricePolicies(List<Long> ids);
+    List<PricePolicy> getPricePoliciesAndOptions(List<Long> ids);
 }
