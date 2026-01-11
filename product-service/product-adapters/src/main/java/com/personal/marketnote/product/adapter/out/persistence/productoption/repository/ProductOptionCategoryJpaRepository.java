@@ -10,7 +10,7 @@ import java.util.List;
 public interface ProductOptionCategoryJpaRepository extends JpaRepository<ProductOptionCategoryJpaEntity, Long> {
     @Query("""
             SELECT DISTINCT c
-            FROM com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionCategoryJpaEntity c
+            FROM ProductOptionCategoryJpaEntity c
               JOIN FETCH c.productJpaEntity p
               LEFT JOIN FETCH c.productOptionJpaEntities o
             WHERE 1 = 1
@@ -25,7 +25,7 @@ public interface ProductOptionCategoryJpaRepository extends JpaRepository<Produc
 
     @Query("""
             select c.productJpaEntity.id
-            from com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionCategoryJpaEntity c
+            from ProductOptionCategoryJpaEntity c
             where c.id = :categoryId
             """)
     Long findProductIdByCategoryId(@Param("categoryId") Long categoryId);

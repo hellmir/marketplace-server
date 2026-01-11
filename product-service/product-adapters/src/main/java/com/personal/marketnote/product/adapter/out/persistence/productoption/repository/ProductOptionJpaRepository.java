@@ -11,7 +11,7 @@ import java.util.List;
 public interface ProductOptionJpaRepository extends JpaRepository<ProductOptionJpaEntity, Long> {
     @Query("""
             select o.id
-            from com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionJpaEntity o
+            from ProductOptionJpaEntity o
             where o.productOptionCategoryJpaEntity.id = :categoryId
             """)
     List<Long> findIdsByCategoryId(@Param("categoryId") Long categoryId);
@@ -19,7 +19,7 @@ public interface ProductOptionJpaRepository extends JpaRepository<ProductOptionJ
     @Modifying
     @Query("""
             delete
-            from com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionJpaEntity o
+            from ProductOptionJpaEntity o
             where o.productOptionCategoryJpaEntity.id = :categoryId
             """)
     void deleteAllByCategoryId(@Param("categoryId") Long categoryId);

@@ -15,7 +15,7 @@ public record GetCartProductResult(
 ) {
     public static GetCartProductResult from(CartProduct cartProduct, Integer stock) {
         return GetCartProductResult.builder()
-                .pricePolicy(GetProductPricePolicyResult.from(cartProduct.getPricePolicy()))
+                .pricePolicy(GetProductPricePolicyResult.fromCart(cartProduct.getPricePolicy()))
                 .product(CartProductItemResult.from(cartProduct.getPricePolicy().getProduct(), cartProduct.getImageUrl()))
                 .stock(stock)
                 .quantity(cartProduct.getQuantity())

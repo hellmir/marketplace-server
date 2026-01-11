@@ -2,11 +2,16 @@ package com.personal.marketnote.product.adapter.out.persistence.pricepolicy.enti
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseOrderedGeneralEntity;
 import com.personal.marketnote.product.adapter.out.persistence.product.entity.ProductJpaEntity;
+import com.personal.marketnote.product.adapter.out.persistence.productoption.entity.ProductOptionPricePolicyJpaEntity;
 import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
+
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
 
 @Entity
 @Table(name = "price_policy")
@@ -36,6 +41,9 @@ public class PricePolicyJpaEntity extends BaseOrderedGeneralEntity {
 
     @Column(name = "popularity", nullable = false, insertable = false, columnDefinition = "BIGINT DEFAULT 0")
     private Long popularity;
+
+    @OneToMany(mappedBy = "pricePolicyJpaEntity", cascade = {PERSIST, MERGE})
+    private List<ProductOptionPricePolicyJpaEntity> productOptionPricePolicyJpaEntities;
 
     public static PricePolicyJpaEntity from(ProductJpaEntity productRef, PricePolicy pricePolicy) {
         return PricePolicyJpaEntity.builder()

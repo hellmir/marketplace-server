@@ -1,10 +1,13 @@
 package com.personal.marketnote.product.port.in.result.pricepolicy;
 
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
+import com.personal.marketnote.product.port.in.result.option.ProductOptionItemResult;
 import lombok.AccessLevel;
 import lombok.Builder;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record GetProductPricePolicyResult(
@@ -12,7 +15,8 @@ public record GetProductPricePolicyResult(
         Long price,
         Long discountPrice,
         BigDecimal discountRate,
-        Long accumulatedPoint
+        Long accumulatedPoint,
+        List<ProductOptionItemResult> options
 ) {
     public static GetProductPricePolicyResult from(PricePolicy pricePolicy) {
         return GetProductPricePolicyResult.builder()
@@ -21,6 +25,24 @@ public record GetProductPricePolicyResult(
                 .discountPrice(pricePolicy.getDiscountPrice())
                 .discountRate(pricePolicy.getDiscountRate())
                 .accumulatedPoint(pricePolicy.getAccumulatedPoint())
+                .build();
+    }
+
+    public static GetProductPricePolicyResult fromCart(PricePolicy pricePolicy) {
+        return GetProductPricePolicyResult.builder()
+                .id(pricePolicy.getId())
+                .price(pricePolicy.getPrice())
+                .discountPrice(pricePolicy.getDiscountPrice())
+                .discountRate(pricePolicy.getDiscountRate())
+                .accumulatedPoint(pricePolicy.getAccumulatedPoint())
+                .options(
+                        FormatValidator.hasValue(pricePolicy.getProductOptions())
+                                ? pricePolicy.getProductOptions()
+                                .stream()
+                                .map(ProductOptionItemResult::from)
+                                .toList()
+                                : null
+                )
                 .build();
     }
 }

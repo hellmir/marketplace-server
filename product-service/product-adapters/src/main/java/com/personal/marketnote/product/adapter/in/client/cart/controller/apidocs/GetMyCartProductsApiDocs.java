@@ -94,62 +94,96 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-04T16:50:53.326054",
+                                          "timestamp": "2026-01-04T11:01:58.842088",
                                           "content": {
                                             "cartProducts": [
                                               {
                                                 "product": {
-                                                  "id": 30,
-                                                  "sellerId": 1,
-                                                  "name": "건기식테스트1",
+                                                  "id": 40,
+                                                  "sellerId": 12,
+                                                  "name": "스프링노트5",
                                                   "brandName": "노트왕",
                                                   "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
                                                   "status": "ACTIVE"
                                                 },
                                                 "pricePolicy": {
-                                                  "id": 19,
-                                                  "price": 60000,
-                                                  "discountPrice": 40000,
-                                                  "accumulatedPoint": 3000,
-                                                  "discountRate": 33.3
+                                                  "id": 114,
+                                                  "price": 100000,
+                                                  "discountPrice": 50000,
+                                                  "discountRate": 60,
+                                                  "accumulatedPoint": 30000,
+                                                  "options": [
+                                                    {
+                                                      "id": 34,
+                                                      "content": "하",
+                                                      "status": "ACTIVE"
+                                                    },
+                                                    {
+                                                      "id": 40,
+                                                      "content": "5박스",
+                                                      "status": "ACTIVE"
+                                                    }
+                                                  ]
                                                 },
+                                                "stock": 0,
+                                                "quantity": 10
+                                              },
+                                              {
+                                                "product": {
+                                                  "id": 38,
+                                                  "sellerId": 12,
+                                                  "name": "스프링노트2",
+                                                  "brandName": "노트킹",
+                                                  "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
+                                                  "status": "ACTIVE"
+                                                },
+                                                "pricePolicy": {
+                                                  "id": 58,
+                                                  "price": 20000,
+                                                  "discountPrice": 15000,
+                                                  "discountRate": 20,
+                                                  "accumulatedPoint": 3000,
+                                                  "options": [
+                                                    {
+                                                      "id": 28,
+                                                      "content": "60개입",
+                                                      "status": "ACTIVE"
+                                                    }
+                                                  ]
+                                                },
+                                                "stock": 0,
                                                 "quantity": 5
                                               },
                                               {
                                                 "product": {
-                                                  "id": 30,
-                                                  "sellerId": 1,
-                                                  "name": "건기식테스트1",
+                                                  "id": 40,
+                                                  "sellerId": 12,
+                                                  "name": "스프링노트5",
                                                   "brandName": "노트왕",
-                                                  "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763533916081_image_600.png",
+                                                  "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
                                                   "status": "ACTIVE"
                                                 },
                                                 "pricePolicy": {
-                                                  "id": 20,
-                                                  "price": 45000,
-                                                  "discountPrice": 37000,
-                                                  "accumulatedPoint": 1200,
-                                                  "discountRate": 17.8
+                                                  "id": 105,
+                                                  "price": 10000,
+                                                  "discountPrice": 9000,
+                                                  "discountRate": 11.1,
+                                                  "accumulatedPoint": 1000,
+                                                  "options": [
+                                                    {
+                                                      "id": 32,
+                                                      "content": "상",
+                                                      "status": "ACTIVE"
+                                                    },
+                                                    {
+                                                      "id": 38,
+                                                      "content": "1박스",
+                                                      "status": "ACTIVE"
+                                                    }
+                                                  ]
                                                 },
-                                                "quantity": 3
-                                              },
-                                              {
-                                                "product": {
-                                                  "id": 30,
-                                                  "sellerId": 1,
-                                                  "name": "건기식테스트1",
-                                                  "brandName": "노트왕",
-                                                  "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763533914954_image_600.png",
-                                                  "status": "ACTIVE"
-                                                },
-                                                "pricePolicy": {
-                                                  "id": 21,
-                                                  "price": 40000,
-                                                  "discountPrice": 32000,
-                                                  "accumulatedPoint": 800,
-                                                  "discountRate": 20
-                                                },
-                                                "quantity": 10
+                                                "stock": 0,
+                                                "quantity": 7
                                               }
                                             ]
                                           },

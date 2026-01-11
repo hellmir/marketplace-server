@@ -14,7 +14,9 @@ public class CartJpaEntityToDomainMapper {
                                 CartProductSnapshotState.builder()
                                         .userId(cartProductJpaEntity.getId().getUserId())
                                         .pricePolicy(
-                                                PricePolicyJpaEntityToDomainMapper.mapToDomain(cartProductJpaEntity.getPricePolicyJpaEntity())
+                                                PricePolicyJpaEntityToDomainMapper.mapToDomainWithOptions(
+                                                                cartProductJpaEntity.getPricePolicyJpaEntity()
+                                                        )
                                                         .orElse(null)
                                         )
                                         .imageUrl(cartProductJpaEntity.getImageUrl())
