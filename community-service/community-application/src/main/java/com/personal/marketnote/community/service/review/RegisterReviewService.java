@@ -45,19 +45,17 @@ public class RegisterReviewService implements RegisterReviewUseCase {
                 )
         );
 
-        // 상품의 총 리뷰 개수가 100개 미만인 경우 즉시 평점 집계
-        if (getReviewUseCase.isReviewCountUnderHundred(productId)) {
-            try {
-                ProductReviewAggregate productReviewAggregate = getReviewUseCase.getProductReviewAggregate(productId);
-                int point = command.rating().intValue();
-                ProductReviewAggregate.addPoint(productReviewAggregate, point);
-                productReviewAggregate.computeAverageRating(point);
-                updateReviewPort.update(productReviewAggregate);
-            } catch (ProductReviewAggregateNotFoundException pranfe) {
-                saveReviewPort.save(
-                        ProductReviewAggregate.from(savedReview)
-                );
-            }
+        // 상품 평점 집계
+        try {
+            ProductReviewAggregate productReviewAggregate = getReviewUseCase.getProductReviewAggregate(productId);
+            int point = command.rating().intValue();
+            ProductReviewAggregate.addPoint(productReviewAggregate, point);
+            productReviewAggregate.computeAverageRating(point);
+            updateReviewPort.update(productReviewAggregate);
+        } catch (ProductReviewAggregateNotFoundException pranfe) {
+            saveReviewPort.save(
+                    ProductReviewAggregate.from(savedReview)
+            );
         }
 
         return RegisterReviewResult.from(savedReview);

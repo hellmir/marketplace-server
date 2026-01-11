@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.lang.annotation.*;
 
@@ -95,7 +94,6 @@ import java.lang.annotation.*;
                 | modifiedAt | string(datetime) | 수정 일시 | "2026-01-10T16:57:59.805601" |
                 | orderNum | number | 정렬 순서 | 1 |
                 """,
-        security = {@SecurityRequirement(name = "bearer")},
         parameters = {
                 @Parameter(
                         name = "productId",
@@ -236,51 +234,6 @@ import java.lang.annotation.*;
                                             }
                                           },
                                           "message": "상품 리뷰 목록 조회 성공"
-                                        }
-                                        """)
-                        )
-                ),
-                @ApiResponse(
-                        responseCode = "401",
-                        description = "토큰 인증 실패",
-                        content = @Content(
-                                examples = @ExampleObject("""
-                                        {
-                                          "statusCode": 401,
-                                          "code": "UNAUTHORIZED",
-                                          "timestamp": "2026-01-09T16:32:18.828188",
-                                          "content": null,
-                                          "message": "Invalid token"
-                                        }
-                                        """)
-                        )
-                ),
-                @ApiResponse(
-                        responseCode = "403",
-                        description = "토큰 인가 실패",
-                        content = @Content(
-                                examples = @ExampleObject("""
-                                        {
-                                          "statusCode": 403,
-                                          "code": "FORBIDDEN",
-                                          "timestamp": "2026-01-09T16:32:18.828188",
-                                          "content": null,
-                                          "message": "Access Denied"
-                                        }
-                                        """)
-                        )
-                ),
-                @ApiResponse(
-                        responseCode = "409",
-                        description = "이미 리뷰가 등록된 주문",
-                        content = @Content(
-                                examples = @ExampleObject("""
-                                        {
-                                          "statusCode": 409,
-                                          "code": "CONFLICT",
-                                          "timestamp": "2026-01-09T16:42:29.926731",
-                                          "content": null,
-                                          "message": "이미 해당 주문에 대한 리뷰가 존재합니다. 전송된 주문 ID: 1, 가격 정책 ID: 11"
                                         }
                                         """)
                         )
