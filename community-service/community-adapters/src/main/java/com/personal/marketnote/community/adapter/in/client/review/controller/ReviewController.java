@@ -2,14 +2,17 @@ package com.personal.marketnote.community.adapter.in.client.review.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.ElementExtractor;
+import com.personal.marketnote.community.adapter.in.client.review.controller.apidocs.GetProductReviewAggregateApiDocs;
 import com.personal.marketnote.community.adapter.in.client.review.controller.apidocs.GetProductReviewsApiDocs;
 import com.personal.marketnote.community.adapter.in.client.review.controller.apidocs.RegisterReviewApiDocs;
 import com.personal.marketnote.community.adapter.in.client.review.mapper.ReviewRequestToCommandMapper;
 import com.personal.marketnote.community.adapter.in.client.review.request.RegisterReviewRequest;
+import com.personal.marketnote.community.adapter.in.client.review.response.GetProductReviewAggregateResponse;
 import com.personal.marketnote.community.adapter.in.client.review.response.GetReviewsResponse;
 import com.personal.marketnote.community.adapter.in.client.review.response.RegisterReviewResponse;
 import com.personal.marketnote.community.domain.review.ReviewSortProperty;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
+import com.personal.marketnote.community.port.in.result.review.ProductReviewAggregateResult;
 import com.personal.marketnote.community.port.in.result.review.RegisterReviewResult;
 import com.personal.marketnote.community.port.in.usecase.review.GetReviewUseCase;
 import com.personal.marketnote.community.port.in.usecase.review.RegisterReviewUseCase;
@@ -108,6 +111,31 @@ public class ReviewController {
                         DEFAULT_SUCCESS_CODE,
                         "상품 리뷰 목록 조회 성공"
                 ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 상품 리뷰 평점 평균 및 점수별 개수 현황 조회
+     *
+     * @param productId 상품 ID
+     * @return 상품 리뷰 평점 평균 및 점수별 개수 현황 조회 응답 {@link GetProductReviewAggregateResponse}
+     * @Author 성효빈
+     * @Date 2026-01-10
+     * @Description 상품 리뷰 평점 평균 및 점수별 개수 현황을 조회합니다.
+     */
+    @GetMapping("products/{productId}/review-aggregate")
+    @GetProductReviewAggregateApiDocs
+    public ResponseEntity<BaseResponse<GetProductReviewAggregateResponse>> getProductReviewAggregate(
+            @PathVariable("productId") Long productId,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        ProductReviewAggregateResult result = ProductReviewAggregateResult.from(
+                getReviewUseCase.getProductReviewAggregate(productId)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(GetProductReviewAggregateResponse.from(result), HttpStatus.OK, DEFAULT_SUCCESS_CODE, "상품 리뷰 평점 평균 및 점수별 개수 현황 조회 성공"),
                 HttpStatus.OK
         );
     }
