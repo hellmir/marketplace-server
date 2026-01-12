@@ -2,6 +2,7 @@ package com.personal.marketnote.commerce.adapter.out.mapper;
 
 import com.personal.marketnote.commerce.adapter.out.persistence.order.entity.OrderJpaEntity;
 import com.personal.marketnote.commerce.adapter.out.persistence.order.entity.OrderProductJpaEntity;
+import com.personal.marketnote.commerce.adapter.out.persistence.order.entity.OrderStatusHistoryJpaEntity;
 import com.personal.marketnote.commerce.domain.order.Order;
 import com.personal.marketnote.commerce.domain.order.OrderProduct;
 import com.personal.marketnote.commerce.domain.order.OrderProductSnapshotState;
@@ -26,6 +27,37 @@ public class OrderJpaEntityToDomainMapper {
                                     .sellerId(entity.getSellerId())
                                     .buyerId(entity.getBuyerId())
                                     .orderStatus(entity.getOrderStatus())
+                                    .totalAmount(entity.getTotalAmount())
+                                    .paidAmount(entity.getPaidAmount())
+                                    .couponAmount(entity.getCouponAmount())
+                                    .pointAmount(entity.getPointAmount())
+                                    .orderProductStates(productStates)
+                                    .createdAt(entity.getCreatedAt())
+                                    .modifiedAt(entity.getModifiedAt())
+                                    .build()
+                    );
+                });
+    }
+
+    public static Optional<Order> mapToDomainWithStatusInfo(
+            OrderJpaEntity orderJpaEntity, OrderStatusHistoryJpaEntity orderStatusInfo
+    ) {
+        return Optional.ofNullable(orderJpaEntity)
+                .map(entity -> {
+                    List<OrderProductSnapshotState> productStates = entity.getOrderProductJpaEntities().stream()
+                            .map(OrderJpaEntityToDomainMapper::mapToSnapshotState)
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .toList();
+
+                    return Order.from(
+                            OrderSnapshotState.builder()
+                                    .id(entity.getId())
+                                    .sellerId(entity.getSellerId())
+                                    .buyerId(entity.getBuyerId())
+                                    .orderStatus(entity.getOrderStatus())
+                                    .statusChangeReasonCategory(orderStatusInfo.getReasonCategory())
+                                    .statusChangeReason(orderStatusInfo.getReason())
                                     .totalAmount(entity.getTotalAmount())
                                     .paidAmount(entity.getPaidAmount())
                                     .couponAmount(entity.getCouponAmount())

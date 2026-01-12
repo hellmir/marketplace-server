@@ -32,7 +32,7 @@ public class RegisterCategoryService implements RegisterCategoryUseCase {
 
         if (
                 FormatValidator.hasValue(parentCategoryId)
-                && findCategoryPort.findAllActiveByIds(List.of(parentCategoryId)).isEmpty()
+                        && findCategoryPort.findAllActiveByIds(List.of(parentCategoryId)).isEmpty()
         ) {
             throw new CategoryNotFoundException(
                     "%s::존재하지 않는 상위 카테고리 ID입니다. 전송된 상위 카테고리 ID: %d",

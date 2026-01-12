@@ -1,5 +1,10 @@
 package com.personal.marketnote.commerce.domain.order;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
 public enum OrderStatus {
     PAYMENT_PENDING("결제 대기"),
     PAID("결제 완료"),
@@ -22,14 +27,6 @@ public enum OrderStatus {
     REFUNDED("환불 완료");
 
     private final String description;
-
-    OrderStatus(String description) {
-        this.description = description;
-    }
-
-    public String getDescription() {
-        return description;
-    }
 
     public boolean isRefunded() {
         return this == REFUNDED;

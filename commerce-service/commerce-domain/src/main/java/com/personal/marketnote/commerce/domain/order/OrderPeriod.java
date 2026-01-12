@@ -1,9 +1,13 @@
 package com.personal.marketnote.commerce.domain.order;
 
+import com.personal.marketnote.common.utility.FormatValidator;
+import lombok.RequiredArgsConstructor;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+@RequiredArgsConstructor
 public enum OrderPeriod {
     ONE_MONTH(1),
     THREE_MONTHS(3),
@@ -13,12 +17,8 @@ public enum OrderPeriod {
 
     private final Integer months;
 
-    OrderPeriod(Integer months) {
-        this.months = months;
-    }
-
     public LocalDateTime startDate(LocalDate now) {
-        if (months == null) {
+        if (!FormatValidator.hasValue(months)) {
             return null;
         }
 

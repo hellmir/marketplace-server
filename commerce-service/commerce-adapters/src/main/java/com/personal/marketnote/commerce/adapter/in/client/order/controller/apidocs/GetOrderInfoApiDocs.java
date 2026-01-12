@@ -25,7 +25,57 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                주문 정보를 조회합니다.
+                - 주문 정보를 조회합니다.
+                
+                - 주문 상태 목록
+                
+                    - "PAYMENT_PENDING": 결제 대기
+                
+                    - "PAID": 결제 완료
+                
+                    - "FAILED": 결제 실패
+                
+                    - "PREPARING": 상품 준비중
+                
+                    - "PREPARED": 상품 준비 완료
+                
+                    - "CANCEL_REQUESTED": 주문 취소 요청됨
+                
+                    - "CANCELLED": 주문 취소
+                
+                    - "SHIPPING": 배송중
+                
+                    - "DELIVERED": 배송 완료
+                
+                    - "CONFIRMED": 구매 확정
+                
+                    - "EXCHANGE_REQUESTED": 교환 요청됨
+                
+                    - "EXCHANGE_RECALLING": 교환 회수 중
+                
+                    - "EXCHANGE_SHIPPING": 교환 배송 중
+                
+                    - "EXCHANGED": 교환 완료
+                
+                    - "REFUND_REQUESTED": 환불 요청됨
+                
+                    - "REFUND_RECALLING": 환불 회수 중
+                
+                    - "REFUND_SHIPPING": 환불 배송 중
+                
+                    - "PARTIALLY_REFUNDED": 부분 환불됨
+                
+                    - "REFUNDED": 환불 완료
+                
+                - 변경 사유 카테고리 목록
+                
+                    - "CANCEL_ORDER": 구매 의사 취소
+                
+                    - "CHANGE_OPTION": 색상, 사이즈 등 변경
+                
+                    - "MISTAKE": 주문 실수
+                
+                    - "ETC": 기타
                 
                 ---
                 
@@ -56,7 +106,9 @@ import java.lang.annotation.*;
                 | id | number | 주문 ID | 1 |
                 | sellerId | number | 판매자 회원 ID | 1 |
                 | buyerId | number | 구매자 회원 ID | 1 |
-                | orderStatus | string | 주문 상태 | "PAYMENT_PENDING" |
+                | orderStatus | string | 주문 상태 | "CANCELLED" |
+                | statusChangeReasonCategory | string | 주문 상태 변경 사유 카테고리 | "CANCEL_ORDER" |
+                | statusChangeReason | string | 주문 상태 변경 사유 | "상품이 별로임" |
                 | totalAmount | number | 총 주문 금액(원) | 100000 |
                 | paidAmount | number | 결제 금액(원) | 100000 |
                 | couponAmount | number | 쿠폰 할인 금액(원) | 5000 |
@@ -73,7 +125,7 @@ import java.lang.annotation.*;
                 | quantity | number | 주문 수량 | 2 |
                 | unitAmount | number | 단위 금액(원) | 50000 |
                 | imageUrl | string | 상품 이미지 URL | "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png" |
-                | orderStatus | string | 주문 상태 | "PAYMENT_PENDING" |
+                | orderStatus | string | 주문 상태 | "CANCELLED" |
                 | productName | string | 상품명 | "스프링노트1234" |
                 | selectedOptions | array | 선택 옵션 목록 | [ ... ] |
                 
@@ -112,41 +164,55 @@ import java.lang.annotation.*;
                                               "id": 15,
                                               "sellerId": 12,
                                               "buyerId": 17,
-                                              "orderStatus": "DELIVERED",
+                                              "orderStatus": "CANCELLED",
+                                              "statusChangeReasonCategory": "CANCEL_ORDER",
+                                              "statusChangeReason": "상품이 별로임",
                                               "totalAmount": 120000,
                                               "paidAmount": 120000,
                                               "couponAmount": 5000,
                                               "pointAmount": 5000,
-                                              "orderProducts": [
+                                              "orderPrducts": [
                                                 {
                                                   "pricePolicyId": 180,
                                                   "quantity": 10,
                                                   "unitAmount": 70000,
                                                   "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763533916081_image_600.png",
-                                                  "orderStatus": "PAID",
-                                                  "productName": "스프링노트1234",
+                                                  "orderStatus": "CANCELLED",
+                                                  "productName": null,
                                                   "selectedOptions": [
                                                     {
                                                       "id": 60,
                                                       "content": "3박스",
                                                       "status": "ACTIVE"
+                                                    },
+                                                    {
+                                                      "id": 62,
+                                                      "content": "60개입",
+                                                      "status": "ACTIVE"
                                                     }
-                                                  ]
+                                                  ],
+                                                  "isReviewed": false
                                                 },
                                                 {
                                                   "pricePolicyId": 166,
                                                   "quantity": 2,
                                                   "unitAmount": 50000,
                                                   "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
-                                                  "orderStatus": "PAID",
-                                                  "productName": "스프링노트12345",
+                                                  "orderStatus": "CANCELLED",
+                                                  "productName": null,
                                                   "selectedOptions": [
                                                     {
-                                                      "id": 55,
-                                                      "content": "4박스",
+                                                      "id": 60,
+                                                      "content": "3박스",
+                                                      "status": "ACTIVE"
+                                                    },
+                                                    {
+                                                      "id": 61,
+                                                      "content": "30개입",
                                                       "status": "ACTIVE"
                                                     }
-                                                  ]
+                                                  ],
+                                                  "isReviewed": false
                                                 }
                                               ]
                                             }

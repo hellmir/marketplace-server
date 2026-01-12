@@ -1,6 +1,7 @@
 package com.personal.marketnote.commerce.adapter.in.client.order.request;
 
 import com.personal.marketnote.commerce.domain.order.OrderStatus;
+import com.personal.marketnote.commerce.domain.order.OrderStatusReasonCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
@@ -21,6 +22,13 @@ public class ChangeOrderStatusRequest {
             requiredMode = Schema.RequiredMode.REQUIRED
     )
     private OrderStatus orderStatus;
+
+    @Schema(
+            name = "reason_category",
+            description = "변경 사유 카테고리",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED
+    )
+    private OrderStatusReasonCategory reasonCategory;
 
     @Schema(
             name = "reason",
