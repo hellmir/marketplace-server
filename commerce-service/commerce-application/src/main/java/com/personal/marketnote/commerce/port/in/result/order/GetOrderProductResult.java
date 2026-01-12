@@ -19,7 +19,8 @@ public record GetOrderProductResult(
         String imageUrl,
         OrderStatus orderStatus,
         String productName,
-        List<ProductOptionInfoResult> selectedOptions
+        List<ProductOptionInfoResult> selectedOptions,
+        Boolean isReviewed
 ) {
     public static GetOrderProductResult from(
             OrderProduct orderProduct,
@@ -45,6 +46,7 @@ public record GetOrderProductResult(
                                 ? productInfo.selectedOptions()
                                 : new ArrayList<>()
                 )
+                .isReviewed(orderProduct.getIsReviewed())
                 .build();
     }
 

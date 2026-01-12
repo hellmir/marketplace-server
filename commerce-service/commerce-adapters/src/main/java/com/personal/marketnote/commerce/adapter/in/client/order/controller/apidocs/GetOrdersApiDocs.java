@@ -92,6 +92,7 @@ import java.lang.annotation.*;
                 | orderStatus | string | 주문 상태 | "PAID" |
                 | productName | string | 상품명 | "공책" |
                 | selectedOptions | array | 선택 옵션 목록 | [ ... ] |
+                | isReviewed | boolean | 리뷰 작성 여부 | true |
                 
                 ---
                 
@@ -143,7 +144,8 @@ import java.lang.annotation.*;
                                                             "content": "4박스",
                                                             "status": "ACTIVE"
                                                           }
-                                                        ]
+                                                        ],
+                                                        "isReviewed": false
                                                       },
                                                       {
                                                         "pricePolicyId": 180,
@@ -158,7 +160,8 @@ import java.lang.annotation.*;
                                                             "content": "3박스",
                                                             "status": "ACTIVE"
                                                           }
-                                                        ]
+                                                        ],
+                                                        "isReviewed": false
                                                       }
                                                     ]
                                                   }
@@ -201,7 +204,8 @@ import java.lang.annotation.*;
                                                             "content": "30개입",
                                                             "status": "ACTIVE"
                                                           }
-                                                        ]
+                                                        ],
+                                                        "isReviewed": false
                                                       },
                                                       {
                                                         "pricePolicyId": 189,
@@ -221,7 +225,8 @@ import java.lang.annotation.*;
                                                             "content": "90개입",
                                                             "status": "ACTIVE"
                                                           }
-                                                        ]
+                                                        ],
+                                                        "isReviewed": false
                                                       }
                                                     ]
                                                   }
@@ -259,7 +264,8 @@ import java.lang.annotation.*;
                                                             "content": "4박스",
                                                             "status": "ACTIVE"
                                                           }
-                                                        ]
+                                                        ],
+                                                        "isReviewed": false
                                                       },
                                                       {
                                                         "pricePolicyId": 185,
@@ -279,7 +285,8 @@ import java.lang.annotation.*;
                                                             "content": "60개입",
                                                             "status": "ACTIVE"
                                                           }
-                                                        ]
+                                                        ],
+                                                        "isReviewed": false
                                                       }
                                                     ]
                                                   }

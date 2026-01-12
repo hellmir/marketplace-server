@@ -46,6 +46,7 @@ public class OrderJpaEntityToDomainMapper {
                         .unitAmount(entity.getUnitAmount())
                         .imageUrl(entity.getImageUrl())
                         .orderStatus(entity.getOrderStatus())
+                        .isReviewed(entity.getIsReviewed())
                         .build());
     }
 }

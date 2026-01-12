@@ -13,6 +13,7 @@ public class OrderProduct {
     private Long unitAmount;
     private String imageUrl;
     private OrderStatus orderStatus;
+    private Boolean isReviewed;
 
     public static OrderProduct from(OrderProductCreateState state) {
         return OrderProduct.builder()
@@ -32,6 +33,7 @@ public class OrderProduct {
                 .unitAmount(state.getUnitAmount())
                 .imageUrl(state.getImageUrl())
                 .orderStatus(state.getOrderStatus())
+                .isReviewed(state.getIsReviewed())
                 .build();
     }
 
