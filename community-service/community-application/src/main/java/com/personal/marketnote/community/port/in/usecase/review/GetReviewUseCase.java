@@ -2,10 +2,13 @@ package com.personal.marketnote.community.port.in.usecase.review;
 
 import com.personal.marketnote.community.domain.review.ProductReviewAggregate;
 import com.personal.marketnote.community.domain.review.Review;
+import com.personal.marketnote.community.domain.review.ReviewReport;
 import com.personal.marketnote.community.domain.review.ReviewSortProperty;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
 import org.springframework.data.domain.Sort;
+
+import java.util.List;
 
 public interface GetReviewUseCase {
     /**
@@ -98,4 +101,13 @@ public interface GetReviewUseCase {
      * @Description 리뷰 중복 신고 여부를 검증합니다.
      */
     void validateDuplicateReport(Long id, Long reporterId);
+
+    /**
+     * @param id 리뷰 ID
+     * @return 리뷰 신고 내역 조회 결과 {@link List<ReviewReport>}
+     * @Date 2026-01-12
+     * @Author 성효빈
+     * @Description 리뷰 신고 내역을 조회합니다.
+     */
+    List<ReviewReport> getReviewReports(Long id);
 }

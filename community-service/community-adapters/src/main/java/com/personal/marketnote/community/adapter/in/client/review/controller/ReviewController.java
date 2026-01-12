@@ -9,9 +9,11 @@ import com.personal.marketnote.community.adapter.in.client.review.request.Regist
 import com.personal.marketnote.community.adapter.in.client.review.request.ReportReviewRequest;
 import com.personal.marketnote.community.adapter.in.client.review.request.UpdateReviewRequest;
 import com.personal.marketnote.community.adapter.in.client.review.response.GetProductReviewAggregateResponse;
+import com.personal.marketnote.community.adapter.in.client.review.response.GetReviewReportsResponse;
 import com.personal.marketnote.community.adapter.in.client.review.response.GetReviewsResponse;
 import com.personal.marketnote.community.adapter.in.client.review.response.RegisterReviewResponse;
 import com.personal.marketnote.community.domain.review.ReviewSortProperty;
+import com.personal.marketnote.community.port.in.result.review.GetReviewReportsResult;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
 import com.personal.marketnote.community.port.in.result.review.ProductReviewAggregateResult;
 import com.personal.marketnote.community.port.in.result.review.RegisterReviewResult;
@@ -22,11 +24,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
+import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 import static org.apache.commons.lang3.BooleanUtils.FALSE;
 
 @RestController
@@ -274,6 +278,33 @@ public class ReviewController {
                         "리뷰 신고 성공"
                 ),
                 HttpStatus.CREATED
+        );
+    }
+
+    /**
+     * (관리자) 리뷰 신고 내역 조회
+     *
+     * @param id 리뷰 ID
+     * @Author 성효빈
+     * @Date 2026-01-12
+     * @Description 상품 리뷰를 신고합니다.
+     */
+    @GetMapping("/reviews/{id}/reports")
+    @PreAuthorize(ADMIN_POINTCUT)
+    @GetReviewReportsApiDocs
+    public ResponseEntity<BaseResponse<GetReviewReportsResponse>> getReviewReports(
+            @PathVariable("id") Long id
+    ) {
+        GetReviewReportsResult result = GetReviewReportsResult.from(getReviewUseCase.getReviewReports(id));
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        GetReviewReportsResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "리뷰 신고 내역 조회 성공"
+                ),
+                HttpStatus.OK
         );
     }
 }

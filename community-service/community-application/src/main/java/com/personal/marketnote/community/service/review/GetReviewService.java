@@ -2,10 +2,7 @@ package com.personal.marketnote.community.service.review;
 
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.utility.FormatValidator;
-import com.personal.marketnote.community.domain.review.ProductReviewAggregate;
-import com.personal.marketnote.community.domain.review.Review;
-import com.personal.marketnote.community.domain.review.ReviewSortProperty;
-import com.personal.marketnote.community.domain.review.Reviews;
+import com.personal.marketnote.community.domain.review.*;
 import com.personal.marketnote.community.exception.*;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
@@ -138,6 +135,11 @@ public class GetReviewService implements GetReviewUseCase {
         if (findReviewReportPort.existsByReviewIdAndReporterId(id, reporterId)) {
             throw new ReviewAlreadyReportedException(id, reporterId);
         }
+    }
+
+    @Override
+    public List<ReviewReport> getReviewReports(Long id) {
+        return findReviewReportPort.findByReviewId(id);
     }
 
     @Override
