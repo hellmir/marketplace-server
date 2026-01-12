@@ -158,4 +158,15 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
     public boolean existsByReviewIdAndReporterId(Long reviewId, Long reporterId) {
         return reviewReportJpaRepository.existsByReviewIdAndReporterId(reviewId, reporterId);
     }
+
+    @Override
+    public List<ReviewReport> findByReviewId(Long reviewId) {
+        return reviewReportJpaRepository.findByReviewId(reviewId)
+                .stream()
+                .map(
+                        reviewReportJpaEntity -> ReviewJpaEntityToDomainMapper.mapToDomain(reviewReportJpaEntity)
+                                .orElse(null)
+                )
+                .toList();
+    }
 }

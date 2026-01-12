@@ -1,5 +1,9 @@
 package com.personal.marketnote.community.adapter.out.persistence.review.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.personal.marketnote.community.domain.review.ReviewReport;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,7 +31,9 @@ public class ReviewReportJpaEntity {
     private String reason;
 
     @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime createdAt;
 
     public static ReviewReportJpaEntity from(ReviewReport report) {
@@ -35,6 +41,14 @@ public class ReviewReportJpaEntity {
                 .id(new ReviewReportId(report.getReviewId(), report.getReporterId()))
                 .reason(report.getReason())
                 .build();
+    }
+
+    public Long getReviewId() {
+        return id.getReviewId();
+    }
+
+    public Long getReporterId() {
+        return id.getReporterId();
     }
 }
 

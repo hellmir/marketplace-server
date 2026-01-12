@@ -21,4 +21,13 @@ public class ReviewReport {
                 .reason(reason)
                 .build();
     }
+
+    public static ReviewReport of(Long reviewId, Long reporterId, String reason, LocalDateTime createdAt) {
+        return ReviewReport.builder()
+                .reviewId(reviewId)
+                .reporterId(reporterId)
+                .reason(reason)
+                .createdAt(createdAt)
+                .build();
+    }
 }
