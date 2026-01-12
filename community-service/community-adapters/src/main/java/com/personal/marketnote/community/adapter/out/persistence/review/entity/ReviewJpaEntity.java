@@ -78,9 +78,24 @@ public class ReviewJpaEntity extends BaseOrderedGeneralEntity {
     }
 
     public void updateFrom(Review review) {
+        updateActivation(review);
         rating = review.getRating();
         content = review.getContent();
         isPhoto = review.getIsPhoto();
         isEdited = true;
+    }
+
+    private void updateActivation(Review review) {
+        if (review.isActive()) {
+            activate();
+            return;
+        }
+
+        if (review.isInactive()) {
+            deactivate();
+            return;
+        }
+
+        hide();
     }
 }

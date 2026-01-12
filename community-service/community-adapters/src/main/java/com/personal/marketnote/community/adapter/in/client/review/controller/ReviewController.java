@@ -3,10 +3,7 @@ package com.personal.marketnote.community.adapter.in.client.review.controller;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.common.utility.FormatValidator;
-import com.personal.marketnote.community.adapter.in.client.review.controller.apidocs.GetProductReviewAggregateApiDocs;
-import com.personal.marketnote.community.adapter.in.client.review.controller.apidocs.GetProductReviewsApiDocs;
-import com.personal.marketnote.community.adapter.in.client.review.controller.apidocs.RegisterReviewApiDocs;
-import com.personal.marketnote.community.adapter.in.client.review.controller.apidocs.UpdateReviewApiDocs;
+import com.personal.marketnote.community.adapter.in.client.review.controller.apidocs.*;
 import com.personal.marketnote.community.adapter.in.client.review.mapper.ReviewRequestToCommandMapper;
 import com.personal.marketnote.community.adapter.in.client.review.request.RegisterReviewRequest;
 import com.personal.marketnote.community.adapter.in.client.review.request.UpdateReviewRequest;
@@ -17,6 +14,7 @@ import com.personal.marketnote.community.domain.review.ReviewSortProperty;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
 import com.personal.marketnote.community.port.in.result.review.ProductReviewAggregateResult;
 import com.personal.marketnote.community.port.in.result.review.RegisterReviewResult;
+import com.personal.marketnote.community.port.in.usecase.review.DeleteReviewUseCase;
 import com.personal.marketnote.community.port.in.usecase.review.GetReviewUseCase;
 import com.personal.marketnote.community.port.in.usecase.review.RegisterReviewUseCase;
 import com.personal.marketnote.community.port.in.usecase.review.UpdateReviewUseCase;
@@ -43,6 +41,7 @@ public class ReviewController {
     private final RegisterReviewUseCase registerReviewUseCase;
     private final GetReviewUseCase getReviewUseCase;
     private final UpdateReviewUseCase updateReviewUseCase;
+    private final DeleteReviewUseCase deleteReviewUseCase;
 
     /**
      * 리뷰 등록
@@ -128,6 +127,7 @@ public class ReviewController {
     /**
      * 리뷰 수정
      *
+     * @param id        리뷰 ID
      * @param request   리뷰 수정 요청
      * @param principal 인증된 사용자 정보
      * @Author 성효빈
@@ -150,6 +150,33 @@ public class ReviewController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "리뷰 수정 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 리뷰 삭제
+     *
+     * @param id        리뷰 ID
+     * @param principal 인증된 사용자 정보
+     * @Author 성효빈
+     * @Date 2026-01-12
+     * @Description 상품 리뷰를 삭제합니다.
+     */
+    @DeleteMapping("/reviews/{id}")
+    @DeleteReviewApiDocs
+    public ResponseEntity<BaseResponse<Void>> deleteReview(
+            @PathVariable("id") Long id,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        deleteReviewUseCase.deleteReview(id, ElementExtractor.extractUserId(principal));
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "리뷰 삭제 성공"
                 ),
                 HttpStatus.OK
         );
