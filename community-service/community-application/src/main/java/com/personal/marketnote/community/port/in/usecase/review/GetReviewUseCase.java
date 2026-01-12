@@ -1,12 +1,22 @@
 package com.personal.marketnote.community.port.in.usecase.review;
 
 import com.personal.marketnote.community.domain.review.ProductReviewAggregate;
+import com.personal.marketnote.community.domain.review.Review;
 import com.personal.marketnote.community.domain.review.ReviewSortProperty;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
 import org.springframework.data.domain.Sort;
 
 public interface GetReviewUseCase {
+    /**
+     * @param id 리뷰 ID
+     * @return 리뷰 {@link Review}
+     * @Date 2026-01-12
+     * @Author 성효빈
+     * @Description 리뷰를 조회합니다.
+     */
+    Review getReview(Long id);
+
     /**
      * @param command 리뷰 등록 커맨드
      * @Date 2026-01-09
@@ -55,4 +65,13 @@ public interface GetReviewUseCase {
      * @Description 상품 리뷰 집계 정보를 조회합니다.
      */
     ProductReviewAggregate getProductReviewAggregate(Long productId);
+
+    /**
+     * @param id         리뷰 ID
+     * @param reviewerId 리뷰 작성자 ID
+     * @Date 2026-01-12
+     * @Author 성효빈
+     * @Description 리뷰 작성자 여부를 검증합니다.
+     */
+    void validateAuthor(Long id, Long reviewerId);
 }

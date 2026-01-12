@@ -6,8 +6,10 @@ import com.personal.marketnote.community.domain.review.ProductReviewAggregate;
 import com.personal.marketnote.community.domain.review.Review;
 import com.personal.marketnote.community.domain.review.ReviewSortProperty;
 import com.personal.marketnote.community.domain.review.Reviews;
+import com.personal.marketnote.community.exception.NotReviewAuthorException;
 import com.personal.marketnote.community.exception.ProductReviewAggregateNotFoundException;
 import com.personal.marketnote.community.exception.ReviewAlreadyExistsException;
+import com.personal.marketnote.community.exception.ReviewNotFoundException;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
 import com.personal.marketnote.community.port.in.usecase.review.GetReviewUseCase;
@@ -28,6 +30,12 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRES_NE
 @Transactional(isolation = READ_COMMITTED, readOnly = true)
 public class GetReviewService implements GetReviewUseCase {
     private final FindReviewPort findReviewPort;
+
+    @Override
+    public Review getReview(Long id) {
+        return findReviewPort.findById(id)
+                .orElseThrow(() -> new ReviewNotFoundException(id));
+    }
 
     @Override
     public void validateDuplicateReview(RegisterReviewCommand command) {
@@ -92,5 +100,12 @@ public class GetReviewService implements GetReviewUseCase {
     public ProductReviewAggregate getProductReviewAggregate(Long productId) {
         return findReviewPort.findProductReviewAggregateByProductId(productId)
                 .orElseThrow(() -> new ProductReviewAggregateNotFoundException(productId));
+    }
+
+    @Override
+    public void validateAuthor(Long id, Long reviewerId) {
+        if (!findReviewPort.existsByIdAndReviewerId(id, reviewerId)) {
+            throw new NotReviewAuthorException(id, reviewerId);
+        }
     }
 }

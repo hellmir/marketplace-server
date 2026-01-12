@@ -6,8 +6,10 @@ import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.adapter.in.client.review.controller.apidocs.GetProductReviewAggregateApiDocs;
 import com.personal.marketnote.community.adapter.in.client.review.controller.apidocs.GetProductReviewsApiDocs;
 import com.personal.marketnote.community.adapter.in.client.review.controller.apidocs.RegisterReviewApiDocs;
+import com.personal.marketnote.community.adapter.in.client.review.controller.apidocs.UpdateReviewApiDocs;
 import com.personal.marketnote.community.adapter.in.client.review.mapper.ReviewRequestToCommandMapper;
 import com.personal.marketnote.community.adapter.in.client.review.request.RegisterReviewRequest;
+import com.personal.marketnote.community.adapter.in.client.review.request.UpdateReviewRequest;
 import com.personal.marketnote.community.adapter.in.client.review.response.GetProductReviewAggregateResponse;
 import com.personal.marketnote.community.adapter.in.client.review.response.GetReviewsResponse;
 import com.personal.marketnote.community.adapter.in.client.review.response.RegisterReviewResponse;
@@ -17,6 +19,7 @@ import com.personal.marketnote.community.port.in.result.review.ProductReviewAggr
 import com.personal.marketnote.community.port.in.result.review.RegisterReviewResult;
 import com.personal.marketnote.community.port.in.usecase.review.GetReviewUseCase;
 import com.personal.marketnote.community.port.in.usecase.review.RegisterReviewUseCase;
+import com.personal.marketnote.community.port.in.usecase.review.UpdateReviewUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +42,7 @@ public class ReviewController {
 
     private final RegisterReviewUseCase registerReviewUseCase;
     private final GetReviewUseCase getReviewUseCase;
+    private final UpdateReviewUseCase updateReviewUseCase;
 
     /**
      * 리뷰 등록
@@ -130,15 +134,15 @@ public class ReviewController {
      * @Date 2026-01-12
      * @Description 상품 리뷰를 수정합니다.
      */
-    @PatchMapping("/reviews")
+    @PatchMapping("/reviews/{id}")
     @UpdateReviewApiDocs
     public ResponseEntity<BaseResponse<Void>> updateReview(
-            @PathVariable("reviewId") Long reviewId,
+            @PathVariable("id") Long id,
             @Valid @RequestBody UpdateReviewRequest request,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
         updateReviewUseCase.updateReview(
-                ReviewRequestToCommandMapper.mapToCommand(request, ElementExtractor.extractUserId(principal))
+                ReviewRequestToCommandMapper.mapToCommand(id, request, ElementExtractor.extractUserId(principal))
         );
 
         return new ResponseEntity<>(
