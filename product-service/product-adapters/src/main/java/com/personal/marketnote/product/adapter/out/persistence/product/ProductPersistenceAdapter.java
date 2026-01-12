@@ -19,8 +19,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
@@ -54,14 +53,15 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
 
     @Override
     public List<Product> findAll() {
-        return productJpaRepository.findAll().stream()
+        return loadProductsWithAssociations(productJpaRepository.findAll()).stream()
                 .map(entity -> ProductJpaEntityToDomainMapper.mapToDomain(entity).get())
                 .toList();
     }
 
     @Override
     public List<Product> findAllByCategoryId(Long categoryId) {
-        return productJpaRepository.findAllByCategoryIdOrderByOrderNumAsc(categoryId).stream()
+
+        return loadProductsWithAssociations(productJpaRepository.findAllByCategoryIdOrderByOrderNumAsc(categoryId)).stream()
                 .map(entity -> ProductJpaEntityToDomainMapper.mapToDomain(entity).get())
                 .toList();
     }
@@ -86,7 +86,7 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
                 searchPattern
         );
 
-        return entities.stream()
+        return loadProductsWithAssociations(entities).stream()
                 .map(entity -> ProductJpaEntityToDomainMapper.mapToDomain(entity).orElse(null))
                 .toList();
     }
@@ -118,7 +118,9 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
                 searchPattern
         );
 
-        return entities.stream()
+        List<ProductJpaEntity> hydratedEntities = loadProductsWithAssociations(entities);
+
+        return hydratedEntities.stream()
                 .map(entity -> ProductJpaEntityToDomainMapper.mapToDomain(entity).orElse(null))
                 .toList();
     }
@@ -190,7 +192,7 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
 
     @Override
     public List<Product> findByPricePolicyIds(List<Long> pricePolicyIds) {
-        return productJpaRepository.findByPricePolicyIds(pricePolicyIds).stream()
+        return loadProductsWithAssociations(productJpaRepository.findByPricePolicyIds(pricePolicyIds)).stream()
                 .map(ProductJpaEntityToDomainMapper::mapToDomain)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -215,5 +217,35 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
     private ProductJpaEntity findEntityById(Long id) throws ProductNotFoundException {
         return productJpaRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
+    }
+
+    private List<ProductJpaEntity> loadProductsWithAssociations(List<ProductJpaEntity> baseEntities) {
+        if (!FormatValidator.hasValue(baseEntities)) {
+            return List.of();
+        }
+
+        List<Long> ids = baseEntities.stream()
+                .map(ProductJpaEntity::getId)
+                .filter(Objects::nonNull)
+                .toList();
+
+        if (!FormatValidator.hasValue(ids)) {
+            return List.of();
+        }
+
+        List<ProductJpaEntity> hydrated = productJpaRepository.findAllWithTagsAndPoliciesByIdIn(ids);
+        if (!FormatValidator.hasValue(hydrated)) {
+            return List.of();
+        }
+
+        Map<Long, ProductJpaEntity> hydratedById = new LinkedHashMap<>();
+        for (ProductJpaEntity entity : hydrated) {
+            hydratedById.putIfAbsent(entity.getId(), entity);
+        }
+
+        return ids.stream()
+                .map(hydratedById::get)
+                .filter(Objects::nonNull)
+                .toList();
     }
 }

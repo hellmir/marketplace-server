@@ -84,8 +84,8 @@ public class GetProductService implements GetProductUseCase {
 
         if (
                 product.isFindAllOptionsYn()
-                        && FormatValidator.hasValue(selectedOptionIds)
-                        && FormatValidator.hasValue(categories)
+                && FormatValidator.hasValue(selectedOptionIds)
+                && FormatValidator.hasValue(categories)
         ) {
             selectedPricePolicy = pricePolicies.stream()
                     .filter(policy -> FormatValidator.equals(policy.getOptionIds(), selectedOptionIds))

@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PricePolicyJpaRepository extends JpaRepository<PricePolicyJpaEntity, Long> {
+    List<PricePolicyJpaEntity> findAllByProductJpaEntity_IdOrderByIdDesc(Long productId);
+
     @Query("""
             select p
             from PricePolicyJpaEntity p
@@ -248,4 +250,16 @@ public interface PricePolicyJpaRepository extends JpaRepository<PricePolicyJpaEn
               )
             """)
     long countActive(@Param("searchTarget") String searchTarget, @Param("pattern") String pattern);
+
+    @Query("""
+            SELECT DISTINCT pp
+            FROM PricePolicyJpaEntity pp
+              LEFT JOIN FETCH pp.productJpaEntity p
+              LEFT JOIN FETCH pp.productOptionPricePolicyJpaEntities popp
+              LEFT JOIN FETCH popp.productOptionJpaEntity po
+            WHERE pp.id IN :pricePolicyIds
+            """)
+    List<PricePolicyJpaEntity> findAllWithProductAndOptionMappingsByIdIn(
+            @Param("pricePolicyIds") List<Long> pricePolicyIds
+    );
 }
