@@ -6,6 +6,7 @@ import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.adapter.in.client.review.controller.apidocs.*;
 import com.personal.marketnote.community.adapter.in.client.review.mapper.ReviewRequestToCommandMapper;
 import com.personal.marketnote.community.adapter.in.client.review.request.RegisterReviewRequest;
+import com.personal.marketnote.community.adapter.in.client.review.request.ReportReviewRequest;
 import com.personal.marketnote.community.adapter.in.client.review.request.UpdateReviewRequest;
 import com.personal.marketnote.community.adapter.in.client.review.response.GetProductReviewAggregateResponse;
 import com.personal.marketnote.community.adapter.in.client.review.response.GetReviewsResponse;
@@ -14,10 +15,7 @@ import com.personal.marketnote.community.domain.review.ReviewSortProperty;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
 import com.personal.marketnote.community.port.in.result.review.ProductReviewAggregateResult;
 import com.personal.marketnote.community.port.in.result.review.RegisterReviewResult;
-import com.personal.marketnote.community.port.in.usecase.review.DeleteReviewUseCase;
-import com.personal.marketnote.community.port.in.usecase.review.GetReviewUseCase;
-import com.personal.marketnote.community.port.in.usecase.review.RegisterReviewUseCase;
-import com.personal.marketnote.community.port.in.usecase.review.UpdateReviewUseCase;
+import com.personal.marketnote.community.port.in.usecase.review.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +40,7 @@ public class ReviewController {
     private final GetReviewUseCase getReviewUseCase;
     private final UpdateReviewUseCase updateReviewUseCase;
     private final DeleteReviewUseCase deleteReviewUseCase;
+    private final ReportReviewUseCase reportReviewUseCase;
 
     /**
      * 리뷰 등록
@@ -244,6 +243,37 @@ public class ReviewController {
         return new ResponseEntity<>(
                 BaseResponse.of(GetProductReviewAggregateResponse.from(result), HttpStatus.OK, DEFAULT_SUCCESS_CODE, "상품 리뷰 평점 평균 및 점수별 개수 현황 조회 성공"),
                 HttpStatus.OK
+        );
+    }
+
+    /**
+     * 리뷰 신고
+     *
+     * @param id        리뷰 ID
+     * @param request   리뷰 신고 요청
+     * @param principal 인증된 사용자 정보
+     * @Author 성효빈
+     * @Date 2026-01-12
+     * @Description 상품 리뷰를 신고합니다.
+     */
+    @PostMapping("/reviews/{id}/reports")
+    @ReportReviewApiDocs
+    public ResponseEntity<BaseResponse<Void>> reportReview(
+            @PathVariable("id") Long id,
+            @Valid @RequestBody ReportReviewRequest request,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        reportReviewUseCase.reportReview(
+                ReviewRequestToCommandMapper.mapToCommand(id, ElementExtractor.extractUserId(principal), request)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        HttpStatus.CREATED,
+                        DEFAULT_SUCCESS_CODE,
+                        "리뷰 신고 성공"
+                ),
+                HttpStatus.CREATED
         );
     }
 }

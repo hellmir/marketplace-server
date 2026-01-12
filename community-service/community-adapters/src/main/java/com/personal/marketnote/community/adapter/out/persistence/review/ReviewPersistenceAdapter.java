@@ -5,17 +5,14 @@ import com.personal.marketnote.community.adapter.out.mapper.ProductReviewAggrega
 import com.personal.marketnote.community.adapter.out.mapper.ReviewJpaEntityToDomainMapper;
 import com.personal.marketnote.community.adapter.out.persistence.review.entity.ProductReviewAggregateJpaEntity;
 import com.personal.marketnote.community.adapter.out.persistence.review.entity.ReviewJpaEntity;
+import com.personal.marketnote.community.adapter.out.persistence.review.entity.ReviewReportJpaEntity;
 import com.personal.marketnote.community.adapter.out.persistence.review.repository.ProductReviewAggregateJpaRepository;
 import com.personal.marketnote.community.adapter.out.persistence.review.repository.ReviewJpaRepository;
-import com.personal.marketnote.community.domain.review.ProductReviewAggregate;
-import com.personal.marketnote.community.domain.review.Review;
-import com.personal.marketnote.community.domain.review.ReviewSortProperty;
-import com.personal.marketnote.community.domain.review.Reviews;
+import com.personal.marketnote.community.adapter.out.persistence.review.repository.ReviewReportJpaRepository;
+import com.personal.marketnote.community.domain.review.*;
 import com.personal.marketnote.community.exception.ProductReviewAggregateNotFoundException;
 import com.personal.marketnote.community.exception.ReviewNotFoundException;
-import com.personal.marketnote.community.port.out.review.FindReviewPort;
-import com.personal.marketnote.community.port.out.review.SaveReviewPort;
-import com.personal.marketnote.community.port.out.review.UpdateReviewPort;
+import com.personal.marketnote.community.port.out.review.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -26,9 +23,10 @@ import java.util.Optional;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort, UpdateReviewPort {
+public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort, UpdateReviewPort, SaveReviewReportPort, FindReviewReportPort {
     private final ReviewJpaRepository reviewJpaRepository;
     private final ProductReviewAggregateJpaRepository productReviewAggregateJpaRepository;
+    private final ReviewReportJpaRepository reviewReportJpaRepository;
 
     @Override
     @CacheEvict(value = "review:photo:list:first", allEntries = true, condition = "T(java.lang.Boolean).TRUE.equals(#review.isPhoto)")
@@ -149,5 +147,15 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
             throws ProductReviewAggregateNotFoundException {
         return productReviewAggregateJpaRepository.findByProductId(productId)
                 .orElseThrow(() -> new ProductReviewAggregateNotFoundException(productId));
+    }
+
+    @Override
+    public void save(ReviewReport reviewReport) {
+        reviewReportJpaRepository.save(ReviewReportJpaEntity.from(reviewReport));
+    }
+
+    @Override
+    public boolean existsByReviewIdAndReporterId(Long reviewId, Long reporterId) {
+        return reviewReportJpaRepository.existsByReviewIdAndReporterId(reviewId, reporterId);
     }
 }
