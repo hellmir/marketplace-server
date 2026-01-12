@@ -116,4 +116,16 @@ public class Review {
         this.content = content;
         this.isPhoto = isPhoto;
     }
+
+    public void delete() {
+        status = EntityStatus.from(false);
+    }
+
+    public boolean isActive() {
+        return status.isActive();
+    }
+
+    public boolean isInactive() {
+        return status.isInactive();
+    }
 }
