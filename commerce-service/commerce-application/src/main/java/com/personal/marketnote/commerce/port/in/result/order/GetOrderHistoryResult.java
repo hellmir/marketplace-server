@@ -18,12 +18,8 @@ public record GetOrderHistoryResult(
 ) {
     public static GetOrderHistoryResult from(
             List<Order> orders,
-            Map<Long, ProductInfoResult> productSummaries
+            Map<Long, ProductInfoResult> productInfo
     ) {
-        Map<Long, ProductInfoResult> summaries =
-                com.personal.marketnote.common.utility.FormatValidator.hasValue(
-                        productSummaries != null ? productSummaries.values() : null
-                ) ? productSummaries : Map.of();
         Map<LocalDate, List<Order>> grouped = new LinkedHashMap<>();
 
         for (Order order : orders) {
@@ -36,7 +32,13 @@ public record GetOrderHistoryResult(
         }
 
         List<OrderHistoryByDateResult> histories = grouped.entrySet().stream()
-                .map(entry -> OrderHistoryByDateResult.of(entry.getKey(), entry.getValue(), summaries))
+                .map(entry -> OrderHistoryByDateResult.of(
+                        entry.getKey(),
+                        entry.getValue(),
+                        FormatValidator.hasValue(productInfo) && FormatValidator.hasValue(productInfo.values())
+                                ? productInfo
+                                : Map.of()
+                ))
                 .toList();
 
         return new GetOrderHistoryResult(histories);

@@ -21,10 +21,6 @@ public record GetOrderResult(
         Long pointAmount,
         List<GetOrderProductResult> orderProducts
 ) {
-    public static GetOrderResult from(Order order) {
-        return from(order, Map.of());
-    }
-
     public static GetOrderResult from(
             Order order,
             Map<Long, ProductInfoResult> productInfo
@@ -39,15 +35,12 @@ public record GetOrderResult(
                 .couponAmount(order.getCouponAmount())
                 .pointAmount(order.getPointAmount())
                 .orderProducts(order.getOrderProducts().stream()
-                        .map(orderProduct -> {
-                            ProductInfoResult summary =
-                                    productInfo.get(orderProduct.getPricePolicyId());
-                            return GetOrderProductResult.from(
-                                    orderProduct,
-                                    summary,
-                                    order.getOrderStatus()
-                            );
-                        })
+                        .map(orderProduct -> GetOrderProductResult.from(
+                                        orderProduct,
+                                        productInfo.get(orderProduct.getPricePolicyId()),
+                                        order.getOrderStatus()
+                                )
+                        )
                         .toList())
                 .build();
     }
