@@ -126,7 +126,7 @@ import java.lang.annotation.*;
                         )
                 ),
                 @ApiResponse(
-                        responseCode = "409",
+                        responseCode = "404",
                         description = "대상 리뷰 조회 실패",
                         content = @Content(
                                 examples = @ExampleObject("""
