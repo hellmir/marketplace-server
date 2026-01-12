@@ -14,6 +14,8 @@ public class Order {
     private Long sellerId;
     private Long buyerId;
     private OrderStatus orderStatus;
+    private OrderStatusReasonCategory statusChangeReasonCategory;
+    private String statusChangeReason;
     private Long totalAmount;
     private Long paidAmount;
     private Long couponAmount;
@@ -52,6 +54,8 @@ public class Order {
                 .sellerId(state.getSellerId())
                 .buyerId(state.getBuyerId())
                 .orderStatus(state.getOrderStatus())
+                .statusChangeReasonCategory(state.getStatusChangeReasonCategory())
+                .statusChangeReason(state.getStatusChangeReason())
                 .totalAmount(state.getTotalAmount())
                 .paidAmount(state.getPaidAmount())
                 .couponAmount(state.getCouponAmount())

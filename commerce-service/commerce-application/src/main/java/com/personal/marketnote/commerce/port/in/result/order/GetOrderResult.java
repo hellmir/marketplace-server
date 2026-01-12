@@ -2,6 +2,7 @@ package com.personal.marketnote.commerce.port.in.result.order;
 
 import com.personal.marketnote.commerce.domain.order.Order;
 import com.personal.marketnote.commerce.domain.order.OrderStatus;
+import com.personal.marketnote.commerce.domain.order.OrderStatusReasonCategory;
 import com.personal.marketnote.commerce.port.out.result.product.ProductInfoResult;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -15,6 +16,8 @@ public record GetOrderResult(
         Long sellerId,
         Long buyerId,
         OrderStatus orderStatus,
+        OrderStatusReasonCategory statusChangeReasonCategory,
+        String statusChangeReason,
         Long totalAmount,
         Long paidAmount,
         Long couponAmount,
@@ -30,6 +33,8 @@ public record GetOrderResult(
                 .sellerId(order.getSellerId())
                 .buyerId(order.getBuyerId())
                 .orderStatus(order.getOrderStatus())
+                .statusChangeReasonCategory(order.getStatusChangeReasonCategory())
+                .statusChangeReason(order.getStatusChangeReason())
                 .totalAmount(order.getTotalAmount())
                 .paidAmount(order.getPaidAmount())
                 .couponAmount(order.getCouponAmount())

@@ -73,6 +73,16 @@ import java.lang.annotation.*;
                 
                     - "REFUNDED": 환불 완료
                 
+                - 변경 사유 카테고리 목록
+                
+                    - "CANCEL_ORDER": 구매 의사 취소
+                
+                    - "CHANGE_OPTION": 색상, 사이즈 등 변경
+                
+                    - "MISTAKE": 주문 실수
+                
+                    - "ETC": 기타
+                
                 ---
                 
                 ## Request
@@ -81,6 +91,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- | --- |
                 | pricePolicyIds | array<number> | 가격 정책 ID 목록 | N | [1, 2, 3] |
                 | orderStatus | string | 주문 상태 | Y | "PAYMENT_PENDING" |
+                | reasonCategory | string | 변경 사유 카테고리 | N | "CANCEL_ORDER" |
                 | reason | string | 변경 사유 | N | default: 변경된 주문 상태의 디스크립션 |
                 
                 ---
@@ -112,6 +123,7 @@ import java.lang.annotation.*;
                                 {
                                   "pricePolicyIds": [1, 2, 3],
                                   "orderStatus": "PAYMENT_PENDING",
+                                  "reasonCategory": "CANCEL_ORDER",
                                   "reason": "주문 상태 변경 사유"
                                 }
                                 """)

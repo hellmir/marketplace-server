@@ -11,6 +11,7 @@ import lombok.Getter;
 public class OrderStatusHistoryCreateState {
     private final Long orderId;
     private final OrderStatus orderStatus;
+    private final OrderStatusReasonCategory reasonCategory;
     private final String reason;
 }
 

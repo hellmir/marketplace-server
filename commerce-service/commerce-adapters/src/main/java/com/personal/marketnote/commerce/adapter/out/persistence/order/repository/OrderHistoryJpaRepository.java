@@ -4,5 +4,5 @@ import com.personal.marketnote.commerce.adapter.out.persistence.order.entity.Ord
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OrderHistoryJpaRepository extends JpaRepository<OrderStatusHistoryJpaEntity, Long> {
+    OrderStatusHistoryJpaEntity findTopByOrderJpaEntityIdOrderByIdDesc(Long orderId);
 }
-

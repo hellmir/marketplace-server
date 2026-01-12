@@ -16,6 +16,8 @@ public class OrderSnapshotState {
     private final Long sellerId;
     private final Long buyerId;
     private final OrderStatus orderStatus;
+    private final OrderStatusReasonCategory statusChangeReasonCategory;
+    private final String statusChangeReason;
     private final Long totalAmount;
     private final Long paidAmount;
     private final Long couponAmount;

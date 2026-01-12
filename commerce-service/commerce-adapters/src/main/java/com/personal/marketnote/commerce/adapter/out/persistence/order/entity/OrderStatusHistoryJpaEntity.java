@@ -2,6 +2,7 @@ package com.personal.marketnote.commerce.adapter.out.persistence.order.entity;
 
 import com.personal.marketnote.commerce.domain.order.OrderStatus;
 import com.personal.marketnote.commerce.domain.order.OrderStatusHistory;
+import com.personal.marketnote.commerce.domain.order.OrderStatusReasonCategory;
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,6 +31,10 @@ public class OrderStatusHistoryJpaEntity extends BaseEntity {
     @Column(name = "order_status", nullable = false, length = 31)
     private OrderStatus orderStatus;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "reason_category", nullable = false, length = 31)
+    private OrderStatusReasonCategory reasonCategory;
+
     @Column(name = "reason", nullable = false, length = 63)
     private String reason;
 
@@ -43,10 +48,14 @@ public class OrderStatusHistoryJpaEntity extends BaseEntity {
                 .build();
     }
 
-    public static OrderStatusHistoryJpaEntity from(OrderStatusHistory orderStatusHistory, OrderJpaEntity orderJpaEntity) {
+    public static OrderStatusHistoryJpaEntity from(
+            OrderStatusHistory orderStatusHistory,
+            OrderJpaEntity orderJpaEntity
+    ) {
         return OrderStatusHistoryJpaEntity.builder()
                 .orderJpaEntity(orderJpaEntity)
                 .orderStatus(orderStatusHistory.getOrderStatus())
+                .reasonCategory(orderStatusHistory.getReasonCategory())
                 .reason(orderStatusHistory.getReason())
                 .build();
     }

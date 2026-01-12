@@ -14,6 +14,7 @@ public class OrderStatusHistorySnapshotState {
     private final Long id;
     private final Long orderId;
     private final OrderStatus orderStatus;
+    private final OrderStatusReasonCategory reasonCategory;
     private final String reason;
     private final LocalDateTime createdAt;
 }

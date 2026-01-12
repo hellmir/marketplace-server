@@ -33,7 +33,11 @@ public class OrderRequestToCommandMapper {
 
     public static ChangeOrderStatusCommand mapToCommand(Long id, ChangeOrderStatusRequest request) {
         return ChangeOrderStatusCommand.of(
-                id, request.getPricePolicyIds(), request.getOrderStatus(), request.getReason()
+                id,
+                request.getPricePolicyIds(),
+                request.getOrderStatus(),
+                request.getReasonCategory(),
+                request.getReason()
         );
     }
 }
