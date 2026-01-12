@@ -114,6 +114,21 @@ import java.lang.annotation.*;
                         )
                 ),
                 @ApiResponse(
+                        responseCode = "404",
+                        description = "대상 리뷰 조회 실패",
+                        content = @Content(
+                                examples = @ExampleObject("""
+                                        {
+                                          "statusCode": 404,
+                                          "code": "NOT_FOUND",
+                                          "timestamp": "2026-01-13T08:11:55.62655",
+                                          "content": null,
+                                          "message": "리뷰를 찾을 수 없습니다. 전송된 리뷰 ID: 1"
+                                        }
+                                        """)
+                        )
+                ),
+                @ApiResponse(
                         responseCode = "409",
                         description = "리뷰 중복 신고",
                         content = @Content(

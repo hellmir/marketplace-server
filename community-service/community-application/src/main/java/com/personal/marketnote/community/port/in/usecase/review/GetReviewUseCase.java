@@ -110,4 +110,13 @@ public interface GetReviewUseCase {
      * @Description 리뷰 신고 내역을 조회합니다.
      */
     List<ReviewReport> getReviewReports(Long id);
+
+    /**
+     * @param id 리뷰 ID
+     * @return 리뷰 존재 여부 {@link boolean}
+     * @Date 2026-01-13
+     * @Author 성효빈
+     * @Description 리뷰 존재 여부를 조회합니다.
+     */
+    boolean existsReview(Long id);
 }

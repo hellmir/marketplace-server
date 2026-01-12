@@ -143,6 +143,11 @@ public class GetReviewService implements GetReviewUseCase {
     }
 
     @Override
+    public boolean existsReview(Long id) {
+        return findReviewPort.existsById(id);
+    }
+
+    @Override
     public void validateAuthor(Long id, Long reviewerId) {
         if (!findReviewPort.existsByIdAndReviewerId(id, reviewerId)) {
             throw new NotReviewAuthorException(id, reviewerId);

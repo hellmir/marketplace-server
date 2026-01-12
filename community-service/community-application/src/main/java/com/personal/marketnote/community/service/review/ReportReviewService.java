@@ -2,6 +2,7 @@ package com.personal.marketnote.community.service.review;
 
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.community.domain.review.ReviewReport;
+import com.personal.marketnote.community.exception.ReviewNotFoundException;
 import com.personal.marketnote.community.port.in.command.review.ReportReviewCommand;
 import com.personal.marketnote.community.port.in.usecase.review.GetReviewUseCase;
 import com.personal.marketnote.community.port.in.usecase.review.ReportReviewUseCase;
@@ -23,6 +24,10 @@ public class ReportReviewService implements ReportReviewUseCase {
         Long id = command.id();
         Long reporterId = command.reporterId();
         getReviewUseCase.validateDuplicateReport(id, reporterId);
+
+        if (!getReviewUseCase.existsReview(id)) {
+            throw new ReviewNotFoundException(id);
+        }
 
         saveReviewReportPort.save(
                 ReviewReport.of(id, reporterId, command.reason())
