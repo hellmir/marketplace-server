@@ -93,4 +93,43 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
     long countByProductId(@Param("productId") Long productId);
 
     boolean existsByIdAndReviewerId(Long id, Long reviewerId);
+
+    @Query("""
+            SELECT r
+            FROM ReviewJpaEntity r
+            WHERE r.reviewerId = :userId
+              AND (
+                    :cursor IS NULL
+                 OR NOT EXISTS (
+                    SELECT 1
+                    FROM ReviewJpaEntity r0
+                    WHERE r0.id = :cursor
+                 )
+                 OR (
+                        (:sortProperty = 'id' AND r.id < :cursor)
+                     OR (:sortProperty = 'orderNum' AND (
+                            r.orderNum < (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                         OR (r.orderNum = (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                             AND r.id < :cursor)
+                       ))
+                 )
+              )
+            ORDER BY
+                CASE WHEN :sortProperty = 'orderNum' THEN r.orderNum END DESC,
+                r.id DESC
+            """)
+    List<ReviewJpaEntity> findUserReviewsByCursor(
+            @Param("userId") Long userId,
+            @Param("cursor") Long cursor,
+            Pageable pageable,
+            @Param("sortProperty") String sortProperty
+    );
+
+    @Query("""
+            SELECT COUNT(r)
+            FROM ReviewJpaEntity r
+            WHERE 1 = 1
+              AND r.reviewerId = :reviewerId
+            """)
+    long countByReviewerId(@Param("reviewerId") Long reviewerId);
 }

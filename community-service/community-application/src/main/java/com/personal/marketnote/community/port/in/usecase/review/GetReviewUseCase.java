@@ -74,4 +74,19 @@ public interface GetReviewUseCase {
      * @Description 리뷰 작성자 여부를 검증합니다.
      */
     void validateAuthor(Long id, Long reviewerId);
+
+    /**
+     * @param userId        회원 ID
+     * @param cursor        커서(무한 스크롤 페이지 설정)
+     * @param pageSize      페이지 크기
+     * @param sortDirection 정렬 방향
+     * @param sortProperty  정렬 속성
+     * @return 나의 리뷰 목록 조회 결과 {@link GetReviewsResult}
+     * @Date 2026-01-12
+     * @Author 성효빈
+     * @Description 회원 리뷰 목록을 조회합니다.
+     */
+    GetReviewsResult getMyReviews(
+            Long userId, Long cursor, int pageSize, Sort.Direction sortDirection, ReviewSortProperty sortProperty
+    );
 }
