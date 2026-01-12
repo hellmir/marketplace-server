@@ -18,8 +18,8 @@ public record ReviewItemResult(
         String reviewerName,
         Float rating,
         String content,
-        Boolean photoYn,
-        Boolean editedYn,
+        Boolean isPhoto,
+        Boolean isEdited,
         Integer likeCount,
         boolean isUserLiked,
         String status,
@@ -39,8 +39,8 @@ public record ReviewItemResult(
                 .reviewerName(review.getReviewerName())
                 .rating(review.getRating())
                 .content(review.getContent())
-                .photoYn(review.getPhotoYn())
-                .editedYn(review.getEditedYn())
+                .isPhoto(review.getIsPhoto())
+                .isEdited(review.getIsEdited())
                 .likeCount(review.getLikeCount())
                 .isUserLiked(review.isUserLiked())
                 .status(review.getStatus().name())

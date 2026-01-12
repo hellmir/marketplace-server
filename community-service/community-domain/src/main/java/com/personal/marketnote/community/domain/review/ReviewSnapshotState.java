@@ -22,8 +22,8 @@ public class ReviewSnapshotState {
     private final String reviewerName;
     private final Float rating;
     private final String content;
-    private final Boolean photoYn;
-    private final Boolean editedYn;
+    private final Boolean isPhoto;
+    private final Boolean isEdited;
     private final Integer likeCount;
     private final EntityStatus status;
     private final LocalDateTime createdAt;

@@ -47,10 +47,10 @@ public class ReviewJpaEntity extends BaseOrderedGeneralEntity {
     private String content;
 
     @Column(name = "photo_yn", nullable = false)
-    private Boolean photoYn;
+    private Boolean isPhoto;
 
     @Column(name = "edited_yn", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private Boolean editedYn;
+    private Boolean isEdited;
 
     @Formula("""
             (
@@ -73,7 +73,7 @@ public class ReviewJpaEntity extends BaseOrderedGeneralEntity {
                 .reviewerName(review.getReviewerName())
                 .rating(review.getRating())
                 .content(review.getContent())
-                .photoYn(review.getPhotoYn())
+                .isPhoto(review.getIsPhoto())
                 .build();
     }
 }

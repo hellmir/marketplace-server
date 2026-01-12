@@ -30,7 +30,7 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
     private final ProductReviewAggregateJpaRepository productReviewAggregateJpaRepository;
 
     @Override
-    @CacheEvict(value = "review:photo:list:first", allEntries = true, condition = "T(java.lang.Boolean).TRUE.equals(#review.photoYn)")
+    @CacheEvict(value = "review:photo:list:first", allEntries = true, condition = "T(java.lang.Boolean).TRUE.equals(#review.isPhoto)")
     public Review save(Review review) {
         ReviewJpaEntity savedEntity = reviewJpaRepository.save(ReviewJpaEntity.from(review));
         savedEntity.setIdToOrderNum();
@@ -85,7 +85,7 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
     @Override
     public long countActive(Long productId, Boolean isPhoto) {
         if (isPhoto) {
-            return reviewJpaRepository.countByProductIdAndPhotoYn(productId, true);
+            return reviewJpaRepository.countByProductIdAndIsPhoto(productId, true);
         }
 
         return reviewJpaRepository.countByProductId(productId);

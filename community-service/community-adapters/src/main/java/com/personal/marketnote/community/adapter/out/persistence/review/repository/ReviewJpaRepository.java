@@ -47,7 +47,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
             FROM ReviewJpaEntity r
             WHERE 1 = 1
               AND r.productId = :productId
-              AND r.photoYn = TRUE
+              AND r.isPhoto = TRUE
               AND (
                     :cursor IS NULL
                  OR NOT EXISTS (
@@ -80,9 +80,9 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
             FROM ReviewJpaEntity r
             WHERE 1 = 1
               AND r.productId = :productId
-              AND r.photoYn = :photoYn
+              AND r.isPhoto = :isPhoto
             """)
-    long countByProductIdAndPhotoYn(@Param("productId") Long productId, @Param("photoYn") Boolean photoYn);
+    long countByProductIdAndIsPhoto(@Param("productId") Long productId, @Param("isPhoto") Boolean isPhoto);
 
     @Query("""
             SELECT COUNT(r)
