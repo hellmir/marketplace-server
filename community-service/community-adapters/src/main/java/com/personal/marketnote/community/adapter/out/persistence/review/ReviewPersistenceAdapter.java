@@ -43,13 +43,23 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
     }
 
     @Override
-    public Optional<Review> findById(Long id) {
-        return ReviewJpaEntityToDomainMapper.mapToDomain(reviewJpaRepository.findById(id).orElse(null));
+    public boolean existsById(Long id) {
+        return reviewJpaRepository.existsById(id);
+    }
+
+    @Override
+    public boolean existsByIdAndReviewerId(Long id, Long reviewerId) {
+        return reviewJpaRepository.existsByIdAndReviewerId(id, reviewerId);
     }
 
     @Override
     public boolean existsByOrderIdAndPricePolicyId(Long orderId, Long pricePolicyId) {
         return reviewJpaRepository.existsByOrderIdAndPricePolicyId(orderId, pricePolicyId);
+    }
+
+    @Override
+    public Optional<Review> findById(Long id) {
+        return ReviewJpaEntityToDomainMapper.mapToDomain(reviewJpaRepository.findById(id).orElse(null));
     }
 
     @Override
@@ -100,11 +110,6 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
         return ProductReviewAggregateJpaEntityToDomainMapper.mapToDomain(
                 productReviewAggregateJpaRepository.findByProductId(productId).orElse(null)
         );
-    }
-
-    @Override
-    public boolean existsByIdAndReviewerId(Long id, Long reviewerId) {
-        return reviewJpaRepository.existsByIdAndReviewerId(id, reviewerId);
     }
 
     @Override
