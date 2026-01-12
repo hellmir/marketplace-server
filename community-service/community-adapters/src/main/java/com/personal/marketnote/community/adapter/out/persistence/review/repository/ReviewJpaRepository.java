@@ -131,5 +131,5 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
             WHERE 1 = 1
               AND r.reviewerId = :reviewerId
             """)
-    long countByReviewerId(@Param("reviewerId") Long reviewerId);
+    long countByReviewerId(@Param("reporterId") Long reviewerId);
 }

@@ -6,14 +6,12 @@ import com.personal.marketnote.community.domain.review.ProductReviewAggregate;
 import com.personal.marketnote.community.domain.review.Review;
 import com.personal.marketnote.community.domain.review.ReviewSortProperty;
 import com.personal.marketnote.community.domain.review.Reviews;
-import com.personal.marketnote.community.exception.NotReviewAuthorException;
-import com.personal.marketnote.community.exception.ProductReviewAggregateNotFoundException;
-import com.personal.marketnote.community.exception.ReviewAlreadyExistsException;
-import com.personal.marketnote.community.exception.ReviewNotFoundException;
+import com.personal.marketnote.community.exception.*;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
 import com.personal.marketnote.community.port.in.usecase.review.GetReviewUseCase;
 import com.personal.marketnote.community.port.out.review.FindReviewPort;
+import com.personal.marketnote.community.port.out.review.FindReviewReportPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +28,7 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRES_NE
 @Transactional(isolation = READ_COMMITTED, readOnly = true)
 public class GetReviewService implements GetReviewUseCase {
     private final FindReviewPort findReviewPort;
+    private final FindReviewReportPort findReviewReportPort;
 
     @Override
     public Review getReview(Long id) {
@@ -132,6 +131,13 @@ public class GetReviewService implements GetReviewUseCase {
         }
 
         return GetReviewsResult.from(hasNext, nextCursor, totalElements, pagedReviews);
+    }
+
+    @Override
+    public void validateDuplicateReport(Long id, Long reporterId) {
+        if (findReviewReportPort.existsByReviewIdAndReporterId(id, reporterId)) {
+            throw new ReviewAlreadyReportedException(id, reporterId);
+        }
     }
 
     @Override

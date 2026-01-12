@@ -89,4 +89,13 @@ public interface GetReviewUseCase {
     GetReviewsResult getMyReviews(
             Long userId, Long cursor, int pageSize, Sort.Direction sortDirection, ReviewSortProperty sortProperty
     );
+
+    /**
+     * @param id         리뷰 ID
+     * @param reporterId 신고자 ID
+     * @Date 2026-01-12
+     * @Author 성효빈
+     * @Description 리뷰 중복 신고 여부를 검증합니다.
+     */
+    void validateDuplicateReport(Long id, Long reporterId);
 }
