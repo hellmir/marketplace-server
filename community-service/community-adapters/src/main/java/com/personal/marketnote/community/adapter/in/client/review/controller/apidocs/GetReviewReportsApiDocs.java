@@ -127,15 +127,15 @@ import java.lang.annotation.*;
                 ),
                 @ApiResponse(
                         responseCode = "409",
-                        description = "리뷰 중복 신고",
+                        description = "대상 리뷰 조회 실패",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
-                                          "statusCode": 409,
-                                          "code": "CONFLICT",
-                                          "timestamp": "2026-01-12T16:42:29.926731",
+                                          "statusCode": 404,
+                                          "code": "NOT_FOUND",
+                                          "timestamp": "2026-01-12T23:20:05.915945975",
                                           "content": null,
-                                          "message": "이미 해당 리뷰를 신고했습니다. 전송된 리뷰 ID: 1, 신고자 ID: 1"
+                                          "message": "리뷰를 찾을 수 없습니다. 전송된 리뷰 ID: 1"
                                         }
                                         """)
                         )
