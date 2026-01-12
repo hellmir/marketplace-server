@@ -15,5 +15,6 @@ public class OrderProductSnapshotState {
     private final Long unitAmount;
     private final String imageUrl;
     private final OrderStatus orderStatus;
+    private final Boolean isReviewed;
 }
 

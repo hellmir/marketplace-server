@@ -5,9 +5,13 @@ import com.personal.marketnote.commerce.domain.order.OrderStatus;
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Table(name = "order_product")
+@DynamicInsert
+@DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
@@ -33,6 +37,9 @@ public class OrderProductJpaEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status", nullable = false, length = 31)
     private OrderStatus orderStatus;
+
+    @Column(name = "review_yn", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isReviewed;
 
     public static OrderProductJpaEntity from(OrderProduct orderProduct, OrderJpaEntity orderJpaEntity) {
         return OrderProductJpaEntity.builder()
