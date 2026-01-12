@@ -12,6 +12,7 @@ import com.personal.marketnote.community.domain.review.Review;
 import com.personal.marketnote.community.domain.review.ReviewSortProperty;
 import com.personal.marketnote.community.domain.review.Reviews;
 import com.personal.marketnote.community.exception.ProductReviewAggregateNotFoundException;
+import com.personal.marketnote.community.exception.ReviewNotFoundException;
 import com.personal.marketnote.community.port.out.review.FindReviewPort;
 import com.personal.marketnote.community.port.out.review.SaveReviewPort;
 import com.personal.marketnote.community.port.out.review.UpdateReviewPort;
@@ -41,6 +42,11 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
     @Override
     public void save(ProductReviewAggregate productReviewAggregate) {
         productReviewAggregateJpaRepository.save(ProductReviewAggregateJpaEntity.from(productReviewAggregate));
+    }
+
+    @Override
+    public Optional<Review> findById(Long id) {
+        return ReviewJpaEntityToDomainMapper.mapToDomain(reviewJpaRepository.findById(id).orElse(null));
     }
 
     @Override
@@ -99,9 +105,25 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
     }
 
     @Override
+    public boolean existsByIdAndReviewerId(Long id, Long reviewerId) {
+        return reviewJpaRepository.existsByIdAndReviewerId(id, reviewerId);
+    }
+
+    @Override
+    public void update(Review review) throws ReviewNotFoundException {
+        ReviewJpaEntity entity = findEntityById(review.getId());
+        entity.updateFrom(review);
+    }
+
+    @Override
     public void update(ProductReviewAggregate productReviewAggregate) throws ProductReviewAggregateNotFoundException {
         ProductReviewAggregateJpaEntity entity = findEntityByProductId(productReviewAggregate.getProductId());
         entity.updateFrom(productReviewAggregate);
+    }
+
+    private ReviewJpaEntity findEntityById(Long id) throws ReviewNotFoundException {
+        return reviewJpaRepository.findById(id)
+                .orElseThrow(() -> new ReviewNotFoundException(id));
     }
 
     private ProductReviewAggregateJpaEntity findEntityByProductId(Long productId)

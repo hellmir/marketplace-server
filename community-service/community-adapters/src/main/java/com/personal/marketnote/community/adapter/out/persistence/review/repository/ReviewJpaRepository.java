@@ -91,4 +91,6 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
               AND r.productId = :productId
             """)
     long countByProductId(@Param("productId") Long productId);
+
+    boolean existsByIdAndReviewerId(Long id, Long reviewerId);
 }

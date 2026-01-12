@@ -11,6 +11,15 @@ import java.util.Optional;
 
 public interface FindReviewPort {
     /**
+     * @param id 리뷰 ID
+     * @return 리뷰 {@link Review}
+     * @Date 2026-01-12
+     * @Author 성효빈
+     * @Description 리뷰를 조회합니다.
+     */
+    Optional<Review> findById(Long id);
+
+    /**
      * @param orderId       주문 ID
      * @param pricePolicyId 가격 정책 ID
      * @return 주문 ID와 가격 정책 ID에 해당하는 리뷰 존재 여부 {@link boolean}
@@ -53,4 +62,14 @@ public interface FindReviewPort {
      * @Description 상품 리뷰 집계 정보를 조회합니다.
      */
     Optional<ProductReviewAggregate> findProductReviewAggregateByProductId(Long productId);
+
+    /**
+     * @param id         리뷰 ID
+     * @param reviewerId 리뷰 작성자 ID
+     * @return 리뷰 작성자 여부 {@link boolean}
+     * @Date 2026-01-12
+     * @Author 성효빈
+     * @Description 리뷰 작성자 여부를 조회합니다.
+     */
+    boolean existsByIdAndReviewerId(Long id, Long reviewerId);
 }

@@ -110,4 +110,10 @@ public class Review {
     public void updateIsUserLiked(Long userId) {
         isUserLiked = FormatValidator.equals(userId, reviewerId);
     }
+
+    public void update(Float rating, String content, Boolean isPhoto) {
+        this.rating = rating;
+        this.content = content;
+        this.isPhoto = isPhoto;
+    }
 }
