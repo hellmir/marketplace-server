@@ -1,6 +1,7 @@
 package com.personal.marketnote.commerce.port.in.usecase.order;
 
 import com.personal.marketnote.commerce.domain.order.Order;
+import com.personal.marketnote.commerce.domain.order.OrderProduct;
 import com.personal.marketnote.commerce.port.in.command.order.GetBuyerOrderHistoryCommand;
 import com.personal.marketnote.commerce.port.in.result.order.GetOrderResult;
 import com.personal.marketnote.commerce.port.in.result.order.GetOrdersResult;
@@ -32,4 +33,14 @@ public interface GetOrderUseCase {
      * @Description 회원 주문 내역을 조회합니다.
      */
     GetOrdersResult getBuyerOrderHistory(GetBuyerOrderHistoryCommand command);
+
+    /**
+     * @param orderId       주문 ID
+     * @param pricePolicyId 가격 정책 ID
+     * @return 주문 상품 도메인 {@link OrderProduct}
+     * @Date 2026-01-12
+     * @Author 성효빈
+     * @Description 주문 상품 정보를 조회합니다.
+     */
+    OrderProduct getOrderProduct(Long orderId, Long pricePolicyId);
 }

@@ -57,6 +57,7 @@ public class OrderProductJpaEntity extends BaseEntity {
         unitAmount = orderProduct.getUnitAmount();
         imageUrl = orderProduct.getImageUrl();
         orderStatus = orderProduct.getOrderStatus();
+        isReviewed = orderProduct.getIsReviewed();
     }
 }
 

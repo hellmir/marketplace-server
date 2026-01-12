@@ -40,5 +40,9 @@ public class OrderProduct {
     public void changeOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
     }
+
+    public void updateReviewStatus(Boolean isReviewed) {
+        this.isReviewed = isReviewed;
+    }
 }
 

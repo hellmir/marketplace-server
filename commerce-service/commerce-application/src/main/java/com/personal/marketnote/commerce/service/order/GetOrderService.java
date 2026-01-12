@@ -3,11 +3,13 @@ package com.personal.marketnote.commerce.service.order;
 import com.personal.marketnote.commerce.domain.order.Order;
 import com.personal.marketnote.commerce.domain.order.OrderProduct;
 import com.personal.marketnote.commerce.exception.OrderNotFoundException;
+import com.personal.marketnote.commerce.exception.OrderProductNotFoundException;
 import com.personal.marketnote.commerce.port.in.command.order.GetBuyerOrderHistoryCommand;
 import com.personal.marketnote.commerce.port.in.result.order.GetOrderResult;
 import com.personal.marketnote.commerce.port.in.result.order.GetOrdersResult;
 import com.personal.marketnote.commerce.port.in.usecase.order.GetOrderUseCase;
 import com.personal.marketnote.commerce.port.out.order.FindOrderPort;
+import com.personal.marketnote.commerce.port.out.order.FindOrderProductPort;
 import com.personal.marketnote.commerce.port.out.product.FindProductByPricePolicyPort;
 import com.personal.marketnote.commerce.port.out.result.product.ProductInfoResult;
 import com.personal.marketnote.common.application.UseCase;
@@ -27,6 +29,7 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 @Transactional(isolation = READ_COMMITTED, readOnly = true)
 public class GetOrderService implements GetOrderUseCase {
     private final FindOrderPort findOrderPort;
+    private final FindOrderProductPort findOrderProductPort;
     private final FindProductByPricePolicyPort findProductByPricePolicyPort;
 
     @Override
@@ -94,5 +97,11 @@ public class GetOrderService implements GetOrderUseCase {
         }
 
         return GetOrdersResult.of(orders, orderedProducts);
+    }
+
+    @Override
+    public OrderProduct getOrderProduct(Long orderId, Long pricePolicyId) {
+        return findOrderProductPort.findByOrderIdAndPricePolicyId(orderId, pricePolicyId)
+                .orElseThrow(() -> new OrderProductNotFoundException(orderId, pricePolicyId));
     }
 }

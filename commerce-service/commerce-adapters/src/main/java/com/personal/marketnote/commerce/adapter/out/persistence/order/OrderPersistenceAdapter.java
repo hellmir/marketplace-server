@@ -6,13 +6,14 @@ import com.personal.marketnote.commerce.adapter.out.persistence.order.entity.Ord
 import com.personal.marketnote.commerce.adapter.out.persistence.order.entity.OrderStatusHistoryJpaEntity;
 import com.personal.marketnote.commerce.adapter.out.persistence.order.repository.OrderHistoryJpaRepository;
 import com.personal.marketnote.commerce.adapter.out.persistence.order.repository.OrderJpaRepository;
+import com.personal.marketnote.commerce.adapter.out.persistence.order.repository.OrderProductJpaRepository;
 import com.personal.marketnote.commerce.domain.order.Order;
+import com.personal.marketnote.commerce.domain.order.OrderProduct;
 import com.personal.marketnote.commerce.domain.order.OrderStatus;
 import com.personal.marketnote.commerce.domain.order.OrderStatusHistory;
 import com.personal.marketnote.commerce.exception.OrderNotFoundException;
-import com.personal.marketnote.commerce.port.out.order.FindOrderPort;
-import com.personal.marketnote.commerce.port.out.order.SaveOrderPort;
-import com.personal.marketnote.commerce.port.out.order.UpdateOrderPort;
+import com.personal.marketnote.commerce.exception.OrderProductNotFoundException;
+import com.personal.marketnote.commerce.port.out.order.*;
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,9 @@ import java.util.Optional;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class OrderPersistenceAdapter implements SaveOrderPort, FindOrderPort, UpdateOrderPort {
+public class OrderPersistenceAdapter implements SaveOrderPort, FindOrderPort, FindOrderProductPort, UpdateOrderPort, UpdateOrderProductPort {
     private final OrderJpaRepository orderJpaRepository;
+    private final OrderProductJpaRepository orderProductJpaRepository;
     private final OrderHistoryJpaRepository orderHistoryJpaRepository;
 
     @Override
@@ -105,5 +107,24 @@ public class OrderPersistenceAdapter implements SaveOrderPort, FindOrderPort, Up
     private OrderJpaEntity findEntityById(Long id) throws OrderNotFoundException {
         return orderJpaRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException(id));
+    }
+
+    @Override
+    public Optional<OrderProduct> findByOrderIdAndPricePolicyId(Long orderId, Long pricePolicyId) {
+        return OrderJpaEntityToDomainMapper.mapToDomain(
+                orderProductJpaRepository.findByOrderIdAndPricePolicyId(orderId, pricePolicyId).orElse(null)
+        );
+    }
+
+    @Override
+    public void update(OrderProduct orderProduct) {
+        OrderProductJpaEntity orderProductJpaEntity
+                = findEntityByOrderIdAndPricePolicyId(orderProduct.getOrderId(), orderProduct.getPricePolicyId());
+        orderProductJpaEntity.updateFrom(orderProduct);
+    }
+
+    private OrderProductJpaEntity findEntityByOrderIdAndPricePolicyId(Long orderId, Long pricePolicyId) {
+        return orderProductJpaRepository.findByOrderIdAndPricePolicyId(orderId, pricePolicyId)
+                .orElseThrow(() -> new OrderProductNotFoundException(orderId, pricePolicyId));
     }
 }
