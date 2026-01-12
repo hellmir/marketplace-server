@@ -103,6 +103,38 @@ public class GetReviewService implements GetReviewUseCase {
     }
 
     @Override
+    public GetReviewsResult getMyReviews(
+            Long userId, Long cursor, int pageSize, Sort.Direction sortDirection, ReviewSortProperty sortProperty
+    ) {
+        Pageable pageable = PageRequest.of(
+                0, pageSize + 1, Sort.by(sortDirection, sortProperty.getCamelCaseValue())
+        );
+
+        Reviews userReviews = findReviewPort.findUserReviews(
+                userId, cursor, pageable, sortProperty
+        );
+
+        // 무한 스크롤 페이지 설정
+        boolean hasNext = userReviews.size() > pageSize;
+        List<Review> pagedReviews = hasNext
+                ? userReviews.subList(0, pageSize)
+                : userReviews.getReviews();
+
+        Long nextCursor = null;
+        if (FormatValidator.hasValue(pagedReviews)) {
+            nextCursor = pagedReviews.getLast().getId();
+        }
+
+        boolean isFirstPage = !FormatValidator.hasValue(cursor);
+        Long totalElements = null;
+        if (isFirstPage) {
+            totalElements = findReviewPort.countActive(userId);
+        }
+
+        return GetReviewsResult.from(hasNext, nextCursor, totalElements, pagedReviews);
+    }
+
+    @Override
     public void validateAuthor(Long id, Long reviewerId) {
         if (!findReviewPort.existsByIdAndReviewerId(id, reviewerId)) {
             throw new NotReviewAuthorException(id, reviewerId);

@@ -87,7 +87,7 @@ public class ReviewController {
      * @Date 2026-01-10
      * @Description 상품 리뷰 목록을 조회합니다.
      */
-    @GetMapping("products/{productId}/reviews")
+    @GetMapping("/products/{productId}/reviews")
     @GetProductReviewsApiDocs
     public ResponseEntity<BaseResponse<GetReviewsResponse>> getProductReviews(
             @PathVariable("productId") Long productId,
@@ -119,6 +119,46 @@ public class ReviewController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "상품 리뷰 목록 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 나의 리뷰 목록 조회
+     *
+     * @param cursor        커서(무한 스크롤 페이지 설정)
+     * @param pageSize      페이지 크기
+     * @param sortDirection 정렬 방향
+     * @param sortProperty  정렬 속성
+     * @return 리뷰 목록 조회 응답 {@link GetReviewsResult}
+     * @Author 성효빈
+     * @Date 2026-01-12
+     * @Description 나의 리뷰 목록을 조회합니다.
+     */
+    @GetMapping("/reviews")
+    @GetMyReviewsApiDocs
+    public ResponseEntity<BaseResponse<GetReviewsResponse>> getMyReviews(
+            @RequestParam(value = "cursor", required = false) Long cursor,
+            @RequestParam(value = "pageSize", required = false, defaultValue = GET_PRODUCT_REVIEWS_DEFAULT_PAGE_SIZE) int pageSize,
+            @RequestParam(required = false, defaultValue = "DESC") Sort.Direction sortDirection,
+            @RequestParam(required = false, defaultValue = "ID") ReviewSortProperty sortProperty,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        GetReviewsResult result = getReviewUseCase.getMyReviews(
+                ElementExtractor.extractUserId(principal),
+                cursor,
+                pageSize,
+                sortDirection,
+                sortProperty
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        GetReviewsResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "나의 리뷰 목록 조회 성공"
                 ),
                 HttpStatus.OK
         );

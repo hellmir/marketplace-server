@@ -110,6 +110,25 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
     }
 
     @Override
+    public Reviews findUserReviews(Long userId, Long cursor, Pageable pageable, ReviewSortProperty sortProperty) {
+        List<ReviewJpaEntity> entities = reviewJpaRepository.findUserReviewsByCursor(
+                userId,
+                cursor,
+                pageable,
+                sortProperty.getCamelCaseValue()
+        );
+
+        return Reviews.from(entities.stream()
+                .map(entity -> ReviewJpaEntityToDomainMapper.mapToDomain(entity).orElse(null))
+                .toList());
+    }
+
+    @Override
+    public long countActive(Long reviewerId) {
+        return reviewJpaRepository.countByReviewerId(reviewerId);
+    }
+
+    @Override
     public void update(Review review) throws ReviewNotFoundException {
         ReviewJpaEntity entity = findEntityById(review.getId());
         entity.updateFrom(review);

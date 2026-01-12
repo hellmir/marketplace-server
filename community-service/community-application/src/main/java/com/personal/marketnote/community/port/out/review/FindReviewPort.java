@@ -72,4 +72,25 @@ public interface FindReviewPort {
      * @Description 리뷰 작성자 여부를 조회합니다.
      */
     boolean existsByIdAndReviewerId(Long id, Long reviewerId);
+
+    /**
+     * @param reviewerId   리뷰 작성자 ID
+     * @param cursor       커서(무한 스크롤 페이지 설정)
+     * @param pageable     페이지네이션 정보
+     * @param sortProperty 정렬 속성
+     * @return 회원 리뷰 목록 {@link Reviews}
+     * @Date 2026-01-12
+     * @Author 성효빈
+     * @Description 회원 리뷰 목록을 조회합니다.
+     */
+    Reviews findUserReviews(Long reviewerId, Long cursor, Pageable pageable, ReviewSortProperty sortProperty);
+
+    /**
+     * @param reviewerId 리뷰 작성자 ID
+     * @return 총 리뷰 개수 {@link long}
+     * @Date 2026-01-12
+     * @Author 성효빈
+     * @Description 총 리뷰 개수를 조회합니다.
+     */
+    long countActive(Long reviewerId);
 }
