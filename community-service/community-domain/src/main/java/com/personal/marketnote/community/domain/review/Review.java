@@ -32,8 +32,8 @@ public class Review {
     private String reviewerName;
     private Float rating;
     private String content;
-    private Boolean photoYn;
-    private Boolean editedYn;
+    private Boolean isPhoto;
+    private Boolean isEdited;
     private Integer likeCount;
     private boolean isUserLiked;
     private EntityStatus status;
@@ -62,7 +62,7 @@ public class Review {
                 .reviewerName(mask(state.getReviewerName()))
                 .rating(round(state.getRating()))
                 .content(state.getContent())
-                .photoYn(state.getPhotoYn())
+                .isPhoto(state.getIsPhoto())
                 .status(EntityStatus.ACTIVE)
                 .build();
     }
@@ -97,8 +97,8 @@ public class Review {
                 .reviewerName(state.getReviewerName())
                 .rating(state.getRating())
                 .content(state.getContent())
-                .photoYn(state.getPhotoYn())
-                .editedYn(state.getEditedYn())
+                .isPhoto(state.getIsPhoto())
+                .isEdited(state.getIsEdited())
                 .likeCount(state.getLikeCount())
                 .status(state.getStatus())
                 .createdAt(state.getCreatedAt())

@@ -18,6 +18,5 @@ public class ReviewCreateState {
     private final String reviewerName;
     private final Float rating;
     private final String content;
-    private final Boolean photoYn;
+    private final Boolean isPhoto;
 }
-

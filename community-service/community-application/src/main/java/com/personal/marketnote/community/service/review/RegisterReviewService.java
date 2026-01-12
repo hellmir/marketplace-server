@@ -9,6 +9,7 @@ import com.personal.marketnote.community.port.in.command.review.RegisterReviewCo
 import com.personal.marketnote.community.port.in.result.review.RegisterReviewResult;
 import com.personal.marketnote.community.port.in.usecase.review.GetReviewUseCase;
 import com.personal.marketnote.community.port.in.usecase.review.RegisterReviewUseCase;
+import com.personal.marketnote.community.port.out.order.UpdateOrderProductReviewStatusPort;
 import com.personal.marketnote.community.port.out.review.SaveReviewPort;
 import com.personal.marketnote.community.port.out.review.UpdateReviewPort;
 import lombok.RequiredArgsConstructor;
@@ -23,24 +24,27 @@ public class RegisterReviewService implements RegisterReviewUseCase {
     private final GetReviewUseCase getReviewUseCase;
     private final SaveReviewPort saveReviewPort;
     private final UpdateReviewPort updateReviewPort;
+    private final UpdateOrderProductReviewStatusPort updateOrderProductReviewStatusPort;
 
     @Override
     public RegisterReviewResult registerReview(RegisterReviewCommand command) {
         getReviewUseCase.validateDuplicateReview(command);
+        Long orderId = command.orderId();
         Long productId = command.productId();
+        Long pricePolicyId = command.pricePolicyId();
         Review savedReview = saveReviewPort.save(
                 Review.from(
                         ReviewCreateState.builder()
                                 .reviewerId(command.reviewerId())
-                                .orderId(command.orderId())
+                                .orderId(orderId)
                                 .productId(productId)
-                                .pricePolicyId(command.pricePolicyId())
+                                .pricePolicyId(pricePolicyId)
                                 .selectedOptions(command.selectedOptions())
                                 .quantity(command.quantity())
                                 .reviewerName(command.reviewerName())
                                 .rating(command.rating())
                                 .content(command.content())
-                                .photoYn(command.isPhoto())
+                                .isPhoto(command.isPhoto())
                                 .build()
                 )
         );
@@ -57,6 +61,10 @@ public class RegisterReviewService implements RegisterReviewUseCase {
                     ProductReviewAggregate.from(savedReview)
             );
         }
+
+        // 주문 상품의 리뷰 작성 여부를 true로 업데이트
+        // FIXME: Kafka 이벤트 Production으로 변경
+        updateOrderProductReviewStatusPort.update(orderId, pricePolicyId, true);
 
         return RegisterReviewResult.from(savedReview);
     }
