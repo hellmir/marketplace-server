@@ -26,6 +26,11 @@ public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> 
             @Param("statusSize") int statusSize
     );
 
-    @Query("select distinct o from OrderJpaEntity o left join fetch o.orderProductJpaEntities where o.id in :ids")
+    @Query("""
+            SELECT DISTINCT o
+            FROM OrderJpaEntity o
+            LEFT JOIN FETCH o.orderProductJpaEntities
+            WHERE o.id IN :ids
+            """)
     List<OrderJpaEntity> findWithProductsByIds(@Param("ids") List<Long> ids);
 }

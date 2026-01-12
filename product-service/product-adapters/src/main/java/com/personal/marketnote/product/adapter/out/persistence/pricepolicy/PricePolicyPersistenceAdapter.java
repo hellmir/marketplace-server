@@ -24,8 +24,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
@@ -135,10 +134,9 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
 
     @Override
     public List<PricePolicy> findByProductId(Long productId) {
-        List<PricePolicyJpaEntity> policyEntities = pricePolicyJpaRepository.findAll().stream()
-                .filter(policyEntity -> policyEntity.getProductJpaEntity().getId().equals(productId))
-                .sorted((a, b) -> Long.compare(b.getId(), a.getId()))
-                .toList();
+        List<PricePolicyJpaEntity> policyEntities = loadPricePoliciesWithAssociations(
+                pricePolicyJpaRepository.findAllByProductJpaEntity_IdOrderByIdDesc(productId)
+        );
 
         return policyEntities.stream()
                 .map(policyEntity -> PricePolicyJpaEntityToDomainMapper.mapToDomain(
@@ -151,7 +149,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
 
     @Override
     public List<PricePolicy> findByIds(List<Long> ids) {
-        return pricePolicyJpaRepository.findAllById(ids).stream()
+        return loadPricePoliciesWithAssociationsByIds(ids).stream()
                 .map(PricePolicyJpaEntityToDomainMapper::mapToDomainWithOptions)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -200,7 +198,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
                 null
         );
 
-        return entities.stream()
+        return loadPricePoliciesWithAssociations(entities).stream()
                 .map(policyEntity -> PricePolicyJpaEntityToDomainMapper.mapToDomain(
                         policyEntity, productOptionPricePolicyJpaRepository.findOptionIdsByPricePolicyId(policyEntity.getId())
                 ))
@@ -252,7 +250,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
                 categoryId
         );
 
-        return entities.stream()
+        return loadPricePoliciesWithAssociations(entities).stream()
                 .map(policyEntity -> PricePolicyJpaEntityToDomainMapper.mapToDomain(
                         policyEntity, productOptionPricePolicyJpaRepository.findOptionIdsByPricePolicyId(policyEntity.getId())
                 ))
@@ -299,5 +297,39 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
     public void deleteByIdInternal(Long productId, Long pricePolicyId) {
         productOptionPricePolicyJpaRepository.deleteByPricePolicyId(pricePolicyId);
         pricePolicyJpaRepository.deleteById(pricePolicyId);
+    }
+
+    private List<PricePolicyJpaEntity> loadPricePoliciesWithAssociations(List<PricePolicyJpaEntity> baseEntities) {
+        if (!FormatValidator.hasValue(baseEntities)) {
+            return List.of();
+        }
+
+        List<Long> ids = baseEntities.stream()
+                .map(PricePolicyJpaEntity::getId)
+                .filter(Objects::nonNull)
+                .toList();
+
+        return loadPricePoliciesWithAssociationsByIds(ids);
+    }
+
+    private List<PricePolicyJpaEntity> loadPricePoliciesWithAssociationsByIds(List<Long> ids) {
+        if (!FormatValidator.hasValue(ids)) {
+            return List.of();
+        }
+
+        List<PricePolicyJpaEntity> hydrated = pricePolicyJpaRepository.findAllWithProductAndOptionMappingsByIdIn(ids);
+        if (!FormatValidator.hasValue(hydrated)) {
+            return List.of();
+        }
+
+        Map<Long, PricePolicyJpaEntity> hydratedById = new LinkedHashMap<>();
+        for (PricePolicyJpaEntity entity : hydrated) {
+            hydratedById.putIfAbsent(entity.getId(), entity);
+        }
+
+        return ids.stream()
+                .map(hydratedById::get)
+                .filter(Objects::nonNull)
+                .toList();
     }
 }
