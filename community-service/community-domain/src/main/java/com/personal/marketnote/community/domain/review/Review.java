@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.common.utility.NameMasker;
 import jakarta.persistence.Column;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -14,8 +15,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-
-import static com.personal.marketnote.common.utility.CharacterConstant.WILD_CARD;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -59,24 +58,12 @@ public class Review {
                 .pricePolicyId(state.getPricePolicyId())
                 .selectedOptions(state.getSelectedOptions())
                 .quantity(state.getQuantity())
-                .reviewerName(mask(state.getReviewerName()))
+                .reviewerName(NameMasker.mask(state.getReviewerName()))
                 .rating(round(state.getRating()))
                 .content(state.getContent())
                 .isPhoto(state.getIsPhoto())
                 .status(EntityStatus.ACTIVE)
                 .build();
-    }
-
-    private static String mask(String value) {
-        int length = value.length();
-        String firstChar = value.substring(0, 1);
-        String lastChar = value.substring(length - 1, length);
-
-        if (length < 3) {
-            return firstChar + WILD_CARD;
-        }
-
-        return firstChar + WILD_CARD + lastChar;
     }
 
     private static Float round(Float value) {

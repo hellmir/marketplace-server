@@ -16,11 +16,11 @@ public class LoginHistory {
     private String ipAddress;
     private LocalDateTime createdAt;
 
-    public static LoginHistory from(LoginHistoryCreateState state) {
+    public static LoginHistory of(User user, AuthVendor authVendor, String ipAddress) {
         return LoginHistory.builder()
-                .user(state.getUser())
-                .authVendor(state.getAuthVendor())
-                .ipAddress(state.getIpAddress())
+                .user(user)
+                .authVendor(authVendor)
+                .ipAddress(ipAddress)
                 .build();
     }
 

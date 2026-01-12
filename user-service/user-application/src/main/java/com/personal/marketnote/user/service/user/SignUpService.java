@@ -4,14 +4,13 @@ import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.domain.exception.illegalargument.novalue.PasswordNoValueException;
 import com.personal.marketnote.common.utility.RandomCodeGenerator;
 import com.personal.marketnote.user.domain.user.LoginHistory;
-import com.personal.marketnote.user.domain.user.LoginHistoryCreateState;
 import com.personal.marketnote.user.domain.user.Terms;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.exception.InvalidVerificationCodeException;
 import com.personal.marketnote.user.exception.UserExistsException;
 import com.personal.marketnote.user.exception.UserNotActiveException;
 import com.personal.marketnote.user.port.in.command.SignUpCommand;
-import com.personal.marketnote.user.port.in.mapper.UserCommandToDomainMapper;
+import com.personal.marketnote.user.port.in.mapper.UserCommandToStateMapper;
 import com.personal.marketnote.user.port.in.result.SignUpResult;
 import com.personal.marketnote.user.port.in.usecase.user.GetUserUseCase;
 import com.personal.marketnote.user.port.in.usecase.user.SignUpUseCase;
@@ -46,8 +45,8 @@ public class SignUpService implements SignUpUseCase {
     public SignUpResult signUp(SignUpCommand signUpCommand, AuthVendor authVendor, String oidcId, String ipAddress) {
         validate(signUpCommand, authVendor, oidcId);
 
-        String email = signUpCommand.getEmail();
-        String password = signUpCommand.getPassword();
+        String email = signUpCommand.email();
+        String password = signUpCommand.password();
 
         // 이메일 가입 정보가 있는 경우 기존 회원 엔티티에 통합
         if (findUserPort.existsByEmail(email)) {
@@ -61,24 +60,20 @@ public class SignUpService implements SignUpUseCase {
         String referenceCode = RandomCodeGenerator.generateReferenceCode();
 
         User signedUpUser = saveUserPort.save(
-                UserCommandToDomainMapper.mapToDomain(
-                        signUpCommand,
-                        authVendor,
-                        oidcId,
-                        terms,
-                        referenceCode,
-                        passwordEncoder
+                User.from(
+                        UserCommandToStateMapper.mapToDomain(
+                                signUpCommand,
+                                authVendor,
+                                oidcId,
+                                terms,
+                                referenceCode,
+                                passwordEncoder
+                        )
                 )
         );
 
         saveLoginHistoryPort.saveLoginHistory(
-                LoginHistory.from(
-                        LoginHistoryCreateState.builder()
-                                .user(signedUpUser)
-                                .authVendor(authVendor)
-                                .ipAddress(ipAddress)
-                                .build()
-                )
+                LoginHistory.of(signedUpUser, authVendor, ipAddress)
         );
 
         return SignUpResult.from(signedUpUser, true);
@@ -95,14 +90,14 @@ public class SignUpService implements SignUpUseCase {
             );
         }
 
-        String nickname = signUpCommand.getNickname();
+        String nickname = signUpCommand.nickname();
         if (findUserPort.existsByNickname(nickname)) {
             throw new UserExistsException(
                     String.format(NICKNAME_ALREADY_EXISTS_EXCEPTION_MESSAGE, THIRD_ERROR_CODE, nickname)
             );
         }
 
-        String phoneNumber = signUpCommand.getPhoneNumber();
+        String phoneNumber = signUpCommand.phoneNumber();
         if (signUpCommand.hasPhoneNumber() && findUserPort.existsByPhoneNumber(phoneNumber)) {
             throw new UserExistsException(
                     String.format(PHONE_NUMBER_ALREADY_EXISTS_EXCEPTION_MESSAGE, FOURTH_ERROR_CODE, phoneNumber)
@@ -110,8 +105,8 @@ public class SignUpService implements SignUpUseCase {
         }
 
         // 이메일 인증 코드 검증
-        String email = signUpCommand.getEmail();
-        if (!verifyCodePort.verify(email, signUpCommand.getVerificationCode())) {
+        String email = signUpCommand.email();
+        if (!verifyCodePort.verify(email, signUpCommand.verificationCode())) {
             throw new InvalidVerificationCodeException(FIFTH_ERROR_CODE, email);
         }
     }
@@ -132,13 +127,7 @@ public class SignUpService implements SignUpUseCase {
             signedUpUser.addLoginAccountInfo(authVendor, oidcId, password, passwordEncoder);
             updateUserPort.update(signedUpUser);
             saveLoginHistoryPort.saveLoginHistory(
-                    LoginHistory.from(
-                            LoginHistoryCreateState.builder()
-                                    .user(signedUpUser)
-                                    .authVendor(authVendor)
-                                    .ipAddress(ipAddress)
-                                    .build()
-                    )
+                    LoginHistory.of(signedUpUser, authVendor, ipAddress)
             );
 
             return signedUpUser;

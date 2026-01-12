@@ -1,10 +1,8 @@
 package com.personal.marketnote.product.port.in.result.option;
 
-import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.option.ProductOptionCategory;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public record SelectableProductOptionCategoryItemResult(
@@ -16,7 +14,7 @@ public record SelectableProductOptionCategoryItemResult(
 ) {
     public static SelectableProductOptionCategoryItemResult from(
             ProductOptionCategory category,
-            Set<String> selectedOptionContents
+            List<Long> selectedOptionIds
     ) {
         return new SelectableProductOptionCategoryItemResult(
                 category.getId(),
@@ -25,19 +23,9 @@ public record SelectableProductOptionCategoryItemResult(
                 category.getStatus().name(),
                 category.getOptions().stream()
                         .map(option -> SelectableProductOptionItemResult.from(
-                                option,
-                                containsIgnoreCase(selectedOptionContents, option.getContent())
+                                option, selectedOptionIds
                         ))
                         .collect(Collectors.toList())
         );
-    }
-
-    private static boolean containsIgnoreCase(Set<String> selectedOptionContents, String targetOptionContent) {
-        if (FormatValidator.hasValue(selectedOptionContents) && FormatValidator.hasValue(targetOptionContent)) {
-            return selectedOptionContents.stream()
-                    .anyMatch(selectedOptionContent -> selectedOptionContent.equalsIgnoreCase(targetOptionContent));
-        }
-
-        return false;
     }
 }

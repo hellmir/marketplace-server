@@ -4,7 +4,6 @@ import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.domain.exception.accessdenied.LoginFailedException;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.domain.user.LoginHistory;
-import com.personal.marketnote.user.domain.user.LoginHistoryCreateState;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.exception.UserNotActiveException;
 import com.personal.marketnote.user.exception.UserNotFoundException;
@@ -41,13 +40,7 @@ public class SignInService implements SignInUseCase {
         }
 
         saveLoginHistoryPort.saveLoginHistory(
-                LoginHistory.from(
-                        LoginHistoryCreateState.builder()
-                                .user(signedUpUser)
-                                .authVendor(authVendor)
-                                .ipAddress(ipAddress)
-                                .build()
-                )
+                LoginHistory.of(signedUpUser, authVendor, ipAddress)
         );
 
         return SignInResult.from(signedUpUser);

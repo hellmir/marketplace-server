@@ -37,17 +37,17 @@ public class UpdateUserService implements UpdateUserUseCase {
 
     private void updateTarget(boolean isAdmin, UpdateUserInfoCommand updateUserInfoCommand, User user) {
         if (isAdmin && updateUserInfoCommand.hasIsActive()) {
-            user.updateStatus(updateUserInfoCommand.getIsActive());
+            user.updateStatus(updateUserInfoCommand.isActive());
             return;
         }
 
-        String password = updateUserInfoCommand.getPassword();
+        String password = updateUserInfoCommand.password();
         if (updateUserInfoCommand.hasPassword()) {
             user.updatePassword(password, passwordEncoder);
             return;
         }
 
-        String email = updateUserInfoCommand.getEmail();
+        String email = updateUserInfoCommand.email();
         if (updateUserInfoCommand.hasEmail()) {
             user.validateDifferentEmail(email);
             validateDuplicateEmail(email);
@@ -55,7 +55,7 @@ public class UpdateUserService implements UpdateUserUseCase {
             return;
         }
 
-        String nickname = updateUserInfoCommand.getNickname();
+        String nickname = updateUserInfoCommand.nickname();
         if (updateUserInfoCommand.hasNickname()) {
             user.validateDifferentNickname(nickname);
             validateDuplicateNickname(nickname);
@@ -63,7 +63,7 @@ public class UpdateUserService implements UpdateUserUseCase {
             return;
         }
 
-        String phoneNumber = updateUserInfoCommand.getPhoneNumber();
+        String phoneNumber = updateUserInfoCommand.phoneNumber();
         if (updateUserInfoCommand.hasPhoneNumber()) {
             user.validateDifferentPhoneNumber(phoneNumber);
             validateDuplicatePhoneNumber(phoneNumber);

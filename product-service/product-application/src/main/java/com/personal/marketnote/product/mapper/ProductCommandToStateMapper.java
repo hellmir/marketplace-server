@@ -1,42 +1,58 @@
 package com.personal.marketnote.product.mapper;
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
-import com.personal.marketnote.product.domain.option.ProductOptionCategory;
 import com.personal.marketnote.product.domain.option.ProductOptionCategoryCreateState;
 import com.personal.marketnote.product.domain.option.ProductOptionCreateState;
-import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
 import com.personal.marketnote.product.domain.pricepolicy.PricePolicyCreateState;
 import com.personal.marketnote.product.domain.product.Product;
+import com.personal.marketnote.product.domain.product.ProductCreateState;
+import com.personal.marketnote.product.domain.product.ProductTagCreateState;
 import com.personal.marketnote.product.port.in.command.RegisterPricePolicyCommand;
+import com.personal.marketnote.product.port.in.command.RegisterProductCommand;
 import com.personal.marketnote.product.port.in.command.RegisterProductOptionsCommand;
 
 import java.util.stream.Collectors;
 
-public class ProductCommandToDomainMapper {
-    public static ProductOptionCategory mapToDomain(
+public class ProductCommandToStateMapper {
+    public static ProductCreateState mapToState(RegisterProductCommand command) {
+        return ProductCreateState.builder()
+                .sellerId(command.sellerId())
+                .name(command.name())
+                .brandName(command.brandName())
+                .detail(command.detail())
+                .findAllOptionsYn(command.isFindAllOptions())
+                .tags(
+                        command.tags()
+                                .stream()
+                                .map(tag -> ProductTagCreateState.builder().name(tag).build())
+                                .toList()
+                )
+                .build();
+    }
+
+    public static ProductOptionCategoryCreateState mapToState(
             Product product, RegisterProductOptionsCommand registerProductOptionsCommand
     ) {
-        return ProductOptionCategory.from(
+        return
                 ProductOptionCategoryCreateState.builder()
                         .product(product)
                         .name(registerProductOptionsCommand.categoryName())
                         .optionStates(
                                 registerProductOptionsCommand.options()
                                         .stream()
-                                        .map(ProductCommandToDomainMapper::mapToDomain)
+                                        .map(ProductCommandToStateMapper::mapToState)
                                         .collect(Collectors.toList())
                         )
-                        .build()
-        );
+                        .build();
     }
 
-    public static ProductOptionCreateState mapToDomain(RegisterProductOptionsCommand.OptionItem optionItem) {
+    public static ProductOptionCreateState mapToState(RegisterProductOptionsCommand.OptionItem optionItem) {
         return ProductOptionCreateState.builder()
                 .content(optionItem.content())
                 .build();
     }
 
-    public static PricePolicy mapToDomain(
+    public static PricePolicyCreateState mapToState(
             Product product, RegisterPricePolicyCommand command
     ) {
         java.math.BigDecimal price = java.math.BigDecimal.valueOf(command.price());
@@ -55,7 +71,7 @@ public class ProductCommandToDomainMapper {
                 .multiply(hundred)
                 .setScale(1, java.math.RoundingMode.HALF_UP);
 
-        return PricePolicy.from(
+        return
                 PricePolicyCreateState.builder()
                         .product(product)
                         .price(command.price())
@@ -65,7 +81,6 @@ public class ProductCommandToDomainMapper {
                         .accumulationRate(accumulationRate)
                         .status(EntityStatus.ACTIVE)
                         .optionIds(command.optionIds())
-                        .build()
-        );
+                        .build();
     }
 }

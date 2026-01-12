@@ -2,8 +2,7 @@ package com.personal.marketnote.product.service.product;
 
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.product.domain.product.Product;
-import com.personal.marketnote.product.domain.product.ProductCreateState;
-import com.personal.marketnote.product.domain.product.ProductTagCreateState;
+import com.personal.marketnote.product.mapper.ProductCommandToStateMapper;
 import com.personal.marketnote.product.port.in.command.RegisterPricePolicyCommand;
 import com.personal.marketnote.product.port.in.command.RegisterProductCommand;
 import com.personal.marketnote.product.port.in.result.pricepolicy.RegisterPricePolicyResult;
@@ -26,29 +25,15 @@ public class RegisterProductService implements RegisterProductUseCase {
     private final RegisterInventoryPort registerInventoryPort;
 
     @Override
-    public RegisterProductResult registerProduct(RegisterProductCommand registerProductCommand) {
-        Long sellerId = registerProductCommand.sellerId();
+    public RegisterProductResult registerProduct(RegisterProductCommand command) {
+        Long sellerId = command.sellerId();
 
         Product savedProduct = saveProductPort.save(
-                Product.from(
-                        ProductCreateState.builder()
-                                .sellerId(sellerId)
-                                .name(registerProductCommand.name())
-                                .brandName(registerProductCommand.brandName())
-                                .detail(registerProductCommand.detail())
-                                .findAllOptionsYn(registerProductCommand.isFindAllOptions())
-                                .tags(
-                                        registerProductCommand.tags()
-                                                .stream()
-                                                .map(tag -> ProductTagCreateState.builder().name(tag).build())
-                                                .toList()
-                                )
-                                .build()
-                )
+                Product.from(ProductCommandToStateMapper.mapToState(command))
         );
 
         RegisterPricePolicyResult registerPricePolicyResult = registerPricePolicyUseCase.registerPricePolicy(
-                sellerId, false, RegisterPricePolicyCommand.from(savedProduct.getId(), registerProductCommand)
+                sellerId, false, RegisterPricePolicyCommand.from(savedProduct.getId(), command)
         );
 
         // FIXME: Kafka 이벤트 Production으로 변경

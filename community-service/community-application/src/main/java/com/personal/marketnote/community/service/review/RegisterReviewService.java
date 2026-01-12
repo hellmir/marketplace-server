@@ -3,8 +3,8 @@ package com.personal.marketnote.community.service.review;
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.community.domain.review.ProductReviewAggregate;
 import com.personal.marketnote.community.domain.review.Review;
-import com.personal.marketnote.community.domain.review.ReviewCreateState;
 import com.personal.marketnote.community.exception.ProductReviewAggregateNotFoundException;
+import com.personal.marketnote.community.mapper.ReviewCommandToStateMapper;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
 import com.personal.marketnote.community.port.in.result.review.RegisterReviewResult;
 import com.personal.marketnote.community.port.in.usecase.review.GetReviewUseCase;
@@ -33,20 +33,7 @@ public class RegisterReviewService implements RegisterReviewUseCase {
         Long productId = command.productId();
         Long pricePolicyId = command.pricePolicyId();
         Review savedReview = saveReviewPort.save(
-                Review.from(
-                        ReviewCreateState.builder()
-                                .reviewerId(command.reviewerId())
-                                .orderId(orderId)
-                                .productId(productId)
-                                .pricePolicyId(pricePolicyId)
-                                .selectedOptions(command.selectedOptions())
-                                .quantity(command.quantity())
-                                .reviewerName(command.reviewerName())
-                                .rating(command.rating())
-                                .content(command.content())
-                                .isPhoto(command.isPhoto())
-                                .build()
-                )
+                Review.from(ReviewCommandToStateMapper.mapToState(command))
         );
 
         // 상품 평점 집계

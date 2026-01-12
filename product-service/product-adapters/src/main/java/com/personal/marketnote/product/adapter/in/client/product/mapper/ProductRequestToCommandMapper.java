@@ -11,28 +11,30 @@ import java.util.List;
 
 public class ProductRequestToCommandMapper {
     public static RegisterProductCommand mapToCommand(RegisterProductRequest registerProductRequest) {
-        return RegisterProductCommand.of(
-                registerProductRequest.getSellerId(),
-                registerProductRequest.getName(),
-                registerProductRequest.getBrandName(),
-                registerProductRequest.getDetail(),
-                registerProductRequest.getPrice(),
-                registerProductRequest.getDiscountPrice(),
-                registerProductRequest.getAccumulatedPoint(),
-                registerProductRequest.getIsFindAllOptions(),
-                registerProductRequest.getTags()
-        );
+        return RegisterProductCommand.builder()
+                .sellerId(registerProductRequest.getSellerId())
+                .name(registerProductRequest.getName())
+                .brandName(registerProductRequest.getBrandName())
+                .detail(registerProductRequest.getDetail())
+                .price(registerProductRequest.getPrice())
+                .discountPrice(registerProductRequest.getDiscountPrice())
+                .accumulatedPoint(registerProductRequest.getAccumulatedPoint())
+                .isFindAllOptions(registerProductRequest.getIsFindAllOptions())
+                .tags(registerProductRequest.getTags())
+                .build();
     }
 
     public static RegisterProductCategoriesCommand mapToCommand(
-            Long productId, RegisterProductCategoriesRequest registerProductCategoriesRequest) {
+            Long productId, RegisterProductCategoriesRequest registerProductCategoriesRequest
+    ) {
         return RegisterProductCategoriesCommand.of(
-                productId,
-                registerProductCategoriesRequest.getCategoryIds());
+                productId, registerProductCategoriesRequest.getCategoryIds()
+        );
     }
 
     public static RegisterProductOptionsCommand mapToCommand(
-            Long productId, UpdateProductOptionsRequest request) {
+            Long productId, UpdateProductOptionsRequest request
+    ) {
         List<RegisterProductOptionsCommand.OptionItem> optionItems = request.getOptions().stream()
                 .map(o -> new RegisterProductOptionsCommand.OptionItem(o.getContent()))
                 .toList();
@@ -40,7 +42,8 @@ public class ProductRequestToCommandMapper {
     }
 
     public static UpdateProductOptionsCommand mapToUpdateCommand(
-            Long productId, Long optionCategoryId, UpdateProductOptionsRequest request) {
+            Long productId, Long optionCategoryId, UpdateProductOptionsRequest request
+    ) {
         List<RegisterProductOptionsCommand.OptionItem> optionItems = request.getOptions().stream()
                 .map(o -> new RegisterProductOptionsCommand.OptionItem(o.getContent()))
                 .toList();
@@ -52,21 +55,22 @@ public class ProductRequestToCommandMapper {
     public static UpdateProductCommand mapToCommand(
             Long id, UpdateProductRequest request
     ) {
-        return UpdateProductCommand.of(
-                id,
-                request.getName(),
-                request.getBrandName(),
-                request.getDetail(),
-                request.getIsFindAllOptions(),
-                request.getTags()
-        );
+        return UpdateProductCommand.builder()
+                .id(id)
+                .name(request.getName())
+                .brandName(request.getBrandName())
+                .detail(request.getDetail())
+                .isFindAllOptions(request.getIsFindAllOptions())
+                .tags(request.getTags())
+                .build();
     }
 
     public static GetMyOrderingProductsCommand mapToCommand(
             GetMyOrderingProductsRequest getMyOrderingProductsRequest
     ) {
         return GetMyOrderingProductsCommand.from(
-                getMyOrderingProductsRequest.orderingItemRequests().stream()
+                getMyOrderingProductsRequest.orderingItemRequests()
+                        .stream()
                         .map(request -> OrderingItemCommand.of(
                                 request.pricePolicyId(), request.quantity(), request.imageUrl())
                         )
