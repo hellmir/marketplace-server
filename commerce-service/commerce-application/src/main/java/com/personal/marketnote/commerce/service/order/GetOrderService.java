@@ -4,6 +4,7 @@ import com.personal.marketnote.commerce.domain.order.Order;
 import com.personal.marketnote.commerce.domain.order.OrderProduct;
 import com.personal.marketnote.commerce.exception.OrderNotFoundException;
 import com.personal.marketnote.commerce.port.in.command.order.GetBuyerOrderHistoryCommand;
+import com.personal.marketnote.commerce.port.in.result.order.GetOrderResult;
 import com.personal.marketnote.commerce.port.in.result.order.GetOrdersResult;
 import com.personal.marketnote.commerce.port.in.usecase.order.GetOrderUseCase;
 import com.personal.marketnote.commerce.port.out.order.FindOrderPort;
@@ -27,6 +28,22 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 public class GetOrderService implements GetOrderUseCase {
     private final FindOrderPort findOrderPort;
     private final FindProductByPricePolicyPort findProductByPricePolicyPort;
+
+    @Override
+    public GetOrderResult getOrderAndOrderProducts(Long id) {
+        Order order = getOrder(id);
+        Map<Long, ProductInfoResult> orderedProducts = Optional.ofNullable(
+                        findProductByPricePolicyPort.findByPricePolicyIds(
+                                order.getOrderProducts()
+                                        .stream()
+                                        .map(OrderProduct::getPricePolicyId)
+                                        .toList()
+                        )
+                )
+                .orElse(Map.of());
+
+        return GetOrderResult.from(order, orderedProducts);
+    }
 
     @Override
     public Order getOrder(Long id) {
@@ -66,11 +83,11 @@ public class GetOrderService implements GetOrderUseCase {
             orders = orders.stream()
                     .filter(order -> order.getOrderProducts().stream()
                             .anyMatch(orderProduct -> {
-                                ProductInfoResult summary = orderedProducts.get(orderProduct.getPricePolicyId());
+                                ProductInfoResult productInfo = orderedProducts.get(orderProduct.getPricePolicyId());
 
-                                return FormatValidator.hasValue(summary)
-                                        && FormatValidator.hasValue(summary.name())
-                                        && FormatValidator.containsKeyword(summary.name(), keyword);
+                                return FormatValidator.hasValue(productInfo)
+                                        && FormatValidator.hasValue(productInfo.name())
+                                        && FormatValidator.containsKeyword(productInfo.name(), keyword);
                             })
                     )
                     .toList();

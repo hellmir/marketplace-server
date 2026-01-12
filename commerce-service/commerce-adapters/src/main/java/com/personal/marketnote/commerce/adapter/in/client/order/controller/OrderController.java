@@ -87,7 +87,7 @@ public class OrderController {
     @GetMapping("/{id}")
     @GetOrderInfoApiDocs
     public ResponseEntity<BaseResponse<GetOrderResponse>> getOrder(@PathVariable("id") Long id) {
-        GetOrderResult getOrderResult = GetOrderResult.from(getOrderUseCase.getOrder(id));
+        GetOrderResult getOrderResult = getOrderUseCase.getOrderAndOrderProducts(id);
 
         return new ResponseEntity<>(
                 BaseResponse.of(
@@ -117,7 +117,7 @@ public class OrderController {
             @RequestParam(value = "status", required = false) OrderStatusFilter statusFilter,
             @RequestParam(value = "productName", required = false) String productName
     ) {
-        GetOrdersResult domainResult = getOrderUseCase.getBuyerOrderHistory(
+        GetOrdersResult getOrderResult = getOrderUseCase.getBuyerOrderHistory(
                 GetBuyerOrderHistoryCommand.of(
                         ElementExtractor.extractUserId(principal),
                         period,
@@ -126,8 +126,8 @@ public class OrderController {
                 )
         );
         GetOrderHistoryResult getOrderHistoryResult = GetOrderHistoryResult.from(
-                domainResult.orders(),
-                domainResult.orderedProducts()
+                getOrderResult.orders(),
+                getOrderResult.orderedProducts()
         );
 
         return new ResponseEntity<>(

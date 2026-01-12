@@ -122,6 +122,36 @@ public class ReviewController {
     }
 
     /**
+     * 리뷰 수정
+     *
+     * @param request   리뷰 수정 요청
+     * @param principal 인증된 사용자 정보
+     * @Author 성효빈
+     * @Date 2026-01-12
+     * @Description 상품 리뷰를 수정합니다.
+     */
+    @PatchMapping("/reviews")
+    @UpdateReviewApiDocs
+    public ResponseEntity<BaseResponse<Void>> updateReview(
+            @PathVariable("reviewId") Long reviewId,
+            @Valid @RequestBody UpdateReviewRequest request,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        updateReviewUseCase.updateReview(
+                ReviewRequestToCommandMapper.mapToCommand(request, ElementExtractor.extractUserId(principal))
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "리뷰 수정 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
      * 상품 리뷰 평점 평균 및 점수별 개수 현황 조회
      *
      * @param productId 상품 ID
