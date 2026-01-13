@@ -1,11 +1,13 @@
-package com.personal.marketnote.community.adapter.in.client.review.controller.apidocs;
+package com.personal.marketnote.community.adapter.in.client.report.apidocs;
 
+import com.personal.marketnote.community.adapter.in.client.report.request.RegisterReportRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
@@ -15,13 +17,13 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "(관리자) 리뷰 신고 내역 조회",
+        summary = "리뷰 신고",
         description = """
                 작성일자: 2026-01-12
                 
                 작성자: 성효빈
                 
-                리뷰 신고 내역을 조회합니다.
+                리뷰를 신고합니다.
                 
                 ---
                 
@@ -30,6 +32,7 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
                 | id | number | 리뷰 ID | Y | 1 |
+                | reason | string | 리뷰 신고 사유(10자 이상) | Y | "부적절한 내용" |
                 
                 ---
                 
@@ -37,28 +40,11 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
-                | statusCode | number | HTTP 상태 코드 | 200 |
+                | statusCode | number | HTTP 상태 코드 | 201 |
                 | code | string | 응답 코드 | "SUC01" |
                 | timestamp | string(datetime) | 응답 일시 | "2026-01-12T16:32:18.828188" |
-                | content | object | 응답 본문 | { ... } |
-                | message | string | 처리 결과 | "리뷰 신고 내역 조회 성공" |
-                
-                ---
-                
-                ### Response > content
-                | **키** | **타입** | **설명** | **예시** |
-                | --- | --- | --- | --- |
-                | reviewReports | array | 리뷰 신고 내역 목록 | [ ... ] |
-                
-                ---
-                
-                ### Response > content > reviewReports
-                | **키** | **타입** | **설명** | **예시** |
-                | --- | --- | --- | --- |
-                | reviewId | number | 리뷰 ID | 30 |
-                | reporterId | number | 신고자 ID | 17 |
-                | reason | string | 신고 사유 | "부적절한 내용" |
-                | createdAt | string(datetime) | 신고 일시 | "2026-01-12T17:39:04.638613" |
+                | content | object | 응답 본문 | null |
+                | message | string | 처리 결과 | "리뷰 신고 성공" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         parameters = {
@@ -70,27 +56,29 @@ import java.lang.annotation.*;
                         schema = @Schema(type = "number", example = "1")
                 )
         },
+        requestBody = @RequestBody(
+                required = true,
+                content = @Content(
+                        schema = @Schema(implementation = RegisterReportRequest.class),
+                        examples = @ExampleObject("""
+                                {
+                                  "reason": "부적절한 내용"
+                                }
+                                """)
+                )
+        ),
         responses = {
                 @ApiResponse(
-                        responseCode = "200",
-                        description = "리뷰 신고 내역 조회 성공",
+                        responseCode = "201",
+                        description = "리뷰 신고 성공",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
-                                          "statusCode": 200,
+                                          "statusCode": 201,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-12T18:04:09.630337",
-                                          "content": {
-                                            "reviewReports": [
-                                              {
-                                                "reviewId": 30,
-                                                "reporterId": 17,
-                                                "reason": "부적절한 내용",
-                                                "createdAt": "2026-01-12T17:39:04.638613"
-                                              }
-                                            ]
-                                          },
-                                          "message": "리뷰 신고 내역 조회 성공"
+                                          "timestamp": "2026-01-12T16:32:18.828188",
+                                          "content": null,
+                                          "message": "리뷰 신고 성공"
                                         }
                                         """)
                         )
@@ -133,14 +121,29 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 404,
                                           "code": "NOT_FOUND",
-                                          "timestamp": "2026-01-12T23:20:05.915945975",
+                                          "timestamp": "2026-01-13T08:11:55.62655",
                                           "content": null,
                                           "message": "리뷰를 찾을 수 없습니다. 전송된 리뷰 ID: 1"
+                                        }
+                                        """)
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "409",
+                        description = "리뷰 중복 신고",
+                        content = @Content(
+                                examples = @ExampleObject("""
+                                        {
+                                          "statusCode": 409,
+                                          "code": "CONFLICT",
+                                          "timestamp": "2026-01-12T16:42:29.926731",
+                                          "content": null,
+                                          "message": "이미 해당 리뷰를 신고했습니다. 전송된 리뷰 ID: 1, 신고자 ID: 1"
                                         }
                                         """)
                         )
                 )
         }
 )
-public @interface GetReviewReportsApiDocs {
+public @interface ReportReviewApiDocs {
 }

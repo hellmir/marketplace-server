@@ -1,6 +1,6 @@
-package com.personal.marketnote.community.adapter.in.client.review.controller.apidocs;
+package com.personal.marketnote.community.adapter.in.client.report.apidocs;
 
-import com.personal.marketnote.community.adapter.in.client.review.request.ReportReviewRequest;
+import com.personal.marketnote.community.adapter.in.client.report.request.RegisterReportRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -17,13 +17,13 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "리뷰 신고",
+        summary = "게시글 신고",
         description = """
-                작성일자: 2026-01-12
+                작성일자: 2026-01-13
                 
                 작성자: 성효빈
                 
-                리뷰를 신고합니다.
+                게시글을 신고합니다.
                 
                 ---
                 
@@ -31,8 +31,8 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
-                | id | number | 리뷰 ID | Y | 1 |
-                | reason | string | 리뷰 신고 사유(10자 이상) | Y | "부적절한 내용" |
+                | id | number | 게시글 ID | Y | 1 |
+                | reason | string | 게시글 신고 사유(10자 이상) | Y | "부적절한 내용" |
                 
                 ---
                 
@@ -44,7 +44,7 @@ import java.lang.annotation.*;
                 | code | string | 응답 코드 | "SUC01" |
                 | timestamp | string(datetime) | 응답 일시 | "2026-01-12T16:32:18.828188" |
                 | content | object | 응답 본문 | null |
-                | message | string | 처리 결과 | "리뷰 신고 성공" |
+                | message | string | 처리 결과 | "게시글 신고 성공" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         parameters = {
@@ -52,14 +52,14 @@ import java.lang.annotation.*;
                         name = "id",
                         in = ParameterIn.PATH,
                         required = true,
-                        description = "리뷰 ID",
+                        description = "게시글 ID",
                         schema = @Schema(type = "number", example = "1")
                 )
         },
         requestBody = @RequestBody(
                 required = true,
                 content = @Content(
-                        schema = @Schema(implementation = ReportReviewRequest.class),
+                        schema = @Schema(implementation = RegisterReportRequest.class),
                         examples = @ExampleObject("""
                                 {
                                   "reason": "부적절한 내용"
@@ -70,7 +70,7 @@ import java.lang.annotation.*;
         responses = {
                 @ApiResponse(
                         responseCode = "201",
-                        description = "리뷰 신고 성공",
+                        description = "게시글 신고 성공",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
@@ -78,7 +78,7 @@ import java.lang.annotation.*;
                                           "code": "SUC01",
                                           "timestamp": "2026-01-12T16:32:18.828188",
                                           "content": null,
-                                          "message": "리뷰 신고 성공"
+                                          "message": "게시글 신고 성공"
                                         }
                                         """)
                         )
@@ -115,7 +115,7 @@ import java.lang.annotation.*;
                 ),
                 @ApiResponse(
                         responseCode = "404",
-                        description = "대상 리뷰 조회 실패",
+                        description = "대상 게시글 조회 실패",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
@@ -123,14 +123,14 @@ import java.lang.annotation.*;
                                           "code": "NOT_FOUND",
                                           "timestamp": "2026-01-13T08:11:55.62655",
                                           "content": null,
-                                          "message": "리뷰를 찾을 수 없습니다. 전송된 리뷰 ID: 1"
+                                          "message": "게시글을 찾을 수 없습니다. 전송된 게시글 ID: 1"
                                         }
                                         """)
                         )
                 ),
                 @ApiResponse(
                         responseCode = "409",
-                        description = "리뷰 중복 신고",
+                        description = "게시글 중복 신고",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
@@ -138,12 +138,12 @@ import java.lang.annotation.*;
                                           "code": "CONFLICT",
                                           "timestamp": "2026-01-12T16:42:29.926731",
                                           "content": null,
-                                          "message": "이미 해당 리뷰를 신고했습니다. 전송된 리뷰 ID: 1, 신고자 ID: 1"
+                                          "message": "이미 해당 게시글을 신고했습니다. 전송된 게시글 ID: 1, 신고자 ID: 1"
                                         }
                                         """)
                         )
                 )
         }
 )
-public @interface ReportReviewApiDocs {
+public @interface ReportPostApiDocs {
 }

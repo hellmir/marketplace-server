@@ -1,10 +1,8 @@
 package com.personal.marketnote.community.adapter.in.client.review.mapper;
 
 import com.personal.marketnote.community.adapter.in.client.review.request.RegisterReviewRequest;
-import com.personal.marketnote.community.adapter.in.client.review.request.ReportReviewRequest;
 import com.personal.marketnote.community.adapter.in.client.review.request.UpdateReviewRequest;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
-import com.personal.marketnote.community.port.in.command.review.ReportReviewCommand;
 import com.personal.marketnote.community.port.in.command.review.UpdateReviewCommand;
 
 public class ReviewRequestToCommandMapper {
@@ -31,9 +29,5 @@ public class ReviewRequestToCommandMapper {
                 .content(request.getContent())
                 .isPhoto(request.getIsPhoto())
                 .build();
-    }
-
-    public static ReportReviewCommand mapToCommand(Long id, Long userId, ReportReviewRequest request) {
-        return ReportReviewCommand.of(id, userId, request.getReason());
     }
 }
