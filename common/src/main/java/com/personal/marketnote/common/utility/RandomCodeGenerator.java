@@ -1,6 +1,7 @@
 package com.personal.marketnote.common.utility;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 
 public class RandomCodeGenerator {
     private static final char[] REFERENCE_CODE_AALLOWED_LETTERS = "ABCDEFGHJKMNPQRTUVWXYZ".toCharArray();
@@ -31,10 +32,14 @@ public class RandomCodeGenerator {
     }
 
     public static String generateEmailVerificationCode() {
-        return generateRandomCode(6);
+        return generateRandomNumberCode(6);
     }
 
-    private static String generateRandomCode(int length) {
+    public static String generateOrderNumber() {
+        return FormatConverter.parseToNumberTime(LocalDateTime.now()) + generateRandomNumberCode(5);
+    }
+
+    private static String generateRandomNumberCode(int length) {
         StringBuilder code = new StringBuilder(length);
         for (int i = 0; i < length; i++) {
             code.append(ALL_DIGITS[SECURE_RANDOM.nextInt(ALL_DIGITS.length)]);

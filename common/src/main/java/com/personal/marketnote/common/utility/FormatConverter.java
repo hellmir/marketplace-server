@@ -4,6 +4,9 @@ import com.personal.marketnote.common.domain.exception.illegalargument.invalidva
 import com.personal.marketnote.common.domain.exception.illegalargument.invalidvalue.ParsingBooleanException;
 import com.personal.marketnote.common.domain.exception.illegalargument.numberformat.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import static org.apache.commons.lang3.BooleanUtils.FALSE;
 import static org.apache.commons.lang3.BooleanUtils.TRUE;
 
@@ -109,5 +112,9 @@ public class FormatConverter {
     public static String sanitizeFileName(String filename) {
         return filename.replaceAll("\\s+", "-")
                 .replaceAll("[^a-zA-Z0-9._-]", "");
+    }
+
+    public static String parseToNumberTime(LocalDateTime time) {
+        return time.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
     }
 }

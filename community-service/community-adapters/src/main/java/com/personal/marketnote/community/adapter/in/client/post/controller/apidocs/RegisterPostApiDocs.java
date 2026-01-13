@@ -1,6 +1,6 @@
 package com.personal.marketnote.community.adapter.in.client.post.controller.apidocs;
 
-import com.personal.marketnote.community.adapter.in.client.review.request.RegisterReviewRequest;
+import com.personal.marketnote.community.adapter.in.client.post.request.RegisterPostRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -113,12 +113,12 @@ import java.lang.annotation.*;
         requestBody = @RequestBody(
                 required = true,
                 content = @Content(
-                        schema = @Schema(implementation = RegisterReviewRequest.class),
+                        schema = @Schema(implementation = RegisterPostRequest.class),
                         examples = @ExampleObject("""
                                 {
                                   "parentId": 1,
                                   "board": "NOTICE",
-                                  "category": "공지",
+                                  "category": "ANNOUNCEMENT",
                                   "targetType": "PRODUCT",
                                   "targetId": 1,
                                   "writerName": "홍길동",
@@ -164,17 +164,36 @@ import java.lang.annotation.*;
                 ),
                 @ApiResponse(
                         responseCode = "403",
-                        description = "토큰 인가 실패",
+                        description = "관리자 권한 인가 실패 / 관리자 또는 판매자 권한 인가 실패",
                         content = @Content(
-                                examples = @ExampleObject("""
-                                        {
-                                          "statusCode": 403,
-                                          "code": "FORBIDDEN",
-                                          "timestamp": "2026-01-09T16:32:18.828188",
-                                          "content": null,
-                                          "message": "Access Denied"
-                                        }
-                                        """)
+                                examples = {
+                                        @ExampleObject(
+                                                name = "관리자 권한 인가 실패",
+                                                summary = "관리자 권한 없음",
+                                                value = """
+                                                        {
+                                                          "statusCode": 403,
+                                                          "code": "FORBIDDEN",
+                                                          "timestamp": "2026-01-13T17:11:31.590392",
+                                                          "content": null,
+                                                          "message": "관리자만 작성할 수 있습니다."
+                                                        }
+                                                        """
+                                        ),
+                                        @ExampleObject(
+                                                name = "관리자 또는 판매자 권한 인가 실패",
+                                                summary = "관리자 또는 판매자 권한 없음",
+                                                value = """
+                                                        {
+                                                          "statusCode": 403,
+                                                          "code": "FORBIDDEN",
+                                                          "timestamp": "2026-01-13T17:11:31.590392",
+                                                          "content": null,
+                                                          "message": "관리자 또는 판매자만 작성할 수 있습니다."
+                                                        }
+                                                        """
+                                        )
+                                }
                         )
                 ),
                 @ApiResponse(

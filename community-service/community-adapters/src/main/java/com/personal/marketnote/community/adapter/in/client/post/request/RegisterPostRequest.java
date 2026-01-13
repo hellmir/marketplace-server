@@ -1,10 +1,14 @@
 package com.personal.marketnote.community.adapter.in.client.post.request;
 
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.domain.post.Board;
 import com.personal.marketnote.community.domain.post.PostTargetType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
+import org.springframework.security.access.AccessDeniedException;
+
+import java.util.List;
 
 @Getter
 public class RegisterPostRequest {
@@ -83,4 +87,22 @@ public class RegisterPostRequest {
             requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
     private Boolean isPrivate = false;
+
+    public void validate(List<String> authorities) {
+        if (isAdminRequired() && !authorities.contains("ROLE_ADMIN")) {
+            throw new AccessDeniedException("관리자만 작성할 수 있습니다.");
+        }
+
+        if (isSellerRequired() && !authorities.contains("ROLE_ADMIN") && !authorities.contains("ROLE_SELLER")) {
+            throw new AccessDeniedException("관리자 또는 판매자만 작성할 수 있습니다.");
+        }
+    }
+
+    private boolean isAdminRequired() {
+        return board.isAdminRequired() || (board.isOneOnOneInquery() && FormatValidator.hasValue(parentId));
+    }
+
+    private boolean isSellerRequired() {
+        return board.isProductInquery() && FormatValidator.hasValue(parentId);
+    }
 }
