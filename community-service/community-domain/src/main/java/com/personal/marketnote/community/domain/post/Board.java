@@ -63,4 +63,8 @@ public enum Board {
     public boolean isOneOnOneInquery() {
         return this == ONE_ON_ONE_INQUERY;
     }
+
+    public boolean isNonMemberViewBoard() {
+        return this == NOTICE || this == FAQ;
+    }
 }

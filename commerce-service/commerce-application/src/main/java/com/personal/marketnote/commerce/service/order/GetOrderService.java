@@ -74,10 +74,7 @@ public class GetOrderService implements GetOrderUseCase {
                 .distinct()
                 .toList();
 
-        Map<Long, ProductInfoResult> orderedProducts = Optional.ofNullable(
-                        findProductByPricePolicyPort.findByPricePolicyIds(pricePolicyIds)
-                )
-                .orElse(Map.of());
+        Map<Long, ProductInfoResult> orderedProducts = findProductByPricePolicyPort.findByPricePolicyIds(pricePolicyIds);
 
         String productNameKeyword = command.resolvedProductName();
         if (FormatValidator.hasValue(productNameKeyword)) {
