@@ -4,12 +4,11 @@ import com.personal.marketnote.community.adapter.out.mapper.ProductReviewAggrega
 import com.personal.marketnote.community.adapter.out.mapper.ReviewJpaEntityToDomainMapper;
 import com.personal.marketnote.community.adapter.out.persistence.review.entity.ProductReviewAggregateJpaEntity;
 import com.personal.marketnote.community.adapter.out.persistence.review.entity.ReviewJpaEntity;
+import com.personal.marketnote.community.adapter.out.persistence.review.entity.ReviewVersionHistoryJpaEntity;
 import com.personal.marketnote.community.adapter.out.persistence.review.repository.ProductReviewAggregateJpaRepository;
 import com.personal.marketnote.community.adapter.out.persistence.review.repository.ReviewJpaRepository;
-import com.personal.marketnote.community.domain.review.ProductReviewAggregate;
-import com.personal.marketnote.community.domain.review.Review;
-import com.personal.marketnote.community.domain.review.ReviewSortProperty;
-import com.personal.marketnote.community.domain.review.Reviews;
+import com.personal.marketnote.community.adapter.out.persistence.review.repository.ReviewVersionHistoryJpaRepository;
+import com.personal.marketnote.community.domain.review.*;
 import com.personal.marketnote.community.exception.ProductReviewAggregateNotFoundException;
 import com.personal.marketnote.community.exception.ReviewNotFoundException;
 import com.personal.marketnote.community.port.out.review.FindReviewPort;
@@ -27,11 +26,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort, UpdateReviewPort {
     private final ReviewJpaRepository reviewJpaRepository;
+    private final ReviewVersionHistoryJpaRepository reviewVersionHistoryJpaRepository;
     private final ProductReviewAggregateJpaRepository productReviewAggregateJpaRepository;
 
     @Override
     @CacheEvict(value = "review:photo:list:first", allEntries = true, condition = "T(java.lang.Boolean).TRUE.equals(#review.isPhoto)")
-    public Review save(Review review) {
+    public Review saveAggregate(Review review) {
         ReviewJpaEntity savedEntity = reviewJpaRepository.save(ReviewJpaEntity.from(review));
         savedEntity.setIdToOrderNum();
 
@@ -39,8 +39,13 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
     }
 
     @Override
-    public void save(ProductReviewAggregate productReviewAggregate) {
+    public void saveAggregate(ProductReviewAggregate productReviewAggregate) {
         productReviewAggregateJpaRepository.save(ProductReviewAggregateJpaEntity.from(productReviewAggregate));
+    }
+
+    @Override
+    public void saveVersionHistory(ReviewVersionHistory reviewVersionHistory) {
+        reviewVersionHistoryJpaRepository.save(ReviewVersionHistoryJpaEntity.from(reviewVersionHistory));
     }
 
     @Override
