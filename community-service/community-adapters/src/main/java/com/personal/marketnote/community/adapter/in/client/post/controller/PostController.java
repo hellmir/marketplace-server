@@ -13,12 +13,15 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
 
@@ -45,6 +48,8 @@ public class PostController {
             @Valid @RequestBody RegisterPostRequest request,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
+        validateAuthority(request, principal);
+
         RegisterPostResult result = registerPostUseCase.registerPost(
                 PostRequestToCommandMapper.mapToCommand(request, ElementExtractor.extractUserId(principal))
         );
@@ -58,5 +63,14 @@ public class PostController {
                 ),
                 HttpStatus.CREATED
         );
+    }
+
+    private void validateAuthority(RegisterPostRequest request, OAuth2AuthenticatedPrincipal principal) {
+        List<String> authorities = principal.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+
+        request.validate(authorities);
     }
 }

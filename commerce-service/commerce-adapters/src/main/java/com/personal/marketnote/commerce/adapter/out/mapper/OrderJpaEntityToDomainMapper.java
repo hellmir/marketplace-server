@@ -26,6 +26,7 @@ public class OrderJpaEntityToDomainMapper {
                                     .id(entity.getId())
                                     .sellerId(entity.getSellerId())
                                     .buyerId(entity.getBuyerId())
+                                    .orderNumber(entity.getOrderNumber())
                                     .orderStatus(entity.getOrderStatus())
                                     .totalAmount(entity.getTotalAmount())
                                     .paidAmount(entity.getPaidAmount())

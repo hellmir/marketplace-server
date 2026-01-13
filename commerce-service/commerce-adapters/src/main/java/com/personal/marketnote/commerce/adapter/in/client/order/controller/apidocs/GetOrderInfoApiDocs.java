@@ -106,6 +106,7 @@ import java.lang.annotation.*;
                 | id | number | 주문 ID | 1 |
                 | sellerId | number | 판매자 회원 ID | 1 |
                 | buyerId | number | 구매자 회원 ID | 1 |
+                | orderNumber | string | 주문 번호 | "2026011300001" |
                 | orderStatus | string | 주문 상태 | "CANCELLED" |
                 | statusChangeReasonCategory | string | 주문 상태 변경 사유 카테고리 | "CANCEL_ORDER" |
                 | statusChangeReason | string | 주문 상태 변경 사유 | "상품이 별로임" |
@@ -164,6 +165,7 @@ import java.lang.annotation.*;
                                               "id": 15,
                                               "sellerId": 12,
                                               "buyerId": 17,
+                                              "orderNumber": "2026011300001",
                                               "orderStatus": "CANCELLED",
                                               "statusChangeReasonCategory": "CANCEL_ORDER",
                                               "statusChangeReason": "상품이 별로임",

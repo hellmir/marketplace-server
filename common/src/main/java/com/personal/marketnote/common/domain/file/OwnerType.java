@@ -11,6 +11,7 @@ import java.util.Arrays;
 public enum OwnerType {
     PRODUCT("상품"),
     ORDER("주문"),
+    POST("게시글"),
     REVIEW("사용자 후기");
 
     private final String description;

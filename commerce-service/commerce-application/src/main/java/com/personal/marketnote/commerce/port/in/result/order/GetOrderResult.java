@@ -15,6 +15,7 @@ public record GetOrderResult(
         Long id,
         Long sellerId,
         Long buyerId,
+        String orderNumber,
         OrderStatus orderStatus,
         OrderStatusReasonCategory statusChangeReasonCategory,
         String statusChangeReason,
@@ -32,6 +33,7 @@ public record GetOrderResult(
                 .id(order.getId())
                 .sellerId(order.getSellerId())
                 .buyerId(order.getBuyerId())
+                .orderNumber(order.getOrderNumber())
                 .orderStatus(order.getOrderStatus())
                 .statusChangeReasonCategory(order.getStatusChangeReasonCategory())
                 .statusChangeReason(order.getStatusChangeReason())

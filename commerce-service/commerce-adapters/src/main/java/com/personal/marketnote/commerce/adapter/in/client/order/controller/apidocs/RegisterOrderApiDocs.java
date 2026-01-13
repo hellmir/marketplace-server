@@ -71,7 +71,8 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | id | number | 생성된 주문 ID | 1 |
-                """, security = {@SecurityRequirement(name = "bearer")},
+                """,
+        security = {@SecurityRequirement(name = "bearer")},
         requestBody = @RequestBody(
                 required = true,
                 content = @Content(

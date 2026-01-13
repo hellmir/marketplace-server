@@ -112,6 +112,7 @@ import java.lang.annotation.*;
                 | id | number | 주문 ID | 1 |
                 | sellerId | number | 판매자 회원 ID | 1 |
                 | buyerId | number | 구매자 회원 ID | 1 |
+                | orderNumber | string | 주문 번호 | "2026011300001" |
                 | orderStatus | string | 주문 상태 | "DELIVERED" |
                 | totalAmount | number | 총 주문 금액(원) | 100000 |
                 | paidAmount | number | 결제 금액(원) | 100000 |
@@ -165,6 +166,7 @@ import java.lang.annotation.*;
                                                     "id": 15,
                                                     "sellerId": 12,
                                                     "buyerId": 17,
+                                                    "orderNumber": "2026011300001",
                                                     "orderStatus": "PAID",
                                                     "totalAmount": 120000,
                                                     "paidAmount": 120000,
@@ -215,6 +217,7 @@ import java.lang.annotation.*;
                                                     "id": 3,
                                                     "sellerId": 1,
                                                     "buyerId": 17,
+                                                    "orderNumber": "2026011300002",
                                                     "orderStatus": "CONFIRMED",
                                                     "totalAmount": 50000,
                                                     "paidAmount": null,
@@ -280,6 +283,7 @@ import java.lang.annotation.*;
                                                     "id": 2,
                                                     "sellerId": 1,
                                                     "buyerId": 17,
+                                                    "orderNumber": "2026011300003",
                                                     "orderStatus": "DELIVERED",
                                                     "totalAmount": 100000,
                                                     "paidAmount": null,

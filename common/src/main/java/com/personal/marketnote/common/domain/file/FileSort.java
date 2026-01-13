@@ -15,6 +15,7 @@ public enum FileSort {
     CANCEL_REASON_IMAGE("취소 사유 이미지"),
     EXCHANGE_REASON_IMAGE("교환 사유 이미지"),
     REFUND_REASON_IMAGE("환불 사유 이미지"),
+    POST_IMAGE("게시글 이미지"),
     REVIEW_IMAGE("리뷰 이미지"),
     ICON("아이콘"),
     ETC("기타");

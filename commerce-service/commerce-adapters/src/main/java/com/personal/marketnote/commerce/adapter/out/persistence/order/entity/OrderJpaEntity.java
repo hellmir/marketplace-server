@@ -37,6 +37,9 @@ public class OrderJpaEntity extends BaseEntity {
     @Column(name = "buyer_id", nullable = false)
     private Long buyerId;
 
+    @Column(name = "order_number", nullable = false, length = 31, unique = true)
+    private String orderNumber;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status", nullable = false, length = 31)
     private OrderStatus orderStatus;
@@ -61,6 +64,7 @@ public class OrderJpaEntity extends BaseEntity {
         return OrderJpaEntity.builder()
                 .sellerId(order.getSellerId())
                 .buyerId(order.getBuyerId())
+                .orderNumber(order.getOrderNumber())
                 .orderStatus(order.getOrderStatus())
                 .totalAmount(order.getTotalAmount())
                 .paidAmount(order.getPaidAmount())

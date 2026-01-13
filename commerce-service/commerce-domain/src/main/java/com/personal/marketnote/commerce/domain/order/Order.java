@@ -1,5 +1,6 @@
 package com.personal.marketnote.commerce.domain.order;
 
+import com.personal.marketnote.common.utility.RandomCodeGenerator;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ public class Order {
     private Long id;
     private Long sellerId;
     private Long buyerId;
+    private String orderNumber;
     private OrderStatus orderStatus;
     private OrderStatusReasonCategory statusChangeReasonCategory;
     private String statusChangeReason;
@@ -34,6 +36,7 @@ public class Order {
         return Order.builder()
                 .sellerId(state.getSellerId())
                 .buyerId(state.getBuyerId())
+                .orderNumber(RandomCodeGenerator.generateOrderNumber())
                 .orderStatus(OrderStatus.PAYMENT_PENDING)
                 .totalAmount(state.getTotalAmount())
                 .couponAmount(state.getCouponAmount())
@@ -53,6 +56,7 @@ public class Order {
                 .id(state.getId())
                 .sellerId(state.getSellerId())
                 .buyerId(state.getBuyerId())
+                .orderNumber(state.getOrderNumber())
                 .orderStatus(state.getOrderStatus())
                 .statusChangeReasonCategory(state.getStatusChangeReasonCategory())
                 .statusChangeReason(state.getStatusChangeReason())

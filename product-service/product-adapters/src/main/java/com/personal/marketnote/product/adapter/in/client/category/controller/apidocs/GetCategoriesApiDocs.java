@@ -67,50 +67,55 @@ import java.lang.annotation.*;
                 | status | string | 상태 | "ACTIVE" |
                 """,
         responses = {
-                @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = StringResponseSchema.class), examples = {
-                        @ExampleObject(name = "성공", value = """
-                                {
-                                  "statusCode": 200,
-                                  "code": "SUC01",
-                                  "timestamp": "2025-12-31T11:10:54.208185",
-                                  "content": {
-                                    "categories": [
-                                      {
-                                        "id": 10001,
-                                        "parentCategoryId": 1,
-                                        "name": "베스트",
-                                        "status": "ACTIVE"
-                                      },
-                                      {
-                                        "id": 10002,
-                                        "parentCategoryId": 1,
-                                        "name": "비타민B",
-                                        "status": "ACTIVE"
-                                      },
-                                      {
-                                        "id": 10003,
-                                        "parentCategoryId": 1,
-                                        "name": "오메가",
-                                        "status": "ACTIVE"
-                                      },
-                                      {
-                                        "id": 10004,
-                                        "parentCategoryId": 1,
-                                        "name": "루테인",
-                                        "status": "ACTIVE"
-                                      },
-                                      {
-                                        "id": 10005,
-                                        "parentCategoryId": 1,
-                                        "name": "아스타잔틴",
-                                        "status": "ACTIVE"
-                                      }
-                                    ]
-                                  },
-                                  "message": "카테고리 목록 조회 성공"
-                                }
-                                """)
-                }))
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "OK",
+                        content = @Content(
+                                schema = @Schema(implementation = StringResponseSchema.class),
+                                examples = {
+                                        @ExampleObject(name = "성공", value = """
+                                                {
+                                                  "statusCode": 200,
+                                                  "code": "SUC01",
+                                                  "timestamp": "2025-12-31T11:10:54.208185",
+                                                  "content": {
+                                                    "categories": [
+                                                      {
+                                                        "id": 10001,
+                                                        "parentCategoryId": 1,
+                                                        "name": "베스트",
+                                                        "status": "ACTIVE"
+                                                      },
+                                                      {
+                                                        "id": 10002,
+                                                        "parentCategoryId": 1,
+                                                        "name": "비타민B",
+                                                        "status": "ACTIVE"
+                                                      },
+                                                      {
+                                                        "id": 10003,
+                                                        "parentCategoryId": 1,
+                                                        "name": "오메가",
+                                                        "status": "ACTIVE"
+                                                      },
+                                                      {
+                                                        "id": 10004,
+                                                        "parentCategoryId": 1,
+                                                        "name": "루테인",
+                                                        "status": "ACTIVE"
+                                                      },
+                                                      {
+                                                        "id": 10005,
+                                                        "parentCategoryId": 1,
+                                                        "name": "아스타잔틴",
+                                                        "status": "ACTIVE"
+                                                      }
+                                                    ]
+                                                  },
+                                                  "message": "카테고리 목록 조회 성공"
+                                                }
+                                                """)
+                                }))
         })
 public @interface GetCategoriesApiDocs {
 }

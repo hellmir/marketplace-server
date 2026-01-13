@@ -51,4 +51,16 @@ public enum Board {
 
         throw new IllegalArgumentException("유효하지 않은 카테고리명입니다. 카테고리명: " + categoryCode);
     }
+
+    public boolean isAdminRequired() {
+        return this == NOTICE || this == FAQ;
+    }
+
+    public boolean isProductInquery() {
+        return this == PRODUCT_INQUERY;
+    }
+
+    public boolean isOneOnOneInquery() {
+        return this == ONE_ON_ONE_INQUERY;
+    }
 }
