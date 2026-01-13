@@ -75,7 +75,7 @@ import java.lang.annotation.*;
                 
                 - 대상 유형 목록
                 
-                    - "PRODUCT": 상품
+                    - "PRICE_POLICY": 상품 가격 정책(상품 문의 시에만 전송)
                 
                 ---
                 
@@ -86,7 +86,7 @@ import java.lang.annotation.*;
                 | parentId | number | 부모 게시글 ID (답변 시 사용) | N | 1 |
                 | board | string | 대상 게시판 | Y | "NOTICE" |
                 | category | string | 게시글 카테고리 | Y | "ANNOUNCEMENT" |
-                | targetType | string | 대상 유형 | N | "PRODUCT" |
+                | targetType | string | 대상 유형 | N | "PRICE_POLICY" |
                 | targetId | number | 대상 ID | N | 1 |
                 | writerName | string | 작성자 이름 | Y | "홍길동" |
                 | title | string | 제목 | Y | "게시글 제목" |
@@ -119,7 +119,7 @@ import java.lang.annotation.*;
                                   "parentId": 1,
                                   "board": "NOTICE",
                                   "category": "ANNOUNCEMENT",
-                                  "targetType": "PRODUCT",
+                                  "targetType": "PRICE_POLICY",
                                   "targetId": 1,
                                   "writerName": "홍길동",
                                   "title": "게시글 제목",
