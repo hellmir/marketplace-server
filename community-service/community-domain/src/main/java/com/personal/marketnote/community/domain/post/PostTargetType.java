@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum PostTargetType {
-    PRODUCT("상품");
+    PRICE_POLICY("상품 가격 정책");
 
     private final String description;
 
