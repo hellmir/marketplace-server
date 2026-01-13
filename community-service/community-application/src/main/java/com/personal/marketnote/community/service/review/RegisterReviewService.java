@@ -3,6 +3,8 @@ package com.personal.marketnote.community.service.review;
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.community.domain.review.ProductReviewAggregate;
 import com.personal.marketnote.community.domain.review.Review;
+import com.personal.marketnote.community.domain.review.ReviewVersionHistory;
+import com.personal.marketnote.community.domain.review.ReviewVersionHistoryCreateState;
 import com.personal.marketnote.community.exception.ProductReviewAggregateNotFoundException;
 import com.personal.marketnote.community.mapper.ReviewCommandToStateMapper;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
@@ -32,8 +34,15 @@ public class RegisterReviewService implements RegisterReviewUseCase {
         Long orderId = command.orderId();
         Long productId = command.productId();
         Long pricePolicyId = command.pricePolicyId();
-        Review savedReview = saveReviewPort.save(
+        Review savedReview = saveReviewPort.saveAggregate(
                 Review.from(ReviewCommandToStateMapper.mapToState(command))
+        );
+
+        // 리뷰 버전 기록 저장
+        ReviewVersionHistoryCreateState reviewVersionHistoryCreateState
+                = ReviewCommandToStateMapper.mapToVersionHistoryState(savedReview.getId(), command);
+        saveReviewPort.saveVersionHistory(
+                ReviewVersionHistory.from(reviewVersionHistoryCreateState)
         );
 
         // 상품 평점 집계
@@ -44,7 +53,7 @@ public class RegisterReviewService implements RegisterReviewUseCase {
             productReviewAggregate.computeAverageRating(point);
             updateReviewPort.update(productReviewAggregate);
         } catch (ProductReviewAggregateNotFoundException pranfe) {
-            saveReviewPort.save(
+            saveReviewPort.saveAggregate(
                     ProductReviewAggregate.from(savedReview)
             );
         }
