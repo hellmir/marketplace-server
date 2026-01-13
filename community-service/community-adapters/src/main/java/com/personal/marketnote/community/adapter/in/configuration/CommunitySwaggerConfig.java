@@ -31,6 +31,7 @@ public class CommunitySwaggerConfig {
     private String serverOrigin;
 
     private static final List<String> TAGS_ORDER = List.of(
+            "게시글 API",
             "리뷰 API",
             "좋아요 API"
     );

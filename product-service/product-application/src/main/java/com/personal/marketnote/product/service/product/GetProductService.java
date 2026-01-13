@@ -29,7 +29,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
@@ -105,11 +107,9 @@ public class GetProductService implements GetProductUseCase {
         GetProductInfoResult productInfo
                 = GetProductInfoResult.from(product, selectedPricePolicy, inventories.get(pricePolicyId));
 
-        Set<String> selectedFlags = getFlags(selectedOptionIds, categories);
-
         List<SelectableProductOptionCategoryItemResult> selectableCategories
                 = categories.stream()
-                .map(c -> SelectableProductOptionCategoryItemResult.from(c, selectedFlags))
+                .map(c -> SelectableProductOptionCategoryItemResult.from(c, selectedOptionIds))
                 .toList();
 
         // 이미지 결과 대기
@@ -119,22 +119,6 @@ public class GetProductService implements GetProductUseCase {
         return GetProductInfoWithOptionsResult.of(
                 productInfo, selectableCategories, representativeImages, contentImages, pricePolicies
         );
-    }
-
-    private static Set<String> getFlags(List<Long> selectedOptionIds, List<ProductOptionCategory> categories) {
-        Set<String> selectedFlags = new HashSet<>();
-        if (FormatValidator.hasValue(categories) && FormatValidator.hasValue(selectedOptionIds)) {
-            Set<Long> selectedIds = new HashSet<>(selectedOptionIds);
-            for (ProductOptionCategory category : categories) {
-                for (ProductOption option : category.getOptions()) {
-                    if (selectedIds.contains(option.getId())) {
-                        selectedFlags.add(option.getContent());
-                    }
-                }
-            }
-        }
-
-        return selectedFlags;
     }
 
     @Override

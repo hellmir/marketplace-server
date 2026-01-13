@@ -1,0 +1,22 @@
+package com.personal.marketnote.community.domain.post;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+
+@Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class PostCreateState {
+    private final Long userId;
+    private final Long parentId;
+    private final Board board;
+    private final String category;
+    private final PostTargetType targetType;
+    private final Long targetId;
+    private final String writerName;
+    private final String title;
+    private final String content;
+    private final Boolean isPrivate;
+}

@@ -1,27 +1,16 @@
 package com.personal.marketnote.user.port.in.command;
 
 import com.personal.marketnote.common.utility.FormatValidator;
-import lombok.Getter;
+import lombok.Builder;
 
-@Getter
-public class UpdateUserInfoCommand {
-    private final Boolean isActive;
-    private final String email;
-    private final String nickname;
-    private final String phoneNumber;
-    private final String password;
-
-    private UpdateUserInfoCommand(Boolean isActive, String email, String nickname, String phoneNumber, String password) {
-        this.isActive = isActive;
-        this.email = email;
-        this.nickname = nickname;
-        this.phoneNumber = phoneNumber;
-        this.password = password;
-    }
-
-    public static UpdateUserInfoCommand of(Boolean isActive, String email, String nickname, String phoneNumber, String password) {
-        return new UpdateUserInfoCommand(isActive, email, nickname, phoneNumber, password);
-    }
+@Builder
+public record UpdateUserInfoCommand(
+        Boolean isActive,
+        String email,
+        String nickname,
+        String phoneNumber,
+        String password
+) {
 
     public boolean hasIsActive() {
         return FormatValidator.hasValue(isActive);

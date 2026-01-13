@@ -12,12 +12,12 @@ import java.util.List;
 
 public class CartRequestToCommandMapper {
     public static AddCartProductCommand mapToCommand(Long userId, AddCartProductRequest request) {
-        return AddCartProductCommand.of(
-                userId,
-                request.pricePolicyId(),
-                request.imageUrl(),
-                request.quantity()
-        );
+        return AddCartProductCommand.builder()
+                .userId(userId)
+                .pricePolicyId(request.pricePolicyId())
+                .imageUrl(request.imageUrl())
+                .quantity(request.quantity())
+                .build();
     }
 
     public static UpdateCartProductQuantityCommand mapToCommand(Long userId, UpdateCartProductQuantityRequest request) {

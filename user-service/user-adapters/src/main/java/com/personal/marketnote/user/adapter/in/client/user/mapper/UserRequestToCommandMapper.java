@@ -11,14 +11,14 @@ import com.personal.marketnote.user.port.in.command.VerifyCodeCommand;
 
 public class UserRequestToCommandMapper {
     public static SignUpCommand mapToCommand(SignUpRequest signUpRequest) {
-        return SignUpCommand.of(
-                signUpRequest.getEmail(),
-                signUpRequest.getPassword(),
-                signUpRequest.getVerificationCode(),
-                signUpRequest.getNickname(),
-                signUpRequest.getFullName(),
-                signUpRequest.getPhoneNumber()
-        );
+        return SignUpCommand.builder()
+                .email(signUpRequest.getEmail())
+                .password(signUpRequest.getPassword())
+                .verificationCode(signUpRequest.getVerificationCode())
+                .nickname(signUpRequest.getNickname())
+                .fullName(signUpRequest.getFullName())
+                .phoneNumber(signUpRequest.getPhoneNumber())
+                .build();
     }
 
     public static SignInCommand mapToCommand(SignInRequest signInRequest) {
@@ -26,13 +26,13 @@ public class UserRequestToCommandMapper {
     }
 
     public static UpdateUserInfoCommand mapToCommand(UpdateUserInfoRequest updateUserInfoRequest) {
-        return UpdateUserInfoCommand.of(
-                updateUserInfoRequest.getIsActive(),
-                updateUserInfoRequest.getEmail(),
-                updateUserInfoRequest.getNickname(),
-                updateUserInfoRequest.getPhoneNumber(),
-                updateUserInfoRequest.getPassword()
-        );
+        return UpdateUserInfoCommand.builder()
+                .isActive(updateUserInfoRequest.getIsActive())
+                .email(updateUserInfoRequest.getEmail())
+                .nickname(updateUserInfoRequest.getNickname())
+                .phoneNumber(updateUserInfoRequest.getPhoneNumber())
+                .password(updateUserInfoRequest.getPassword())
+                .build();
     }
 
     public static VerifyCodeCommand mapToCommand(

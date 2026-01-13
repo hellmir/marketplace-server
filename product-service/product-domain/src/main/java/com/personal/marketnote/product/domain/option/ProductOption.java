@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Set;
+
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
@@ -30,5 +32,11 @@ public class ProductOption {
                 .content(state.getContent())
                 .status(state.getStatus())
                 .build();
+    }
+
+    public void addContent(Set<Long> ids, Set<String> contents) {
+        if (ids.contains(id)) {
+            contents.add(content);
+        }
     }
 }

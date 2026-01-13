@@ -1,7 +1,10 @@
 package com.personal.marketnote.product.port.in.command;
 
+import lombok.Builder;
+
 import java.util.List;
 
+@Builder
 public record UpdateProductCommand(
         Long id,
         String name,
@@ -10,9 +13,4 @@ public record UpdateProductCommand(
         Boolean isFindAllOptions,
         List<String> tags
 ) {
-    public static UpdateProductCommand of(
-            Long id, String name, String brandName, String detail, Boolean isFindAllOptions, List<String> tags
-    ) {
-        return new UpdateProductCommand(id, name, brandName, detail, isFindAllOptions, tags);
-    }
 }

@@ -3,6 +3,7 @@ package com.personal.marketnote.commerce.adapter.in.client.order.mapper;
 import com.personal.marketnote.commerce.adapter.in.client.order.request.ChangeOrderStatusRequest;
 import com.personal.marketnote.commerce.adapter.in.client.order.request.RegisterOrderRequest;
 import com.personal.marketnote.commerce.port.in.command.order.ChangeOrderStatusCommand;
+import com.personal.marketnote.commerce.port.in.command.order.OrderProductItem;
 import com.personal.marketnote.commerce.port.in.command.order.RegisterOrderCommand;
 
 import java.util.List;
@@ -12,33 +13,33 @@ public class OrderRequestToCommandMapper {
             RegisterOrderRequest request,
             Long buyerId
     ) {
-        List<RegisterOrderCommand.OrderProductItem> orderProducts = request.getOrderProducts().stream()
-                .map(item -> new RegisterOrderCommand.OrderProductItem(
-                        item.getPricePolicyId(),
-                        item.getQuantity(),
-                        item.getUnitAmount(),
-                        item.getImageUrl()
-                ))
+        List<OrderProductItem> orderProducts = request.getOrderProducts().stream()
+                .map(item -> OrderProductItem.builder()
+                        .pricePolicyId(item.getPricePolicyId())
+                        .quantity(item.getQuantity())
+                        .unitAmount(item.getUnitAmount())
+                        .imageUrl(item.getImageUrl())
+                        .build())
                 .toList();
 
-        return RegisterOrderCommand.of(
-                request.getSellerId(),
-                buyerId,
-                request.getTotalAmount(),
-                request.getCouponAmount(),
-                request.getPointAmount(),
-                orderProducts
-        );
+        return RegisterOrderCommand.builder()
+                .sellerId(request.getSellerId())
+                .buyerId(buyerId)
+                .totalAmount(request.getTotalAmount())
+                .couponAmount(request.getCouponAmount())
+                .pointAmount(request.getPointAmount())
+                .orderProducts(orderProducts)
+                .build();
     }
 
     public static ChangeOrderStatusCommand mapToCommand(Long id, ChangeOrderStatusRequest request) {
-        return ChangeOrderStatusCommand.of(
-                id,
-                request.getPricePolicyIds(),
-                request.getOrderStatus(),
-                request.getReasonCategory(),
-                request.getReason()
-        );
+        return ChangeOrderStatusCommand.builder()
+                .id(id)
+                .pricePolicyIds(request.getPricePolicyIds())
+                .orderStatus(request.getOrderStatus())
+                .reasonCategory(request.getReasonCategory())
+                .reason(request.getReason())
+                .build();
     }
 }
 
