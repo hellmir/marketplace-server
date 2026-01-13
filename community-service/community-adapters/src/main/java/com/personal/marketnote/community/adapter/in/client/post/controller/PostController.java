@@ -8,6 +8,7 @@ import com.personal.marketnote.community.adapter.in.client.post.request.Register
 import com.personal.marketnote.community.adapter.in.client.post.response.RegisterPostResponse;
 import com.personal.marketnote.community.port.in.result.post.RegisterPostResult;
 import com.personal.marketnote.community.port.in.usecase.post.RegisterPostUseCase;
+import com.personal.marketnote.community.port.in.usecase.report.RegisterReportUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +27,12 @@ import java.util.List;
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/posts")
 @Tag(name = "게시글 API", description = "게시글 관련 API")
 @RequiredArgsConstructor
 public class PostController {
     private final RegisterPostUseCase registerPostUseCase;
+    private final RegisterReportUseCase registerReportUseCase;
 
     /**
      * 게시글 등록
@@ -42,7 +44,7 @@ public class PostController {
      * @Date 2026-01-13
      * @Description 게시글을 등록합니다.
      */
-    @PostMapping("/posts")
+    @PostMapping
     @RegisterPostApiDocs
     public ResponseEntity<BaseResponse<RegisterPostResponse>> registerPost(
             @Valid @RequestBody RegisterPostRequest request,

@@ -1,0 +1,25 @@
+package com.personal.marketnote.community.adapter.out.mapper;
+
+import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.community.adapter.out.persistence.report.entity.ReportJpaEntity;
+import com.personal.marketnote.community.domain.report.Report;
+
+import java.util.Optional;
+
+public class ReportJpaEntityToDomainMapper {
+    public static Optional<Report> mapToDomain(ReportJpaEntity entity) {
+        if (!FormatValidator.hasValue(entity)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(
+                Report.of(
+                        entity.getId().getTargetType(),
+                        entity.getTargetId(),
+                        entity.getReporterId(),
+                        entity.getReason(),
+                        entity.getCreatedAt()
+                )
+        );
+    }
+}

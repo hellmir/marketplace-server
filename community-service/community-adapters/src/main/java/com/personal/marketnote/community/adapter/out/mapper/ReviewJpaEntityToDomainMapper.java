@@ -2,9 +2,7 @@ package com.personal.marketnote.community.adapter.out.mapper;
 
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.adapter.out.persistence.review.entity.ReviewJpaEntity;
-import com.personal.marketnote.community.adapter.out.persistence.review.entity.ReviewReportJpaEntity;
 import com.personal.marketnote.community.domain.review.Review;
-import com.personal.marketnote.community.domain.review.ReviewReport;
 import com.personal.marketnote.community.domain.review.ReviewSnapshotState;
 
 import java.util.Optional;
@@ -36,21 +34,6 @@ public class ReviewJpaEntityToDomainMapper {
                                 .modifiedAt(entity.getModifiedAt())
                                 .orderNum(entity.getOrderNum())
                                 .build()
-                )
-        );
-    }
-
-    public static Optional<ReviewReport> mapToDomain(ReviewReportJpaEntity entity) {
-        if (!FormatValidator.hasValue(entity)) {
-            return Optional.empty();
-        }
-
-        return Optional.of(
-                ReviewReport.of(
-                        entity.getReviewId(),
-                        entity.getReporterId(),
-                        entity.getReason(),
-                        entity.getCreatedAt()
                 )
         );
     }
