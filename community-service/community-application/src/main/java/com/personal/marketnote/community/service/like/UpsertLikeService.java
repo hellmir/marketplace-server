@@ -27,8 +27,12 @@ public class UpsertLikeService implements UpsertLikeUseCase {
     public UpsertLikeResult upsertLike(UpsertLikeCommand command) {
         try {
             Like like = getLikeUseCase.getLike(command.targetType(), command.targetId(), command.userId());
-            like.revert();
-            updateLikePort.update(like);
+
+            // 좋아요 상태가 변경된 경우에만 갱신(따닥 이슈 방지)
+            if (like.isStatusChanged(command.isLiked())) {
+                like.revert();
+                updateLikePort.update(like);
+            }
 
             return UpsertLikeResult.from(like, false);
         } catch (LikeNotFoundException lnfe) {

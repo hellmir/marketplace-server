@@ -37,6 +37,14 @@ public class Like {
                 .build();
     }
 
+    public boolean isStatusChanged(boolean isLiked) {
+        if (isLiked) {
+            return status.isInactive();
+        }
+
+        return status.isActive();
+    }
+
     public void revert() {
         status = EntityStatus.from(!isLiked());
     }

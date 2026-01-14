@@ -14,7 +14,6 @@ import com.personal.marketnote.community.domain.review.ReviewSortProperty;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
 import com.personal.marketnote.community.port.in.result.review.ProductReviewAggregateResult;
 import com.personal.marketnote.community.port.in.result.review.RegisterReviewResult;
-import com.personal.marketnote.community.port.in.usecase.report.RegisterReportUseCase;
 import com.personal.marketnote.community.port.in.usecase.review.DeleteReviewUseCase;
 import com.personal.marketnote.community.port.in.usecase.review.GetReviewUseCase;
 import com.personal.marketnote.community.port.in.usecase.review.RegisterReviewUseCase;
@@ -43,7 +42,6 @@ public class ReviewController {
     private final GetReviewUseCase getReviewUseCase;
     private final UpdateReviewUseCase updateReviewUseCase;
     private final DeleteReviewUseCase deleteReviewUseCase;
-    private final RegisterReportUseCase registerReportUseCase;
 
     /**
      * 리뷰 등록

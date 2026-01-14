@@ -39,6 +39,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- | --- |
                 | targetType | string | 대상 유형(REVIEW/BOARD) | Y | "REVIEW" |
                 | targetId | number | 대상 ID | Y | 10 |
+                | isLiked | boolean | 좋아요 여부(좋아요/취소) | Y | true |
                 
                 ---
                 
@@ -68,7 +69,8 @@ import java.lang.annotation.*;
                         examples = @ExampleObject("""
                                 {
                                   "targetType": "REVIEW",
-                                  "targetId": 10
+                                  "targetId": 10,
+                                  "isLiked": true
                                 }
                                 """)
                 )
