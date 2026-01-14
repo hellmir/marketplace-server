@@ -1,6 +1,7 @@
 package com.personal.marketnote.community.service.post;
 
 import com.personal.marketnote.common.application.UseCase;
+import com.personal.marketnote.common.utility.AuthorityValidator;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.domain.post.*;
 import com.personal.marketnote.community.port.in.command.post.GetPostsCommand;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -56,6 +58,7 @@ public class GetPostService implements GetPostUseCase {
         Board board = command.board();
         PostTargetType targetType = command.targetType();
         boolean isDesc = Sort.Direction.DESC.equals(command.sortDirection());
+        Long userId = command.userId();
 
         // 비회원 전용 게시판이거나 상품 상세 정보의 문의 게시판인 경우
         if (board.isNonMemberViewBoard() || FormatValidator.hasValue(targetType)) {
@@ -72,8 +75,8 @@ public class GetPostService implements GetPostUseCase {
         }
 
         // 나의 상품 문의 게시판이거나 나의 1:1 문의 게시판인 경우
-        return findPostPort.findPosts(
-                command.userId(),
+        return findPostPort.findUserPosts(
+                userId,
                 board,
                 command.cursor(),
                 pageable,
@@ -95,30 +98,57 @@ public class GetPostService implements GetPostUseCase {
         }
 
         Long totalElements = totalElementsOverride;
+        PostTargetType targetType = command.targetType();
+        Board board = command.board();
         if (totalElements == null && !FormatValidator.hasValue(command.cursor())) {
             totalElements = findPostPort.count(
-                    command.board(), command.category(), command.targetType(), command.targetId()
+                    board, command.category(), targetType, command.targetId()
             );
         }
 
-        Map<Long, ProductInfoResult> reviewedProducts = command.board().isProductInquery()
+        // 상품 문의 게시판인 경우 각 게시글의 주문 상품 정보 조회
+        Map<Long, ProductInfoResult> reviewedProducts = board.isProductInquery()
                 ? getProductInfo(pagedPosts)
                 : Map.of();
 
         List<PostItemResult> postItems = pagedPosts.stream()
                 .map(post -> {
-                    if (FormatValidator.hasValue(post.getTargetId())) {
-                        return PostItemResult.from(
-                                post,
-                                PostProductInfoResult.from(reviewedProducts.get(post.getTargetId()))
-                        );
+                    if (!FormatValidator.hasValue(post.getTargetId())) {
+                        return PostItemResult.from(post);
                     }
 
-                    return PostItemResult.from(post);
+                    // 상품 문의 게시판인 경우 각 게시글의 상품 정보 포함
+                    ProductInfoResult productInfoResult = reviewedProducts.get(post.getTargetId());
+                    PostItemResult postItemResult = PostItemResult.from(
+                            post,
+                            PostProductInfoResult.from(productInfoResult)
+                    );
+
+                    // 상품 상세 정보 페이지의 상품 문의 게시판인 경우 비밀글 필터링
+                    if (FormatValidator.hasValue(targetType)) {
+                        Long sellerId = FormatValidator.hasValue(productInfoResult)
+                                ? productInfoResult.sellerId()
+                                : null;
+                        if (!adminOrSeller(command.principal(), command.userId(), sellerId)) {
+                            postItemResult.maskPrivatePost(command.userId());
+                        }
+                    }
+
+                    // 게시글의 답글 목록 추가
+                    if (!postItemResult.isMasked() && post.hasReplies()) {
+                        postItemResult.addReplies(post);
+                    }
+
+                    return postItemResult;
                 })
                 .toList();
 
         return GetPostsResult.from(hasNext, nextCursor, totalElements, postItems);
+    }
+
+    private boolean adminOrSeller(OAuth2AuthenticatedPrincipal principal, Long userId, Long sellerId) {
+        return AuthorityValidator.hasAdminRole(principal)
+                || (FormatValidator.equals(userId, sellerId) && AuthorityValidator.hasSellerRole(principal));
     }
 
     private Map<Long, ProductInfoResult> getProductInfo(List<Post> pagedPosts) {

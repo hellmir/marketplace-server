@@ -111,9 +111,11 @@ import java.lang.annotation.*;
                 | title | string | 제목 | "배송 문의" |
                 | content | string | 내용 | "배송 언제 오나요?" |
                 | isPrivate | boolean | 비밀글 여부 | true |
+                | isMasked | boolean | 비밀글 숨김 처리 여부 | true |
                 | createdAt | string(datetime) | 생성 일시 | "2026-01-13T13:12:40.921092" |
                 | modifiedAt | string(datetime) | 수정 일시 | "2026-01-13T13:12:40.921092" |
                 | product | object | 상품 정보(상품 문의글이 아닌 경우 null) | { ... } |
+                | replies | array | 답글 목록(재귀) | [ ... ] |
                 """,
         parameters = {
                 @Parameter(
@@ -185,46 +187,115 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-13T17:33:19.652324",
+                                          "timestamp": "2026-01-13T16:32:18.828188",
                                           "content": {
                                             "posts": {
-                                              "totalElements": null,
+                                              "totalElements": 3,
                                               "hasNext": false,
-                                              "nextCursor": 13,
+                                              "nextCursor": 5,
                                               "items": [
                                                 {
-                                                  "id": 14,
-                                                  "userId": 4,
-                                                  "parentId": 1,
-                                                  "board": "ONE_ON_ONE_INQUERY",
-                                                  "category": "POINT",
-                                                  "targetType": null,
-                                                  "targetId": null,
-                                                  "writerName": "홍*동",
-                                                  "title": "게시글 제목",
-                                                  "content": "게시글 내용",
-                                                  "isPrivate": false,
-                                                  "createdAt": "2026-01-13T17:17:29.943604",
-                                                  "modifiedAt": "2026-01-13T17:17:29.955261",
-                                                  "product": null,
+                                                  "id": 8,
+                                                  "userId": 12,
+                                                  "parentId": null,
+                                                  "board": "PRODUCT_INQUERY",
+                                                  "category": "PRODUCT_QUESTION",
+                                                  "targetType": "PRICE_POLICY",
+                                                  "targetId": 180,
+                                                  "writerName": "김*",
+                                                  "title": null,
+                                                  "content": null,
+                                                  "isPrivate": true,
+                                                  "isMasked": true,
+                                                  "createdAt": "2026-01-13T17:16:05.34468",
+                                                  "modifiedAt": "2026-01-13T17:16:05.380594",
+                                                  "product": {
+                                                    "name": "스프링노트1234",
+                                                    "brandName": "노트왕",
+                                                    "selectedOptions": [
+                                                      {
+                                                        "id": 60,
+                                                        "content": "3박스",
+                                                        "status": "ACTIVE"
+                                                      }
+                                                    ]
+                                                  },
                                                   "replies": []
                                                 },
                                                 {
-                                                  "id": 13,
-                                                  "userId": 4,
-                                                  "parentId": 1,
-                                                  "board": "ONE_ON_ONE_INQUERY",
-                                                  "category": "RETURN_EXCHANGE",
-                                                  "targetType": null,
-                                                  "targetId": null,
+                                                  "id": 6,
+                                                  "userId": 17,
+                                                  "parentId": null,
+                                                  "board": "PRODUCT_INQUERY",
+                                                  "category": "PRODUCT_QUESTION",
+                                                  "targetType": "PRICE_POLICY",
+                                                  "targetId": 180,
+                                                  "writerName": "김*",
+                                                  "title": "게시글 제목abc",
+                                                  "content": "게시글 내용abc",
+                                                  "isPrivate": true,
+                                                  "isMasked": false,
+                                                  "createdAt": "2026-01-13T16:45:26.694612",
+                                                  "modifiedAt": "2026-01-13T16:45:26.726141",
+                                                  "product": {
+                                                    "name": "스프링노트1234",
+                                                    "brandName": "노트왕",
+                                                    "selectedOptions": [
+                                                      {
+                                                        "id": 60,
+                                                        "content": "3박스",
+                                                        "status": "ACTIVE"
+                                                      }
+                                                    ]
+                                                  },
+                                                  "replies": []
+                                                },
+                                                {
+                                                  "id": 5,
+                                                  "userId": 17,
+                                                  "parentId": null,
+                                                  "board": "PRODUCT_INQUERY",
+                                                  "category": "PRODUCT_QUESTION",
+                                                  "targetType": "PRICE_POLICY",
+                                                  "targetId": 180,
                                                   "writerName": "홍*동",
                                                   "title": "게시글 제목",
                                                   "content": "게시글 내용",
                                                   "isPrivate": false,
-                                                  "createdAt": "2026-01-13T17:17:21.374981",
-                                                  "modifiedAt": "2026-01-13T17:17:21.403971",
-                                                  "product": null,
-                                                  "replies": []
+                                                  "isMasked": false,
+                                                  "createdAt": "2026-01-13T16:44:28.287364",
+                                                  "modifiedAt": "2026-01-13T16:44:28.338047",
+                                                  "product": {
+                                                    "name": "스프링노트1234",
+                                                    "brandName": "노트왕",
+                                                    "selectedOptions": [
+                                                      {
+                                                        "id": 60,
+                                                        "content": "3박스",
+                                                        "status": "ACTIVE"
+                                                      }
+                                                    ]
+                                                  },
+                                                  "replies": [
+                                                    {
+                                                      "id": 15,
+                                                      "userId": 4,
+                                                      "parentId": 5,
+                                                      "board": "PRODUCT_INQUERY",
+                                                      "category": "PRODUCT_QUESTION",
+                                                      "targetType": "PRICE_POLICY",
+                                                      "targetId": 180,
+                                                      "writerName": "홍*동",
+                                                      "title": "답글 제목",
+                                                      "content": "답글 내용",
+                                                      "isPrivate": false,
+                                                      "isMasked": false,
+                                                      "createdAt": "2026-01-14T11:44:40.772724",
+                                                      "modifiedAt": "2026-01-14T11:44:40.827294",
+                                                      "product": null,
+                                                      "replies": []
+                                                    }
+                                                  ]
                                                 }
                                               ]
                                             }

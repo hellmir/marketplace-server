@@ -20,4 +20,8 @@ public enum Role {
     public static boolean isAdmin(String role) {
         return role.equals(ROLE_ADMIN.name());
     }
+
+    public static boolean isSeller(String role) {
+        return role.equals(ROLE_SELLER.name());
+    }
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.common.utility.NameMasker;
 import jakarta.persistence.Column;
 import lombok.AccessLevel;
@@ -97,5 +98,9 @@ public class Post {
 
     public void updateReplies(List<Post> replies) {
         this.replies = replies;
+    }
+
+    public boolean hasReplies() {
+        return FormatValidator.hasValue(getReplies());
     }
 }

@@ -97,7 +97,7 @@ public class ProductServiceClient implements FindProductByPricePolicyPort {
 
     private void generateResult(Map<Long, ProductInfoResult> productInfoResult, List<ProductsInfoResponse> productsInfo) {
         for (ProductsInfoResponse productInfo : productsInfo) {
-            if (productInfo == null || productInfo.pricePolicy() == null) {
+            if (!FormatValidator.hasValue(productInfo) || !FormatValidator.hasValue(productInfo.pricePolicy())) {
                 continue;
             }
 
@@ -109,6 +109,7 @@ public class ProductServiceClient implements FindProductByPricePolicyPort {
             productInfoResult.put(
                     policyId,
                     new ProductInfoResult(
+                            productInfo.sellerId(),
                             productInfo.name(),
                             productInfo.brandName(),
                             productInfo.selectedOptions()

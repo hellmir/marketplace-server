@@ -60,12 +60,6 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
         return countByBoardAndFilters(board, category, targetType, targetId, EntityStatus.ACTIVE);
     }
 
-    default List<PostJpaEntity> findByBoardAndFilters(
-            Board board, String category, PostTargetType targetType, Long targetId, Long cursor, boolean isDesc, Pageable pageable
-    ) {
-        return findByBoardAndFilters(board, category, targetType, targetId, cursor, isDesc, EntityStatus.ACTIVE, pageable);
-    }
-
     @Query("""
             SELECT p
             FROM PostJpaEntity p

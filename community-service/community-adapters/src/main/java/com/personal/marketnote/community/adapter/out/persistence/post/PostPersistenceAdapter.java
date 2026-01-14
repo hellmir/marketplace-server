@@ -1,6 +1,7 @@
 package com.personal.marketnote.community.adapter.out.persistence.post;
 
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
+import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.adapter.out.mapper.PostJpaEntityToDomainMapper;
 import com.personal.marketnote.community.adapter.out.persistence.post.entity.PostJpaEntity;
@@ -46,24 +47,16 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort {
             boolean isDesc,
             PostSortProperty sortProperty
     ) {
-        if (PostSortProperty.IS_ANSWERED.equals(sortProperty)) {
-            return mapToPostsWithReplies(
-                    postJpaRepository.findByBoardAndFiltersOrderByAnswered(
-                            board, category, targetType, targetId, cursor, isDesc, pageable
-                    )
-            );
-        }
-
         return mapToPostsWithReplies(
                 postJpaRepository.findByBoardAndFilters(
-                        board, category, targetType, targetId, cursor, isDesc, pageable
+                        board, category, targetType, targetId, cursor, isDesc, EntityStatus.ACTIVE, pageable
                 )
         );
     }
 
     @Override
-    public Posts findPosts(Long userId, Board board, Long cursor, Pageable pageable, boolean isDesc, PostSortProperty sortProperty) {
-        if (PostSortProperty.IS_ANSWERED.equals(sortProperty)) {
+    public Posts findUserPosts(Long userId, Board board, Long cursor, Pageable pageable, boolean isDesc, PostSortProperty sortProperty) {
+        if (FormatValidator.equals(sortProperty, PostSortProperty.IS_ANSWERED)) {
             return mapToPostsWithReplies(
                     postJpaRepository.findByUserIdAndBoardOrderByAnswered(userId, board, cursor, isDesc, pageable)
             );
