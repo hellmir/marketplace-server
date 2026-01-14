@@ -70,7 +70,10 @@ public class GetPostService implements GetPostUseCase {
                     command.cursor(),
                     pageable,
                     isDesc,
-                    sortProperty
+                    sortProperty,
+                    userId,
+                    command.filter(),
+                    command.filterValue()
             );
         }
 
@@ -102,7 +105,13 @@ public class GetPostService implements GetPostUseCase {
         Board board = command.board();
         if (totalElements == null && !FormatValidator.hasValue(command.cursor())) {
             totalElements = findPostPort.count(
-                    board, command.category(), targetType, command.targetId()
+                    board,
+                    command.category(),
+                    targetType,
+                    command.targetId(),
+                    command.userId(),
+                    command.filter(),
+                    command.filterValue()
             );
         }
 

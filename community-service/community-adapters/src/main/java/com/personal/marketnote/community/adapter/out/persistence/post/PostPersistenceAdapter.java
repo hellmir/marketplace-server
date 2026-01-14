@@ -45,11 +45,63 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort {
             Long cursor,
             Pageable pageable,
             boolean isDesc,
-            PostSortProperty sortProperty
+            PostSortProperty sortProperty,
+            Long viewerId,
+            PostFilterCategory filter,
+            PostFilterValue filterValue
     ) {
+        String effectiveCategory = category;
+        boolean isPublicOnly = false;
+        Long filterUserId = null;
+
+        if (filter == PostFilterCategory.FAQ_CATEGORY && FormatValidator.hasValue(filterValue)) {
+            effectiveCategory = filterValue.name();
+        }
+
+        if (
+                filter == PostFilterCategory.IS_PUBLIC
+                        && FormatValidator.hasValue(filterValue)
+                        && FormatValidator.equals(filterValue, PostFilterValue.TRUE)
+        ) {
+            isPublicOnly = true;
+        }
+
+        if (
+                filter == PostFilterCategory.IS_MINE
+                        && FormatValidator.hasValue(viewerId)
+                        && FormatValidator.equals(filterValue, PostFilterValue.TRUE)
+        ) {
+            filterUserId = viewerId;
+        }
+
+        if (FormatValidator.equals(sortProperty, PostSortProperty.IS_ANSWERED)) {
+            return mapToPostsWithReplies(
+                    postJpaRepository.findByBoardAndFiltersOrderByAnswered(
+                            board,
+                            effectiveCategory,
+                            targetType,
+                            targetId,
+                            cursor,
+                            isDesc,
+                            isPublicOnly,
+                            filterUserId,
+                            pageable
+                    )
+            );
+        }
+
         return mapToPostsWithReplies(
                 postJpaRepository.findByBoardAndFilters(
-                        board, category, targetType, targetId, cursor, isDesc, EntityStatus.ACTIVE, pageable
+                        board,
+                        effectiveCategory,
+                        targetType,
+                        targetId,
+                        cursor,
+                        isDesc,
+                        isPublicOnly,
+                        filterUserId,
+                        EntityStatus.ACTIVE,
+                        pageable
                 )
         );
     }
@@ -68,8 +120,42 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort {
     }
 
     @Override
-    public long count(Board board, String category, PostTargetType targetType, Long targetId) {
-        return postJpaRepository.countByBoardAndFilters(board, category, targetType, targetId);
+    public long count(
+            Board board,
+            String category,
+            PostTargetType targetType,
+            Long targetId,
+            Long viewerId,
+            PostFilterCategory filter,
+            PostFilterValue filterValue
+    ) {
+        String effectiveCategory = category;
+        boolean isPublicOnly = false;
+        Long filterUserId = null;
+
+        if (filter == PostFilterCategory.FAQ_CATEGORY && FormatValidator.hasValue(filterValue)) {
+            effectiveCategory = filterValue.name();
+        }
+
+        if (
+                filter == PostFilterCategory.IS_PUBLIC
+                        && FormatValidator.hasValue(filterValue)
+                        && FormatValidator.equals(filterValue, PostFilterValue.TRUE)
+        ) {
+            isPublicOnly = true;
+        }
+
+        if (
+                filter == PostFilterCategory.IS_MINE
+                        && FormatValidator.hasValue(viewerId)
+                        && FormatValidator.equals(filterValue, PostFilterValue.TRUE)
+        ) {
+            filterUserId = viewerId;
+        }
+
+        return postJpaRepository.countByBoardAndFilters(
+                board, effectiveCategory, targetType, targetId, isPublicOnly, filterUserId
+        );
     }
 
     @Override

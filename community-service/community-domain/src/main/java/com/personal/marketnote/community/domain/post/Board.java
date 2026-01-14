@@ -17,7 +17,7 @@ public enum Board {
 
     Board(String description) {
         this.description = description;
-        this.camelCaseValue = FormatConverter.snakeToCamel(this.name());
+        camelCaseValue = FormatConverter.snakeToCamel(name());
     }
 
     public PostCategory resolveCategory(String categoryCode) {

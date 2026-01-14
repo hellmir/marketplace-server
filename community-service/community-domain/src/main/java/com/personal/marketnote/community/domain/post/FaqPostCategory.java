@@ -7,13 +7,13 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum FaqPostCategory implements PostCategory {
-    TOP_NOTICE("TOP 공지"),
-    MEMBER("회원"),
-    ORDER_PAYMENT_BULK("주문/결제/대량 주문"),
-    CANCEL_EXCHANGE_REFUND("취소/교환/환불"),
-    DELIVERY("배송"),
-    EVENT_COUPON_POINT("이벤트/쿠폰/적립금"),
-    PRODUCT("상품");
+    ORDER_PAYMENT("주문/결제"),
+    DELIVERY("배송 관련"),
+    CANCEL_REFUND("취소/환불"),
+    RETURN_EXCHANGE("반품/교환"),
+    POINT("적립금(포인트)"),
+    EVENT_COUPON("이벤트/쿠폰"),
+    LOGIN_MEMBER_INFO("로그인/회원정보");
 
     private final String description;
 

@@ -22,6 +22,12 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
               AND (:targetType IS NULL OR p.targetType = :targetType)
               AND (:targetId IS NULL OR p.targetId = :targetId)
               AND (
+                :isPublicOnly IS NULL
+                OR (:isPublicOnly = true AND p.isPrivate = false)
+                OR (:isPublicOnly = false)
+              )
+              AND (:filterUserId IS NULL OR p.userId = :filterUserId)
+              AND (
                     :cursor IS NULL
                     OR (:isDesc = true AND p.id < :cursor)
                     OR (:isDesc = false AND p.id > :cursor)
@@ -34,6 +40,8 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
             @Param("targetId") Long targetId,
             @Param("cursor") Long cursor,
             @Param("isDesc") boolean isDesc,
+            @Param("isPublicOnly") boolean isPublicOnly,
+            @Param("filterUserId") Long filterUserId,
             @Param("status") EntityStatus status,
             Pageable pageable
     );
@@ -47,17 +55,32 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
               AND (:category IS NULL OR p.category = :category)
               AND (:targetType IS NULL OR p.targetType = :targetType)
               AND (:targetId IS NULL OR p.targetId = :targetId)
+              AND (
+                :isPublicOnly IS NULL
+                OR (:isPublicOnly = true AND p.isPrivate = false)
+                OR (:isPublicOnly = false)
+              )
+              AND (:filterUserId IS NULL OR p.userId = :filterUserId)
             """)
     long countByBoardAndFilters(
             @Param("board") Board board,
             @Param("category") String category,
             @Param("targetType") PostTargetType targetType,
             @Param("targetId") Long targetId,
+            @Param("isPublicOnly") Boolean isPublicOnly,
+            @Param("filterUserId") Long filterUserId,
             @Param("status") EntityStatus status
     );
 
-    default long countByBoardAndFilters(Board board, String category, PostTargetType targetType, Long targetId) {
-        return countByBoardAndFilters(board, category, targetType, targetId, EntityStatus.ACTIVE);
+    default long countByBoardAndFilters(
+            Board board,
+            String category,
+            PostTargetType targetType,
+            Long targetId,
+            boolean isPublicOnly,
+            Long filterUserId
+    ) {
+        return countByBoardAndFilters(board, category, targetType, targetId, isPublicOnly, filterUserId, EntityStatus.ACTIVE);
     }
 
     @Query("""
@@ -116,6 +139,12 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
               AND (:targetType IS NULL OR p.targetType = :targetType)
               AND (:targetId IS NULL OR p.targetId = :targetId)
               AND (
+                :isPublicOnly IS NULL
+                OR (:isPublicOnly = true AND p.isPrivate = false)
+                OR (:isPublicOnly = false)
+              )
+              AND (:filterUserId IS NULL OR p.userId = :filterUserId)
+              AND (
                     :cursor IS NULL
                     OR (:isDesc = true AND p.id < :cursor)
                     OR (:isDesc = false AND p.id > :cursor)
@@ -131,6 +160,8 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
             @Param("targetId") Long targetId,
             @Param("cursor") Long cursor,
             @Param("isDesc") boolean isDesc,
+            @Param("isPublicOnly") boolean isPublicOnly,
+            @Param("filterUserId") Long filterUserId,
             @Param("status") EntityStatus status,
             Pageable pageable
     );
@@ -144,6 +175,12 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
               AND (:category IS NULL OR p.category = :category)
               AND (:targetType IS NULL OR p.targetType = :targetType)
               AND (:targetId IS NULL OR p.targetId = :targetId)
+              AND (
+                :isPublicOnly IS NULL
+                OR (:isPublicOnly = true AND p.isPrivate = false)
+                OR (:isPublicOnly = false)
+              )
+              AND (:filterUserId IS NULL OR p.userId = :filterUserId)
               AND (
                     :cursor IS NULL
                     OR (:isDesc = true AND p.id < :cursor)
@@ -160,6 +197,8 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
             @Param("targetId") Long targetId,
             @Param("cursor") Long cursor,
             @Param("isDesc") boolean isDesc,
+            @Param("isPublicOnly") boolean isPublicOnly,
+            @Param("filterUserId") Long filterUserId,
             @Param("status") EntityStatus status,
             Pageable pageable
     );
@@ -171,16 +210,18 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
             Long targetId,
             Long cursor,
             boolean isDesc,
+            boolean isPublicOnly,
+            Long filterUserId,
             Pageable pageable
     ) {
         if (isDesc) {
             return findByBoardAndFiltersOrderByAnsweredDesc(
-                    board, category, targetType, targetId, cursor, true, EntityStatus.ACTIVE, pageable
+                    board, category, targetType, targetId, cursor, true, isPublicOnly, filterUserId, EntityStatus.ACTIVE, pageable
             );
         }
 
         return findByBoardAndFiltersOrderByAnsweredAsc(
-                board, category, targetType, targetId, cursor, false, EntityStatus.ACTIVE, pageable
+                board, category, targetType, targetId, cursor, false, isPublicOnly, filterUserId, EntityStatus.ACTIVE, pageable
         );
     }
 
