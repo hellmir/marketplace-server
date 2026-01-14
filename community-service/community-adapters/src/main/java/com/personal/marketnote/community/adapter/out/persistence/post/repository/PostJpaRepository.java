@@ -17,6 +17,7 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
             FROM PostJpaEntity p
             WHERE p.status = :status
               AND p.board = :board
+              AND p.parentId IS NULL
               AND (:category IS NULL OR p.category = :category)
               AND (:targetType IS NULL OR p.targetType = :targetType)
               AND (:targetId IS NULL OR p.targetId = :targetId)
@@ -42,6 +43,7 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
             FROM PostJpaEntity p
             WHERE p.status = :status
               AND p.board = :board
+              AND p.parentId IS NULL
               AND (:category IS NULL OR p.category = :category)
               AND (:targetType IS NULL OR p.targetType = :targetType)
               AND (:targetId IS NULL OR p.targetId = :targetId)
@@ -70,6 +72,7 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
             WHERE p.status = :status
               AND p.board = :board
               AND p.userId = :userId
+              AND p.parentId IS NULL
               AND (
                     :cursor IS NULL
                     OR (:isDesc = true AND p.id < :cursor)
@@ -91,6 +94,7 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
             WHERE p.status = :status
               AND p.board = :board
               AND p.userId = :userId
+              AND p.parentId IS NULL
             """)
     long countByUserIdAndBoard(
             @Param("userId") Long userId,
@@ -113,6 +117,7 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
             FROM PostJpaEntity p
             WHERE p.status = :status
               AND p.board = :board
+              AND p.parentId IS NULL
               AND (:category IS NULL OR p.category = :category)
               AND (:targetType IS NULL OR p.targetType = :targetType)
               AND (:targetId IS NULL OR p.targetId = :targetId)
@@ -141,6 +146,7 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
             FROM PostJpaEntity p
             WHERE p.status = :status
               AND p.board = :board
+              AND p.parentId IS NULL
               AND (:category IS NULL OR p.category = :category)
               AND (:targetType IS NULL OR p.targetType = :targetType)
               AND (:targetId IS NULL OR p.targetId = :targetId)
@@ -190,6 +196,7 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
             WHERE p.status = :status
               AND p.board = :board
               AND p.userId = :userId
+              AND p.parentId IS NULL
               AND (
                     :cursor IS NULL
                     OR (:isDesc = true AND p.id < :cursor)
@@ -214,6 +221,7 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
             WHERE p.status = :status
               AND p.board = :board
               AND p.userId = :userId
+              AND p.parentId IS NULL
               AND (
                     :cursor IS NULL
                     OR (:isDesc = true AND p.id < :cursor)
@@ -240,5 +248,21 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
         }
 
         return findByUserIdAndBoardOrderByAnsweredAsc(userId, board, cursor, false, EntityStatus.ACTIVE, pageable);
+    }
+
+    @Query("""
+            SELECT p
+            FROM PostJpaEntity p
+            WHERE p.parentId IN :parentIds
+              AND p.status = :status
+            ORDER BY p.id ASC
+            """)
+    List<PostJpaEntity> findRepliesByParentIds(
+            @Param("parentIds") List<Long> parentIds,
+            @Param("status") EntityStatus status
+    );
+
+    default List<PostJpaEntity> findRepliesByParentIds(List<Long> parentIds) {
+        return findRepliesByParentIds(parentIds, EntityStatus.ACTIVE);
     }
 }

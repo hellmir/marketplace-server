@@ -5,6 +5,7 @@ import com.personal.marketnote.community.domain.post.Post;
 import com.personal.marketnote.community.domain.post.PostTargetType;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record PostItemResult(
         Long id,
@@ -20,7 +21,8 @@ public record PostItemResult(
         Boolean isPrivate,
         LocalDateTime createdAt,
         LocalDateTime modifiedAt,
-        PostProductInfoResult product
+        PostProductInfoResult product,
+        List<PostItemResult> replies
 ) {
     public static PostItemResult from(Post post, PostProductInfoResult productInfo) {
         String categoryCode = post.getCategory() == null ? null : post.getCategory().getCode();
@@ -39,7 +41,12 @@ public record PostItemResult(
                 post.getIsPrivate(),
                 post.getCreatedAt(),
                 post.getModifiedAt(),
-                productInfo
+                productInfo,
+                post.getReplies() == null
+                        ? List.of()
+                        : post.getReplies().stream()
+                        .map(PostItemResult::from)
+                        .toList()
         );
     }
 
@@ -63,7 +70,12 @@ public record PostItemResult(
                 post.getIsPrivate(),
                 post.getCreatedAt(),
                 post.getModifiedAt(),
-                null
+                null,
+                post.getReplies() == null
+                        ? List.of()
+                        : post.getReplies().stream()
+                        .map(PostItemResult::from)
+                        .toList()
         );
     }
 }
