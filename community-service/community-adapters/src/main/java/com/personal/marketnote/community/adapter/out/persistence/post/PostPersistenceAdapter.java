@@ -46,56 +46,39 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort {
             Pageable pageable,
             boolean isDesc,
             PostSortProperty sortProperty,
-            Long viewerId,
-            PostSearchKeywordCategory searchKeywordCategory,
-            String keyword,
-            PostFilterCategory filter,
-            PostFilterValue filterValue
+            Long userId,
+            PostFilterCategory filterCategory,
+            PostFilterValue filterValue,
+            PostSearchTarget searchTarget,
+            String searchKeyword
     ) {
-        String effectiveCategory = category;
-        Boolean isPublicOnly = null;
-        Long filterUserId = null;
-        String keywordForRepository = FormatValidator.hasValue(keyword) ? keyword : null;
-        PostSearchKeywordCategory keywordCategoryForRepository = searchKeywordCategory;
-
-        if (filter == PostFilterCategory.FAQ_CATEGORY && FormatValidator.hasValue(filterValue)) {
-            effectiveCategory = filterValue.name();
-        }
-
-        if (filter == PostFilterCategory.IS_PUBLIC && FormatValidator.hasValue(filterValue)) {
-            if (FormatValidator.equals(filterValue, PostFilterValue.TRUE)) {
-                isPublicOnly = true;
-            } else if (FormatValidator.equals(filterValue, PostFilterValue.FALSE)) {
-                isPublicOnly = false;
+        boolean isPublicOnly = false;
+        Long userIdFilter = null;
+        boolean searchInTitle = shouldSearchIn(searchTarget, PostSearchTarget.TITLE);
+        boolean searchInContent = shouldSearchIn(searchTarget, PostSearchTarget.CONTENT);
+        String searchKeywordPattern = buildSearchPattern(searchKeyword);
+        if (FormatValidator.hasValue(filterCategory) && FormatValidator.hasValue(filterValue)) {
+            isPublicOnly = filterCategory.isPublicOnly(filterValue);
+            if (filterCategory.isMineFiltered(filterValue)) {
+                userIdFilter = userId;
             }
-        }
-
-        if (
-                filter == PostFilterCategory.IS_MINE
-                        && FormatValidator.hasValue(viewerId)
-                        && FormatValidator.equals(filterValue, PostFilterValue.MINE)
-        ) {
-            filterUserId = viewerId;
-        }
-
-        if (searchKeywordCategory == PostSearchKeywordCategory.PRODUCT_NAME || searchKeywordCategory == PostSearchKeywordCategory.BRAND_NAME) {
-            keywordForRepository = null;
-            keywordCategoryForRepository = null;
         }
 
         if (FormatValidator.equals(sortProperty, PostSortProperty.IS_ANSWERED)) {
             return mapToPostsWithReplies(
                     postJpaRepository.findByBoardAndFiltersOrderByAnswered(
                             board,
-                            effectiveCategory,
+                            category,
                             targetType,
                             targetId,
                             cursor,
                             isDesc,
                             isPublicOnly,
-                            filterUserId,
-                            keywordForRepository,
-                            keywordCategoryForRepository,
+                            userIdFilter,
+                            searchInTitle,
+                            searchInContent,
+                            searchKeywordPattern,
+                            EntityStatus.ACTIVE,
                             pageable
                     )
             );
@@ -104,15 +87,16 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort {
         return mapToPostsWithReplies(
                 postJpaRepository.findByBoardAndFilters(
                         board,
-                        effectiveCategory,
+                        category,
                         targetType,
                         targetId,
                         cursor,
                         isDesc,
                         isPublicOnly,
-                        filterUserId,
-                        keywordForRepository,
-                        keywordCategoryForRepository,
+                        userIdFilter,
+                        searchInTitle,
+                        searchInContent,
+                        searchKeywordPattern,
                         EntityStatus.ACTIVE,
                         pageable
                 )
@@ -127,25 +111,26 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort {
             Pageable pageable,
             boolean isDesc,
             PostSortProperty sortProperty,
-            PostSearchKeywordCategory searchKeywordCategory,
-            String keyword
+            PostSearchTarget searchTarget,
+            String searchKeyword
     ) {
-        String keywordForRepository = FormatValidator.hasValue(keyword) ? keyword : null;
-        PostSearchKeywordCategory keywordCategoryForRepository = searchKeywordCategory;
-
-        if (searchKeywordCategory == PostSearchKeywordCategory.PRODUCT_NAME || searchKeywordCategory == PostSearchKeywordCategory.BRAND_NAME) {
-            keywordForRepository = null;
-            keywordCategoryForRepository = null;
-        }
-
+        boolean searchInTitle = shouldSearchIn(searchTarget, PostSearchTarget.TITLE);
+        boolean searchInContent = shouldSearchIn(searchTarget, PostSearchTarget.CONTENT);
+        String searchKeywordPattern = buildSearchPattern(searchKeyword);
         if (FormatValidator.equals(sortProperty, PostSortProperty.IS_ANSWERED)) {
             return mapToPostsWithReplies(
-                    postJpaRepository.findByUserIdAndBoardOrderByAnswered(userId, board, cursor, isDesc, keywordForRepository, keywordCategoryForRepository, pageable)
+                    postJpaRepository.findByUserIdAndBoardOrderByAnswered(
+                            userId, board, cursor, isDesc, searchInTitle, searchInContent,
+                            searchKeywordPattern, EntityStatus.ACTIVE, pageable
+                    )
             );
         }
 
         return mapToPostsWithReplies(
-                postJpaRepository.findByUserIdAndBoard(userId, board, cursor, isDesc, keywordForRepository, keywordCategoryForRepository, pageable)
+                postJpaRepository.findByUserIdAndBoard(
+                        userId, board, cursor, isDesc, searchInTitle, searchInContent,
+                        searchKeywordPattern, EntityStatus.ACTIVE, pageable
+                )
         );
     }
 
@@ -155,59 +140,46 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort {
             String category,
             PostTargetType targetType,
             Long targetId,
-            Long viewerId,
-            PostSearchKeywordCategory searchKeywordCategory,
-            String keyword,
-            PostFilterCategory filter,
-            PostFilterValue filterValue
+            Long userId,
+            PostFilterCategory filterCategory,
+            PostFilterValue filterValue,
+            PostSearchTarget searchTarget,
+            String searchKeyword
     ) {
-        String effectiveCategory = category;
-        Boolean isPublicOnly = null;
-        Long filterUserId = null;
-        String keywordForRepository = FormatValidator.hasValue(keyword) ? keyword : null;
-        PostSearchKeywordCategory keywordCategoryForRepository = searchKeywordCategory;
-
-        if (filter == PostFilterCategory.FAQ_CATEGORY && FormatValidator.hasValue(filterValue)) {
-            effectiveCategory = filterValue.name();
-        }
-
-        if (filter == PostFilterCategory.IS_PUBLIC && FormatValidator.hasValue(filterValue)) {
-            if (FormatValidator.equals(filterValue, PostFilterValue.TRUE)) {
-                isPublicOnly = true;
-            } else if (FormatValidator.equals(filterValue, PostFilterValue.FALSE)) {
-                isPublicOnly = false;
+        boolean isPublicOnly = false;
+        Long userIdFilter = null;
+        boolean searchInTitle = shouldSearchIn(searchTarget, PostSearchTarget.TITLE);
+        boolean searchInContent = shouldSearchIn(searchTarget, PostSearchTarget.CONTENT);
+        String searchKeywordPattern = buildSearchPattern(searchKeyword);
+        if (FormatValidator.hasValue(filterCategory) && FormatValidator.hasValue(filterValue)) {
+            isPublicOnly = filterCategory.isPublicOnly(filterValue);
+            if (filterCategory.isMineFiltered(filterValue)) {
+                userIdFilter = userId;
             }
         }
 
-        if (
-                filter == PostFilterCategory.IS_MINE
-                        && FormatValidator.hasValue(viewerId)
-                        && FormatValidator.equals(filterValue, PostFilterValue.MINE)
-        ) {
-            filterUserId = viewerId;
-        }
-
-        if (searchKeywordCategory == PostSearchKeywordCategory.PRODUCT_NAME || searchKeywordCategory == PostSearchKeywordCategory.BRAND_NAME) {
-            keywordForRepository = null;
-            keywordCategoryForRepository = null;
-        }
-
         return postJpaRepository.countByBoardAndFilters(
-                board, effectiveCategory, targetType, targetId, isPublicOnly, filterUserId, keywordForRepository, keywordCategoryForRepository
+                board,
+                category,
+                targetType,
+                targetId,
+                isPublicOnly,
+                userIdFilter,
+                searchInTitle,
+                searchInContent,
+                searchKeywordPattern,
+                EntityStatus.ACTIVE
         );
     }
 
     @Override
-    public long count(Long userId, Board board, PostSearchKeywordCategory searchKeywordCategory, String keyword) {
-        String keywordForRepository = FormatValidator.hasValue(keyword) ? keyword : null;
-        PostSearchKeywordCategory keywordCategoryForRepository = searchKeywordCategory;
-
-        if (searchKeywordCategory == PostSearchKeywordCategory.PRODUCT_NAME || searchKeywordCategory == PostSearchKeywordCategory.BRAND_NAME) {
-            keywordForRepository = null;
-            keywordCategoryForRepository = null;
-        }
-
-        return postJpaRepository.countByUserIdAndBoard(userId, board, keywordForRepository, keywordCategoryForRepository);
+    public long count(Long userId, Board board, PostSearchTarget searchTarget, String searchKeyword) {
+        boolean searchInTitle = shouldSearchIn(searchTarget, PostSearchTarget.TITLE);
+        boolean searchInContent = shouldSearchIn(searchTarget, PostSearchTarget.CONTENT);
+        String searchKeywordPattern = buildSearchPattern(searchKeyword);
+        return postJpaRepository.countByUserIdAndBoard(
+                userId, board, searchInTitle, searchInContent, searchKeywordPattern, EntityStatus.ACTIVE
+        );
     }
 
     private Posts mapToPostsWithReplies(List<PostJpaEntity> parentEntities) {
@@ -237,5 +209,16 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort {
         );
 
         return Posts.from(parents);
+    }
+
+    private boolean shouldSearchIn(PostSearchTarget requestedCategory, PostSearchTarget targetCategory) {
+        return requestedCategory == null || requestedCategory == targetCategory;
+    }
+
+    private String buildSearchPattern(String searchKeyword) {
+        if (!FormatValidator.hasValue(searchKeyword)) {
+            return null;
+        }
+        return "%" + searchKeyword.toLowerCase() + "%";
     }
 }

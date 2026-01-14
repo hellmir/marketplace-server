@@ -110,7 +110,7 @@ public class PostController {
             @RequestParam(value = "pageSize", required = false, defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
             @RequestParam(required = false, defaultValue = "DESC") Sort.Direction sortDirection,
             @RequestParam(required = false, defaultValue = "ID") PostSortProperty sortProperty,
-            @RequestParam(value = "searchKeywordCategory", required = false) PostSearchKeywordCategory searchKeywordCategory,
+            @RequestParam(value = "searchTarget", required = false) PostSearchTarget searchTarget,
             @RequestParam(value = "searchKeyword", required = false) String searchKeyword,
             @RequestParam(value = "filterCategory", required = false) PostFilterCategory filterCategory,
             @RequestParam(value = "filterValue", required = false) PostFilterValue filterValue,
@@ -120,11 +120,6 @@ public class PostController {
         Long userId = null;
         if (FormatValidator.hasValue(principal)) {
             userId = ElementExtractor.extractUserId(principal);
-        }
-
-        PostSortProperty effectiveSortProperty = sortProperty;
-        if (board.isNonMemberViewBoard()) {
-            effectiveSortProperty = PostSortProperty.ORDER_NUM;
         }
 
         GetPostsResult result = getPostUseCase.getPosts(
@@ -138,8 +133,8 @@ public class PostController {
                         .cursor(cursor)
                         .pageSize(pageSize)
                         .sortDirection(sortDirection)
-                        .sortProperty(effectiveSortProperty)
-                        .searchKeywordCategory(searchKeywordCategory)
+                        .sortProperty(sortProperty)
+                        .searchTarget(searchTarget)
                         .searchKeyword(searchKeyword)
                         .filter(filterCategory)
                         .filterValue(filterValue)
