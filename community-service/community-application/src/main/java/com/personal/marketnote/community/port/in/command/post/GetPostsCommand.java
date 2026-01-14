@@ -17,6 +17,8 @@ public record GetPostsCommand(
         int pageSize,
         Sort.Direction sortDirection,
         PostSortProperty sortProperty,
+        PostSearchKeywordCategory searchKeywordCategory,
+        String searchKeyword,
         PostFilterCategory filter,
         PostFilterValue filterValue
 ) {

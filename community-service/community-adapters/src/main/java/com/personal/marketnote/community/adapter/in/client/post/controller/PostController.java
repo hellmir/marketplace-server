@@ -110,6 +110,8 @@ public class PostController {
             @RequestParam(value = "pageSize", required = false, defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
             @RequestParam(required = false, defaultValue = "DESC") Sort.Direction sortDirection,
             @RequestParam(required = false, defaultValue = "ID") PostSortProperty sortProperty,
+            @RequestParam(value = "searchKeywordCategory", required = false) PostSearchKeywordCategory searchKeywordCategory,
+            @RequestParam(value = "searchKeyword", required = false) String searchKeyword,
             @RequestParam(value = "filterCategory", required = false) PostFilterCategory filterCategory,
             @RequestParam(value = "filterValue", required = false) PostFilterValue filterValue,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
@@ -137,6 +139,8 @@ public class PostController {
                         .pageSize(pageSize)
                         .sortDirection(sortDirection)
                         .sortProperty(effectiveSortProperty)
+                        .searchKeywordCategory(searchKeywordCategory)
+                        .searchKeyword(searchKeyword)
                         .filter(filterCategory)
                         .filterValue(filterValue)
                         .build()
