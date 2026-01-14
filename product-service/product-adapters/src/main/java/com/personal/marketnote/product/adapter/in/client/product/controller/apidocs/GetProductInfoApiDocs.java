@@ -82,7 +82,7 @@ import java.lang.annotation.*;
                 | popularity | number | 인기도 | 0 |
                 | findAllOptionsYn | boolean | 모든 옵션 선택 여부 | true |
                 | productTags | array | 상품 태그 목록 | [ ... ] |
-                | stock | number | 재고 수량 | 2200 |
+                | stock | number | 재고 수량(재고 서버와 통신 실패한 경우 -1 반환) | 2200 |
                 | orderNum | number | 정렬 순서 | 19 |
                 | status | string | 상태 | "ACTIVE" |
                 ---

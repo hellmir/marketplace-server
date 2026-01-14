@@ -195,8 +195,10 @@ public class GetProductService implements GetProductUseCase {
                 .toList();
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
-        // 상품 재고 수량 조회
-        Map<Long, Integer> inventories = getProductInventoryUseCase.getProductStocks(
+        // 상품 재고 수량 조회(pricePolicyIds를 통한 요청인 경우 제외)
+        Map<Long, Integer> inventories = FormatValidator.hasValue(pricePolicyIds)
+                ? Map.of()
+                : getProductInventoryUseCase.getProductStocks(
                 pagedPolicies.stream()
                         .map(PricePolicy::getId)
                         .toList()
