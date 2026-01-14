@@ -48,7 +48,12 @@ public class GetPostService implements GetPostUseCase {
 
         Long totalElements = null;
         if (!FormatValidator.hasValue(command.cursor())) {
-            totalElements = findPostPort.count(command.userId(), command.board());
+            totalElements = findPostPort.count(
+                    command.userId(),
+                    command.board(),
+                    command.searchKeywordCategory(),
+                    command.searchKeyword()
+            );
         }
 
         return generatePage(command, posts, totalElements);
@@ -72,6 +77,8 @@ public class GetPostService implements GetPostUseCase {
                     isDesc,
                     sortProperty,
                     userId,
+                    command.searchKeywordCategory(),
+                    command.searchKeyword(),
                     command.filter(),
                     command.filterValue()
             );
@@ -84,22 +91,13 @@ public class GetPostService implements GetPostUseCase {
                 command.cursor(),
                 pageable,
                 isDesc,
-                sortProperty
+                sortProperty,
+                command.searchKeywordCategory(),
+                command.searchKeyword()
         );
     }
 
     private GetPostsResult generatePage(GetPostsCommand command, Posts posts, Long totalElementsOverride) {
-        boolean hasNext = posts.size() > command.pageSize();
-        List<Post> pagedPosts = hasNext
-                ? posts.subList(0, command.pageSize())
-                : posts.getPosts();
-
-        Long nextCursor = null;
-        if (FormatValidator.hasValue(posts.getPosts())) {
-            List<Post> orderedPosts = posts.getPosts();
-            nextCursor = orderedPosts.getLast().getId();
-        }
-
         Long totalElements = totalElementsOverride;
         PostTargetType targetType = command.targetType();
         Board board = command.board();
@@ -110,6 +108,8 @@ public class GetPostService implements GetPostUseCase {
                     targetType,
                     command.targetId(),
                     command.userId(),
+                    command.searchKeywordCategory(),
+                    command.searchKeyword(),
                     command.filter(),
                     command.filterValue()
             );
@@ -117,8 +117,36 @@ public class GetPostService implements GetPostUseCase {
 
         // 상품 문의 게시판인 경우 각 게시글의 주문 상품 정보 조회
         Map<Long, ProductInfoResult> reviewedProducts = board.isProductInquery()
-                ? getProductInfo(pagedPosts)
+                ? getProductInfo(posts.getPosts())
                 : Map.of();
+
+        List<Post> filteredPosts = posts.getPosts();
+
+        // 검색어가 있는 경우 후처리 필터링
+        if (FormatValidator.hasValue(command.searchKeyword())) {
+            PostSearchKeywordCategory keywordCategory = command.searchKeywordCategory();
+            String keyword = command.searchKeyword().toLowerCase();
+
+            if (board.isProductInquery() && !FormatValidator.hasValue(targetType)) {
+                filteredPosts = filteredPosts.stream()
+                        .filter(post -> matchesProductInquiryKeyword(post, reviewedProducts.get(post.getTargetId()), keyword, keywordCategory))
+                        .toList();
+            } else if (board.isOneOnOneInquery()) {
+                filteredPosts = filteredPosts.stream()
+                        .filter(post -> matchesOneOnOneKeyword(post, keyword, keywordCategory))
+                        .toList();
+            }
+        }
+
+        boolean hasNext = filteredPosts.size() > command.pageSize();
+        List<Post> pagedPosts = hasNext
+                ? filteredPosts.subList(0, command.pageSize())
+                : filteredPosts;
+
+        Long nextCursor = null;
+        if (FormatValidator.hasValue(pagedPosts)) {
+            nextCursor = pagedPosts.getLast().getId();
+        }
 
         List<PostItemResult> postItems = pagedPosts.stream()
                 .map(post -> {
@@ -184,5 +212,47 @@ public class GetPostService implements GetPostUseCase {
             case ORDER_NUM -> "orderNum";
             case IS_ANSWERED, ID -> "id";
         };
+    }
+
+    private boolean matchesProductInquiryKeyword(
+            Post post,
+            ProductInfoResult productInfoResult,
+            String keyword,
+            PostSearchKeywordCategory searchKeywordCategory
+    ) {
+        if (searchKeywordCategory == null) {
+            return containsKeyword(post.getTitle(), keyword)
+                    || containsKeyword(post.getContent(), keyword)
+                    || containsKeyword(productInfoResult == null ? null : productInfoResult.name(), keyword)
+                    || containsKeyword(productInfoResult == null ? null : productInfoResult.brandName(), keyword);
+        }
+
+        return switch (searchKeywordCategory) {
+            case TITLE -> containsKeyword(post.getTitle(), keyword);
+            case CONTENT -> containsKeyword(post.getContent(), keyword);
+            case PRODUCT_NAME -> containsKeyword(productInfoResult == null ? null : productInfoResult.name(), keyword);
+            case BRAND_NAME ->
+                    containsKeyword(productInfoResult == null ? null : productInfoResult.brandName(), keyword);
+        };
+    }
+
+    private boolean matchesOneOnOneKeyword(Post post, String keyword, PostSearchKeywordCategory searchKeywordCategory) {
+        if (searchKeywordCategory == PostSearchKeywordCategory.TITLE) {
+            return containsKeyword(post.getTitle(), keyword);
+        }
+
+        if (searchKeywordCategory == PostSearchKeywordCategory.CONTENT) {
+            return containsKeyword(post.getContent(), keyword);
+        }
+
+        return containsKeyword(post.getTitle(), keyword) || containsKeyword(post.getContent(), keyword);
+    }
+
+    private boolean containsKeyword(String target, String keyword) {
+        if (!FormatValidator.hasValue(target)) {
+            return false;
+        }
+
+        return target.toLowerCase().contains(keyword);
     }
 }

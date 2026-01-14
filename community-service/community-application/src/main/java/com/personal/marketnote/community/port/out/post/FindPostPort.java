@@ -35,6 +35,8 @@ public interface FindPostPort {
             boolean isDesc,
             PostSortProperty sortProperty,
             Long viewerId,
+            PostSearchKeywordCategory searchKeywordCategory,
+            String keyword,
             PostFilterCategory filter,
             PostFilterValue filterValue
     );
@@ -55,7 +57,9 @@ public interface FindPostPort {
             Long cursor,
             Pageable pageable,
             boolean isDesc,
-            PostSortProperty sortProperty
+            PostSortProperty sortProperty,
+            PostSearchKeywordCategory searchKeywordCategory,
+            String keyword
     );
 
     /**
@@ -74,6 +78,8 @@ public interface FindPostPort {
             PostTargetType targetType,
             Long targetId,
             Long viewerId,
+            PostSearchKeywordCategory searchKeywordCategory,
+            String keyword,
             PostFilterCategory filter,
             PostFilterValue filterValue
     );
@@ -86,5 +92,5 @@ public interface FindPostPort {
      * @Author 성효빈
      * @Description 내 게시글 개수를 조회합니다.
      */
-    long count(Long userId, Board board);
+    long count(Long userId, Board board, PostSearchKeywordCategory searchKeywordCategory, String keyword);
 }
