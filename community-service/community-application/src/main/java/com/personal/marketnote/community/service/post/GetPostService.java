@@ -51,7 +51,7 @@ public class GetPostService implements GetPostUseCase {
             totalElements = findPostPort.count(
                     command.userId(),
                     command.board(),
-                    command.searchKeywordCategory(),
+                    command.searchTarget(),
                     command.searchKeyword()
             );
         }
@@ -77,10 +77,10 @@ public class GetPostService implements GetPostUseCase {
                     isDesc,
                     sortProperty,
                     userId,
-                    command.searchKeywordCategory(),
-                    command.searchKeyword(),
                     command.filter(),
-                    command.filterValue()
+                    command.filterValue(),
+                    command.searchTarget(),
+                    command.searchKeyword()
             );
         }
 
@@ -92,7 +92,7 @@ public class GetPostService implements GetPostUseCase {
                 pageable,
                 isDesc,
                 sortProperty,
-                command.searchKeywordCategory(),
+                command.searchTarget(),
                 command.searchKeyword()
         );
     }
@@ -101,17 +101,18 @@ public class GetPostService implements GetPostUseCase {
         Long totalElements = totalElementsOverride;
         PostTargetType targetType = command.targetType();
         Board board = command.board();
-        if (totalElements == null && !FormatValidator.hasValue(command.cursor())) {
+
+        if (!FormatValidator.hasValue(totalElements) && !FormatValidator.hasValue(command.cursor())) {
             totalElements = findPostPort.count(
                     board,
                     command.category(),
                     targetType,
                     command.targetId(),
                     command.userId(),
-                    command.searchKeywordCategory(),
-                    command.searchKeyword(),
                     command.filter(),
-                    command.filterValue()
+                    command.filterValue(),
+                    command.searchTarget(),
+                    command.searchKeyword()
             );
         }
 
@@ -122,18 +123,13 @@ public class GetPostService implements GetPostUseCase {
 
         List<Post> filteredPosts = posts.getPosts();
 
-        // 검색어가 있는 경우 후처리 필터링
-        if (FormatValidator.hasValue(command.searchKeyword())) {
-            PostSearchKeywordCategory keywordCategory = command.searchKeywordCategory();
-            String keyword = command.searchKeyword().toLowerCase();
-
-            if (board.isProductInquery() && !FormatValidator.hasValue(targetType)) {
+        // 나의 상품 문의 게시판 또는 1:1 문의 게시판인 경우 검색어 적용
+        if (board.isOneOnOneInquery() || board.isProductInquery() && !FormatValidator.hasValue(targetType)) {
+            if (FormatValidator.hasValue(command.searchKeyword())) {
+                PostSearchTarget keywordCategory = command.searchTarget();
+                String searchKeyword = command.searchKeyword().toLowerCase();
                 filteredPosts = filteredPosts.stream()
-                        .filter(post -> matchesProductInquiryKeyword(post, reviewedProducts.get(post.getTargetId()), keyword, keywordCategory))
-                        .toList();
-            } else if (board.isOneOnOneInquery()) {
-                filteredPosts = filteredPosts.stream()
-                        .filter(post -> matchesOneOnOneKeyword(post, keyword, keywordCategory))
+                        .filter(post -> matchesKeyword(post, keywordCategory, searchKeyword))
                         .toList();
             }
         }
@@ -214,38 +210,16 @@ public class GetPostService implements GetPostUseCase {
         };
     }
 
-    private boolean matchesProductInquiryKeyword(
-            Post post,
-            ProductInfoResult productInfoResult,
-            String keyword,
-            PostSearchKeywordCategory searchKeywordCategory
-    ) {
-        if (searchKeywordCategory == null) {
-            return containsKeyword(post.getTitle(), keyword)
-                    || containsKeyword(post.getContent(), keyword)
-                    || containsKeyword(productInfoResult == null ? null : productInfoResult.name(), keyword)
-                    || containsKeyword(productInfoResult == null ? null : productInfoResult.brandName(), keyword);
+    private boolean matchesKeyword(Post post, PostSearchTarget searchTarget, String searchKeyword) {
+        if (searchTarget == PostSearchTarget.TITLE) {
+            return containsKeyword(post.getTitle(), searchKeyword);
         }
 
-        return switch (searchKeywordCategory) {
-            case TITLE -> containsKeyword(post.getTitle(), keyword);
-            case CONTENT -> containsKeyword(post.getContent(), keyword);
-            case PRODUCT_NAME -> containsKeyword(productInfoResult == null ? null : productInfoResult.name(), keyword);
-            case BRAND_NAME ->
-                    containsKeyword(productInfoResult == null ? null : productInfoResult.brandName(), keyword);
-        };
-    }
-
-    private boolean matchesOneOnOneKeyword(Post post, String keyword, PostSearchKeywordCategory searchKeywordCategory) {
-        if (searchKeywordCategory == PostSearchKeywordCategory.TITLE) {
-            return containsKeyword(post.getTitle(), keyword);
+        if (searchTarget == PostSearchTarget.CONTENT) {
+            return containsKeyword(post.getContent(), searchKeyword);
         }
 
-        if (searchKeywordCategory == PostSearchKeywordCategory.CONTENT) {
-            return containsKeyword(post.getContent(), keyword);
-        }
-
-        return containsKeyword(post.getTitle(), keyword) || containsKeyword(post.getContent(), keyword);
+        return containsKeyword(post.getTitle(), searchKeyword) || containsKeyword(post.getContent(), searchKeyword);
     }
 
     private boolean containsKeyword(String target, String keyword) {

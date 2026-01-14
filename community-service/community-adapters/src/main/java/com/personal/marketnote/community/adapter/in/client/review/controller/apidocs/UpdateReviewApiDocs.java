@@ -127,7 +127,7 @@ import java.lang.annotation.*;
                                           "code": "CONFLICT",
                                           "timestamp": "2026-01-12T16:42:29.926731",
                                           "content": null,
-                                          "message": "리뷰 작성자가 아닙니다. 리뷰 ID: 1, 사용자 ID: 1"
+                                          "message": "리뷰 작성자가 아닙니다. 리뷰 ID: 1, 회원 ID: 1"
                                         }
                                         """)
                         )

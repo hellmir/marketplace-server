@@ -16,4 +16,20 @@ public enum PostFilterCategory {
         this.description = description;
         camelCaseValue = FormatConverter.snakeToCamel(name());
     }
+
+    public boolean isPublicOnly(PostFilterValue filterValue) {
+        return isPublic() && filterValue.isTrue();
+    }
+
+    private boolean isPublic() {
+        return this == PostFilterCategory.IS_PUBLIC;
+    }
+
+    public boolean isMineFiltered(PostFilterValue filterValue) {
+        return isMine() && filterValue.isTrue();
+    }
+
+    private boolean isMine() {
+        return this == PostFilterCategory.IS_MINE;
+    }
 }

@@ -7,8 +7,6 @@ import lombok.Getter;
 public enum PostFilterValue {
     // 상품 문의 필터
     TRUE("참"),
-    FALSE("거짓"),
-    MINE("내 문의글"),
 
     // FAQ 카테고리
     ORDER_PAYMENT("FAQ-주문/결제"),
@@ -25,5 +23,9 @@ public enum PostFilterValue {
     PostFilterValue(String description) {
         this.description = description;
         camelCaseValue = FormatConverter.snakeToCamel(name());
+    }
+
+    public boolean isTrue() {
+        return this == TRUE;
     }
 }

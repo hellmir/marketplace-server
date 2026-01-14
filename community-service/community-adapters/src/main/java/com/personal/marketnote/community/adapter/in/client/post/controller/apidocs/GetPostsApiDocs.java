@@ -22,9 +22,9 @@ import java.lang.annotation.*;
                 
                 - 게시글 목록을 조회합니다.
                 
-                - 페이로드에 cursor 값이 없는 경우(첫 페이지): 총 상품 개수 반환 O
+                - 페이로드에 cursor 값이 없는 경우(첫 페이지): 총 게시글 개수 반환 O
                 
-                - 페이로드에 cursor 값이 있는 경우(더 보기): 총 상품 개수 반환 X
+                - 페이로드에 cursor 값이 있는 경우(더 보기): 총 게시글 개수 반환 X
                 
                 - 게시판
                 
@@ -72,10 +72,10 @@ import java.lang.annotation.*;
                 | pageSize | number | 페이지 크기 | N | 10 |
                 | sortDirection | string | 정렬 방향(DESC/ASC) | N | "DESC" |
                 | sortProperty | string | 정렬 기준 | N | "ORDER_NUM" |
-                | searchKeywordCategory | string | 검색어 구분(TITLE/CONTENT/PRODUCT_NAME/BRAND_NAME) | N | "TITLE" |
-                | searchKeyword | string | 검색어(게시글 제목/내용, 상품 문의 시 상품명/브랜드명 포함) | N | "배송" |
-                | filterCategory | string | 필터 유형(FAQ_CATEGORY, IS_PUBLIC, IS_MINE) | N | "IS_PUBLIC" |
-                | filterValue | string | 필터 값(Enum)<br/>- FAQ_CATEGORY: FAQ 카테고리 코드<br/>- IS_PUBLIC: TRUE/FALSE<br/>- IS_MINE: MINE | N | "TRUE" |
+                | searchTarget | string | 검색 대상 | N | "CONTENT" |
+                | searchKeyword | string | 검색 키워드 | N | "배송" |
+                | filterCategory | string | 필터 유형 | N | "IS_PUBLIC" |
+                | filterValue | string | 필터 값 | N | "TRUE" |
                 
                 ---
                 
@@ -182,18 +182,18 @@ import java.lang.annotation.*;
                         )
                 ),
                 @Parameter(
-                        name = "searchKeywordCategory",
+                        name = "searchTarget",
                         in = ParameterIn.QUERY,
-                        description = "검색어 구분(TITLE/CONTENT/PRODUCT_NAME/BRAND_NAME)",
+                        description = "검색 대상",
                         schema = @Schema(
                                 type = "string",
-                                allowableValues = {"TITLE", "CONTENT", "PRODUCT_NAME", "BRAND_NAME"}
+                                allowableValues = {"TITLE", "CONTENT"}
                         )
                 ),
                 @Parameter(
                         name = "searchKeyword",
                         in = ParameterIn.QUERY,
-                        description = "검색어(게시글 제목/내용, 상품 문의 시 상품명/브랜드명 포함)",
+                        description = "검색 키워드",
                         schema = @Schema(type = "string")
                 ),
                 @Parameter(
@@ -208,12 +208,11 @@ import java.lang.annotation.*;
                 @Parameter(
                         name = "filterValue",
                         in = ParameterIn.QUERY,
-                        description = "필터 값<br/>- IS_PUBLIC: TRUE/FALSE<br/>- IS_MINE: MINE<br/>- FAQ_CATEGORY: FAQ 카테고리 코드",
+                        description = "필터 값",
                         schema = @Schema(
                                 type = "string",
                                 allowableValues = {
-                                        "TRUE", "FALSE", "MINE",
-                                        "ORDER_PAYMENT", "DELIVERY", "CANCEL_REFUND",
+                                        "TRUE", "ORDER_PAYMENT", "DELIVERY", "CANCEL_REFUND",
                                         "RETURN_EXCHANGE", "POINT", "EVENT_COUPON", "LOGIN_MEMBER_INFO"
                                 }
                         )
