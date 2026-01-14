@@ -47,9 +47,16 @@ public interface FindPostPort {
      * @return 게시글 목록 {@link Posts}
      * @Date 2025-12-06
      * @Author 성효빈
-     * @Description 내 게시글 목록을 조회합니다.
+     * @Description 회원 게시글 목록을 조회합니다.
      */
-    Posts findPosts(Long userId, Board board, Long cursor, Pageable pageable, boolean isDesc, PostSortProperty sortProperty);
+    Posts findUserPosts(
+            Long userId,
+            Board board,
+            Long cursor,
+            Pageable pageable,
+            boolean isDesc,
+            PostSortProperty sortProperty
+    );
 
     /**
      * @param board      게시판

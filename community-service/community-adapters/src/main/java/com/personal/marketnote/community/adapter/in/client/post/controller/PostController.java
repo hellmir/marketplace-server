@@ -127,6 +127,7 @@ public class PostController {
 
         GetPostsResult result = getPostUseCase.getPosts(
                 GetPostsCommand.builder()
+                        .principal(principal)
                         .userId(userId)
                         .board(board)
                         .category(category)

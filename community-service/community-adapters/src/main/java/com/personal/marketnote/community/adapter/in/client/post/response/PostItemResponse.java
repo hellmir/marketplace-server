@@ -1,5 +1,6 @@
 package com.personal.marketnote.community.adapter.in.client.post.response;
 
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.domain.post.PostTargetType;
 import com.personal.marketnote.community.port.in.result.post.PostItemResult;
 
@@ -17,33 +18,37 @@ public record PostItemResponse(
         String writerName,
         String title,
         String content,
-        Boolean isPrivate,
+        boolean isPrivate,
+        boolean isMasked,
         LocalDateTime createdAt,
         LocalDateTime modifiedAt,
         PostProductInfoResponse product,
         List<PostItemResponse> replies
 ) {
     public static PostItemResponse from(PostItemResult result) {
+        List<PostItemResult> replies = result.getReplies();
+
         return new PostItemResponse(
-                result.id(),
-                result.userId(),
-                result.parentId(),
-                result.board(),
-                result.category(),
-                result.targetType(),
-                result.targetId(),
-                result.writerName(),
-                result.title(),
-                result.content(),
+                result.getId(),
+                result.getUserId(),
+                result.getParentId(),
+                result.getBoard(),
+                result.getCategory(),
+                result.getTargetType(),
+                result.getTargetId(),
+                result.getWriterName(),
+                result.getTitle(),
+                result.getContent(),
                 result.isPrivate(),
-                result.createdAt(),
-                result.modifiedAt(),
-                PostProductInfoResponse.from(result.product()),
-                result.replies() == null
-                        ? List.of()
-                        : result.replies().stream()
+                result.isMasked(),
+                result.getCreatedAt(),
+                result.getModifiedAt(),
+                PostProductInfoResponse.from(result.getProduct()),
+                FormatValidator.hasValue(replies)
+                        ? replies.stream()
                         .map(PostItemResponse::from)
                         .toList()
+                        : List.of()
         );
     }
 }
