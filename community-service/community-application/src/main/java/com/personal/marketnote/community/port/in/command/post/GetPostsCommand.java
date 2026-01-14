@@ -1,8 +1,6 @@
 package com.personal.marketnote.community.port.in.command.post;
 
-import com.personal.marketnote.community.domain.post.Board;
-import com.personal.marketnote.community.domain.post.PostSortProperty;
-import com.personal.marketnote.community.domain.post.PostTargetType;
+import com.personal.marketnote.community.domain.post.*;
 import lombok.Builder;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
@@ -18,6 +16,8 @@ public record GetPostsCommand(
         Long cursor,
         int pageSize,
         Sort.Direction sortDirection,
-        PostSortProperty sortProperty
+        PostSortProperty sortProperty,
+        PostFilterCategory filter,
+        PostFilterValue filterValue
 ) {
 }

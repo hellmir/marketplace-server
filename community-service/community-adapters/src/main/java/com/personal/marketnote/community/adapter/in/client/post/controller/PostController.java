@@ -10,9 +10,7 @@ import com.personal.marketnote.community.adapter.in.client.post.mapper.PostReque
 import com.personal.marketnote.community.adapter.in.client.post.request.RegisterPostRequest;
 import com.personal.marketnote.community.adapter.in.client.post.response.GetPostsResponse;
 import com.personal.marketnote.community.adapter.in.client.post.response.RegisterPostResponse;
-import com.personal.marketnote.community.domain.post.Board;
-import com.personal.marketnote.community.domain.post.PostSortProperty;
-import com.personal.marketnote.community.domain.post.PostTargetType;
+import com.personal.marketnote.community.domain.post.*;
 import com.personal.marketnote.community.port.in.command.post.GetPostsCommand;
 import com.personal.marketnote.community.port.in.result.post.GetPostsResult;
 import com.personal.marketnote.community.port.in.result.post.RegisterPostResult;
@@ -112,6 +110,8 @@ public class PostController {
             @RequestParam(value = "pageSize", required = false, defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
             @RequestParam(required = false, defaultValue = "DESC") Sort.Direction sortDirection,
             @RequestParam(required = false, defaultValue = "ID") PostSortProperty sortProperty,
+            @RequestParam(value = "filterCategory", required = false) PostFilterCategory filterCategory,
+            @RequestParam(value = "filterValue", required = false) PostFilterValue filterValue,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
         validateAuthentication(board, targetType, principal);
@@ -137,6 +137,8 @@ public class PostController {
                         .pageSize(pageSize)
                         .sortDirection(sortDirection)
                         .sortProperty(effectiveSortProperty)
+                        .filter(filterCategory)
+                        .filterValue(filterValue)
                         .build()
         );
 

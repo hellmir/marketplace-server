@@ -1,9 +1,6 @@
 package com.personal.marketnote.community.port.out.post;
 
-import com.personal.marketnote.community.domain.post.Board;
-import com.personal.marketnote.community.domain.post.PostSortProperty;
-import com.personal.marketnote.community.domain.post.PostTargetType;
-import com.personal.marketnote.community.domain.post.Posts;
+import com.personal.marketnote.community.domain.post.*;
 import org.springframework.data.domain.Pageable;
 
 public interface FindPostPort {
@@ -36,7 +33,10 @@ public interface FindPostPort {
             Long cursor,
             Pageable pageable,
             boolean isDesc,
-            PostSortProperty sortProperty
+            PostSortProperty sortProperty,
+            Long viewerId,
+            PostFilterCategory filter,
+            PostFilterValue filterValue
     );
 
     /**
@@ -68,7 +68,15 @@ public interface FindPostPort {
      * @Author 성효빈
      * @Description 게시글 개수를 조회합니다.
      */
-    long count(Board board, String category, PostTargetType targetType, Long targetId);
+    long count(
+            Board board,
+            String category,
+            PostTargetType targetType,
+            Long targetId,
+            Long viewerId,
+            PostFilterCategory filter,
+            PostFilterValue filterValue
+    );
 
     /**
      * @param userId 사용자 ID

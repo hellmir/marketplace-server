@@ -72,6 +72,8 @@ import java.lang.annotation.*;
                 | pageSize | number | 페이지 크기 | N | 10 |
                 | sortDirection | string | 정렬 방향(DESC/ASC) | N | "DESC" |
                 | sortProperty | string | 정렬 기준 | N | "ORDER_NUM" |
+                | filterCategory | string | 필터 유형 | N | "IS_PRIVATE" |
+                | filterValue | string | 필터 값 | N | "TRUE" |
                 
                 ---
                 
@@ -175,6 +177,27 @@ import java.lang.annotation.*;
                                 example = "ORDER_NUM",
                                 allowableValues = {"ORDER_NUM", "ID", "IS_ANSWERED"},
                                 defaultValue = "ORDER_NUM"
+                        )
+                ),
+                @Parameter(
+                        name = "filterCategory",
+                        in = ParameterIn.QUERY,
+                        description = "필터 유형",
+                        schema = @Schema(
+                                type = "string",
+                                allowableValues = {"IS_PUBLIC", "IS_MINE", "FAQ_CATEGORY"}
+                        )
+                ),
+                @Parameter(
+                        name = "filterValue",
+                        in = ParameterIn.QUERY,
+                        description = "필터 값(IS_PUBLIC/IS_MINE: TRUE, FAQ_CATEGORY: 나머지)",
+                        schema = @Schema(
+                                type = "string",
+                                allowableValues = {
+                                        "TRUE", "ORDER_PAYMENT", "DELIVERY", "CANCEL_REFUND",
+                                        "RETURN_EXCHANGE", "POINT", "EVENT_COUPON", "LOGIN_MEMBER_INFO"
+                                }
                         )
                 )
         },
