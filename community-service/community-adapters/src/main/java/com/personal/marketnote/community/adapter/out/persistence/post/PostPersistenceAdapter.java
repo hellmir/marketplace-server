@@ -1,6 +1,7 @@
 package com.personal.marketnote.community.adapter.out.persistence.post;
 
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.adapter.out.mapper.PostJpaEntityToDomainMapper;
 import com.personal.marketnote.community.adapter.out.persistence.post.entity.PostJpaEntity;
 import com.personal.marketnote.community.adapter.out.persistence.post.repository.PostJpaRepository;
@@ -10,7 +11,11 @@ import com.personal.marketnote.community.port.out.post.SavePostPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Objects;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
@@ -42,43 +47,30 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort {
             PostSortProperty sortProperty
     ) {
         if (PostSortProperty.IS_ANSWERED.equals(sortProperty)) {
-            return Posts.from(
+            return mapToPostsWithReplies(
                     postJpaRepository.findByBoardAndFiltersOrderByAnswered(
-                                    board, category, targetType, targetId, cursor, isDesc, pageable
-                            ).stream()
-                            .map(entity -> PostJpaEntityToDomainMapper.mapToDomain(entity).orElse(null))
-                            .filter(Objects::nonNull)
-                            .toList()
+                            board, category, targetType, targetId, cursor, isDesc, pageable
+                    )
             );
         }
 
-        return Posts.from(
-                postJpaRepository.findByBoardAndFilters(board, category, targetType, targetId, cursor, isDesc, pageable)
-                        .stream()
-                        .map(entity -> PostJpaEntityToDomainMapper.mapToDomain(entity).orElse(null))
-                        .filter(Objects::nonNull)
-                        .toList()
+        return mapToPostsWithReplies(
+                postJpaRepository.findByBoardAndFilters(
+                        board, category, targetType, targetId, cursor, isDesc, pageable
+                )
         );
     }
 
     @Override
     public Posts findPosts(Long userId, Board board, Long cursor, Pageable pageable, boolean isDesc, PostSortProperty sortProperty) {
         if (PostSortProperty.IS_ANSWERED.equals(sortProperty)) {
-            return Posts.from(
+            return mapToPostsWithReplies(
                     postJpaRepository.findByUserIdAndBoardOrderByAnswered(userId, board, cursor, isDesc, pageable)
-                            .stream()
-                            .map(entity -> PostJpaEntityToDomainMapper.mapToDomain(entity).orElse(null))
-                            .filter(Objects::nonNull)
-                            .toList()
             );
         }
 
-        return Posts.from(
+        return mapToPostsWithReplies(
                 postJpaRepository.findByUserIdAndBoard(userId, board, cursor, isDesc, pageable)
-                        .stream()
-                        .map(entity -> PostJpaEntityToDomainMapper.mapToDomain(entity).orElse(null))
-                        .filter(Objects::nonNull)
-                        .toList()
         );
     }
 
@@ -90,5 +82,34 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort {
     @Override
     public long count(Long userId, Board board) {
         return postJpaRepository.countByUserIdAndBoard(userId, board);
+    }
+
+    private Posts mapToPostsWithReplies(List<PostJpaEntity> parentEntities) {
+        List<Post> parents = parentEntities.stream()
+                .map(PostJpaEntityToDomainMapper::mapToDomain)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+
+        if (!FormatValidator.hasValue(parents)) {
+            return Posts.from(parents);
+        }
+
+        List<Long> parentIds = parents.stream()
+                .map(Post::getId)
+                .toList();
+
+        Map<Long, List<Post>> repliesByParentId = postJpaRepository.findRepliesByParentIds(parentIds)
+                .stream()
+                .map(PostJpaEntityToDomainMapper::mapToDomain)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.groupingBy(Post::getParentId));
+
+        parents.forEach(parent ->
+                parent.updateReplies(repliesByParentId.getOrDefault(parent.getId(), Collections.emptyList()))
+        );
+
+        return Posts.from(parents);
     }
 }

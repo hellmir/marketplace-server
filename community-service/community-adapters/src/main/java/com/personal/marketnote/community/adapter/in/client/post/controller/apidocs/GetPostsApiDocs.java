@@ -206,7 +206,8 @@ import java.lang.annotation.*;
                                                   "isPrivate": false,
                                                   "createdAt": "2026-01-13T17:17:29.943604",
                                                   "modifiedAt": "2026-01-13T17:17:29.955261",
-                                                  "product": null
+                                                  "product": null,
+                                                  "replies": []
                                                 },
                                                 {
                                                   "id": 13,
@@ -222,7 +223,8 @@ import java.lang.annotation.*;
                                                   "isPrivate": false,
                                                   "createdAt": "2026-01-13T17:17:21.374981",
                                                   "modifiedAt": "2026-01-13T17:17:21.403971",
-                                                  "product": null
+                                                  "product": null,
+                                                  "replies": []
                                                 }
                                               ]
                                             }

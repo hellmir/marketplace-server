@@ -15,6 +15,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
@@ -32,6 +34,8 @@ public class Post {
     private String content;
     private Boolean isPrivate;
     private EntityStatus status;
+    @Builder.Default
+    private List<Post> replies = Collections.emptyList();
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -79,6 +83,7 @@ public class Post {
                 .createdAt(state.getCreatedAt())
                 .modifiedAt(state.getModifiedAt())
                 .orderNum(state.getOrderNum())
+                .replies(Collections.emptyList())
                 .build();
     }
 
@@ -88,5 +93,9 @@ public class Post {
 
     public boolean isInactive() {
         return status.isInactive();
+    }
+
+    public void updateReplies(List<Post> replies) {
+        this.replies = replies;
     }
 }

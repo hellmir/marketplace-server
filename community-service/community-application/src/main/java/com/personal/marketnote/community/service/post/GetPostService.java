@@ -36,18 +36,30 @@ public class GetPostService implements GetPostUseCase {
 
     @Override
     public GetPostsResult getPosts(GetPostsCommand command) {
-        Sort.Direction sortDirection = command.sortDirection() == null ? Sort.Direction.DESC : command.sortDirection();
+        Sort.Direction sortDirection = FormatValidator.hasValue(command.sortDirection())
+                ? command.sortDirection()
+                : Sort.Direction.DESC;
         PostSortProperty sortProperty = resolveSortProperty(command);
-        boolean isDesc = Sort.Direction.DESC.equals(sortDirection);
-
         Pageable pageable = PageRequest.of(0, command.pageSize() + 1, Sort.by(sortDirection, getSortField(sortProperty)));
 
+        Posts posts = getBoardPosts(command, pageable, sortProperty);
+
+        Long totalElements = null;
+        if (!FormatValidator.hasValue(command.cursor())) {
+            totalElements = findPostPort.count(command.userId(), command.board());
+        }
+
+        return generatePage(command, posts, totalElements);
+    }
+
+    private Posts getBoardPosts(GetPostsCommand command, Pageable pageable, PostSortProperty sortProperty) {
         Board board = command.board();
         PostTargetType targetType = command.targetType();
+        boolean isDesc = Sort.Direction.DESC.equals(command.sortDirection());
 
         // 비회원 전용 게시판이거나 상품 상세 정보의 문의 게시판인 경우
         if (board.isNonMemberViewBoard() || FormatValidator.hasValue(targetType)) {
-            Posts posts = findPostPort.findPosts(
+            return findPostPort.findPosts(
                     board,
                     command.category(),
                     targetType,
@@ -57,12 +69,10 @@ public class GetPostService implements GetPostUseCase {
                     isDesc,
                     sortProperty
             );
-
-            return generatePage(command, posts, null);
         }
 
         // 나의 상품 문의 게시판이거나 나의 1:1 문의 게시판인 경우
-        Posts posts = findPostPort.findPosts(
+        return findPostPort.findPosts(
                 command.userId(),
                 board,
                 command.cursor(),
@@ -70,13 +80,6 @@ public class GetPostService implements GetPostUseCase {
                 isDesc,
                 sortProperty
         );
-
-        Long totalElements = null;
-        if (!FormatValidator.hasValue(command.cursor())) {
-            totalElements = findPostPort.count(command.userId(), board);
-        }
-
-        return generatePage(command, posts, totalElements);
     }
 
     private GetPostsResult generatePage(GetPostsCommand command, Posts posts, Long totalElementsOverride) {
