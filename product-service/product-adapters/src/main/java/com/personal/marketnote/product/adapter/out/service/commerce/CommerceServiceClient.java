@@ -24,6 +24,7 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_MAX_REQUEST_COUNT;
 
@@ -87,7 +88,13 @@ public class CommerceServiceClient implements RegisterInventoryPort, FindStockPo
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(adminAccessToken);
 
-        return sendRequest(uri, headers, pricePolicyIds).inventories();
+        try {
+            return sendRequest(uri, headers, pricePolicyIds).inventories();
+        } catch (CommerceServiceRequestFailedException csrfe) {
+            return pricePolicyIds.stream()
+                    .map(GetInventoryResult::generateResultWithoutStock)
+                    .collect(Collectors.toSet());
+        }
     }
 
     public GetInventoriesResponse sendRequest(URI uri, HttpHeaders headers, List<Long> pricePolicyIds) {

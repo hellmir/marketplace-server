@@ -69,18 +69,18 @@ import java.lang.annotation.*;
                 
                 ---
                 
-                ### Response > content
+                ### Response > content > products
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
-                | products | array | 상품 목록 | [ ... ] |
+                | totalElements | number | 총 아이템 수 | 30 |
                 | nextCursor | number | 현재 페이지에서 조회한 마지막 리소스의 식별자 | 18 |
                 | hasNext | boolean | 다음 페이지 존재 여부 | true |
-                | totalElements | number | 총 아이템 수 | 30 |
+                | items | array | 상품 목록 | [ ... ] |
                 
                 ---
                 
-                ### Response > content > products
+                ### Response > content > products > items
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
@@ -92,8 +92,10 @@ import java.lang.annotation.*;
                 | sales | number | 판매량 | 0 |
                 | productTags | array | 상품 태그 목록 | [ ... ] |
                 | catalogImage | object | 상품 카탈로그 이미지 | { ... } |
-                | orderNum | number | 정렬 순서 | 1 |
+                | selectedOptions | array | 선택된 옵션 목록 | [ ... ] |
+                | stock | number | 재고 수량(재고 서버와 통신 실패한 경우 -1 반환) | 10 |
                 | status | string | 상태 | "ACTIVE" |
+                | orderNum | number | 정렬 순서 | 1 |
                 
                 ---
                 
