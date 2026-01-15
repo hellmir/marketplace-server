@@ -259,18 +259,19 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
     );
 
     @Query("""
-            SELECT p
-            FROM PostJpaEntity p
-            WHERE p.parentId IN :parentIds
-              AND p.status = :status
-            ORDER BY p.id ASC
+                SELECT p
+                FROM PostJpaEntity p
+                WHERE p.id IN (
+                    SELECT MAX(child.id)
+                    FROM PostJpaEntity child
+                    WHERE child.parentId IN :parentIds
+                      AND child.status = :status
+                    GROUP BY child.parentId
+                )
+                ORDER BY p.id DESC
             """)
     List<PostJpaEntity> findRepliesByParentIds(
             @Param("parentIds") List<Long> parentIds,
             @Param("status") EntityStatus status
     );
-
-    default List<PostJpaEntity> findRepliesByParentIds(List<Long> parentIds) {
-        return findRepliesByParentIds(parentIds, EntityStatus.ACTIVE);
-    }
 }

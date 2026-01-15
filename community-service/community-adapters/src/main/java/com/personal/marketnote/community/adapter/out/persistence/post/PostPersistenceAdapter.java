@@ -197,7 +197,7 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort {
                 .map(Post::getId)
                 .toList();
 
-        Map<Long, List<Post>> repliesByParentId = postJpaRepository.findRepliesByParentIds(parentIds)
+        Map<Long, List<Post>> repliesByParentId = postJpaRepository.findRepliesByParentIds(parentIds, EntityStatus.ACTIVE)
                 .stream()
                 .map(PostJpaEntityToDomainMapper::mapToDomain)
                 .filter(Optional::isPresent)
