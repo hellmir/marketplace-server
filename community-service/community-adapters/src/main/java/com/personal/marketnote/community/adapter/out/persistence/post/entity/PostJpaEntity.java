@@ -72,6 +72,8 @@ public class PostJpaEntity extends BaseOrderedGeneralEntity {
 
     public void updateFrom(Post post) {
         updateActivation(post);
+        title = post.getTitle();
+        content = post.getContent();
     }
 
     private void updateActivation(Post post) {
