@@ -96,6 +96,10 @@ public class Post {
         return status.isInactive();
     }
 
+    public boolean isStatusChanged(boolean isVisible) {
+        return !FormatValidator.equals(status.isActive(), isVisible);
+    }
+
     public void updateReplies(List<Post> replies) {
         this.replies = replies;
         isAnswered = FormatValidator.hasValue(replies);
@@ -103,5 +107,9 @@ public class Post {
 
     public boolean hasReplies() {
         return FormatValidator.hasValue(getReplies());
+    }
+
+    public void changeExposure() {
+        status = EntityStatus.changeVisibility(status);
     }
 }

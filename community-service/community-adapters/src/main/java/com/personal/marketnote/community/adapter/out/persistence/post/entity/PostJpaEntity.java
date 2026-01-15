@@ -69,4 +69,22 @@ public class PostJpaEntity extends BaseOrderedGeneralEntity {
                 .isPrivate(Boolean.TRUE.equals(post.getIsPrivate()))
                 .build();
     }
+
+    public void updateFrom(Post post) {
+        updateActivation(post);
+    }
+
+    private void updateActivation(Post post) {
+        if (post.isActive()) {
+            activate();
+            return;
+        }
+
+        if (post.isInactive()) {
+            deactivate();
+            return;
+        }
+
+        hide();
+    }
 }
