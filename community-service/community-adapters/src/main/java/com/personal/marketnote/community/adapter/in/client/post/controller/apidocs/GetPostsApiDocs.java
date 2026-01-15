@@ -116,6 +116,7 @@ import java.lang.annotation.*;
                 | content | string | 내용 | "배송 언제 오나요?" |
                 | isPrivate | boolean | 비밀글 여부 | true |
                 | isMasked | boolean | 비밀글 숨김 처리 여부 | true |
+                | isAnswered | boolean | 답변 여부 | true |
                 | createdAt | string(datetime) | 생성 일시 | "2026-01-13T13:12:40.921092" |
                 | modifiedAt | string(datetime) | 수정 일시 | "2026-01-13T13:12:40.921092" |
                 | product | object | 상품 정보(상품 문의글이 아닌 경우 null) | { ... } |
@@ -247,6 +248,7 @@ import java.lang.annotation.*;
                                                   "content": null,
                                                   "isPrivate": true,
                                                   "isMasked": true,
+                                                  "isAnswered": true,
                                                   "createdAt": "2026-01-13T17:16:05.34468",
                                                   "modifiedAt": "2026-01-13T17:16:05.380594",
                                                   "product": {
@@ -275,6 +277,7 @@ import java.lang.annotation.*;
                                                   "content": "게시글 내용abc",
                                                   "isPrivate": true,
                                                   "isMasked": false,
+                                                  "isAnswered": false,
                                                   "createdAt": "2026-01-13T16:45:26.694612",
                                                   "modifiedAt": "2026-01-13T16:45:26.726141",
                                                   "product": {
@@ -303,6 +306,7 @@ import java.lang.annotation.*;
                                                   "content": "게시글 내용",
                                                   "isPrivate": false,
                                                   "isMasked": false,
+                                                  "isAnswered": true,
                                                   "createdAt": "2026-01-13T16:44:28.287364",
                                                   "modifiedAt": "2026-01-13T16:44:28.338047",
                                                   "product": {
@@ -330,6 +334,7 @@ import java.lang.annotation.*;
                                                       "content": "답글 내용",
                                                       "isPrivate": false,
                                                       "isMasked": false,
+                                                      "isAnswered": false,
                                                       "createdAt": "2026-01-14T11:44:40.772724",
                                                       "modifiedAt": "2026-01-14T11:44:40.827294",
                                                       "product": null,

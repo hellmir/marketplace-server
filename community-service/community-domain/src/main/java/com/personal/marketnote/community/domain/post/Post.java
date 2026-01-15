@@ -34,6 +34,7 @@ public class Post {
     private String title;
     private String content;
     private Boolean isPrivate;
+    private boolean isAnswered;
     private EntityStatus status;
     @Builder.Default
     private List<Post> replies = Collections.emptyList();
@@ -84,7 +85,6 @@ public class Post {
                 .createdAt(state.getCreatedAt())
                 .modifiedAt(state.getModifiedAt())
                 .orderNum(state.getOrderNum())
-                .replies(Collections.emptyList())
                 .build();
     }
 
@@ -98,6 +98,7 @@ public class Post {
 
     public void updateReplies(List<Post> replies) {
         this.replies = replies;
+        isAnswered = FormatValidator.hasValue(replies);
     }
 
     public boolean hasReplies() {
