@@ -56,6 +56,14 @@ public enum Board {
         return this == NOTICE || this == FAQ;
     }
 
+    public boolean isNotice() {
+        return this == NOTICE;
+    }
+
+    public boolean isFaq() {
+        return this == FAQ;
+    }
+
     public boolean isProductInquery() {
         return this == PRODUCT_INQUERY;
     }

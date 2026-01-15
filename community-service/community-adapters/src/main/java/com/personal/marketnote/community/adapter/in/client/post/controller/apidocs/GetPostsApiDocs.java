@@ -48,7 +48,7 @@ import java.lang.annotation.*;
                 
                             - targetId: 미전송
                 
-                        - **"ONE_ON_ONE_INQUERY": 나의 1:1 문의**
+                        - **"ONE_ON_ONE_INQUERY": 1:1 문의**
                 
                 - 정렬 기준
                 
