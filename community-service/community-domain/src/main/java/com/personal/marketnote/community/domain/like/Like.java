@@ -1,6 +1,7 @@
 package com.personal.marketnote.community.domain.like;
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
+import com.personal.marketnote.common.utility.FormatValidator;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -38,11 +39,7 @@ public class Like {
     }
 
     public boolean isStatusChanged(boolean isLiked) {
-        if (isLiked) {
-            return status.isInactive();
-        }
-
-        return status.isActive();
+        return !FormatValidator.equals(status.isActive(), isLiked);
     }
 
     public void revert() {

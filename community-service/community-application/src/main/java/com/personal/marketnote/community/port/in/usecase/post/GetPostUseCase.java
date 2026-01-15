@@ -1,5 +1,6 @@
 package com.personal.marketnote.community.port.in.usecase.post;
 
+import com.personal.marketnote.community.domain.post.Post;
 import com.personal.marketnote.community.port.in.command.post.GetPostsCommand;
 import com.personal.marketnote.community.port.in.result.post.GetPostsResult;
 
@@ -21,4 +22,13 @@ public interface GetPostUseCase {
      * @Description 게시글 목록을 조회합니다.
      */
     GetPostsResult getPosts(GetPostsCommand query);
+
+    /**
+     * @param id 게시글 ID
+     * @return 게시글 {@link Post}
+     * @Date 2026-01-15
+     * @Author 성효빈
+     * @Description 게시글을 조회합니다.
+     */
+    Post getPost(Long id);
 }

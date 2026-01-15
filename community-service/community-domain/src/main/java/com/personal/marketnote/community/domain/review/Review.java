@@ -104,15 +104,23 @@ public class Review {
         this.isPhoto = isPhoto;
     }
 
-    public void delete() {
-        status = EntityStatus.from(false);
-    }
-
     public boolean isActive() {
         return status.isActive();
     }
 
     public boolean isInactive() {
         return status.isInactive();
+    }
+
+    public boolean isStatusChanged(boolean isVisible) {
+        return !FormatValidator.equals(status.isActive(), isVisible);
+    }
+
+    public void delete() {
+        status = EntityStatus.from(false);
+    }
+
+    public void changeExposure() {
+        status = EntityStatus.changeVisibility(status);
     }
 }

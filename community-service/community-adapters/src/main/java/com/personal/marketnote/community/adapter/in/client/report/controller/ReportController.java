@@ -3,16 +3,16 @@ package com.personal.marketnote.community.adapter.in.client.report.controller;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.community.adapter.in.client.report.ReportRequestToCommandMapper;
-import com.personal.marketnote.community.adapter.in.client.report.apidocs.GetPostReportsApiDocs;
-import com.personal.marketnote.community.adapter.in.client.report.apidocs.GetReviewReportsApiDocs;
-import com.personal.marketnote.community.adapter.in.client.report.apidocs.ReportPostApiDocs;
-import com.personal.marketnote.community.adapter.in.client.report.apidocs.ReportReviewApiDocs;
+import com.personal.marketnote.community.adapter.in.client.report.apidocs.*;
 import com.personal.marketnote.community.adapter.in.client.report.request.RegisterReportRequest;
+import com.personal.marketnote.community.adapter.in.client.report.request.UpdateTargetStatusRequest;
 import com.personal.marketnote.community.adapter.in.client.report.response.GetReportsResponse;
+import com.personal.marketnote.community.adapter.in.client.report.response.UpdateTargetStatusResponse;
 import com.personal.marketnote.community.domain.report.ReportTargetType;
 import com.personal.marketnote.community.port.in.result.report.GetReportsResult;
 import com.personal.marketnote.community.port.in.usecase.report.GetReportUseCase;
 import com.personal.marketnote.community.port.in.usecase.report.RegisterReportUseCase;
+import com.personal.marketnote.community.port.in.usecase.report.UpdateTargetStatusUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +33,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 public class ReportController {
     private final RegisterReportUseCase registerReportUseCase;
     private final GetReportUseCase getReportUseCase;
+    private final UpdateTargetStatusUseCase updateTargetStatusUseCase;
 
     /**
      * 리뷰 신고
@@ -159,6 +160,35 @@ public class ReportController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "게시글 신고 내역 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * (관리자) 대상 리뷰/게시글 노출/숨기기
+     *
+     * @param request 대상 리뷰/게시글 노출/숨기기 요청
+     * @Author 성효빈
+     * @Date 2026-01-15
+     * @Description 대상 리뷰/게시글을 숨기거나 복구합니다.
+     */
+    @PatchMapping("/status")
+    @PreAuthorize(ADMIN_POINTCUT)
+    @UpdateTargetStatusApiDocs
+    public ResponseEntity<BaseResponse<UpdateTargetStatusResponse>> updateTargetStatus(
+            @Valid @RequestBody UpdateTargetStatusRequest request
+    ) {
+        updateTargetStatusUseCase.updateTargetStatus(
+                ReportRequestToCommandMapper.mapToCommand(request)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        UpdateTargetStatusResponse.of(request.isVisible()),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "대상 노출/숨기기 성공"
                 ),
                 HttpStatus.OK
         );

@@ -3,6 +3,8 @@ package com.personal.marketnote.community.port.out.post;
 import com.personal.marketnote.community.domain.post.*;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 public interface FindPostPort {
     /**
      * @param id 게시글 ID
@@ -111,4 +113,13 @@ public interface FindPostPort {
      * @Description 게시글 개수를 조회합니다.
      */
     long count(Long userId, Board board, PostSearchTarget searchTarget, String searchKeyword);
+
+    /**
+     * @param id 게시글 ID
+     * @return 게시글 {@link Post}
+     * @Date 2026-01-15
+     * @Author 성효빈
+     * @Description 게시글을 조회합니다.
+     */
+    Optional<Post> findById(Long id);
 }

@@ -4,6 +4,7 @@ import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.utility.AuthorityValidator;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.domain.post.*;
+import com.personal.marketnote.community.exception.PostNotFoundException;
 import com.personal.marketnote.community.port.in.command.post.GetPostsCommand;
 import com.personal.marketnote.community.port.in.result.post.GetPostsResult;
 import com.personal.marketnote.community.port.in.result.post.PostItemResult;
@@ -228,5 +229,11 @@ public class GetPostService implements GetPostUseCase {
         }
 
         return target.toLowerCase().contains(keyword);
+    }
+
+    @Override
+    public Post getPost(Long id) {
+        return findPostPort.findById(id)
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 }

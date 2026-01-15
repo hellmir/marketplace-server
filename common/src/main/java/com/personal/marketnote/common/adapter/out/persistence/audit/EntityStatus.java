@@ -26,4 +26,12 @@ public enum EntityStatus {
 
         return INACTIVE;
     }
+
+    public static EntityStatus changeVisibility(EntityStatus status) {
+        if (status.isActive()) {
+            return UNEXPOSED;
+        }
+
+        return ACTIVE;
+    }
 }

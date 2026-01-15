@@ -7,8 +7,10 @@ import com.personal.marketnote.community.adapter.out.mapper.PostJpaEntityToDomai
 import com.personal.marketnote.community.adapter.out.persistence.post.entity.PostJpaEntity;
 import com.personal.marketnote.community.adapter.out.persistence.post.repository.PostJpaRepository;
 import com.personal.marketnote.community.domain.post.*;
+import com.personal.marketnote.community.exception.PostNotFoundException;
 import com.personal.marketnote.community.port.out.post.FindPostPort;
 import com.personal.marketnote.community.port.out.post.SavePostPort;
+import com.personal.marketnote.community.port.out.post.UpdatePostPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 
@@ -20,7 +22,7 @@ import java.util.stream.Collectors;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class PostPersistenceAdapter implements SavePostPort, FindPostPort {
+public class PostPersistenceAdapter implements SavePostPort, FindPostPort, UpdatePostPort {
     private final PostJpaRepository postJpaRepository;
 
     @Override
@@ -182,6 +184,14 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort {
         );
     }
 
+    @Override
+    public Optional<Post> findById(Long id) {
+        return postJpaRepository.findById(id)
+                .map(PostJpaEntityToDomainMapper::mapToDomain)
+                .filter(Optional::isPresent)
+                .map(Optional::get);
+    }
+
     private Posts mapToPostsWithReplies(List<PostJpaEntity> parentEntities) {
         List<Post> parents = parentEntities.stream()
                 .map(PostJpaEntityToDomainMapper::mapToDomain)
@@ -220,5 +230,16 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort {
             return null;
         }
         return "%" + searchKeyword.toLowerCase() + "%";
+    }
+
+    @Override
+    public void update(Post post) throws PostNotFoundException {
+        PostJpaEntity entity = findEntityById(post.getId());
+        entity.updateFrom(post);
+    }
+
+    private PostJpaEntity findEntityById(Long id) throws PostNotFoundException {
+        return postJpaRepository.findById(id)
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 }
