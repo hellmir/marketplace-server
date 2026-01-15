@@ -2,9 +2,12 @@ package com.personal.marketnote.community.adapter.in.client.board;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.community.adapter.in.client.board.apidocs.GetBoardCategoriesApiDocs;
-import com.personal.marketnote.community.adapter.in.client.post.response.GetPostCategoriesResponse;
+import com.personal.marketnote.community.adapter.in.client.board.apidocs.GetBoardsApiDocs;
+import com.personal.marketnote.community.adapter.in.client.post.response.GetBoardCategoriesResponse;
+import com.personal.marketnote.community.adapter.in.client.post.response.GetBoardsResponse;
 import com.personal.marketnote.community.domain.post.Board;
-import com.personal.marketnote.community.port.in.result.post.GetPostCategoriesResult;
+import com.personal.marketnote.community.port.in.result.board.GetBoardCategoriesResult;
+import com.personal.marketnote.community.port.in.result.board.GetBoardsResult;
 import com.personal.marketnote.community.port.in.usecase.board.GetBoardUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -25,24 +28,48 @@ public class BoardController {
     private final GetBoardUseCase getBoardUseCase;
 
     /**
+     * 게시판 목록 조회
+     *
+     * @return 게시판 목록 조회 응답 {@link GetBoardCategoriesResponse}
+     * @Author 성효빈
+     * @Date 2026-01-15
+     * @Description 게시판 목록을 조회합니다.
+     */
+    @GetMapping
+    @GetBoardsApiDocs
+    public ResponseEntity<BaseResponse<GetBoardsResponse>> getBoards() {
+        GetBoardsResult result = getBoardUseCase.getBoards();
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        GetBoardsResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "게시판 목록 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
      * 게시판 카테고리 목록 조회
      *
      * @param board 게시판
-     * @return 게시판 카테고리 목록 조회 응답 {@link GetPostCategoriesResponse}
+     * @return 게시판 카테고리 목록 조회 응답 {@link GetBoardCategoriesResponse}
      * @Author 성효빈
      * @Date 2026-01-15
      * @Description 게시판 카테고리 목록을 조회합니다.
      */
     @GetMapping("/categories")
     @GetBoardCategoriesApiDocs
-    public ResponseEntity<BaseResponse<GetPostCategoriesResponse>> getCategories(
+    public ResponseEntity<BaseResponse<GetBoardCategoriesResponse>> getCategories(
             @RequestParam("board") Board board
     ) {
-        GetPostCategoriesResult result = getBoardUseCase.getCategories(board);
+        GetBoardCategoriesResult result = getBoardUseCase.getCategories(board);
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        GetPostCategoriesResponse.from(result),
+                        GetBoardCategoriesResponse.from(result),
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "게시판 카테고리 목록 조회 성공"
