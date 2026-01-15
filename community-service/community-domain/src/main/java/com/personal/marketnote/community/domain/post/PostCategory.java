@@ -6,4 +6,6 @@ public interface PostCategory {
     default String getCode() {
         return ((Enum<?>) this).name();
     }
+
+    String getDescription();
 }

@@ -8,7 +8,7 @@ public record GetPostsResult(
         boolean hasNext,
         List<PostItemResult> posts
 ) {
-    public static GetPostsResult from(
+    public static GetPostsResult of(
             boolean hasNext,
             Long nextCursor,
             Long totalElements,

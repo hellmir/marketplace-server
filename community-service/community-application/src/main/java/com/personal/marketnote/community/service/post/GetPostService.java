@@ -176,7 +176,7 @@ public class GetPostService implements GetPostUseCase {
                 })
                 .toList();
 
-        return GetPostsResult.from(hasNext, nextCursor, totalElements, postItems);
+        return GetPostsResult.of(hasNext, nextCursor, totalElements, postItems);
     }
 
     private boolean adminOrSeller(OAuth2AuthenticatedPrincipal principal, Long userId, Long sellerId) {
