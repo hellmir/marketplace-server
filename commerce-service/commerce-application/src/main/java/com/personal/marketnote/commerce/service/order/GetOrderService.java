@@ -4,7 +4,7 @@ import com.personal.marketnote.commerce.domain.order.Order;
 import com.personal.marketnote.commerce.domain.order.OrderProduct;
 import com.personal.marketnote.commerce.exception.OrderNotFoundException;
 import com.personal.marketnote.commerce.exception.OrderProductNotFoundException;
-import com.personal.marketnote.commerce.port.in.command.order.GetBuyerOrderHistoryCommand;
+import com.personal.marketnote.commerce.port.in.command.order.GetBuyerOrderHistoryQuery;
 import com.personal.marketnote.commerce.port.in.result.order.GetOrderResult;
 import com.personal.marketnote.commerce.port.in.result.order.GetOrdersResult;
 import com.personal.marketnote.commerce.port.in.usecase.order.GetOrderUseCase;
@@ -55,12 +55,12 @@ public class GetOrderService implements GetOrderUseCase {
     }
 
     @Override
-    public GetOrdersResult getBuyerOrderHistory(GetBuyerOrderHistoryCommand command) {
+    public GetOrdersResult getBuyerOrderHistory(GetBuyerOrderHistoryQuery query) {
         List<Order> orders = findOrderPort.findByBuyerId(
-                command.buyerId(),
-                command.calculateStartDate(now()),
-                command.calculateEndDate(now()),
-                command.resolveStatuses()
+                query.buyerId(),
+                query.calculateStartDate(now()),
+                query.calculateEndDate(now()),
+                query.resolveStatuses()
         );
 
         if (!FormatValidator.hasValue(orders)) {
@@ -76,7 +76,7 @@ public class GetOrderService implements GetOrderUseCase {
 
         Map<Long, ProductInfoResult> orderedProducts = findProductByPricePolicyPort.findByPricePolicyIds(pricePolicyIds);
 
-        String productNameKeyword = command.resolvedProductName();
+        String productNameKeyword = query.resolvedProductName();
         if (FormatValidator.hasValue(productNameKeyword)) {
             String keyword = productNameKeyword.toLowerCase();
 

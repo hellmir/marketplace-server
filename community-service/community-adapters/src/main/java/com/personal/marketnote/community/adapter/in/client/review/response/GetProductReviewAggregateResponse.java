@@ -13,13 +13,13 @@ public record GetProductReviewAggregateResponse(
 ) {
     public static GetProductReviewAggregateResponse from(ProductReviewAggregateResult result) {
         return new GetProductReviewAggregateResponse(
-                result.totalCount(),
-                result.fivePointCount(),
-                result.fourPointCount(),
-                result.threePointCount(),
-                result.twoPointCount(),
-                result.onePointCount(),
-                result.averageRating()
+                result.getTotalCount(),
+                result.getFivePointCount(),
+                result.getFourPointCount(),
+                result.getThreePointCount(),
+                result.getTwoPointCount(),
+                result.getOnePointCount(),
+                result.getAverageRating()
         );
     }
 }

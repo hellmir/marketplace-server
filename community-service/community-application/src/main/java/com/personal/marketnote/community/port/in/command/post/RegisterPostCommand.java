@@ -1,5 +1,6 @@
 package com.personal.marketnote.community.port.in.command.post;
 
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.domain.post.Board;
 import com.personal.marketnote.community.domain.post.PostTargetType;
 import lombok.Builder;
@@ -17,4 +18,7 @@ public record RegisterPostCommand(
         String content,
         Boolean isPrivate
 ) {
+    public boolean isReply() {
+        return FormatValidator.hasValue(parentId);
+    }
 }

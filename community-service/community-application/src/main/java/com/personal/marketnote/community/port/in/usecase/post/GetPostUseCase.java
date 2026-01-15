@@ -1,7 +1,7 @@
 package com.personal.marketnote.community.port.in.usecase.post;
 
 import com.personal.marketnote.community.domain.post.Post;
-import com.personal.marketnote.community.port.in.command.post.GetPostsCommand;
+import com.personal.marketnote.community.port.in.command.post.GetPostsQuery;
 import com.personal.marketnote.community.port.in.result.post.GetPostsResult;
 
 public interface GetPostUseCase {
@@ -15,13 +15,13 @@ public interface GetPostUseCase {
     boolean existsPost(Long id);
 
     /**
-     * @param query 게시글 조회 조건
+     * @param query 게시글 조회 쿼리
      * @return 게시글 목록 조회 결과 {@link GetPostsResult}
      * @Date 2025-12-06
      * @Author 성효빈
      * @Description 게시글 목록을 조회합니다.
      */
-    GetPostsResult getPosts(GetPostsCommand query);
+    GetPostsResult getPosts(GetPostsQuery query);
 
     /**
      * @param id 게시글 ID

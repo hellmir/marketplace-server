@@ -203,7 +203,7 @@ import java.lang.annotation.*;
                         description = "필터 유형",
                         schema = @Schema(
                                 type = "string",
-                                allowableValues = {"IS_PUBLIC", "IS_MINE", "FAQ_CATEGORY"}
+                                allowableValues = {"IS_PUBLIC", "IS_MINE"}
                         )
                 ),
                 @Parameter(
@@ -212,10 +212,7 @@ import java.lang.annotation.*;
                         description = "필터 값",
                         schema = @Schema(
                                 type = "string",
-                                allowableValues = {
-                                        "TRUE", "ORDER_PAYMENT", "DELIVERY", "CANCEL_REFUND",
-                                        "RETURN_EXCHANGE", "POINT", "EVENT_COUPON", "LOGIN_MEMBER_INFO"
-                                }
+                                allowableValues = {"TRUE"}
                         )
                 )
         },

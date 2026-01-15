@@ -5,7 +5,7 @@ import com.personal.marketnote.community.domain.review.Review;
 import com.personal.marketnote.community.domain.review.ReviewVersionHistory;
 
 public interface SaveReviewPort {
-    Review saveAggregate(Review review);
+    Review save(Review review);
 
     void saveAggregate(ProductReviewAggregate productReviewAggregate);
 

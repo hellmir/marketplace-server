@@ -41,6 +41,9 @@ public class ProductReviewAggregateJpaEntity extends BaseEntity {
     @Column(name = "one_point_count", nullable = false, columnDefinition = "INT DEFAULT 0")
     private Integer onePointCount;
 
+    @Column(name = "total_rating")
+    private Float totalRating;
+
     @Column(name = "average_rating", nullable = false)
     private Float averageRating;
 
@@ -53,6 +56,7 @@ public class ProductReviewAggregateJpaEntity extends BaseEntity {
                 .threePointCount(aggregate.getThreePointCount())
                 .twoPointCount(aggregate.getTwoPointCount())
                 .onePointCount(aggregate.getOnePointCount())
+                .totalRating(aggregate.getTotalRating())
                 .averageRating(aggregate.getAverageRating())
                 .build();
     }
@@ -64,6 +68,7 @@ public class ProductReviewAggregateJpaEntity extends BaseEntity {
         threePointCount = aggregate.getThreePointCount();
         twoPointCount = aggregate.getTwoPointCount();
         onePointCount = aggregate.getOnePointCount();
+        totalRating = aggregate.getTotalRating();
         averageRating = aggregate.getAverageRating();
     }
 }

@@ -34,7 +34,7 @@ public class RegisterReviewService implements RegisterReviewUseCase {
         Long orderId = command.orderId();
         Long productId = command.productId();
         Long pricePolicyId = command.pricePolicyId();
-        Review savedReview = saveReviewPort.saveAggregate(
+        Review savedReview = saveReviewPort.save(
                 Review.from(ReviewCommandToStateMapper.mapToState(command))
         );
 
@@ -48,9 +48,9 @@ public class RegisterReviewService implements RegisterReviewUseCase {
         // 상품 평점 집계
         try {
             ProductReviewAggregate productReviewAggregate = getReviewUseCase.getProductReviewAggregate(productId);
-            int point = command.rating().intValue();
-            ProductReviewAggregate.addPoint(productReviewAggregate, point);
-            productReviewAggregate.computeAverageRating(point);
+            Float point = command.rating();
+            productReviewAggregate.addPoint(point.intValue());
+            productReviewAggregate.computeRating(point);
             updateReviewPort.update(productReviewAggregate);
         } catch (ProductReviewAggregateNotFoundException pranfe) {
             saveReviewPort.saveAggregate(

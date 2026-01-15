@@ -13,7 +13,7 @@ public enum FaqPostCategory implements PostCategory {
     RETURN_EXCHANGE("반품/교환"),
     POINT("적립금(포인트)"),
     EVENT_COUPON("이벤트/쿠폰"),
-    LOGIN_MEMBER_INFO("로그인/회원정보");
+    LOGIN_USER_INFO("로그인/회원정보");
 
     private final String description;
 

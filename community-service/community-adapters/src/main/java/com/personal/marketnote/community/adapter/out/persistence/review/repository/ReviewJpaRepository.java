@@ -16,6 +16,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
             FROM ReviewJpaEntity r
             WHERE r.productId = :productId
               AND (:cursor IS NULL OR r.id > :cursor)
+              AND r.status = 'ACTIVE'
             ORDER BY r.id ASC
             """)
     List<ReviewJpaEntity> findProductReviewsByCursorOrderByIdAsc(
@@ -29,6 +30,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
             FROM ReviewJpaEntity r
             WHERE r.productId = :productId
               AND (:cursor IS NULL OR r.id < :cursor)
+              AND r.status = 'ACTIVE'
             ORDER BY r.id DESC
             """)
     List<ReviewJpaEntity> findProductReviewsByCursorOrderByIdDesc(
@@ -49,6 +51,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
                     AND r.id > :cursor
                  )
               )
+              AND r.status = 'ACTIVE'
             ORDER BY r.orderNum ASC, r.id ASC
             """)
     List<ReviewJpaEntity> findProductReviewsByCursorOrderByOrderNumAsc(
@@ -69,6 +72,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
                     AND r.id < :cursor
                  )
               )
+              AND r.status = 'ACTIVE'
             ORDER BY r.orderNum DESC, r.id DESC
             """)
     List<ReviewJpaEntity> findProductReviewsByCursorOrderByOrderNumDesc(
@@ -97,6 +101,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
                     )
                  )
               )
+              AND r.status = 'ACTIVE'
             ORDER BY
                 (SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
                  WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id) ASC,
@@ -128,6 +133,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
                     )
                  )
               )
+              AND r.status = 'ACTIVE'
             ORDER BY
                 (SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
                  WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id) DESC,
@@ -151,6 +157,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
                     AND r.id > :cursor
                  )
               )
+              AND r.status = 'ACTIVE'
             ORDER BY r.rating ASC, r.id ASC
             """)
     List<ReviewJpaEntity> findProductReviewsByCursorOrderByRatingAsc(
@@ -171,6 +178,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
                     AND r.id < :cursor
                  )
               )
+              AND r.status = 'ACTIVE'
             ORDER BY r.rating DESC, r.id DESC
             """)
     List<ReviewJpaEntity> findProductReviewsByCursorOrderByRatingDesc(
@@ -212,6 +220,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
             WHERE r.productId = :productId
               AND r.isPhoto = TRUE
               AND (:cursor IS NULL OR r.id > :cursor)
+              AND r.status = 'ACTIVE'
             ORDER BY r.id ASC
             """)
     List<ReviewJpaEntity> findProductPhotoReviewsByCursorOrderByIdAsc(
@@ -226,6 +235,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
             WHERE r.productId = :productId
               AND r.isPhoto = TRUE
               AND (:cursor IS NULL OR r.id < :cursor)
+              AND r.status = 'ACTIVE'
             ORDER BY r.id DESC
             """)
     List<ReviewJpaEntity> findProductPhotoReviewsByCursorOrderByIdDesc(
@@ -247,6 +257,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
                     AND r.id > :cursor
                  )
               )
+              AND r.status = 'ACTIVE'
             ORDER BY r.orderNum ASC, r.id ASC
             """)
     List<ReviewJpaEntity> findProductPhotoReviewsByCursorOrderByOrderNumAsc(
@@ -268,6 +279,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
                     AND r.id < :cursor
                  )
               )
+              AND r.status = 'ACTIVE'
             ORDER BY r.orderNum DESC, r.id DESC
             """)
     List<ReviewJpaEntity> findProductPhotoReviewsByCursorOrderByOrderNumDesc(
@@ -297,6 +309,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
                     )
                  )
               )
+              AND r.status = 'ACTIVE'
             ORDER BY
                 (SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
                  WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id) ASC,
@@ -329,6 +342,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
                     )
                  )
               )
+              AND r.status = 'ACTIVE'
             ORDER BY
                 (SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
                  WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id) DESC,
@@ -353,6 +367,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
                     AND r.id > :cursor
                  )
               )
+              AND r.status = 'ACTIVE'
             ORDER BY r.rating ASC, r.id ASC
             """)
     List<ReviewJpaEntity> findProductPhotoReviewsByCursorOrderByRatingAsc(
@@ -374,6 +389,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
                     AND r.id < :cursor
                  )
               )
+              AND r.status = 'ACTIVE'
             ORDER BY r.rating DESC, r.id DESC
             """)
     List<ReviewJpaEntity> findProductPhotoReviewsByCursorOrderByRatingDesc(
@@ -414,6 +430,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
             FROM ReviewJpaEntity r
             WHERE r.productId = :productId
               AND r.isPhoto = :isPhoto
+              AND r.status = 'ACTIVE'
             """)
     long countByProductIdAndIsPhoto(@Param("productId") Long productId, @Param("isPhoto") Boolean isPhoto);
 
@@ -421,6 +438,7 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
             SELECT COUNT(r)
             FROM ReviewJpaEntity r
             WHERE r.productId = :productId
+              AND r.status = 'ACTIVE'
             """)
     long countByProductId(@Param("productId") Long productId);
 

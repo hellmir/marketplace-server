@@ -1,6 +1,8 @@
 spring:
   application:
     name: ${env.SERVICE_NAME:user-service}
+  jackson:
+    time-zone: Asia/Seoul
 
   datasource:
     driver-class-name: org.postgresql.Driver

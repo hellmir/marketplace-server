@@ -65,13 +65,13 @@ public class ProductRequestToCommandMapper {
                 .build();
     }
 
-    public static GetMyOrderingProductsCommand mapToCommand(
+    public static GetMyOrderingProductsQuery mapToCommand(
             GetMyOrderingProductsRequest getMyOrderingProductsRequest
     ) {
-        return GetMyOrderingProductsCommand.from(
+        return GetMyOrderingProductsQuery.from(
                 getMyOrderingProductsRequest.orderingItemRequests()
                         .stream()
-                        .map(request -> OrderingItemCommand.of(
+                        .map(request -> OrderingItemQuery.of(
                                 request.pricePolicyId(), request.quantity(), request.imageUrl())
                         )
                         .toList()

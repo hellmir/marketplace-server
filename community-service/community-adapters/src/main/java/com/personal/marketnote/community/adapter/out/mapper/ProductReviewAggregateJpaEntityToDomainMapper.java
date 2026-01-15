@@ -23,6 +23,7 @@ public class ProductReviewAggregateJpaEntityToDomainMapper {
                                 .threePointCount(entity.getThreePointCount())
                                 .twoPointCount(entity.getTwoPointCount())
                                 .onePointCount(entity.getOnePointCount())
+                                .totalRating(entity.getTotalRating())
                                 .averageRating(entity.getAverageRating())
                                 .createdAt(entity.getCreatedAt())
                                 .modifiedAt(entity.getModifiedAt())

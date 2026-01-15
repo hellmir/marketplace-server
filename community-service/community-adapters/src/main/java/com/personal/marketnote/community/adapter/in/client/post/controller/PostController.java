@@ -13,7 +13,7 @@ import com.personal.marketnote.community.adapter.in.client.post.request.UpdatePo
 import com.personal.marketnote.community.adapter.in.client.post.response.GetPostsResponse;
 import com.personal.marketnote.community.adapter.in.client.post.response.RegisterPostResponse;
 import com.personal.marketnote.community.domain.post.*;
-import com.personal.marketnote.community.port.in.command.post.GetPostsCommand;
+import com.personal.marketnote.community.port.in.command.post.GetPostsQuery;
 import com.personal.marketnote.community.port.in.result.post.GetPostsResult;
 import com.personal.marketnote.community.port.in.result.post.RegisterPostResult;
 import com.personal.marketnote.community.port.in.usecase.post.GetPostUseCase;
@@ -64,10 +64,10 @@ public class PostController {
             @Valid @RequestBody RegisterPostRequest request,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
-        validateAuthentication(request, principal);
+        boolean isSeller = validateAuthentication(request, principal);
 
         RegisterPostResult result = registerPostUseCase.registerPost(
-                PostRequestToCommandMapper.mapToCommand(request, ElementExtractor.extractUserId(principal))
+                isSeller, PostRequestToCommandMapper.mapToCommand(request, ElementExtractor.extractUserId(principal))
         );
 
         return new ResponseEntity<>(
@@ -81,13 +81,17 @@ public class PostController {
         );
     }
 
-    private void validateAuthentication(RegisterPostRequest request, OAuth2AuthenticatedPrincipal principal) {
+    private boolean validateAuthentication(RegisterPostRequest request, OAuth2AuthenticatedPrincipal principal) {
         List<String> authorities = principal.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
 
-        request.validate(authorities);
+        boolean isAdmin = authorities.contains("ROLE_ADMIN");
+        boolean isSeller = authorities.contains("ROLE_SELLER");
+        request.validate(isAdmin, isSeller);
+
+        return isSeller;
     }
 
     /**
@@ -129,7 +133,7 @@ public class PostController {
         }
 
         GetPostsResult result = getPostUseCase.getPosts(
-                GetPostsCommand.builder()
+                GetPostsQuery.builder()
                         .principal(principal)
                         .userId(userId)
                         .board(board)

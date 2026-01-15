@@ -7,11 +7,12 @@ public interface RegisterPostUseCase {
     /**
      * 게시글 등록
      *
+     * @param isAdmin 관리자 여부
      * @param command 게시글 등록 커맨드
      * @return 게시글 등록 결과 {@link RegisterPostResult}
      * @Author 성효빈
      * @Date 2026-01-15
      * @Description 게시글을 등록합니다.
      */
-    RegisterPostResult registerPost(RegisterPostCommand command);
+    RegisterPostResult registerPost(boolean isAdmin, RegisterPostCommand command);
 }

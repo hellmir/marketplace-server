@@ -9,7 +9,7 @@ import com.personal.marketnote.commerce.adapter.in.client.order.response.GetOrde
 import com.personal.marketnote.commerce.adapter.in.client.order.response.RegisterOrderResponse;
 import com.personal.marketnote.commerce.domain.order.OrderPeriod;
 import com.personal.marketnote.commerce.domain.order.OrderStatusFilter;
-import com.personal.marketnote.commerce.port.in.command.order.GetBuyerOrderHistoryCommand;
+import com.personal.marketnote.commerce.port.in.command.order.GetBuyerOrderHistoryQuery;
 import com.personal.marketnote.commerce.port.in.command.order.UpdateOrderProductReviewStatusCommand;
 import com.personal.marketnote.commerce.port.in.result.order.GetOrderHistoryResult;
 import com.personal.marketnote.commerce.port.in.result.order.GetOrderResult;
@@ -120,7 +120,7 @@ public class OrderController {
             @RequestParam(value = "productName", required = false) String productName
     ) {
         GetOrdersResult getOrderResult = getOrderUseCase.getBuyerOrderHistory(
-                GetBuyerOrderHistoryCommand.of(
+                GetBuyerOrderHistoryQuery.of(
                         ElementExtractor.extractUserId(principal),
                         period,
                         statusFilter,
