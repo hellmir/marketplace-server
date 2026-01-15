@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -77,12 +78,15 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
     public Reviews findProductReviews(
             Long productId, Boolean isPhoto, Long cursor, Pageable pageable, ReviewSortProperty sortProperty
     ) {
+        boolean isAsc = isAscending(pageable, sortProperty);
+
         if (isPhoto) {
             List<ReviewJpaEntity> entities = reviewJpaRepository.findProductPhotoReviewsByCursor(
                     productId,
                     cursor,
                     pageable,
-                    sortProperty.getCamelCaseValue()
+                    sortProperty.getCamelCaseValue(),
+                    isAsc
             );
 
             return Reviews.from(entities.stream()
@@ -94,7 +98,8 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
                 productId,
                 cursor,
                 pageable,
-                sortProperty.getCamelCaseValue()
+                sortProperty.getCamelCaseValue(),
+                isAsc
         );
 
         return Reviews.from(entities.stream()
@@ -120,11 +125,14 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
 
     @Override
     public Reviews findUserReviews(Long userId, Long cursor, Pageable pageable, ReviewSortProperty sortProperty) {
+        boolean isAsc = isAscending(pageable, sortProperty);
+
         List<ReviewJpaEntity> entities = reviewJpaRepository.findUserReviewsByCursor(
                 userId,
                 cursor,
                 pageable,
-                sortProperty.getCamelCaseValue()
+                sortProperty.getCamelCaseValue(),
+                isAsc
         );
 
         return Reviews.from(entities.stream()
@@ -158,5 +166,19 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
             throws ProductReviewAggregateNotFoundException {
         return productReviewAggregateJpaRepository.findByProductId(productId)
                 .orElseThrow(() -> new ProductReviewAggregateNotFoundException(productId));
+    }
+
+    private boolean isAscending(Pageable pageable, ReviewSortProperty sortProperty) {
+        Sort.Order order = pageable.getSort().getOrderFor(sortProperty.getCamelCaseValue());
+
+        if (order != null) {
+            return order.isAscending();
+        }
+
+        if (pageable.getSort().isSorted()) {
+            return pageable.getSort().iterator().next().isAscending();
+        }
+
+        return false;
     }
 }

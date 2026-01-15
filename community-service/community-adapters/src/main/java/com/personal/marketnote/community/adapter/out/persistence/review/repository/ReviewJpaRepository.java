@@ -23,23 +23,84 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
                     WHERE r0.id = :cursor
                  )
                  OR (
-                        (:sortProperty = 'id' AND r.id < :cursor)
+                        (:sortProperty = 'id' AND (
+                                (:isAsc = TRUE AND r.id > :cursor)
+                             OR (:isAsc = FALSE AND r.id < :cursor)
+                        ))
                      OR (:sortProperty = 'orderNum' AND (
-                            r.orderNum < (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
-                         OR (r.orderNum = (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
-                             AND r.id < :cursor)
+                            (:isAsc = TRUE AND (
+                                    r.orderNum > (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                 OR (r.orderNum = (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                     AND r.id > :cursor)
+                            ))
+                         OR (:isAsc = FALSE AND (
+                                    r.orderNum < (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                 OR (r.orderNum = (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                     AND r.id < :cursor)
+                            ))
+                       ))
+                     OR (:sortProperty = 'likeCount' AND (
+                            (:isAsc = TRUE AND (
+                                    (SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
+                                     WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id)
+                                        > (SELECT COUNT(l2) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l2
+                                           WHERE l2.id.targetType = 'REVIEW' AND l2.id.targetId = :cursor)
+                                 OR ((SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
+                                      WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id)
+                                        = (SELECT COUNT(l2) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l2
+                                           WHERE l2.id.targetType = 'REVIEW' AND l2.id.targetId = :cursor)
+                                     AND r.id > :cursor)
+                            ))
+                         OR (:isAsc = FALSE AND (
+                                    (SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
+                                     WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id)
+                                        < (SELECT COUNT(l2) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l2
+                                           WHERE l2.id.targetType = 'REVIEW' AND l2.id.targetId = :cursor)
+                                 OR ((SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
+                                      WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id)
+                                        = (SELECT COUNT(l2) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l2
+                                           WHERE l2.id.targetType = 'REVIEW' AND l2.id.targetId = :cursor)
+                                     AND r.id < :cursor)
+                            ))
+                       ))
+                     OR (:sortProperty = 'rating' AND (
+                            (:isAsc = TRUE AND (
+                                    r.rating > (SELECT r2.rating FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                 OR (r.rating = (SELECT r2.rating FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                     AND r.id > :cursor)
+                            ))
+                         OR (:isAsc = FALSE AND (
+                                    r.rating < (SELECT r2.rating FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                 OR (r.rating = (SELECT r2.rating FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                     AND r.id < :cursor)
+                            ))
                        ))
                  )
               )
             ORDER BY
-                CASE WHEN :sortProperty = 'orderNum' THEN r.orderNum END DESC,
-                r.id DESC
+                CASE WHEN :sortProperty = 'orderNum' AND :isAsc = TRUE THEN r.orderNum END ASC,
+                CASE WHEN :sortProperty = 'orderNum' AND :isAsc = FALSE THEN r.orderNum END DESC,
+                CASE WHEN :sortProperty = 'likeCount' AND :isAsc = TRUE THEN (
+                    SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
+                    WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id
+                ) END ASC,
+                CASE WHEN :sortProperty = 'likeCount' AND :isAsc = FALSE THEN (
+                    SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
+                    WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id
+                ) END DESC,
+                CASE WHEN :sortProperty = 'rating' AND :isAsc = TRUE THEN r.rating END ASC,
+                CASE WHEN :sortProperty = 'rating' AND :isAsc = FALSE THEN r.rating END DESC,
+                CASE WHEN :sortProperty = 'id' AND :isAsc = TRUE THEN r.id END ASC,
+                CASE WHEN :sortProperty = 'id' AND :isAsc = FALSE THEN r.id END DESC,
+                CASE WHEN :isAsc = TRUE THEN r.id END ASC,
+                CASE WHEN :isAsc = FALSE THEN r.id END DESC
             """)
     List<ReviewJpaEntity> findProductReviewsByCursor(
             @Param("productId") Long productId,
             @Param("cursor") Long cursor,
             Pageable pageable,
-            @Param("sortProperty") String sortProperty
+            @Param("sortProperty") String sortProperty,
+            @Param("isAsc") Boolean isAsc
     );
 
     @Query("""
@@ -56,23 +117,84 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
                     WHERE r0.id = :cursor
                  )
                  OR (
-                        (:sortProperty = 'id' AND r.id < :cursor)
+                        (:sortProperty = 'id' AND (
+                                (:isAsc = TRUE AND r.id > :cursor)
+                             OR (:isAsc = FALSE AND r.id < :cursor)
+                        ))
                      OR (:sortProperty = 'orderNum' AND (
-                            r.orderNum < (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
-                         OR (r.orderNum = (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
-                             AND r.id < :cursor)
+                            (:isAsc = TRUE AND (
+                                    r.orderNum > (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                 OR (r.orderNum = (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                     AND r.id > :cursor)
+                            ))
+                         OR (:isAsc = FALSE AND (
+                                    r.orderNum < (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                 OR (r.orderNum = (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                     AND r.id < :cursor)
+                            ))
+                       ))
+                     OR (:sortProperty = 'likeCount' AND (
+                            (:isAsc = TRUE AND (
+                                    (SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
+                                     WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id)
+                                        > (SELECT COUNT(l2) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l2
+                                           WHERE l2.id.targetType = 'REVIEW' AND l2.id.targetId = :cursor)
+                                 OR ((SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
+                                      WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id)
+                                        = (SELECT COUNT(l2) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l2
+                                           WHERE l2.id.targetType = 'REVIEW' AND l2.id.targetId = :cursor)
+                                     AND r.id > :cursor)
+                            ))
+                         OR (:isAsc = FALSE AND (
+                                    (SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
+                                     WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id)
+                                        < (SELECT COUNT(l2) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l2
+                                           WHERE l2.id.targetType = 'REVIEW' AND l2.id.targetId = :cursor)
+                                 OR ((SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
+                                      WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id)
+                                        = (SELECT COUNT(l2) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l2
+                                           WHERE l2.id.targetType = 'REVIEW' AND l2.id.targetId = :cursor)
+                                     AND r.id < :cursor)
+                            ))
+                       ))
+                     OR (:sortProperty = 'rating' AND (
+                            (:isAsc = TRUE AND (
+                                    r.rating > (SELECT r2.rating FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                 OR (r.rating = (SELECT r2.rating FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                     AND r.id > :cursor)
+                            ))
+                         OR (:isAsc = FALSE AND (
+                                    r.rating < (SELECT r2.rating FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                 OR (r.rating = (SELECT r2.rating FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                     AND r.id < :cursor)
+                            ))
                        ))
                  )
               )
             ORDER BY
-                CASE WHEN :sortProperty = 'orderNum' THEN r.orderNum END DESC,
-                r.id DESC
+                CASE WHEN :sortProperty = 'orderNum' AND :isAsc = TRUE THEN r.orderNum END ASC,
+                CASE WHEN :sortProperty = 'orderNum' AND :isAsc = FALSE THEN r.orderNum END DESC,
+                CASE WHEN :sortProperty = 'likeCount' AND :isAsc = TRUE THEN (
+                    SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
+                    WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id
+                ) END ASC,
+                CASE WHEN :sortProperty = 'likeCount' AND :isAsc = FALSE THEN (
+                    SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
+                    WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id
+                ) END DESC,
+                CASE WHEN :sortProperty = 'rating' AND :isAsc = TRUE THEN r.rating END ASC,
+                CASE WHEN :sortProperty = 'rating' AND :isAsc = FALSE THEN r.rating END DESC,
+                CASE WHEN :sortProperty = 'id' AND :isAsc = TRUE THEN r.id END ASC,
+                CASE WHEN :sortProperty = 'id' AND :isAsc = FALSE THEN r.id END DESC,
+                CASE WHEN :isAsc = TRUE THEN r.id END ASC,
+                CASE WHEN :isAsc = FALSE THEN r.id END DESC
             """)
     List<ReviewJpaEntity> findProductPhotoReviewsByCursor(
             @Param("productId") Long productId,
             @Param("cursor") Long cursor,
             Pageable pageable,
-            @Param("sortProperty") String sortProperty
+            @Param("sortProperty") String sortProperty,
+            @Param("isAsc") Boolean isAsc
     );
 
     @Query("""
@@ -106,23 +228,84 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
                     WHERE r0.id = :cursor
                  )
                  OR (
-                        (:sortProperty = 'id' AND r.id < :cursor)
+                        (:sortProperty = 'id' AND (
+                                (:isAsc = TRUE AND r.id > :cursor)
+                             OR (:isAsc = FALSE AND r.id < :cursor)
+                        ))
                      OR (:sortProperty = 'orderNum' AND (
-                            r.orderNum < (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
-                         OR (r.orderNum = (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
-                             AND r.id < :cursor)
+                            (:isAsc = TRUE AND (
+                                    r.orderNum > (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                 OR (r.orderNum = (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                     AND r.id > :cursor)
+                            ))
+                         OR (:isAsc = FALSE AND (
+                                    r.orderNum < (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                 OR (r.orderNum = (SELECT r2.orderNum FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                     AND r.id < :cursor)
+                            ))
+                       ))
+                     OR (:sortProperty = 'likeCount' AND (
+                            (:isAsc = TRUE AND (
+                                    (SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
+                                     WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id)
+                                        > (SELECT COUNT(l2) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l2
+                                           WHERE l2.id.targetType = 'REVIEW' AND l2.id.targetId = :cursor)
+                                 OR ((SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
+                                      WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id)
+                                        = (SELECT COUNT(l2) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l2
+                                           WHERE l2.id.targetType = 'REVIEW' AND l2.id.targetId = :cursor)
+                                     AND r.id > :cursor)
+                            ))
+                         OR (:isAsc = FALSE AND (
+                                    (SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
+                                     WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id)
+                                        < (SELECT COUNT(l2) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l2
+                                           WHERE l2.id.targetType = 'REVIEW' AND l2.id.targetId = :cursor)
+                                 OR ((SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
+                                      WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id)
+                                        = (SELECT COUNT(l2) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l2
+                                           WHERE l2.id.targetType = 'REVIEW' AND l2.id.targetId = :cursor)
+                                     AND r.id < :cursor)
+                            ))
+                       ))
+                     OR (:sortProperty = 'rating' AND (
+                            (:isAsc = TRUE AND (
+                                    r.rating > (SELECT r2.rating FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                 OR (r.rating = (SELECT r2.rating FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                     AND r.id > :cursor)
+                            ))
+                         OR (:isAsc = FALSE AND (
+                                    r.rating < (SELECT r2.rating FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                 OR (r.rating = (SELECT r2.rating FROM ReviewJpaEntity r2 WHERE r2.id = :cursor)
+                                     AND r.id < :cursor)
+                            ))
                        ))
                  )
               )
             ORDER BY
-                CASE WHEN :sortProperty = 'orderNum' THEN r.orderNum END DESC,
-                r.id DESC
+                CASE WHEN :sortProperty = 'orderNum' AND :isAsc = TRUE THEN r.orderNum END ASC,
+                CASE WHEN :sortProperty = 'orderNum' AND :isAsc = FALSE THEN r.orderNum END DESC,
+                CASE WHEN :sortProperty = 'likeCount' AND :isAsc = TRUE THEN (
+                    SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
+                    WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id
+                ) END ASC,
+                CASE WHEN :sortProperty = 'likeCount' AND :isAsc = FALSE THEN (
+                    SELECT COUNT(l) FROM com.personal.marketnote.community.adapter.out.persistence.like.entity.LikeJpaEntity l
+                    WHERE l.id.targetType = 'REVIEW' AND l.id.targetId = r.id
+                ) END DESC,
+                CASE WHEN :sortProperty = 'rating' AND :isAsc = TRUE THEN r.rating END ASC,
+                CASE WHEN :sortProperty = 'rating' AND :isAsc = FALSE THEN r.rating END DESC,
+                CASE WHEN :sortProperty = 'id' AND :isAsc = TRUE THEN r.id END ASC,
+                CASE WHEN :sortProperty = 'id' AND :isAsc = FALSE THEN r.id END DESC,
+                CASE WHEN :isAsc = TRUE THEN r.id END ASC,
+                CASE WHEN :isAsc = FALSE THEN r.id END DESC
             """)
     List<ReviewJpaEntity> findUserReviewsByCursor(
             @Param("userId") Long userId,
             @Param("cursor") Long cursor,
             Pageable pageable,
-            @Param("sortProperty") String sortProperty
+            @Param("sortProperty") String sortProperty,
+            @Param("isAsc") Boolean isAsc
     );
 
     @Query("""
@@ -131,5 +314,5 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, Long
             WHERE 1 = 1
               AND r.reviewerId = :reviewerId
             """)
-    long countByReviewerId(@Param("reporterId") Long reviewerId);
+    long countByReviewerId(@Param("reviewerId") Long reviewerId);
 }
