@@ -11,6 +11,7 @@ import com.personal.marketnote.community.adapter.in.client.review.response.GetPr
 import com.personal.marketnote.community.adapter.in.client.review.response.GetReviewsResponse;
 import com.personal.marketnote.community.adapter.in.client.review.response.RegisterReviewResponse;
 import com.personal.marketnote.community.domain.review.ReviewSortProperty;
+import com.personal.marketnote.community.exception.ProductReviewAggregateNotFoundException;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
 import com.personal.marketnote.community.port.in.result.review.ProductReviewAggregateResult;
 import com.personal.marketnote.community.port.in.result.review.RegisterReviewResult;
@@ -234,16 +235,34 @@ public class ReviewController {
     @GetMapping("products/{productId}/review-aggregate")
     @GetProductReviewAggregateApiDocs
     public ResponseEntity<BaseResponse<GetProductReviewAggregateResponse>> getProductReviewAggregate(
-            @PathVariable("productId") Long productId,
-            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+            @PathVariable("productId") Long productId
     ) {
-        ProductReviewAggregateResult result = ProductReviewAggregateResult.from(
-                getReviewUseCase.getProductReviewAggregate(productId)
-        );
-
-        return new ResponseEntity<>(
-                BaseResponse.of(GetProductReviewAggregateResponse.from(result), HttpStatus.OK, DEFAULT_SUCCESS_CODE, "상품 리뷰 평점 평균 및 점수별 개수 현황 조회 성공"),
-                HttpStatus.OK
-        );
+        try {
+            return new ResponseEntity<>(
+                    BaseResponse.of(
+                            GetProductReviewAggregateResponse.from(
+                                    ProductReviewAggregateResult.from(
+                                            getReviewUseCase.getProductReviewAggregate(productId)
+                                    )
+                            ),
+                            HttpStatus.OK,
+                            DEFAULT_SUCCESS_CODE,
+                            "상품 리뷰 평점 평균 및 점수별 개수 현황 조회 성공"
+                    ),
+                    HttpStatus.OK
+            );
+        } catch (ProductReviewAggregateNotFoundException pranfe) {
+            return new ResponseEntity<>(
+                    BaseResponse.of(
+                            GetProductReviewAggregateResponse.from(
+                                    ProductReviewAggregateResult.from(null)
+                            ),
+                            HttpStatus.OK,
+                            DEFAULT_SUCCESS_CODE,
+                            "상품 리뷰 평점 평균 및 점수별 개수 현황 조회 성공"
+                    ),
+                    HttpStatus.OK
+            );
+        }
     }
 }

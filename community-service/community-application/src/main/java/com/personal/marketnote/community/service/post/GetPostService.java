@@ -5,7 +5,7 @@ import com.personal.marketnote.common.utility.AuthorityValidator;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.domain.post.*;
 import com.personal.marketnote.community.exception.PostNotFoundException;
-import com.personal.marketnote.community.port.in.command.post.GetPostsCommand;
+import com.personal.marketnote.community.port.in.command.post.GetPostsQuery;
 import com.personal.marketnote.community.port.in.result.post.GetPostsResult;
 import com.personal.marketnote.community.port.in.result.post.PostItemResult;
 import com.personal.marketnote.community.port.in.result.post.PostProductInfoResult;
@@ -38,50 +38,50 @@ public class GetPostService implements GetPostUseCase {
     }
 
     @Override
-    public GetPostsResult getPosts(GetPostsCommand command) {
-        Sort.Direction sortDirection = FormatValidator.hasValue(command.sortDirection())
-                ? command.sortDirection()
+    public GetPostsResult getPosts(GetPostsQuery query) {
+        Sort.Direction sortDirection = FormatValidator.hasValue(query.sortDirection())
+                ? query.sortDirection()
                 : Sort.Direction.DESC;
-        PostSortProperty sortProperty = resolveSortProperty(command);
-        Pageable pageable = PageRequest.of(0, command.pageSize() + 1, Sort.by(sortDirection, getSortField(sortProperty)));
+        PostSortProperty sortProperty = resolveSortProperty(query);
+        Pageable pageable = PageRequest.of(0, query.pageSize() + 1, Sort.by(sortDirection, getSortField(sortProperty)));
 
-        Posts posts = getBoardPosts(command, pageable, sortProperty);
+        Posts posts = getBoardPosts(query, pageable, sortProperty);
 
         Long totalElements = null;
-        if (!FormatValidator.hasValue(command.cursor())) {
+        if (!FormatValidator.hasValue(query.cursor())) {
             totalElements = findPostPort.count(
-                    command.userId(),
-                    command.board(),
-                    command.searchTarget(),
-                    command.searchKeyword()
+                    query.userId(),
+                    query.board(),
+                    query.searchTarget(),
+                    query.searchKeyword()
             );
         }
 
-        return generatePage(command, posts, totalElements);
+        return generatePage(query, posts, totalElements);
     }
 
-    private Posts getBoardPosts(GetPostsCommand command, Pageable pageable, PostSortProperty sortProperty) {
-        Board board = command.board();
-        PostTargetType targetType = command.targetType();
-        boolean isDesc = Sort.Direction.DESC.equals(command.sortDirection());
-        Long userId = command.userId();
+    private Posts getBoardPosts(GetPostsQuery query, Pageable pageable, PostSortProperty sortProperty) {
+        Board board = query.board();
+        PostTargetType targetType = query.targetType();
+        boolean isDesc = Sort.Direction.DESC.equals(query.sortDirection());
+        Long userId = query.userId();
 
         // 비회원 전용 게시판이거나 상품 상세 정보의 문의 게시판인 경우
         if (board.isNonMemberViewBoard() || FormatValidator.hasValue(targetType)) {
             return findPostPort.findPosts(
                     board,
-                    command.category(),
+                    query.category(),
                     targetType,
-                    command.targetId(),
-                    command.cursor(),
+                    query.targetId(),
+                    query.cursor(),
                     pageable,
                     isDesc,
                     sortProperty,
                     userId,
-                    command.filter(),
-                    command.filterValue(),
-                    command.searchTarget(),
-                    command.searchKeyword()
+                    query.filter(),
+                    query.filterValue(),
+                    query.searchTarget(),
+                    query.searchKeyword()
             );
         }
 
@@ -89,36 +89,36 @@ public class GetPostService implements GetPostUseCase {
         return findPostPort.findUserPosts(
                 userId,
                 board,
-                command.cursor(),
+                query.cursor(),
                 pageable,
                 isDesc,
                 sortProperty,
-                command.searchTarget(),
-                command.searchKeyword()
+                query.searchTarget(),
+                query.searchKeyword()
         );
     }
 
-    private GetPostsResult generatePage(GetPostsCommand command, Posts posts, Long totalElementsOverride) {
+    private GetPostsResult generatePage(GetPostsQuery query, Posts posts, Long totalElementsOverride) {
         Long totalElements = totalElementsOverride;
-        PostTargetType targetType = command.targetType();
-        Board board = command.board();
+        PostTargetType targetType = query.targetType();
+        Board board = query.board();
 
-        if (!FormatValidator.hasValue(totalElements) && !FormatValidator.hasValue(command.cursor())) {
+        if (!FormatValidator.hasValue(totalElements) && !FormatValidator.hasValue(query.cursor())) {
             totalElements = findPostPort.count(
                     board,
-                    command.category(),
+                    query.category(),
                     targetType,
-                    command.targetId(),
-                    command.userId(),
-                    command.filter(),
-                    command.filterValue(),
-                    command.searchTarget(),
-                    command.searchKeyword()
+                    query.targetId(),
+                    query.userId(),
+                    query.filter(),
+                    query.filterValue(),
+                    query.searchTarget(),
+                    query.searchKeyword()
             );
         }
 
         // 상품 문의 게시판인 경우 각 게시글의 주문 상품 정보 조회
-        Map<Long, ProductInfoResult> reviewedProducts = board.isProductInquery()
+        Map<Long, ProductInfoResult> targetProducts = board.isProductInquery()
                 ? getProductInfo(posts.getPosts())
                 : Map.of();
 
@@ -126,18 +126,18 @@ public class GetPostService implements GetPostUseCase {
 
         // 나의 상품 문의 게시판 또는 1:1 문의 게시판인 경우 검색어 적용
         if (board.isOneOnOneInquery() || board.isProductInquery() && !FormatValidator.hasValue(targetType)) {
-            if (FormatValidator.hasValue(command.searchKeyword())) {
-                PostSearchTarget keywordCategory = command.searchTarget();
-                String searchKeyword = command.searchKeyword().toLowerCase();
+            if (FormatValidator.hasValue(query.searchKeyword())) {
+                PostSearchTarget keywordCategory = query.searchTarget();
+                String searchKeyword = query.searchKeyword().toLowerCase();
                 filteredPosts = filteredPosts.stream()
                         .filter(post -> matchesKeyword(post, keywordCategory, searchKeyword))
                         .toList();
             }
         }
 
-        boolean hasNext = filteredPosts.size() > command.pageSize();
+        boolean hasNext = filteredPosts.size() > query.pageSize();
         List<Post> pagedPosts = hasNext
-                ? filteredPosts.subList(0, command.pageSize())
+                ? filteredPosts.subList(0, query.pageSize())
                 : filteredPosts;
 
         Long nextCursor = null;
@@ -152,7 +152,7 @@ public class GetPostService implements GetPostUseCase {
                     }
 
                     // 상품 문의 게시판인 경우 각 게시글의 상품 정보 포함
-                    ProductInfoResult productInfoResult = reviewedProducts.get(post.getTargetId());
+                    ProductInfoResult productInfoResult = targetProducts.get(post.getTargetId());
                     PostItemResult postItemResult = PostItemResult.from(
                             post,
                             PostProductInfoResult.from(productInfoResult)
@@ -163,8 +163,8 @@ public class GetPostService implements GetPostUseCase {
                         Long sellerId = FormatValidator.hasValue(productInfoResult)
                                 ? productInfoResult.sellerId()
                                 : null;
-                        if (!adminOrSeller(command.principal(), command.userId(), sellerId)) {
-                            postItemResult.maskPrivatePost(command.userId());
+                        if (!adminOrSeller(query.principal(), query.userId(), sellerId)) {
+                            postItemResult.maskPrivatePost(query.userId());
                         }
                     }
 
@@ -185,8 +185,8 @@ public class GetPostService implements GetPostUseCase {
                 || (FormatValidator.equals(userId, sellerId) && AuthorityValidator.hasSellerRole(principal));
     }
 
-    private Map<Long, ProductInfoResult> getProductInfo(List<Post> pagedPosts) {
-        List<Long> pricePolicyIds = pagedPosts.stream()
+    private Map<Long, ProductInfoResult> getProductInfo(List<Post> posts) {
+        List<Long> pricePolicyIds = posts.stream()
                 .filter(post -> PostTargetType.PRICE_POLICY.equals(post.getTargetType()))
                 .map(Post::getTargetId)
                 .filter(FormatValidator::hasValue)
@@ -196,12 +196,12 @@ public class GetPostService implements GetPostUseCase {
         return findProductByPricePolicyPort.findByPricePolicyIds(pricePolicyIds);
     }
 
-    private PostSortProperty resolveSortProperty(GetPostsCommand command) {
-        if (command.board().isNonMemberViewBoard()) {
+    private PostSortProperty resolveSortProperty(GetPostsQuery query) {
+        if (query.board().isNonMemberViewBoard()) {
             return PostSortProperty.ORDER_NUM;
         }
 
-        return command.sortProperty() == null ? PostSortProperty.ID : command.sortProperty();
+        return query.sortProperty() == null ? PostSortProperty.ID : query.sortProperty();
     }
 
     private String getSortField(PostSortProperty sortProperty) {

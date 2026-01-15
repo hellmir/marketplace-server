@@ -18,6 +18,7 @@ public class ProductReviewAggregateSnapshotState {
     private final Integer threePointCount;
     private final Integer twoPointCount;
     private final Integer onePointCount;
+    private final Float totalRating;
     private final Float averageRating;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;

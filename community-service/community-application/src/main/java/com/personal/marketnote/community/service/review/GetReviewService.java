@@ -31,7 +31,6 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRES_NE
 @Transactional(isolation = READ_COMMITTED, readOnly = true)
 public class GetReviewService implements GetReviewUseCase {
     private final FindReviewPort findReviewPort;
-    private final FindReportPort findReportPort;
 
     @Override
     public Review getReview(Long id) {

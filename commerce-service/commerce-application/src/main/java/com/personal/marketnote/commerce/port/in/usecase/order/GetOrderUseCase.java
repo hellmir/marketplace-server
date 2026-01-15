@@ -2,7 +2,7 @@ package com.personal.marketnote.commerce.port.in.usecase.order;
 
 import com.personal.marketnote.commerce.domain.order.Order;
 import com.personal.marketnote.commerce.domain.order.OrderProduct;
-import com.personal.marketnote.commerce.port.in.command.order.GetBuyerOrderHistoryCommand;
+import com.personal.marketnote.commerce.port.in.command.order.GetBuyerOrderHistoryQuery;
 import com.personal.marketnote.commerce.port.in.result.order.GetOrderResult;
 import com.personal.marketnote.commerce.port.in.result.order.GetOrdersResult;
 
@@ -26,13 +26,13 @@ public interface GetOrderUseCase {
     Order getOrder(Long id);
 
     /**
-     * @param command 회원 주문 내역 조회 커맨드
+     * @param query 회원 주문 내역 조회 쿼리
      * @return 회원 주문 내역 조회 결과 {@link GetOrdersResult}
      * @Date 2026-01-05
      * @Author 성효빈
      * @Description 회원 주문 내역을 조회합니다.
      */
-    GetOrdersResult getBuyerOrderHistory(GetBuyerOrderHistoryCommand command);
+    GetOrdersResult getBuyerOrderHistory(GetBuyerOrderHistoryQuery query);
 
     /**
      * @param orderId       주문 ID

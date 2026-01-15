@@ -3,6 +3,7 @@ package com.personal.marketnote.product.adapter.in.client.product.controller;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.AuthorityValidator;
 import com.personal.marketnote.common.utility.ElementExtractor;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.adapter.in.client.product.controller.apidocs.*;
 import com.personal.marketnote.product.adapter.in.client.product.mapper.ProductRequestToCommandMapper;
 import com.personal.marketnote.product.adapter.in.client.product.request.RegisterProductRequest;
@@ -188,6 +189,9 @@ public class ProductController {
             @PathVariable("id") Long id,
             @RequestParam(value = "selectedOptionIds", required = false) List<Long> selectedOptionIds
     ) {
+        if (!FormatValidator.hasValue(selectedOptionIds)) {
+            selectedOptionIds = List.of();
+        }
         GetProductInfoWithOptionsResult getProductInfoWithOptionsResult
                 = getProductUseCase.getProductInfo(id, selectedOptionIds);
 

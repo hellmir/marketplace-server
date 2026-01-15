@@ -32,7 +32,7 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
 
     @Override
     @CacheEvict(value = "review:photo:list:first", allEntries = true, condition = "T(java.lang.Boolean).TRUE.equals(#review.isPhoto)")
-    public Review saveAggregate(Review review) {
+    public Review save(Review review) {
         ReviewJpaEntity savedEntity = reviewJpaRepository.save(ReviewJpaEntity.from(review));
         savedEntity.setIdToOrderNum();
 

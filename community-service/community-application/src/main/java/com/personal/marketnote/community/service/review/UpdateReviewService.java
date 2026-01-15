@@ -45,8 +45,8 @@ public class UpdateReviewService implements UpdateReviewUseCase {
         // 상품 평점 재집계
         if (!FormatValidator.equals(previousRating, newRating)) {
             ProductReviewAggregate productReviewAggregate = getReviewUseCase.getProductReviewAggregate(review.getProductId());
-            ProductReviewAggregate.changePoint(productReviewAggregate, previousRating, newRating);
-            productReviewAggregate.computeAverageRating(previousRating.intValue(), newRating.intValue());
+            productReviewAggregate.changePoint(previousRating, newRating);
+            productReviewAggregate.computeRating(newRating - previousRating);
             updateReviewPort.update(productReviewAggregate);
         }
     }

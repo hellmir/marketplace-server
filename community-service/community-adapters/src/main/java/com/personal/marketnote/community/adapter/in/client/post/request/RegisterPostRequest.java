@@ -8,8 +8,6 @@ import jakarta.validation.constraints.*;
 import lombok.Getter;
 import org.springframework.security.access.AccessDeniedException;
 
-import java.util.List;
-
 @Getter
 public class RegisterPostRequest {
     @Schema(
@@ -88,12 +86,12 @@ public class RegisterPostRequest {
     )
     private Boolean isPrivate = false;
 
-    public void validate(List<String> authorities) {
-        if (isAdminRequired() && !authorities.contains("ROLE_ADMIN")) {
+    public void validate(boolean isAdmin, boolean isSeller) {
+        if (isAdminRequired() && !isAdmin) {
             throw new AccessDeniedException("관리자만 작성할 수 있습니다.");
         }
 
-        if (isSellerRequired() && !authorities.contains("ROLE_ADMIN") && !authorities.contains("ROLE_SELLER")) {
+        if (isSellerRequired() && !isAdmin && !isSeller) {
             throw new AccessDeniedException("관리자 또는 판매자만 작성할 수 있습니다.");
         }
     }

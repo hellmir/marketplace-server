@@ -36,20 +36,20 @@ import java.lang.annotation.*;
                         - "EVENT": 이벤트
                 
                     - **"FAQ": FAQ**
+
+                        - "ORDER_PAYMENT": 주문/결제
                 
-                        - "TOP_NOTICE": TOP 공지
+                        - "DELIVERY": 배송 관련
                 
-                        - "MEMBER": 회원
+                        - "CANCEL_REFUND": 취소/환불
                 
-                        - "ORDER_PAYMENT_BULK": 주문/결제/대량 주문
+                        - "RETURN_EXCHANGE": 반품/교환
                 
-                        - "CANCEL_EXCHANGE_REFUND": 취소/교환/환불
+                        - "POINT": 적립금(포인트)
                 
-                        - "DELIVERY": 배송
+                        - "EVENT_COUPON": 이벤트/쿠폰
                 
-                        - "EVENT_COUPON_POINT": 이벤트/쿠폰/적립금
-                
-                        - "PRODUCT": 상품
+                        - "LOGIN_USER_INFO": 로그인/회원정보
                 
                     - **"PRODUCT_INQUERY": 상품 문의**
                 
@@ -190,6 +190,19 @@ import java.lang.annotation.*;
                                                           "timestamp": "2026-01-13T17:11:31.590392",
                                                           "content": null,
                                                           "message": "관리자 또는 판매자만 작성할 수 있습니다."
+                                                        }
+                                                        """
+                                        ),
+                                        @ExampleObject(
+                                                name = "상품 판매자가 아님",
+                                                summary = "본인의 상품이 아닌 상품에 답글 등록 시도",
+                                                value = """
+                                                        {
+                                                          "statusCode": 403,
+                                                          "code": "FORBIDDEN",
+                                                          "timestamp": "2026-01-13T17:11:31.590392",
+                                                          "content": null,
+                                                          "message": "상품 판매자가 아닙니다. 전송된 가격 정책 ID: 180"
                                                         }
                                                         """
                                         )

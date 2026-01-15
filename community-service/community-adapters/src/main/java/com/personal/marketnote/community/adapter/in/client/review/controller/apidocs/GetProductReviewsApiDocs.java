@@ -89,8 +89,8 @@ import java.lang.annotation.*;
                 | reviewerName | string | 리뷰 작성자 이름 | "홍*동" |
                 | rating | number | 평점 | 4 |
                 | content | string | 리뷰 내용 | "배송이 빠르고 포장 상태도 좋았습니다." |
-                | photoYn | boolean | 포토 리뷰 여부 | false |
-                | editedYn | boolean | 수정 여부 | false |
+                | isPhoto | boolean | 포토 리뷰 여부 | false |
+                | isEdited | boolean | 수정 여부 | false |
                 | likeCount | number | 좋아요 개수 | 0 |
                 | isUserLiked | boolean | 로그인 사용자가 좋아요를 눌렀는지 여부 | false |
                 | status | string | 상태 | "ACTIVE" |
@@ -177,8 +177,8 @@ import java.lang.annotation.*;
                                                   "reviewerName": "홍*동",
                                                   "rating": 5,
                                                   "content": "배송이 빠르고 포장 상태도 좋았습니다.",
-                                                  "photoYn": false,
-                                                  "editedYn": false,
+                                                  "isPhoto": false,
+                                                  "isEdited": false,
                                                   "likeCount": 0,
                                                   "isUserLiked": false,
                                                   "status": "ACTIVE",
@@ -197,8 +197,8 @@ import java.lang.annotation.*;
                                                   "reviewerName": "홍*",
                                                   "rating": 5,
                                                   "content": "배송이 빠르고 포장 상태도 좋았습니다.",
-                                                  "photoYn": false,
-                                                  "editedYn": false,
+                                                  "isPhoto": false,
+                                                  "isEdited": false,
                                                   "likeCount": 1,
                                                   "isUserLiked": true,
                                                   "status": "ACTIVE",
@@ -217,8 +217,8 @@ import java.lang.annotation.*;
                                                   "reviewerName": "홍*개",
                                                   "rating": 5,
                                                   "content": "배송이 빠르고 포장 상태도 좋았습니다.",
-                                                  "photoYn": false,
-                                                  "editedYn": false,
+                                                  "isPhoto": false,
+                                                  "isEdited": false,
                                                   "likeCount": 0,
                                                   "isUserLiked": false,
                                                   "status": "ACTIVE",
@@ -237,8 +237,8 @@ import java.lang.annotation.*;
                                                   "reviewerName": "홍*동",
                                                   "rating": 5,
                                                   "content": "배송이 빠르고 포장 상태도 좋았습니다.",
-                                                  "photoYn": false,
-                                                  "editedYn": false,
+                                                  "isPhoto": false,
+                                                  "isEdited": false,
                                                   "likeCount": 0,
                                                   "isUserLiked": false,
                                                   "status": "ACTIVE",

@@ -3,8 +3,8 @@ package com.personal.marketnote.product.service.product;
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
-import com.personal.marketnote.product.port.in.command.GetMyOrderingProductsCommand;
-import com.personal.marketnote.product.port.in.command.OrderingItemCommand;
+import com.personal.marketnote.product.port.in.command.GetMyOrderingProductsQuery;
+import com.personal.marketnote.product.port.in.command.OrderingItemQuery;
 import com.personal.marketnote.product.port.in.result.cart.GetCartProductResult;
 import com.personal.marketnote.product.port.in.result.product.GetMyOrderProductsResult;
 import com.personal.marketnote.product.port.in.usecase.pricepolicy.GetPricePoliciesUseCase;
@@ -27,12 +27,10 @@ public class GetMyOrderingProductsService implements GetMyOrderingProductsUseCas
     private final GetProductInventoryUseCase getProductInventoryUseCase;
 
     @Override
-    public GetMyOrderProductsResult getMyOrderingProducts(
-            GetMyOrderingProductsCommand getMyOrderingProductsCommand
-    ) {
-        List<Long> pricePolicyIds = getMyOrderingProductsCommand.orderingItemCommands()
+    public GetMyOrderProductsResult getMyOrderingProducts(GetMyOrderingProductsQuery query) {
+        List<Long> pricePolicyIds = query.orderingItemQueries()
                 .stream()
-                .map(OrderingItemCommand::pricePolicyId)
+                .map(OrderingItemQuery::pricePolicyId)
                 .toList();
 
         List<PricePolicy> pricePolicies = getPricePoliciesUseCase.getPricePoliciesAndOptions(pricePolicyIds);
@@ -42,7 +40,7 @@ public class GetMyOrderingProductsService implements GetMyOrderingProductsUseCas
 
         List<GetCartProductResult> orderingProducts = new ArrayList<>();
         pricePolicies.forEach(
-                pricePolicy -> getMyOrderingProductsCommand.orderingItemCommands()
+                pricePolicy -> query.orderingItemQueries()
                         .stream()
                         .filter(
                                 request -> FormatValidator.equals(
