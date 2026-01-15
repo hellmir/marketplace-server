@@ -1,7 +1,9 @@
 package com.personal.marketnote.community.adapter.in.client.post.mapper;
 
 import com.personal.marketnote.community.adapter.in.client.post.request.RegisterPostRequest;
+import com.personal.marketnote.community.adapter.in.client.post.request.UpdatePostRequest;
 import com.personal.marketnote.community.port.in.command.post.RegisterPostCommand;
+import com.personal.marketnote.community.port.in.command.post.UpdatePostCommand;
 
 public class PostRequestToCommandMapper {
     public static RegisterPostCommand mapToCommand(RegisterPostRequest request, Long userId) {
@@ -17,5 +19,9 @@ public class PostRequestToCommandMapper {
                 .content(request.getContent())
                 .isPrivate(request.getIsPrivate())
                 .build();
+    }
+
+    public static UpdatePostCommand mapToCommand(Long id, UpdatePostRequest request) {
+        return UpdatePostCommand.of(id, request.getTitle(), request.getContent());
     }
 }

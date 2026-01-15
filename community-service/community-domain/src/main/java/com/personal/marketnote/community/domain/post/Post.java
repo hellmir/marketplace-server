@@ -112,4 +112,13 @@ public class Post {
     public void changeExposure() {
         status = EntityStatus.changeVisibility(status);
     }
+
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+
+    public boolean isEditable() {
+        return board.isEditable();
+    }
 }

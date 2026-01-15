@@ -75,4 +75,8 @@ public enum Board {
     public boolean isNonMemberViewBoard() {
         return this == NOTICE || this == FAQ;
     }
+
+    public boolean isEditable() {
+        return isNotice() || isFaq();
+    }
 }

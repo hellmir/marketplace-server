@@ -6,8 +6,10 @@ import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.adapter.in.client.post.controller.apidocs.GetPostsApiDocs;
 import com.personal.marketnote.community.adapter.in.client.post.controller.apidocs.RegisterPostApiDocs;
+import com.personal.marketnote.community.adapter.in.client.post.controller.apidocs.UpdatePostApiDocs;
 import com.personal.marketnote.community.adapter.in.client.post.mapper.PostRequestToCommandMapper;
 import com.personal.marketnote.community.adapter.in.client.post.request.RegisterPostRequest;
+import com.personal.marketnote.community.adapter.in.client.post.request.UpdatePostRequest;
 import com.personal.marketnote.community.adapter.in.client.post.response.GetPostsResponse;
 import com.personal.marketnote.community.adapter.in.client.post.response.RegisterPostResponse;
 import com.personal.marketnote.community.domain.post.*;
@@ -16,12 +18,14 @@ import com.personal.marketnote.community.port.in.result.post.GetPostsResult;
 import com.personal.marketnote.community.port.in.result.post.RegisterPostResult;
 import com.personal.marketnote.community.port.in.usecase.post.GetPostUseCase;
 import com.personal.marketnote.community.port.in.usecase.post.RegisterPostUseCase;
+import com.personal.marketnote.community.port.in.usecase.post.UpdatePostUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
@@ -31,6 +35,7 @@ import java.util.List;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
 import static com.personal.marketnote.common.domain.exception.ExceptionMessage.INVALID_ACCESS_TOKEN_EXCEPTION_MESSAGE;
+import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -41,6 +46,7 @@ public class PostController {
 
     private final RegisterPostUseCase registerPostUseCase;
     private final GetPostUseCase getPostUseCase;
+    private final UpdatePostUseCase updatePostUseCase;
 
     /**
      * 게시글 등록
@@ -161,5 +167,34 @@ public class PostController {
         if (!FormatValidator.hasValue(principal) || FormatValidator.equals(principal.getName(), "-1")) {
             throw new AuthenticationFailedException(INVALID_ACCESS_TOKEN_EXCEPTION_MESSAGE);
         }
+    }
+
+    /**
+     * (관리자) 게시글 수정
+     *
+     * @param request 게시글 수정 요청
+     * @Author 성효빈
+     * @Date 2026-01-15
+     * @Description 게시글 제목/내용을 수정합니다.
+     */
+    @PatchMapping("/{id}")
+    @PreAuthorize(ADMIN_POINTCUT)
+    @UpdatePostApiDocs
+    public ResponseEntity<BaseResponse<Void>> updatePost(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdatePostRequest request
+    ) {
+        updatePostUseCase.updatePost(
+                PostRequestToCommandMapper.mapToCommand(id, request)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "게시글 수정 성공"
+                ),
+                HttpStatus.OK
+        );
     }
 }
