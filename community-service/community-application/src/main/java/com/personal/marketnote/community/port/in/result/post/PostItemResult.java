@@ -24,6 +24,7 @@ public class PostItemResult {
     private String content;
     private boolean isPrivate;
     private boolean isMasked;
+    private boolean isAnswered;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private PostProductInfoResult product;
@@ -47,6 +48,7 @@ public class PostItemResult {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .isPrivate(post.getIsPrivate())
+                .isAnswered(post.isAnswered())
                 .createdAt(post.getCreatedAt())
                 .modifiedAt(post.getModifiedAt())
                 .product(productInfo)
@@ -71,6 +73,7 @@ public class PostItemResult {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .isPrivate(post.getIsPrivate())
+                .isAnswered(post.isAnswered())
                 .createdAt(post.getCreatedAt())
                 .modifiedAt(post.getModifiedAt())
                 .build();
