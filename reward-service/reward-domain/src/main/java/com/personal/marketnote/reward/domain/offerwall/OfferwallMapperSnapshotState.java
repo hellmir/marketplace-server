@@ -26,5 +26,7 @@ public class OfferwallMapperSnapshotState {
     private final LocalDateTime attendedAt;
     private final String requestPayload;
     private final JsonNode requestPayloadJson;
+    private final String responsePayload;
+    private final JsonNode responsePayloadJson;
     private final LocalDateTime createdAt;
 }

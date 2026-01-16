@@ -14,7 +14,15 @@ import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "offerwall_mapper")
+@Table(
+        name = "offerwall_mapper",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_offerwall_type_reward_key",
+                        columnNames = {"offerwall_type", "reward_key"}
+                )
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
@@ -74,6 +82,13 @@ public class OfferwallMapperJpaEntity {
     @Column(name = "request_payload_json", nullable = false, columnDefinition = "jsonb")
     private JsonNode requestPayloadJson;
 
+    @Column(name = "response_payload", columnDefinition = "TEXT")
+    private String responsePayload;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "response_payload_json", columnDefinition = "jsonb")
+    private JsonNode responsePayloadJson;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -101,6 +116,8 @@ public class OfferwallMapperJpaEntity {
                 .attendedAt(offerwallMapper.getAttendedAt())
                 .requestPayload(offerwallMapper.getRequestPayload())
                 .requestPayloadJson(offerwallMapper.getRequestPayloadJson())
+                .responsePayload(offerwallMapper.getResponsePayload())
+                .responsePayloadJson(offerwallMapper.getResponsePayloadJson())
                 .createdAt(offerwallMapper.getCreatedAt())
                 .build();
     }
@@ -125,8 +142,15 @@ public class OfferwallMapperJpaEntity {
                         .attendedAt(attendedAt)
                         .requestPayload(requestPayload)
                         .requestPayloadJson(requestPayloadJson)
+                        .responsePayload(responsePayload)
+                        .responsePayloadJson(responsePayloadJson)
                         .createdAt(createdAt)
                         .build()
         );
+    }
+
+    public void updateResponse(String payload, JsonNode payloadJson) {
+        this.responsePayload = payload;
+        this.responsePayloadJson = payloadJson;
     }
 }

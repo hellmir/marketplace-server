@@ -27,6 +27,8 @@ public class OfferwallMapper {
     private LocalDateTime attendedAt;
     private String requestPayload;
     private JsonNode requestPayloadJson;
+    private String responsePayload;
+    private JsonNode responsePayloadJson;
     private LocalDateTime createdAt;
 
     public static OfferwallMapper from(OfferwallMapperCreateState state) {
@@ -47,6 +49,8 @@ public class OfferwallMapper {
                 .attendedAt(state.getAttendedAt())
                 .requestPayload(state.getRequestPayload())
                 .requestPayloadJson(state.getRequestPayloadJson())
+                .responsePayload(state.getResponsePayload())
+                .responsePayloadJson(state.getResponsePayloadJson())
                 .build();
     }
 
@@ -69,6 +73,8 @@ public class OfferwallMapper {
                 .attendedAt(state.getAttendedAt())
                 .requestPayload(state.getRequestPayload())
                 .requestPayloadJson(state.getRequestPayloadJson())
+                .responsePayload(state.getResponsePayload())
+                .responsePayloadJson(state.getResponsePayloadJson())
                 .createdAt(state.getCreatedAt())
                 .build();
     }

@@ -101,9 +101,9 @@ public class RewardController {
                 payloadJson
         );
 
-        registerOfferwallRewardUseCase.register(command);
+        String responsePayload = registerOfferwallRewardUseCase.register(command);
 
-        return ResponseEntity.ok("OK");
+        return ResponseEntity.ok(responsePayload);
     }
 
     private JsonNode buildPayloadJson(
