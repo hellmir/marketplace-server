@@ -36,7 +36,7 @@ import java.lang.annotation.*;
                         - "EVENT": 이벤트
                 
                     - **"FAQ": FAQ**
-
+                
                         - "ORDER_PAYMENT": 주문/결제
                 
                         - "DELIVERY": 배송 관련
