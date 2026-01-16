@@ -53,7 +53,7 @@ public class ProductReviewAggregate {
         addPoint(newRating.intValue());
     }
 
-    public void reducePoint( int point) {
+    public void reducePoint(int point) {
         --totalCount;
 
         if (RatingPoint.isFive(point)) {

@@ -48,6 +48,7 @@ def buildMarketNoteTaskDefinition(env) {
                 [name: "PRODUCT_SERVICE_SERVER_ORIGIN",  value: env.PRODUCT_SERVICE_SERVER_ORIGIN],
                 [name: "COMMERCE_SERVICE_SERVER_ORIGIN", value: env.COMMERCE_SERVICE_SERVER_ORIGIN],
                 [name: "COMMUNITY_SERVICE_SERVER_ORIGIN",value: env.COMMUNITY_SERVICE_SERVER_ORIGIN],
+                [name: "REWARD_SERVICE_SERVER_ORIGIN",   value: env.REWARD_SERVICE_SERVER_ORIGIN],
                 [name: "JWT_ADMIN_ACCESS_TOKEN",         value: env.JWT_ADMIN_ACCESS_TOKEN],
             ],
             logConfiguration: [
@@ -74,7 +75,7 @@ pipeline {
 	agent any
 
 	parameters {
-		choice(name: 'SERVICE', choices: ['auto','user-service','product-service','commerce-service','community-service','file-service'], description: '배포 대상 서비스')
+		choice(name: 'SERVICE', choices: ['auto','user-service','product-service','commerce-service','community-service','reward-service','file-service'], description: '배포 대상 서비스')
 	}
 
 	environment {
@@ -100,6 +101,7 @@ pipeline {
 						'product-service'  : 'product-adapters',
 						'commerce-service' : 'commerce-adapters',
 						'community-service': 'community-adapters',
+						'reward-service': 'reward-adapters',
 						'file-service'     : 'file-adapters',
 					]
 
@@ -264,38 +266,44 @@ pipeline {
 					withCredentials([
 						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_ECR_REPOSITORY',      variable: 'USER_SERVICE_ECR_REPOSITORY'),
 						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_ECR_REPOSITORY',   variable: 'PRODUCT_SERVICE_ECR_REPOSITORY'),
-						string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_ECR_REPOSITORY',     variable: 'COMMERCE_SERVICE_ECR_REPOSITORY'),
-						string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_ECR_REPOSITORY',     variable: 'COMMUNITY_SERVICE_ECR_REPOSITORY'),
+						string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_ECR_REPOSITORY',  variable: 'COMMERCE_SERVICE_ECR_REPOSITORY'),
+						string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_ECR_REPOSITORY', variable: 'COMMUNITY_SERVICE_ECR_REPOSITORY'),
+						string(credentialsId: 'MARKETNOTE_QA_REWARD_SERVICE_ECR_REPOSITORY',    variable: 'REWARD_SERVICE_ECR_REPOSITORY'),
 						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_ECR_REPOSITORY',      variable: 'FILE_SERVICE_ECR_REPOSITORY'),
 
-						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_ECS_SERVICE_NAME',    variable: 'USER_SERVICE_ECS_SERVICE_NAME'),
-						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_ECS_SERVICE_NAME', variable: 'PRODUCT_SERVICE_ECS_SERVICE_NAME'),
-						string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_ECS_SERVICE_NAME',   variable: 'COMMERCE_SERVICE_ECS_SERVICE_NAME'),
-						string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_ECS_SERVICE_NAME',   variable: 'COMMUNITY_SERVICE_ECS_SERVICE_NAME'),
-						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_ECS_SERVICE_NAME',    variable: 'FILE_SERVICE_ECS_SERVICE_NAME'),
+						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_ECS_SERVICE_NAME',      variable: 'USER_SERVICE_ECS_SERVICE_NAME'),
+						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_ECS_SERVICE_NAME',   variable: 'PRODUCT_SERVICE_ECS_SERVICE_NAME'),
+						string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_ECS_SERVICE_NAME',  variable: 'COMMERCE_SERVICE_ECS_SERVICE_NAME'),
+						string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_ECS_SERVICE_NAME', variable: 'COMMUNITY_SERVICE_ECS_SERVICE_NAME'),
+						string(credentialsId: 'MARKETNOTE_QA_REWARD_SERVICE_ECS_SERVICE_NAME',    variable: 'REWARD_SERVICE_ECS_SERVICE_NAME'),
+						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_ECS_SERVICE_NAME',      variable: 'FILE_SERVICE_ECS_SERVICE_NAME'),
 
-						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_TARGET_GROUP_ARN',    variable: 'USER_SERVICE_TARGET_GROUP_ARN'),
-						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_TARGET_GROUP_ARN', variable: 'PRODUCT_SERVICE_TARGET_GROUP_ARN'),
-						string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_TARGET_GROUP_ARN',   variable: 'COMMERCE_SERVICE_TARGET_GROUP_ARN'),
-						string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_TARGET_GROUP_ARN',   variable: 'COMMUNITY_SERVICE_TARGET_GROUP_ARN'),
-						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_TARGET_GROUP_ARN',    variable: 'FILE_SERVICE_TARGET_GROUP_ARN'),
+						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_TARGET_GROUP_ARN',      variable: 'USER_SERVICE_TARGET_GROUP_ARN'),
+						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_TARGET_GROUP_ARN',   variable: 'PRODUCT_SERVICE_TARGET_GROUP_ARN'),
+						string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_TARGET_GROUP_ARN',  variable: 'COMMERCE_SERVICE_TARGET_GROUP_ARN'),
+						string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_TARGET_GROUP_ARN', variable: 'COMMUNITY_SERVICE_TARGET_GROUP_ARN'),
+						string(credentialsId: 'MARKETNOTE_QA_REWARD_SERVICE_TARGET_GROUP_ARN',    variable: 'REWARD_SERVICE_TARGET_GROUP_ARN'),
+						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_TARGET_GROUP_ARN',      variable: 'FILE_SERVICE_TARGET_GROUP_ARN'),
 
 						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_SERVER_ORIGIN',       variable: 'USER_SERVICE_SERVER_ORIGIN'),
 						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_SERVER_ORIGIN',    variable: 'PRODUCT_SERVICE_SERVER_ORIGIN'),
-						string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_SERVER_ORIGIN',      variable: 'COMMERCE_SERVICE_SERVER_ORIGIN'),
-						string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_SERVER_ORIGIN',      variable: 'COMMUNITY_SERVICE_SERVER_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_SERVER_ORIGIN',   variable: 'COMMERCE_SERVICE_SERVER_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_SERVER_ORIGIN',  variable: 'COMMUNITY_SERVICE_SERVER_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_QA_REWARD_SERVICE_SERVER_ORIGIN',     variable: 'REWARD_SERVICE_SERVER_ORIGIN'),
 						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_SERVER_ORIGIN',       variable: 'FILE_SERVICE_SERVER_ORIGIN'),
 
 						string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_DB_URL',              variable: 'USER_SERVICE_DB_URL'),
                         string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_DB_URL',           variable: 'PRODUCT_SERVICE_DB_URL'),
-                        string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_DB_URL',             variable: 'COMMERCE_SERVICE_DB_URL'),
-                        string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_DB_URL',             variable: 'COMMUNITY_SERVICE_DB_URL'),
+                        string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_DB_URL',          variable: 'COMMERCE_SERVICE_DB_URL'),
+                        string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_DB_URL',         variable: 'COMMUNITY_SERVICE_DB_URL'),
+                        string(credentialsId: 'MARKETNOTE_QA_REWARD_SERVICE_DB_URL',            variable: 'REWARD_SERVICE_DB_URL'),
                         string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_DB_URL',              variable: 'FILE_SERVICE_DB_URL'),
 
                         string(credentialsId: 'MARKETNOTE_QA_USER_SERVICE_DB_PASSWORD',         variable: 'USER_SERVICE_DB_PASSWORD'),
                         string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_DB_PASSWORD',      variable: 'PRODUCT_SERVICE_DB_PASSWORD'),
-                        string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_DB_PASSWORD',        variable: 'COMMERCE_SERVICE_DB_PASSWORD'),
-                        string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_DB_PASSWORD',        variable: 'COMMUNITY_SERVICE_DB_PASSWORD'),
+                        string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_DB_PASSWORD',     variable: 'COMMERCE_SERVICE_DB_PASSWORD'),
+                        string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_DB_PASSWORD',    variable: 'COMMUNITY_SERVICE_DB_PASSWORD'),
+                        string(credentialsId: 'MARKETNOTE_QA_REWARD_SERVICE_DB_PASSWORD',       variable: 'REWARD_SERVICE_DB_PASSWORD'),
                         string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_DB_PASSWORD',         variable: 'FILE_SERVICE_DB_PASSWORD'),
 					]) {
 						def svc = env.SERVICE_NAME
@@ -327,6 +335,13 @@ pipeline {
                            	env.SERVER_ORIGIN = COMMUNITY_SERVICE_SERVER_ORIGIN
                            	env.DB_URL = COMMUNITY_SERVICE_DB_URL
                             env.DB_PASSWORD = COMMUNITY_SERVICE_DB_PASSWORD
+                        } else if (svc == 'reward-service') {
+                           	env.ECR_REPOSITORY = REWARD_SERVICE_ECR_REPOSITORY
+                           	env.ECS_SERVICE_NAME = REWARD_SERVICE_ECS_SERVICE_NAME
+                           	env.TARGET_GROUP_ARN = REWARD_SERVICE_TARGET_GROUP_ARN
+                           	env.SERVER_ORIGIN = REWARD_SERVICE_SERVER_ORIGIN
+                           	env.DB_URL = REWARD_SERVICE_DB_URL
+                            env.DB_PASSWORD = REWARD_SERVICE_DB_PASSWORD
                         } else if (svc == 'file-service') {
                            	env.ECR_REPOSITORY = FILE_SERVICE_ECR_REPOSITORY
                            	env.ECS_SERVICE_NAME = FILE_SERVICE_ECS_SERVICE_NAME
@@ -540,42 +555,43 @@ pipeline {
 			steps {
 				script {
 					withCredentials([
-						string(credentialsId: 'MARKETNOTE_DB_USERNAME',                       variable: 'DB_USERNAME'),
-						string(credentialsId: 'MARKETNOTE_JWT_SECRET_KEY',                    variable: 'JWT_SECRET_KEY'),
-						string(credentialsId: 'MARKETNOTE_ACCESS_TOKEN_EXPIRATION_TIME',      variable: 'ACCESS_TOKEN_EXPIRATION_TIME'),
-						string(credentialsId: 'MARKETNOTE_REFRESH_TOKEN_EXPIRATION_TIME',     variable: 'REFRESH_TOKEN_EXPIRATION_TIME'),
-						string(credentialsId: 'MARKETNOTE_CLIENT_ORIGIN',                     variable: 'CLIENT_ORIGIN'),
-						string(credentialsId: 'MARKETNOTE_COOKIE_DOMAIN',                     variable: 'COOKIE_DOMAIN'),
-						string(credentialsId: 'MARKETNOTE_ACCESS_CONTROL_ALLOWED_ORIGINS',    variable: 'ACCESS_CONTROL_ALLOWED_ORIGINS'),
-						string(credentialsId: 'MARKETNOTE_QA_SPRING_PROFILE',                 variable: 'SPRING_PROFILE'),
-						string(credentialsId: 'MARKETNOTE_GOOGLE_CLIENT_ID',                  variable: 'GOOGLE_CLIENT_ID'),
-						string(credentialsId: 'MARKETNOTE_GOOGLE_CLIENT_SECRET',              variable: 'GOOGLE_CLIENT_SECRET'),
-						string(credentialsId: 'MARKETNOTE_KAKAO_CLIENT_ID',                   variable: 'KAKAO_CLIENT_ID'),
-						string(credentialsId: 'MARKETNOTE_KAKAO_CLIENT_SECRET',               variable: 'KAKAO_CLIENT_SECRET'),
-						string(credentialsId: 'MARKETNOTE_KAKAO_ADMIN_KEY',                   variable: 'KAKAO_ADMIN_KEY'),
-						string(credentialsId: 'MARKETNOTE_S3_ACCESS_KEY',                     variable: 'S3_ACCESS_KEY'),
-						string(credentialsId: 'MARKETNOTE_S3_SECRET_KEY',                     variable: 'S3_SECRET_KEY'),
-						string(credentialsId: 'MARKETNOTE_S3_BUCKET_NAME',                    variable: 'S3_BUCKET_NAME'),
-						string(credentialsId: 'MARKETNOTE_AWS_ACCOUNT_ID',                    variable: 'AWS_ACCOUNT_ID'),
-						string(credentialsId: 'MARKETNOTE_AWS_ACCESS_KEY_ID',                 variable: 'AWS_ACCESS_KEY_ID'),
-						string(credentialsId: 'MARKETNOTE_AWS_SECRET_ACCESS_KEY',             variable: 'AWS_SECRET_ACCESS_KEY'),
-						string(credentialsId: 'MARKETNOTE_AWS_DEFAULT_REGION',                variable: 'AWS_DEFAULT_REGION'),
-						string(credentialsId: 'MARKETNOTE_ECS_TASK_EXECUTION_ROLE_ARN',       variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
-						string(credentialsId: 'MARKETNOTE_ECS_TASK_ROLE_ARN',                 variable: 'ECS_TASK_ROLE_ARN'),
-						string(credentialsId: 'MARKETNOTE_CLOUDWATCH_LOG_GROUP',              variable: 'CLOUDWATCH_LOG_GROUP'),
-						string(credentialsId: 'MARKETNOTE_SES_SMTP_USERNAME',                 variable: 'SES_SMTP_USERNAME'),
-						string(credentialsId: 'MARKETNOTE_SES_SMTP_PASSWORD',                 variable: 'SES_SMTP_PASSWORD'),
-						string(credentialsId: 'MARKETNOTE_MAIL_FROM',                         variable: 'MAIL_FROM'),
-						string(credentialsId: 'MARKETNOTE_MAIL_SENDER_NAME',                  variable: 'MAIL_SENDER_NAME'),
-						string(credentialsId: 'MARKETNOTE_MAIL_VERIFICATION_TTL_MINUTES',     variable: 'MAIL_VERIFICATION_TTL_MINUTES'),
-						string(credentialsId: 'MARKETNOTE_REDIS_PASSWORD',                    variable: 'REDIS_PASSWORD'),
-						string(credentialsId: 'MARKETNOTE_REDIS_HOST_NAME',                   variable: 'REDIS_HOST_NAME'),
-						string(credentialsId: 'MARKETNOTE_REDIS_EMAIL_VERIFICATION_PREFIX',   variable: 'REDIS_EMAIL_VERIFICATION_PREFIX'),
-						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_SERVER_ORIGIN',     variable: 'FILE_SERVICE_SERVER_ORIGIN'),
-						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_SERVER_ORIGIN',  variable: 'PRODUCT_SERVICE_SERVER_ORIGIN'),
-						string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_SERVER_ORIGIN', variable: 'COMMERCE_SERVICE_SERVER_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_DB_USERNAME',                        variable: 'DB_USERNAME'),
+						string(credentialsId: 'MARKETNOTE_JWT_SECRET_KEY',                     variable: 'JWT_SECRET_KEY'),
+						string(credentialsId: 'MARKETNOTE_ACCESS_TOKEN_EXPIRATION_TIME',       variable: 'ACCESS_TOKEN_EXPIRATION_TIME'),
+						string(credentialsId: 'MARKETNOTE_REFRESH_TOKEN_EXPIRATION_TIME',      variable: 'REFRESH_TOKEN_EXPIRATION_TIME'),
+						string(credentialsId: 'MARKETNOTE_CLIENT_ORIGIN',                      variable: 'CLIENT_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_COOKIE_DOMAIN',                      variable: 'COOKIE_DOMAIN'),
+						string(credentialsId: 'MARKETNOTE_ACCESS_CONTROL_ALLOWED_ORIGINS',     variable: 'ACCESS_CONTROL_ALLOWED_ORIGINS'),
+						string(credentialsId: 'MARKETNOTE_QA_SPRING_PROFILE',                  variable: 'SPRING_PROFILE'),
+						string(credentialsId: 'MARKETNOTE_GOOGLE_CLIENT_ID',                   variable: 'GOOGLE_CLIENT_ID'),
+						string(credentialsId: 'MARKETNOTE_GOOGLE_CLIENT_SECRET',               variable: 'GOOGLE_CLIENT_SECRET'),
+						string(credentialsId: 'MARKETNOTE_KAKAO_CLIENT_ID',                    variable: 'KAKAO_CLIENT_ID'),
+						string(credentialsId: 'MARKETNOTE_KAKAO_CLIENT_SECRET',                variable: 'KAKAO_CLIENT_SECRET'),
+						string(credentialsId: 'MARKETNOTE_KAKAO_ADMIN_KEY',                    variable: 'KAKAO_ADMIN_KEY'),
+						string(credentialsId: 'MARKETNOTE_S3_ACCESS_KEY',                      variable: 'S3_ACCESS_KEY'),
+						string(credentialsId: 'MARKETNOTE_S3_SECRET_KEY',                      variable: 'S3_SECRET_KEY'),
+						string(credentialsId: 'MARKETNOTE_S3_BUCKET_NAME',                     variable: 'S3_BUCKET_NAME'),
+						string(credentialsId: 'MARKETNOTE_AWS_ACCOUNT_ID',                     variable: 'AWS_ACCOUNT_ID'),
+						string(credentialsId: 'MARKETNOTE_AWS_ACCESS_KEY_ID',                  variable: 'AWS_ACCESS_KEY_ID'),
+						string(credentialsId: 'MARKETNOTE_AWS_SECRET_ACCESS_KEY',              variable: 'AWS_SECRET_ACCESS_KEY'),
+						string(credentialsId: 'MARKETNOTE_AWS_DEFAULT_REGION',                 variable: 'AWS_DEFAULT_REGION'),
+						string(credentialsId: 'MARKETNOTE_ECS_TASK_EXECUTION_ROLE_ARN',        variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
+						string(credentialsId: 'MARKETNOTE_ECS_TASK_ROLE_ARN',                  variable: 'ECS_TASK_ROLE_ARN'),
+						string(credentialsId: 'MARKETNOTE_CLOUDWATCH_LOG_GROUP',               variable: 'CLOUDWATCH_LOG_GROUP'),
+						string(credentialsId: 'MARKETNOTE_SES_SMTP_USERNAME',                  variable: 'SES_SMTP_USERNAME'),
+						string(credentialsId: 'MARKETNOTE_SES_SMTP_PASSWORD',                  variable: 'SES_SMTP_PASSWORD'),
+						string(credentialsId: 'MARKETNOTE_MAIL_FROM',                          variable: 'MAIL_FROM'),
+						string(credentialsId: 'MARKETNOTE_MAIL_SENDER_NAME',                   variable: 'MAIL_SENDER_NAME'),
+						string(credentialsId: 'MARKETNOTE_MAIL_VERIFICATION_TTL_MINUTES',      variable: 'MAIL_VERIFICATION_TTL_MINUTES'),
+						string(credentialsId: 'MARKETNOTE_REDIS_PASSWORD',                     variable: 'REDIS_PASSWORD'),
+						string(credentialsId: 'MARKETNOTE_REDIS_HOST_NAME',                    variable: 'REDIS_HOST_NAME'),
+						string(credentialsId: 'MARKETNOTE_REDIS_EMAIL_VERIFICATION_PREFIX',    variable: 'REDIS_EMAIL_VERIFICATION_PREFIX'),
+						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_SERVER_ORIGIN',      variable: 'FILE_SERVICE_SERVER_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_SERVER_ORIGIN',   variable: 'PRODUCT_SERVICE_SERVER_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_SERVER_ORIGIN',  variable: 'COMMERCE_SERVICE_SERVER_ORIGIN'),
 						string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_SERVER_ORIGIN', variable: 'COMMUNITY_SERVICE_SERVER_ORIGIN'),
-						string(credentialsId: 'MARKETNOTE_QA_JWT_ADMIN_ACCESS_TOKEN',         variable: 'JWT_ADMIN_ACCESS_TOKEN'),
+						string(credentialsId: 'MARKETNOTE_QA_REWARD_SERVICE_SERVER_ORIGIN',    variable: 'REWARD_SERVICE_SERVER_ORIGIN'),
+						string(credentialsId: 'MARKETNOTE_QA_JWT_ADMIN_ACCESS_TOKEN',          variable: 'JWT_ADMIN_ACCESS_TOKEN'),
 					]) {
 						sh '''
                   LG="$CLOUDWATCH_LOG_GROUP"

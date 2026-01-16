@@ -22,6 +22,11 @@ include("community-service:community-adapters")
 include("community-service:community-application")
 include("community-service:community-domain")
 
+include("reward-service")
+include("reward-service:reward-adapters")
+include("reward-service:reward-application")
+include("reward-service:reward-domain")
+
 include("file-service")
 include("file-service:file-adapters")
 include("file-service:file-application")
