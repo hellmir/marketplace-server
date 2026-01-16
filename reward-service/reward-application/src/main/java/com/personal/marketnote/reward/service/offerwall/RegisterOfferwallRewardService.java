@@ -14,10 +14,9 @@ public class RegisterOfferwallRewardService implements RegisterOfferwallRewardUs
     private final SaveOfferwallMapperPort saveOfferwallMapperPort;
 
     @Override
-    public void register(OfferwallCallbackCommand command) {
-        OfferwallMapper offerwallMapper = OfferwallMapper.from(
-                RewardCommandToStateMapper.mapToOfferwallMapperCreateState(command)
+    public OfferwallMapper register(OfferwallCallbackCommand command) {
+        return saveOfferwallMapperPort.save(
+                OfferwallMapper.from(RewardCommandToStateMapper.mapToOfferwallMapperCreateState(command))
         );
-        saveOfferwallMapperPort.save(offerwallMapper);
     }
 }

@@ -1,6 +1,5 @@
 package com.personal.marketnote.reward.port.in.command.offerwall;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallType;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +23,4 @@ public class OfferwallCallbackCommand {
     private final String idfa;
     private final Boolean isSuccess;
     private final LocalDateTime attendedAt;
-    private final String requestPayload;
-    private final JsonNode requestPayloadJson;
 }

@@ -9,7 +9,7 @@ public class RewardCommandToStateMapper {
         return OfferwallMapperCreateState.builder()
                 .offerwallType(command.getOfferwallType())
                 .rewardKey(command.getRewardKey())
-                .userKey(command.getUserKey())
+                .userId(command.getUserKey())
                 .campaignKey(command.getCampaignKey())
                 .campaignType(command.getCampaignType())
                 .campaignName(command.getCampaignName())
@@ -21,8 +21,6 @@ public class RewardCommandToStateMapper {
                 .idfa(command.getIdfa())
                 .isSuccess(command.getIsSuccess())
                 .attendedAt(command.getAttendedAt())
-                .requestPayload(command.getRequestPayload())
-                .requestPayloadJson(command.getRequestPayloadJson())
                 .build();
     }
 }
