@@ -1,6 +1,5 @@
 package com.personal.marketnote.reward.domain.offerwall;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -13,7 +12,7 @@ public class OfferwallMapper {
     private Long id;
     private OfferwallType offerwallType;
     private String rewardKey;
-    private String userKey;
+    private String userId;
     private String campaignKey;
     private Integer campaignType;
     private String campaignName;
@@ -25,17 +24,13 @@ public class OfferwallMapper {
     private String idfa;
     private Boolean isSuccess;
     private LocalDateTime attendedAt;
-    private String requestPayload;
-    private JsonNode requestPayloadJson;
-    private String responsePayload;
-    private JsonNode responsePayloadJson;
     private LocalDateTime createdAt;
 
     public static OfferwallMapper from(OfferwallMapperCreateState state) {
         return OfferwallMapper.builder()
                 .offerwallType(state.getOfferwallType())
                 .rewardKey(state.getRewardKey())
-                .userKey(state.getUserKey())
+                .userId(state.getUserId())
                 .campaignKey(state.getCampaignKey())
                 .campaignType(state.getCampaignType())
                 .campaignName(state.getCampaignName())
@@ -47,10 +42,6 @@ public class OfferwallMapper {
                 .idfa(state.getIdfa())
                 .isSuccess(state.getIsSuccess() != null ? state.getIsSuccess() : Boolean.TRUE)
                 .attendedAt(state.getAttendedAt())
-                .requestPayload(state.getRequestPayload())
-                .requestPayloadJson(state.getRequestPayloadJson())
-                .responsePayload(state.getResponsePayload())
-                .responsePayloadJson(state.getResponsePayloadJson())
                 .build();
     }
 
@@ -59,7 +50,7 @@ public class OfferwallMapper {
                 .id(state.getId())
                 .offerwallType(state.getOfferwallType())
                 .rewardKey(state.getRewardKey())
-                .userKey(state.getUserKey())
+                .userId(state.getUserId())
                 .campaignKey(state.getCampaignKey())
                 .campaignType(state.getCampaignType())
                 .campaignName(state.getCampaignName())
@@ -71,10 +62,6 @@ public class OfferwallMapper {
                 .idfa(state.getIdfa())
                 .isSuccess(state.getIsSuccess())
                 .attendedAt(state.getAttendedAt())
-                .requestPayload(state.getRequestPayload())
-                .requestPayloadJson(state.getRequestPayloadJson())
-                .responsePayload(state.getResponsePayload())
-                .responsePayloadJson(state.getResponsePayloadJson())
                 .createdAt(state.getCreatedAt())
                 .build();
     }

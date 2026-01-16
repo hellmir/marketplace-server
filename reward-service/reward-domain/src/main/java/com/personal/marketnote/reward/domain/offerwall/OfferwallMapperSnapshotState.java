@@ -1,6 +1,5 @@
 package com.personal.marketnote.reward.domain.offerwall;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,7 +11,7 @@ public class OfferwallMapperSnapshotState {
     private final Long id;
     private final OfferwallType offerwallType;
     private final String rewardKey;
-    private final String userKey;
+    private final String userId;
     private final String campaignKey;
     private final Integer campaignType;
     private final String campaignName;
@@ -24,9 +23,5 @@ public class OfferwallMapperSnapshotState {
     private final String idfa;
     private final Boolean isSuccess;
     private final LocalDateTime attendedAt;
-    private final String requestPayload;
-    private final JsonNode requestPayloadJson;
-    private final String responsePayload;
-    private final JsonNode responsePayloadJson;
     private final LocalDateTime createdAt;
 }

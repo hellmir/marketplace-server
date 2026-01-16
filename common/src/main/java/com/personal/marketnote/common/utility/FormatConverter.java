@@ -3,14 +3,19 @@ package com.personal.marketnote.common.utility;
 import com.personal.marketnote.common.domain.exception.illegalargument.invalidvalue.InvalidIdException;
 import com.personal.marketnote.common.domain.exception.illegalargument.invalidvalue.ParsingBooleanException;
 import com.personal.marketnote.common.domain.exception.illegalargument.numberformat.*;
+import org.springframework.util.StringUtils;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import static org.apache.commons.lang3.BooleanUtils.FALSE;
 import static org.apache.commons.lang3.BooleanUtils.TRUE;
 
 public class FormatConverter {
+    private static final ZoneId DEFAULT_ZONE_ID = ZoneId.of("Asia/Seoul");
+
     public static Long parseId(String id) {
         try {
             return parseToLong(id);
@@ -116,5 +121,29 @@ public class FormatConverter {
 
     public static String parseToNumberTime(LocalDateTime time) {
         return time.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+    }
+
+    public static LocalDateTime parseToLocalDateTime(String time) {
+        if (!StringUtils.hasText(time)) {
+            return null;
+        }
+
+        try {
+            long epochSeconds = Long.parseLong(time);
+            return LocalDateTime.ofInstant(Instant.ofEpochSecond(epochSeconds), DEFAULT_ZONE_ID);
+        } catch (NumberFormatException nfe) {
+        }
+
+        try {
+            return LocalDateTime.parse(time, DateTimeFormatter.ISO_DATE_TIME);
+        } catch (Exception e) {
+        }
+
+        try {
+            return LocalDateTime.parse(time, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        } catch (Exception e) {
+        }
+
+        return null;
     }
 }

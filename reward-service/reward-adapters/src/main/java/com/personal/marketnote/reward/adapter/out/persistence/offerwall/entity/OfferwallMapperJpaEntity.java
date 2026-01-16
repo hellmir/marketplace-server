@@ -1,6 +1,5 @@
 package com.personal.marketnote.reward.adapter.out.persistence.offerwall.entity;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapper;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapperSnapshotState;
@@ -8,8 +7,6 @@ import com.personal.marketnote.reward.domain.offerwall.OfferwallType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
@@ -39,8 +36,8 @@ public class OfferwallMapperJpaEntity {
     @Column(name = "reward_key", nullable = false, length = 256)
     private String rewardKey;
 
-    @Column(name = "user_key", nullable = false, length = 128)
-    private String userKey;
+    @Column(name = "user_id", nullable = false, length = 128)
+    private String userId;
 
     @Column(name = "campaign_key", nullable = false, length = 50)
     private String campaignKey;
@@ -75,20 +72,6 @@ public class OfferwallMapperJpaEntity {
     @Column(name = "attended_at")
     private LocalDateTime attendedAt;
 
-    @Column(name = "request_payload", nullable = false, columnDefinition = "TEXT")
-    private String requestPayload;
-
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "request_payload_json", nullable = false, columnDefinition = "jsonb")
-    private JsonNode requestPayloadJson;
-
-    @Column(name = "response_payload", columnDefinition = "TEXT")
-    private String responsePayload;
-
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "response_payload_json", columnDefinition = "jsonb")
-    private JsonNode responsePayloadJson;
-
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -102,7 +85,7 @@ public class OfferwallMapperJpaEntity {
                 .id(offerwallMapper.getId())
                 .offerwallType(offerwallMapper.getOfferwallType())
                 .rewardKey(offerwallMapper.getRewardKey())
-                .userKey(offerwallMapper.getUserKey())
+                .userId(offerwallMapper.getUserId())
                 .campaignKey(offerwallMapper.getCampaignKey())
                 .campaignType(offerwallMapper.getCampaignType())
                 .campaignName(offerwallMapper.getCampaignName())
@@ -114,10 +97,6 @@ public class OfferwallMapperJpaEntity {
                 .idfa(offerwallMapper.getIdfa())
                 .isSuccess(offerwallMapper.getIsSuccess())
                 .attendedAt(offerwallMapper.getAttendedAt())
-                .requestPayload(offerwallMapper.getRequestPayload())
-                .requestPayloadJson(offerwallMapper.getRequestPayloadJson())
-                .responsePayload(offerwallMapper.getResponsePayload())
-                .responsePayloadJson(offerwallMapper.getResponsePayloadJson())
                 .createdAt(offerwallMapper.getCreatedAt())
                 .build();
     }
@@ -128,7 +107,7 @@ public class OfferwallMapperJpaEntity {
                         .id(id)
                         .offerwallType(offerwallType)
                         .rewardKey(rewardKey)
-                        .userKey(userKey)
+                        .userId(userId)
                         .campaignKey(campaignKey)
                         .campaignType(campaignType)
                         .campaignName(campaignName)
@@ -140,17 +119,8 @@ public class OfferwallMapperJpaEntity {
                         .idfa(idfa)
                         .isSuccess(isSuccess)
                         .attendedAt(attendedAt)
-                        .requestPayload(requestPayload)
-                        .requestPayloadJson(requestPayloadJson)
-                        .responsePayload(responsePayload)
-                        .responsePayloadJson(responsePayloadJson)
                         .createdAt(createdAt)
                         .build()
         );
-    }
-
-    public void updateResponse(String payload, JsonNode payloadJson) {
-        this.responsePayload = payload;
-        this.responsePayloadJson = payloadJson;
     }
 }

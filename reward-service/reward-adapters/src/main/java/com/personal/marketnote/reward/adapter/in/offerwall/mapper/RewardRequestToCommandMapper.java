@@ -1,6 +1,5 @@
 package com.personal.marketnote.reward.adapter.in.offerwall.mapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallType;
 import com.personal.marketnote.reward.port.in.command.offerwall.OfferwallCallbackCommand;
 
@@ -22,9 +21,7 @@ public class RewardRequestToCommandMapper {
             String adid,
             String idfa,
             LocalDateTime attendedAt,
-            Boolean isSuccess,
-            String requestPayload,
-            JsonNode requestPayloadJson
+            Boolean isSuccess
     ) {
         return OfferwallCallbackCommand.builder()
                 .offerwallType(offerwallType)
@@ -41,8 +38,6 @@ public class RewardRequestToCommandMapper {
                 .idfa(idfa)
                 .isSuccess(isSuccess)
                 .attendedAt(attendedAt)
-                .requestPayload(requestPayload)
-                .requestPayloadJson(requestPayloadJson)
                 .build();
     }
 }
