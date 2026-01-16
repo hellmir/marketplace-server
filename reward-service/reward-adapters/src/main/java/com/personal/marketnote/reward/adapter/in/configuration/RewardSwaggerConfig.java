@@ -31,6 +31,7 @@ public class RewardSwaggerConfig {
     private String serverOrigin;
 
     private static final List<String> TAGS_ORDER = List.of(
+            "리워드 API"
     );
 
     private static final Map<String, Integer> ORDER_MAP = new ConcurrentHashMap<>();
