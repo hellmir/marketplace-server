@@ -11,6 +11,7 @@ public class OfferwallMapperCreateState {
     private final OfferwallType offerwallType;
     private final String rewardKey;
     private final String userId;
+    private final UserDeviceType userDeviceType;
     private final String campaignKey;
     private final Integer campaignType;
     private final String campaignName;

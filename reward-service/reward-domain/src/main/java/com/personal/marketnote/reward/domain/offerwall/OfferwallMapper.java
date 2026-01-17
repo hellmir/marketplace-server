@@ -13,6 +13,7 @@ public class OfferwallMapper {
     private OfferwallType offerwallType;
     private String rewardKey;
     private String userId;
+    private UserDeviceType userDeviceType;
     private String campaignKey;
     private Integer campaignType;
     private String campaignName;
@@ -31,6 +32,7 @@ public class OfferwallMapper {
                 .offerwallType(state.getOfferwallType())
                 .rewardKey(state.getRewardKey())
                 .userId(state.getUserId())
+                .userDeviceType(state.getUserDeviceType())
                 .campaignKey(state.getCampaignKey())
                 .campaignType(state.getCampaignType())
                 .campaignName(state.getCampaignName())
@@ -51,6 +53,7 @@ public class OfferwallMapper {
                 .offerwallType(state.getOfferwallType())
                 .rewardKey(state.getRewardKey())
                 .userId(state.getUserId())
+                .userDeviceType(state.getUserDeviceType())
                 .campaignKey(state.getCampaignKey())
                 .campaignType(state.getCampaignType())
                 .campaignName(state.getCampaignName())
