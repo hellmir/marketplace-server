@@ -8,22 +8,27 @@ import com.personal.marketnote.common.utility.FormatConverter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.reward.configuration.AdpopcornHashKeyProperties;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapper;
+import com.personal.marketnote.reward.domain.point.UserPointChangeType;
+import com.personal.marketnote.reward.domain.point.UserPointHistorySourceType;
 import com.personal.marketnote.reward.exception.DuplicateOfferwallRewardException;
 import com.personal.marketnote.reward.exception.RewardTargetInfoNotFoundException;
 import com.personal.marketnote.reward.mapper.RewardCommandToStateMapper;
 import com.personal.marketnote.reward.port.in.command.offerwall.RegisterOfferwallRewardCommand;
+import com.personal.marketnote.reward.port.in.command.point.ModifyUserPointCommand;
 import com.personal.marketnote.reward.port.in.usecase.offerwall.GetPostOfferwallMapperUseCase;
 import com.personal.marketnote.reward.port.in.usecase.offerwall.RegisterOfferwallRewardUseCase;
 import com.personal.marketnote.reward.port.in.usecase.point.GetUserPointUseCase;
 import com.personal.marketnote.reward.port.out.offerwall.SaveOfferwallMapperPort;
+import com.personal.marketnote.reward.service.point.ModifyUserPointService;
 import lombok.RequiredArgsConstructor;
 
 @UseCase
 @RequiredArgsConstructor
 public class RegisterOfferwallRewardRewardService implements RegisterOfferwallRewardUseCase {
+    private final GetUserPointUseCase getUserPointUseCase;
+    private final ModifyUserPointService modifyUserPointService;
     private final SaveOfferwallMapperPort saveOfferwallMapperPort;
     private final GetPostOfferwallMapperUseCase getPostOfferwallMapperUseCase;
-    private final GetUserPointUseCase getUserPointUseCase;
     private final AdpopcornHashKeyProperties adpopcornHashKeyProperties;
 
     @Override
@@ -32,9 +37,23 @@ public class RegisterOfferwallRewardRewardService implements RegisterOfferwallRe
         validateUser(command);
         validateDuplicate(command);
 
-        return saveOfferwallMapperPort.save(
+        OfferwallMapper offerwallMapper = saveOfferwallMapperPort.save(
                 OfferwallMapper.from(RewardCommandToStateMapper.mapToOfferwallMapperCreateState(command))
         );
+
+        // 회원 리워드 포인트 적립
+        modifyUserPointService.modify(
+                ModifyUserPointCommand.builder()
+                        .userId(FormatConverter.parseId(command.userId()))
+                        .changeType(UserPointChangeType.ACCRUAL)
+                        .amount(command.quantity())
+                        .sourceType(UserPointHistorySourceType.OFFERWALL)
+                        .sourceId(offerwallMapper.getId())
+                        .reason(String.format("%s 리워드 보상 적립", command.offerwallType().getDescription()))
+                        .build()
+        );
+
+        return offerwallMapper;
     }
 
     private void validateSignature(RegisterOfferwallRewardCommand command) {
