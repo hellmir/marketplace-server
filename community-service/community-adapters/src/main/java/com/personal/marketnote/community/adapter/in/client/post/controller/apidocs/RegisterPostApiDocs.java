@@ -27,6 +27,8 @@ import java.lang.annotation.*;
                 
                 - 게시글을 등록합니다.
                 
+                - 상품 문의글인 경우, 해당 상품의 이미지 URL을 함께 전송해야 합니다.
+                
                 - 게시판 및 카테고리 목록
                 
                     - **"NOTICE": 공지**
@@ -88,10 +90,12 @@ import java.lang.annotation.*;
                 | category | string | 게시글 카테고리 | Y | "ANNOUNCEMENT" |
                 | targetType | string | 대상 유형 | N | "PRICE_POLICY" |
                 | targetId | number | 대상 ID | N | 1 |
+                | productImageUrl | string | 상품 이미지 URL | N | "https://example.com/image.jpg" |
                 | writerName | string | 작성자 이름 | Y | "홍길동" |
-                | title | string | 제목 | Y | "게시글 제목" |
+                | title | string | 제목 | N | "게시글 제목" |
                 | content | string | 내용 | Y | "게시글 내용" |
-                | isPrivate | boolean | 비밀글 여부 | Y | false |
+                | isPrivate | boolean | 비밀글 여부 | Y | default: false |
+                | isPhoto | boolean | 이미지 첨부 여부 | Y | default: false |
                 
                 ## Response
                 
@@ -121,10 +125,12 @@ import java.lang.annotation.*;
                                   "category": "ANNOUNCEMENT",
                                   "targetType": "PRICE_POLICY",
                                   "targetId": 1,
+                                  "productImageUrl": "https://example.com/image.jpg",
                                   "writerName": "홍길동",
                                   "title": "게시글 제목",
                                   "content": "게시글 내용",
-                                  "isPrivate": false
+                                  "isPrivate": false,
+                                  "isPhoto": false
                                 }
                                 """)
                 )

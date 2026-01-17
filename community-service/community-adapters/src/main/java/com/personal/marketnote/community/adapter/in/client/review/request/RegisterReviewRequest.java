@@ -90,7 +90,9 @@ public class RegisterReviewRequest {
     @Schema(
             name = "isPhoto",
             description = "포토 리뷰 여부",
+            defaultValue = "false",
             requiredMode = Schema.RequiredMode.REQUIRED
     )
+    @NotNull(message = "포토 리뷰 여부는 필수값입니다.")
     private Boolean isPhoto;
 }

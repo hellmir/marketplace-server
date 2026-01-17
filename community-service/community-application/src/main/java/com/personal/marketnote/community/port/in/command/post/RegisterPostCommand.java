@@ -13,10 +13,12 @@ public record RegisterPostCommand(
         String category,
         PostTargetType targetType,
         Long targetId,
+        String productImageUrl,
         String writerName,
         String title,
         String content,
-        Boolean isPrivate
+        boolean isPrivate,
+        boolean isPhoto
 ) {
     public boolean isReply() {
         return FormatValidator.hasValue(parentId);

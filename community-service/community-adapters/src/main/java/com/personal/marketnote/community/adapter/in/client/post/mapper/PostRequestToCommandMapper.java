@@ -14,10 +14,12 @@ public class PostRequestToCommandMapper {
                 .category(request.getCategory())
                 .targetType(request.getTargetType())
                 .targetId(request.getTargetId())
+                .productImageUrl(request.getProductImageUrl())
                 .writerName(request.getWriterName())
                 .title(request.getTitle())
                 .content(request.getContent())
                 .isPrivate(request.getIsPrivate())
+                .isPhoto(request.getIsPhoto())
                 .build();
     }
 

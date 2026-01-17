@@ -30,10 +30,12 @@ public class Post {
     private PostCategory category;
     private PostTargetType targetType;
     private Long targetId;
+    private String productImageUrl;
     private String writerName;
     private String title;
     private String content;
-    private Boolean isPrivate;
+    private boolean isPrivate;
+    private boolean isPhoto;
     private boolean isAnswered;
     private EntityStatus status;
     @Builder.Default
@@ -60,10 +62,12 @@ public class Post {
                 .category(PostCategoryResolver.resolve(state.getBoard(), state.getCategory()))
                 .targetType(state.getTargetType())
                 .targetId(state.getTargetId())
+                .productImageUrl(state.getProductImageUrl())
                 .writerName(NameMasker.mask(state.getWriterName()))
                 .title(state.getTitle())
                 .content(state.getContent())
-                .isPrivate(Boolean.TRUE.equals(state.getIsPrivate()))
+                .isPrivate(state.isPrivate())
+                .isPhoto(state.isPhoto())
                 .status(EntityStatus.ACTIVE)
                 .build();
     }
@@ -77,10 +81,12 @@ public class Post {
                 .category(PostCategoryResolver.resolve(state.getBoard(), state.getCategory()))
                 .targetType(state.getTargetType())
                 .targetId(state.getTargetId())
+                .productImageUrl(state.getProductImageUrl())
                 .writerName(state.getWriterName())
                 .title(state.getTitle())
                 .content(state.getContent())
-                .isPrivate(state.getIsPrivate())
+                .isPrivate(state.isPrivate())
+                .isPhoto(state.isPhoto())
                 .status(state.getStatus())
                 .createdAt(state.getCreatedAt())
                 .modifiedAt(state.getModifiedAt())

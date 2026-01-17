@@ -19,10 +19,12 @@ public class PostItemResult {
     private String category;
     private PostTargetType targetType;
     private Long targetId;
+    private String productImageUrl;
     private String writerName;
     private String title;
     private String content;
     private boolean isPrivate;
+    private boolean isPhoto;
     private boolean isMasked;
     private boolean isAnswered;
     private LocalDateTime createdAt;
@@ -44,10 +46,12 @@ public class PostItemResult {
                 .category(categoryCode)
                 .targetType(post.getTargetType())
                 .targetId(post.getTargetId())
+                .productImageUrl(post.getProductImageUrl())
                 .writerName(post.getWriterName())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .isPrivate(post.getIsPrivate())
+                .isPrivate(post.isPrivate())
+                .isPhoto(post.isPhoto())
                 .isAnswered(post.isAnswered())
                 .createdAt(post.getCreatedAt())
                 .modifiedAt(post.getModifiedAt())
@@ -69,10 +73,12 @@ public class PostItemResult {
                 .category(categoryCode)
                 .targetType(post.getTargetType())
                 .targetId(post.getTargetId())
+                .productImageUrl(post.getProductImageUrl())
                 .writerName(post.getWriterName())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .isPrivate(post.getIsPrivate())
+                .isPrivate(post.isPrivate())
+                .isPhoto(post.isPhoto())
                 .isAnswered(post.isAnswered())
                 .createdAt(post.getCreatedAt())
                 .modifiedAt(post.getModifiedAt())

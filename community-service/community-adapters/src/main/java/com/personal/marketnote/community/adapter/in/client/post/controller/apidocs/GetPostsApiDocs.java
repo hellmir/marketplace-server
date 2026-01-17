@@ -115,6 +115,7 @@ import java.lang.annotation.*;
                 | title | string | 제목 | "배송 문의" |
                 | content | string | 내용 | "배송 언제 오나요?" |
                 | isPrivate | boolean | 비밀글 여부 | true |
+                | isPhoto | boolean | 이미지 첨부 여부 | true |
                 | isMasked | boolean | 비밀글 숨김 처리 여부 | true |
                 | isAnswered | boolean | 답변 여부 | true |
                 | createdAt | string(datetime) | 생성 일시 | "2026-01-13T13:12:40.921092" |
@@ -244,6 +245,7 @@ import java.lang.annotation.*;
                                                   "title": null,
                                                   "content": null,
                                                   "isPrivate": true,
+                                                  "isPhoto": false,
                                                   "isMasked": true,
                                                   "isAnswered": true,
                                                   "createdAt": "2026-01-13T17:16:05.34468",
@@ -273,6 +275,7 @@ import java.lang.annotation.*;
                                                   "title": "게시글 제목abc",
                                                   "content": "게시글 내용abc",
                                                   "isPrivate": true,
+                                                  "isPhoto": false,
                                                   "isMasked": false,
                                                   "isAnswered": false,
                                                   "createdAt": "2026-01-13T16:45:26.694612",
@@ -302,6 +305,7 @@ import java.lang.annotation.*;
                                                   "title": "게시글 제목",
                                                   "content": "게시글 내용",
                                                   "isPrivate": false,
+                                                  "isPhoto": false,
                                                   "isMasked": false,
                                                   "isAnswered": true,
                                                   "createdAt": "2026-01-13T16:44:28.287364",
@@ -330,6 +334,7 @@ import java.lang.annotation.*;
                                                       "title": "답글 제목",
                                                       "content": "답글 내용",
                                                       "isPrivate": false,
+                                                      "isPhoto": false,
                                                       "isMasked": false,
                                                       "isAnswered": false,
                                                       "createdAt": "2026-01-14T11:44:40.772724",

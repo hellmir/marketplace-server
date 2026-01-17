@@ -40,6 +40,9 @@ public class PostJpaEntity extends BaseOrderedGeneralEntity {
     @Column(name = "category", nullable = false, length = 63)
     private String category;
 
+    @Column(name = "product_image_url", length = 2048)
+    private String productImageUrl;
+
     @Column(name = "writer_name", nullable = false, length = 15)
     private String writerName;
 
@@ -50,8 +53,10 @@ public class PostJpaEntity extends BaseOrderedGeneralEntity {
     private String content;
 
     @Column(name = "is_private", nullable = false)
-    @Builder.Default
-    private Boolean isPrivate = false;
+    private boolean isPrivate;
+
+    @Column(name = "is_photo", nullable = false)
+    private boolean isPhoto;
 
     public static PostJpaEntity from(Post post) {
         PostCategory category = post.getCategory();
@@ -63,10 +68,12 @@ public class PostJpaEntity extends BaseOrderedGeneralEntity {
                 .category(FormatValidator.hasValue(category) ? category.getCode() : null)
                 .targetType(post.getTargetType())
                 .targetId(post.getTargetId())
+                .productImageUrl(post.getProductImageUrl())
                 .writerName(post.getWriterName())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .isPrivate(Boolean.TRUE.equals(post.getIsPrivate()))
+                .isPrivate(post.isPrivate())
+                .isPhoto(post.isPhoto())
                 .build();
     }
 

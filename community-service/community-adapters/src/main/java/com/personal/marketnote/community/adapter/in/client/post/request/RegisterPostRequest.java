@@ -53,6 +53,13 @@ public class RegisterPostRequest {
     private Long targetId;
 
     @Schema(
+            name = "productImageUrl",
+            description = "상품 이미지 URL",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED
+    )
+    private String productImageUrl;
+
+    @Schema(
             name = "writerName",
             description = "작성자 이름",
             requiredMode = Schema.RequiredMode.REQUIRED
@@ -82,9 +89,18 @@ public class RegisterPostRequest {
             name = "isPrivate",
             description = "비밀글 여부",
             defaultValue = "false",
-            requiredMode = Schema.RequiredMode.NOT_REQUIRED
+            requiredMode = Schema.RequiredMode.REQUIRED
     )
     private Boolean isPrivate = false;
+
+    @Schema(
+            name = "isPhoto",
+            description = "이미지 첨부 여부",
+            defaultValue = "false",
+            requiredMode = Schema.RequiredMode.REQUIRED
+    )
+    @NotNull(message = "포토 리뷰 여부는 필수값입니다.")
+    private Boolean isPhoto;
 
     public void validate(boolean isAdmin, boolean isSeller) {
         if (isAdminRequired() && !isAdmin) {
