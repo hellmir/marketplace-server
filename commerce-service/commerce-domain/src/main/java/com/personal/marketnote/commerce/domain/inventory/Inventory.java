@@ -12,11 +12,13 @@ import static org.hibernate.type.descriptor.java.IntegerJavaType.ZERO;
 public class Inventory {
     private Long pricePolicyId;
     private Stock stock;
+    private Long version;
 
     public static Inventory of(Long pricePolicyId) {
         return Inventory.builder()
                 .pricePolicyId(pricePolicyId)
                 .stock(Stock.of(ZERO.toString()))
+                .version(null)
                 .build();
     }
 
@@ -24,6 +26,15 @@ public class Inventory {
         return Inventory.builder()
                 .pricePolicyId(pricePolicyId)
                 .stock(Stock.of(stock.toString()))
+                .version(null)
+                .build();
+    }
+
+    public static Inventory of(Long pricePolicyId, Integer stock, Long version) {
+        return Inventory.builder()
+                .pricePolicyId(pricePolicyId)
+                .stock(Stock.of(stock.toString()))
+                .version(version)
                 .build();
     }
 

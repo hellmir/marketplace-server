@@ -2,10 +2,7 @@ package com.personal.marketnote.commerce.adapter.out.persistence.inventory.entit
 
 import com.personal.marketnote.commerce.domain.inventory.Inventory;
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,15 +23,26 @@ public class InventoryJpaEntity extends BaseEntity {
     @Column(name = "stock", nullable = false, columnDefinition = "INT DEFAULT 0")
     private Integer stock;
 
-    private InventoryJpaEntity(Long pricePolicyId) {
+    // RDBMS 낙관적 락 기반의 동시성 제어
+    @Version
+    private Long version;
+
+    private InventoryJpaEntity(Long pricePolicyId, Integer stock, Long version) {
         this.pricePolicyId = pricePolicyId;
+        this.stock = stock;
+        this.version = version;
     }
 
     public static InventoryJpaEntity from(Inventory inventory) {
-        return new InventoryJpaEntity(inventory.getPricePolicyId());
+        return new InventoryJpaEntity(
+                inventory.getPricePolicyId(),
+                inventory.getStockValue(),
+                inventory.getVersion()
+        );
     }
 
     public void updateFrom(Inventory inventory) {
-        stock = inventory.getStockValue();
+        this.stock = inventory.getStockValue();
+        this.version = inventory.getVersion();
     }
 }

@@ -13,6 +13,7 @@ import com.personal.marketnote.commerce.port.out.inventory.SaveInventoryDeductio
 import com.personal.marketnote.commerce.port.out.inventory.SaveInventoryPort;
 import com.personal.marketnote.commerce.port.out.inventory.UpdateInventoryPort;
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
+import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
@@ -52,17 +53,22 @@ public class InventoryPersistenceAdapter implements SaveInventoryPort, FindInven
 
     @Override
     public void update(Set<Inventory> inventories) throws InventoryNotFoundException {
-        Set<InventoryJpaEntity> inventoryEntities = inventoryJpaRepository.findByPricePolicyIds(
-                inventories.stream()
-                        .map(Inventory::getPricePolicyId)
-                        .collect(Collectors.toSet())
-        );
+        Set<Long> pricePolicyIds = inventories.stream()
+                .map(Inventory::getPricePolicyId)
+                .collect(Collectors.toSet());
+
+        Set<InventoryJpaEntity> inventoryEntities = inventoryJpaRepository.findByPricePolicyIds(pricePolicyIds);
 
         for (Inventory inventory : inventories) {
             InventoryJpaEntity inventoryEntity = inventoryEntities.stream()
                     .filter(entity -> entity.getPricePolicyId().equals(inventory.getPricePolicyId()))
                     .findFirst()
                     .orElseThrow(() -> new InventoryNotFoundException(inventory.getPricePolicyId()));
+
+            if (!inventoryEntity.getVersion().equals(inventory.getVersion())) {
+                throw new OptimisticLockException("재고 버전 불일치: pricePolicyId=" + inventory.getPricePolicyId());
+            }
+
             inventoryEntity.updateFrom(inventory);
         }
     }
