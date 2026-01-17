@@ -1,8 +1,10 @@
 package com.personal.marketnote.community.port.in.result.review;
 
+import com.personal.marketnote.common.application.file.port.in.result.GetFileResult;
 import com.personal.marketnote.community.domain.review.Review;
 
 import java.util.List;
+import java.util.Map;
 
 public record GetReviewsResult(
         Long totalElements,
@@ -14,14 +16,15 @@ public record GetReviewsResult(
             boolean hasNext,
             Long nextCursor,
             Long totalElements,
-            List<Review> reviews
+            List<Review> reviews,
+            Map<Long, List<GetFileResult>> reviewImages
     ) {
         return new GetReviewsResult(
                 totalElements,
                 nextCursor,
                 hasNext,
                 reviews.stream()
-                        .map(ReviewItemResult::from)
+                        .map(review -> ReviewItemResult.from(review, reviewImages.get(review.getId())))
                         .toList()
         );
     }

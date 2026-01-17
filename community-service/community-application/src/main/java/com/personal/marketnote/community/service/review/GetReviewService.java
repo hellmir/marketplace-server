@@ -1,6 +1,7 @@
 package com.personal.marketnote.community.service.review;
 
 import com.personal.marketnote.common.application.UseCase;
+import com.personal.marketnote.common.application.file.port.in.result.GetFileResult;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.domain.review.ProductReviewAggregate;
 import com.personal.marketnote.community.domain.review.Review;
@@ -13,6 +14,7 @@ import com.personal.marketnote.community.exception.ReviewNotFoundException;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
 import com.personal.marketnote.community.port.in.usecase.review.GetReviewUseCase;
+import com.personal.marketnote.community.port.out.file.FindReviewImagesPort;
 import com.personal.marketnote.community.port.out.review.FindReviewPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +23,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
+import static com.personal.marketnote.common.domain.file.FileSort.REVIEW_IMAGE;
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 
@@ -30,6 +36,7 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRES_NE
 @Transactional(isolation = READ_COMMITTED, readOnly = true)
 public class GetReviewService implements GetReviewUseCase {
     private final FindReviewPort findReviewPort;
+    private final FindReviewImagesPort findReviewImagesPort;
 
     @Override
     public Review getReview(Long id) {
@@ -82,12 +89,14 @@ public class GetReviewService implements GetReviewUseCase {
             totalElements = findReviewPort.countActive(productId, isPhoto);
         }
 
+        Map<Long, List<GetFileResult>> reviewImages = findReviewImages(pagedReviews);
+
         if (!isPhoto && FormatValidator.hasValue(userId)) {
             // 로그인 사용자가 각 리뷰에 좋아요를 눌렀는지 여부 업데이트
             pagedReviews.forEach(review -> review.updateIsUserLiked(userId));
         }
 
-        return GetReviewsResult.from(hasNext, nextCursor, totalElements, pagedReviews);
+        return GetReviewsResult.from(hasNext, nextCursor, totalElements, pagedReviews, reviewImages);
     }
 
     @Override
@@ -131,7 +140,9 @@ public class GetReviewService implements GetReviewUseCase {
             totalElements = findReviewPort.countActive(userId);
         }
 
-        return GetReviewsResult.from(hasNext, nextCursor, totalElements, pagedReviews);
+        Map<Long, List<GetFileResult>> reviewImages = findReviewImages(pagedReviews);
+
+        return GetReviewsResult.from(hasNext, nextCursor, totalElements, pagedReviews, reviewImages);
     }
 
     @Override
@@ -144,5 +155,27 @@ public class GetReviewService implements GetReviewUseCase {
         if (!findReviewPort.existsByIdAndReviewerId(id, reviewerId)) {
             throw new NotReviewAuthorException(id, reviewerId);
         }
+    }
+
+    private Map<Long, List<GetFileResult>> findReviewImages(List<Review> reviews) {
+        if (!FormatValidator.hasValue(reviews)) {
+            return Map.of();
+        }
+
+        Map<Long, List<GetFileResult>> reviewImages = new ConcurrentHashMap<>();
+
+        List<CompletableFuture<Void>> futures = reviews.stream()
+                .filter(review -> Boolean.TRUE.equals(review.getIsPhoto()))
+                .map(review -> CompletableFuture.runAsync(
+                        () -> findReviewImagesPort.findImagesByReviewIdAndSort(review.getId(), REVIEW_IMAGE)
+                                .ifPresent(result -> reviewImages.put(review.getId(), result.images()))
+                ))
+                .toList();
+
+        if (FormatValidator.hasValue(futures)) {
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        }
+
+        return reviewImages;
     }
 }
