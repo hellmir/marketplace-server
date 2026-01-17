@@ -3,10 +3,11 @@ package com.personal.marketnote.reward.adapter.in.offerwall;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.personal.marketnote.common.domain.exception.token.AuthenticationFailedException;
 import com.personal.marketnote.common.domain.exception.token.VendorVerificationFailedException;
+import com.personal.marketnote.common.exception.UserNotFoundException;
 import com.personal.marketnote.common.utility.FormatConverter;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.reward.adapter.in.offerwall.apidocs.AdpopcornCallbackApiDocs;
 import com.personal.marketnote.reward.adapter.in.offerwall.mapper.RewardRequestToCommandMapper;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapper;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallType;
@@ -15,7 +16,7 @@ import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorCom
 import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorCommunicationType;
 import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorName;
 import com.personal.marketnote.reward.exception.DuplicateOfferwallRewardException;
-import com.personal.marketnote.reward.port.in.command.offerwall.OfferwallCallbackCommand;
+import com.personal.marketnote.reward.port.in.command.offerwall.RegisterOfferwallRewardCommand;
 import com.personal.marketnote.reward.port.in.command.vendorcommunication.RewardVendorCommunicationHistoryCommand;
 import com.personal.marketnote.reward.port.in.usecase.offerwall.RegisterOfferwallRewardUseCase;
 import com.personal.marketnote.reward.port.in.usecase.vendorcommunication.RewardRecordVendorCommunicationHistoryUseCase;
@@ -60,6 +61,7 @@ public class OfferwallController {
      * @Date 2026-01-16
      */
     @PostMapping(value = "/adpopcorn/callback")
+    @AdpopcornCallbackApiDocs
     public ResponseEntity<String> handleAdpopcornCallback(
             @RequestParam("reward_key") String rewardKey,
             @RequestParam("usn") String userId,
@@ -93,7 +95,7 @@ public class OfferwallController {
         );
         String payloadString = payloadJson.toString();
 
-        OfferwallCallbackCommand command = RewardRequestToCommandMapper.mapToOfferwallCallbackCommand(
+        RegisterOfferwallRewardCommand command = RewardRequestToCommandMapper.mapToOfferwallCallbackCommand(
                 OfferwallType.ADPOPCORN,
                 rewardKey,
                 userId,
@@ -128,10 +130,10 @@ public class OfferwallController {
             return ResponseEntity.ok(successPayload);
         } catch (VendorVerificationFailedException e) {
             return handleFailure(targetType, vendorName, payloadString, payloadJson, e, 1100, "invalid signed value");
+        } catch (UserNotFoundException e) {
+            return handleFailure(targetType, vendorName, payloadString, payloadJson, e, 3200, "invalid user");
         } catch (DuplicateOfferwallRewardException e) {
             return handleFailure(targetType, vendorName, payloadString, payloadJson, e, 3100, "duplicate transaction");
-        } catch (AuthenticationFailedException e) {
-            return handleFailure(targetType, vendorName, payloadString, payloadJson, e, 3200, "invalid user ");
         } catch (Exception e) {
             return handleFailure(targetType, vendorName, payloadString, payloadJson, e, 4000, "custom error message");
         }
