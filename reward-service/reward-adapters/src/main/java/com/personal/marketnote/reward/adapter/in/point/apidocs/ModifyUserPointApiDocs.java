@@ -62,7 +62,7 @@ import java.lang.annotation.*;
                 | timestamp | string(datetime) | 응답 시간 | "2026-01-17T12:00:00.000" |
                 | content | object | 수정 후 포인트 정보 | { ... } |
                 | message | string | 처리 결과 | "회원 포인트 수정 성공" |
-
+                
                 ---
                 
                 ### Response > content

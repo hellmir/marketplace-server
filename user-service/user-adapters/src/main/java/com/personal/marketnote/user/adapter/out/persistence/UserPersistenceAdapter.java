@@ -90,6 +90,11 @@ public class UserPersistenceAdapter
     }
 
     @Override
+    public Optional<User> findByReferenceCode(String referredUserCode) {
+        return UserJpaEntityToDomainMapper.mapToDomain(userJpaRepository.findByReferenceCode(referredUserCode).orElse(null));
+    }
+
+    @Override
     public Optional<User> findAllStatusUserById(Long id) {
         return UserJpaEntityToDomainMapper.mapToDomain(userJpaRepository.findAllStatusUserById(id).orElse(null));
     }

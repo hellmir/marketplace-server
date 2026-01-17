@@ -61,7 +61,7 @@ public class SignUpService implements SignUpUseCase {
 
         User signedUpUser = saveUserPort.save(
                 User.from(
-                        UserCommandToStateMapper.mapToDomain(
+                        UserCommandToStateMapper.mapToState(
                                 signUpCommand,
                                 authVendor,
                                 oidcId,

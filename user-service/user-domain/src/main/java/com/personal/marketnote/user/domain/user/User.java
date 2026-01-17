@@ -179,6 +179,10 @@ public class User extends BaseDomain {
         this.referredUserCode = referredUserCode;
     }
 
+    public void removeReferredUserCode() {
+        referredUserCode = null;
+    }
+
     public void registerEmail(String email) {
         this.email = email;
     }

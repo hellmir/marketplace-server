@@ -37,6 +37,11 @@ public class GetUserService implements GetUserUseCase {
     }
 
     @Override
+    public boolean existsUser(String referredUserCode) {
+        return findUserPort.existsByReferenceCode(referredUserCode);
+    }
+
+    @Override
     public User getUser(Long id) {
         return findUserPort.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(String.format(USER_ID_NOT_FOUND_EXCEPTION_MESSAGE, id)));
@@ -46,6 +51,12 @@ public class GetUserService implements GetUserUseCase {
     public User getUser(AuthVendor authVendor, String oidcId) {
         return findUserPort.findByAuthVendorAndOidcId(authVendor, oidcId)
                 .orElseThrow(() -> new UserNotFoundException(String.format(USER_OIDC_ID_NOT_FOUND_EXCEPTION_MESSAGE, oidcId)));
+    }
+
+    @Override
+    public User getUser(String referredUserCode) {
+        return findUserPort.findByReferenceCode(referredUserCode)
+                .orElseThrow(() -> new UserNotFoundException(String.format(USER_REFERENCE_CODE_NOT_FOUND_EXCEPTION_MESSAGE, referredUserCode)));
     }
 
     @Override

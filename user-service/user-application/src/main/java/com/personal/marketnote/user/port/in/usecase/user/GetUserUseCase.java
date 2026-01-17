@@ -13,6 +13,15 @@ import java.util.List;
 
 public interface GetUserUseCase {
     /**
+     * @param referredUserCode 추천인 코드
+     * @return 추천 코드 존재 여부 {@link boolean}
+     * @Date 2025-12-28
+     * @Author 성효빈
+     * @Description 회원 존재 여부를 조회합니다.
+     */
+    boolean existsUser(String referredUserCode);
+
+    /**
      * @param id 회원 ID
      * @return 회원 도메인 {@link User}
      * @Date 2025-12-28
@@ -30,6 +39,15 @@ public interface GetUserUseCase {
      * @Description 활성화된 회원을 조회합니다.
      */
     User getUser(AuthVendor authVendor, String oidcId);
+
+    /**
+     * @param referredUserCode 추천인 코드
+     * @return 회원 도메인 {@link User}
+     * @Date 2026-01-17
+     * @Author 성효빈
+     * @Description 추천 코드를 통해 회원을 조회합니다.
+     */
+    User getUser(String referredUserCode);
 
     /**
      * @param id 회원 ID
