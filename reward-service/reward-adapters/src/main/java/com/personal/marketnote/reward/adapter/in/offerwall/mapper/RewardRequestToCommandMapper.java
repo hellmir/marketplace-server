@@ -26,7 +26,7 @@ public class RewardRequestToCommandMapper {
         return OfferwallCallbackCommand.builder()
                 .offerwallType(offerwallType)
                 .rewardKey(rewardKey)
-                .userKey(userKey)
+                .userId(userKey)
                 .campaignKey(campaignKey)
                 .campaignType(campaignType)
                 .campaignName(campaignName)

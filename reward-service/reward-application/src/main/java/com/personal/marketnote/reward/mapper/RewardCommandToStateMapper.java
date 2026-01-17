@@ -9,7 +9,7 @@ public class RewardCommandToStateMapper {
         return OfferwallMapperCreateState.builder()
                 .offerwallType(command.getOfferwallType())
                 .rewardKey(command.getRewardKey())
-                .userId(command.getUserKey())
+                .userId(command.getUserId())
                 .campaignKey(command.getCampaignKey())
                 .campaignType(command.getCampaignType())
                 .campaignName(command.getCampaignName())

@@ -50,6 +50,8 @@ def buildMarketNoteTaskDefinition(env) {
                 [name: "COMMUNITY_SERVICE_SERVER_ORIGIN",value: env.COMMUNITY_SERVICE_SERVER_ORIGIN],
                 [name: "REWARD_SERVICE_SERVER_ORIGIN",   value: env.REWARD_SERVICE_SERVER_ORIGIN],
                 [name: "JWT_ADMIN_ACCESS_TOKEN",         value: env.JWT_ADMIN_ACCESS_TOKEN],
+                [name: "ADPOPCORN_ANDROID_HASH_KEY",     value: env.ADPOPCORN_ANDROID_HASH_KEY],
+                [name: "ADPOPCORN_IOS_HASH_KEY",         value: env.ADPOPCORN_IOS_HASH_KEY],
             ],
             logConfiguration: [
                 logDriver: "awslogs",
@@ -592,6 +594,8 @@ pipeline {
 						string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_SERVER_ORIGIN', variable: 'COMMUNITY_SERVICE_SERVER_ORIGIN'),
 						string(credentialsId: 'MARKETNOTE_QA_REWARD_SERVICE_SERVER_ORIGIN',    variable: 'REWARD_SERVICE_SERVER_ORIGIN'),
 						string(credentialsId: 'MARKETNOTE_QA_JWT_ADMIN_ACCESS_TOKEN',          variable: 'JWT_ADMIN_ACCESS_TOKEN'),
+						string(credentialsId: 'MARKETNOTE_QA_ADPOPCORN_ANDROID_HASH_KEY',      variable: 'ADPOPCORN_ANDROID_HASH_KEY'),
+						string(credentialsId: 'MARKETNOTE_QA_ADPOPCORN_IOS_HASH_KEY',          variable: 'ADPOPCORN_IOS_HASH_KEY'),
 					]) {
 						sh '''
                   LG="$CLOUDWATCH_LOG_GROUP"
