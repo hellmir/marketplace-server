@@ -18,6 +18,7 @@ import com.personal.marketnote.product.port.in.usecase.pricepolicy.RegisterPrice
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,11 +33,22 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER
 @RequestMapping("/api/v1/products/{productId}/price-policies")
 @Tag(name = "상품 가격 정책 API", description = "상품 가격 정책 관련 API")
 @RequiredArgsConstructor
+@Slf4j
 public class PricePolicyController {
     private final RegisterPricePolicyUseCase registerPricePolicyUseCase;
-    private final DeletePricePolicyUseCase deletePricePolicyUseCase;
     private final GetPricePoliciesUseCase getPricePoliciesUseCase;
+    private final DeletePricePolicyUseCase deletePricePolicyUseCase;
 
+    /**
+     * (판매자/관리자) 상품 가격 정책 등록
+     *
+     * @param productId 상품 ID
+     * @param request   상품 가격 정책 등록 요청
+     * @return 상품 가격 정책 등록 응답 {@link RegisterPricePolicyResponse}
+     * @Author 성효빈
+     * @Date 2026-01-18
+     * @Description 상품 가격 정책을 등록합니다.
+     */
     @PostMapping
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
     @RegisterPricePolicyApiDocs
@@ -68,7 +80,15 @@ public class PricePolicyController {
         );
     }
 
-
+    /**
+     * (비회원) 상품 가격 정책 목록 조회
+     *
+     * @param productId 상품 ID
+     * @return 상품 가격 정책 목록 조회 응답 {@link GetPricePoliciesResponse}
+     * @Author 성효빈
+     * @Date 2026-01-18
+     * @Description 상품 가격 정책 목록을 조회합니다.
+     */
     @GetMapping
     @GetPricePoliciesApiDocs
     public ResponseEntity<BaseResponse<GetPricePoliciesResponse>> getPricePolicies(
@@ -85,6 +105,16 @@ public class PricePolicyController {
         );
     }
 
+    /**
+     * 상품 가격 정책 삭제
+     *
+     * @param productId     상품 ID
+     * @param pricePolicyId 가격 정책 ID
+     * @return 상품 가격 정책 삭제 응답 {@link Void}
+     * @Author 성효빈
+     * @Date 2026-01-18
+     * @Description 상품 가격 정책을 삭제합니다.
+     */
     @DeleteMapping("/{pricePolicyId}")
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
     @DeletePricePolicyApiDocs

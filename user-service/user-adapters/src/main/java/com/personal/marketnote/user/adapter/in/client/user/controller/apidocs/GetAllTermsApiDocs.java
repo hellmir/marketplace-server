@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "전체 약관 목록 조회",
+        summary = "(비회원) 전체 약관 목록 조회",
         description = """
                 작성일자: 2025-12-27
                 
