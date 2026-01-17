@@ -30,7 +30,11 @@ import java.lang.annotation.*;
                 
                 - 회원 포인트를 적립하거나 차감합니다.
                 
-                - 300 포인트를 차감하는 경우, changeType: "DEDUCTION", 금액: 300으로 전송합니다.
+                - 포인트 차감 시에도 양수를 전송합니다.
+                
+                    - 예) 300 포인트를 적립하는 경우 -> changeType: "ACCRUAL", amount: 300 전송
+                
+                    - 예) 300 포인트를 차감하는 경우 -> changeType: "DEDUCTION", amount: 300 전송
                 
                 - 포인트는 0 미만이 될 수 없습니다.
                 
@@ -58,6 +62,19 @@ import java.lang.annotation.*;
                 | timestamp | string(datetime) | 응답 시간 | "2026-01-17T12:00:00.000" |
                 | content | object | 수정 후 포인트 정보 | { ... } |
                 | message | string | 처리 결과 | "회원 포인트 수정 성공" |
+
+                ---
+                
+                ### Response > content
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | userId | number | 회원 ID | 100 |
+                | amount | number | 수정 후 포인트 | 1500 |
+                | addExpectedAmount | number | 추가 예상 포인트 | 0 |
+                | expireExpectedAmount | number | 만료 예상 포인트 | 0 |
+                | createdAt | string(datetime) | 생성 일시 | "2026-01-17T11:00:00" |
+                | modifiedAt | string(datetime) | 수정 일시 | "2026-01-17T11:00:00" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         parameters = {
@@ -100,7 +117,8 @@ import java.lang.annotation.*;
                                             "amount": 1500,
                                             "addExpectedAmount": 0,
                                             "expireExpectedAmount": 0,
-                                            "createdAt": "2026-01-17T11:00:00"
+                                            "createdAt": "2026-01-17T11:00:00",
+                                            "modifiedAt": "2026-01-17T11:00:00"
                                           },
                                           "message": "회원 포인트 수정 성공"
                                         }

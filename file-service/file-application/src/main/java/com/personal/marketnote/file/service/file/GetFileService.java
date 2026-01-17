@@ -36,9 +36,9 @@ public class GetFileService implements GetFileUseCase {
     @Override
     public GetFilesResult getFiles(String ownerType, Long ownerId, String sort) {
         OwnerType type = OwnerType.from(ownerType);
-        List<FileDomain> files = (!FormatValidator.hasValue(sort))
-                ? findFilePort.findByOwner(type, ownerId)
-                : findFilePort.findByOwnerAndSort(type, ownerId, FileSort.from(sort));
+        List<FileDomain> files = FormatValidator.hasValue(sort)
+                ? findFilePort.findByOwnerAndSort(type, ownerId, FileSort.from(sort))
+                : findFilePort.findByOwner(type, ownerId);
 
         List<Long> fileIds = files.stream().map(FileDomain::getId).toList();
         List<ResizedFile> resized = findResizedFilesPort.findByFileIds(fileIds);
