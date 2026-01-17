@@ -35,6 +35,7 @@ spring:
 
   jwt:
     secret: ${JWT_SECRET_KEY:dev-secret-change-me}
+    admin-access-token: ${JWT_ADMIN_ACCESS_TOKEN:abc}
     access-token:
       ttl: ${ACCESS_TOKEN_EXPIRATION_TIME:18000001800000}
     refresh-token:
@@ -74,6 +75,12 @@ logging:
   config: classpath:logback-spring.xml
   level:
     org.springframework.security: ERROR
+
+reward-service:
+  base-url: ${REWARD_SERVICE_SERVER_ORIGIN:http://localhost:8084}
+  referral-point:
+    referee-amount: ${REWARD_REFEREE_POINT_AMOUNT:0}
+    referrer-amount: ${REWARD_REFERRER_POINT_AMOUNT:0}
 
 oauth2:
   google:

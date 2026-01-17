@@ -11,6 +11,7 @@ import com.personal.marketnote.reward.port.in.result.point.UpdateUserPointResult
 import com.personal.marketnote.reward.port.in.usecase.point.ModifyUserPointUseCase;
 import com.personal.marketnote.reward.port.in.usecase.point.RegisterUserPointUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,7 +66,7 @@ public class PointController {
     @ModifyUserPointApiDocs
     public ResponseEntity<BaseResponse<UpdateUserPointResponse>> modifyUserPoint(
             @PathVariable("userId") Long userId,
-            @RequestBody @jakarta.validation.Valid ModifyUserPointRequest request
+            @RequestBody @Valid ModifyUserPointRequest request
     ) {
         UpdateUserPointResult result = modifyUserPointUseCase.modify(
                 PointRequestToCommandMapper.mapToModifyUserPointCommand(userId, request)

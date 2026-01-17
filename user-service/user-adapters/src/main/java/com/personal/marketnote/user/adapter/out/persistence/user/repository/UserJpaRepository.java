@@ -74,6 +74,15 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
     @Query("""
             SELECT u
             FROM UserJpaEntity u
+            WHERE u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
+                AND u.referenceCode = :referredUserCode
+            ORDER BY u.orderNum ASC
+            """)
+    Optional<UserJpaEntity> findByReferenceCode(String referredUserCode);
+
+    @Query("""
+            SELECT u
+            FROM UserJpaEntity u
             WHERE 1 = 1
                 AND u.status = com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus.ACTIVE
               AND EXISTS (

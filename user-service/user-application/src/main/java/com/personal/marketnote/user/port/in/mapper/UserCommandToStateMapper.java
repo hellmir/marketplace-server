@@ -12,7 +12,7 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UserCommandToStateMapper {
-    public static UserCreateState mapToDomain(
+    public static UserCreateState mapToState(
             SignUpCommand command,
             AuthVendor authVendor,
             String oidcId,
