@@ -18,7 +18,7 @@
 ## 📚 관련 URL
 - [회원 서비스](https://users.marketnote.store/swagger-ui/index.html)
 - [상품 서비스](https://products.marketnote.store/swagger-ui/index.html)
-- [커머스 서비스](https://commerce.marketnote.store/swagger-ui/index.html)
+- [커머스 서비스](https://[reward-service-1.0.0.jar](reward-service/reward-adapters/build/libs/reward-service-1.0.0.jar)commerce.marketnote.store/swagger-ui/index.html)
 - [커뮤니티 서비스](https://community.marketnote.store/swagger-ui/index.html)
 - [파일 서비스](https://files.marketnote.store/swagger-ui/index.html)
   <br><br>

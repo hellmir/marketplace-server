@@ -33,7 +33,7 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/v1/offerwalls")
-@Tag(name = "리워드 API", description = "리워드 관련 API")
+@Tag(name = "오퍼월 API", description = "오퍼월 관련 API")
 @RequiredArgsConstructor
 @Slf4j
 public class OfferwallController {
