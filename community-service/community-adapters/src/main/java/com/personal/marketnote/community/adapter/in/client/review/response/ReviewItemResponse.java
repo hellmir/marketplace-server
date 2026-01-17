@@ -1,10 +1,12 @@
 package com.personal.marketnote.community.adapter.in.client.review.response;
 
+import com.personal.marketnote.common.application.file.port.in.result.GetFileResult;
 import com.personal.marketnote.community.port.in.result.review.ReviewItemResult;
 import lombok.AccessLevel;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record ReviewItemResponse(
@@ -19,6 +21,7 @@ public record ReviewItemResponse(
         Float rating,
         String content,
         Boolean isPhoto,
+        List<GetFileResult> images,
         Boolean isEdited,
         Integer likeCount,
         boolean isUserLiked,
@@ -40,6 +43,7 @@ public record ReviewItemResponse(
                 .rating(result.rating())
                 .content(result.content())
                 .isPhoto(result.isPhoto())
+                .images(result.images())
                 .isEdited(result.isEdited())
                 .likeCount(result.likeCount())
                 .isUserLiked(result.isUserLiked())
