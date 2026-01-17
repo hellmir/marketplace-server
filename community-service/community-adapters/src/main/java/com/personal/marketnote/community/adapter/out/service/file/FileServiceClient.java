@@ -6,7 +6,9 @@ import com.personal.marketnote.common.adapter.out.ServiceAdapter;
 import com.personal.marketnote.common.application.file.port.in.result.GetFileResult;
 import com.personal.marketnote.common.application.file.port.in.result.GetFilesResult;
 import com.personal.marketnote.common.domain.file.FileSort;
+import com.personal.marketnote.common.domain.file.OwnerType;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.community.port.out.file.FindPostImagesPort;
 import com.personal.marketnote.community.port.out.file.FindReviewImagesPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,13 +25,14 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import static com.personal.marketnote.common.domain.file.OwnerType.POST;
 import static com.personal.marketnote.common.domain.file.OwnerType.REVIEW;
 import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_MAX_REQUEST_COUNT;
 
 @ServiceAdapter
 @RequiredArgsConstructor
 @Slf4j
-public class FileServiceClient implements FindReviewImagesPort {
+public class FileServiceClient implements FindReviewImagesPort, FindPostImagesPort {
     @Value("${file-service.base-url:http://localhost:9000}")
     private String fileServiceBaseUrl;
 
@@ -40,11 +43,20 @@ public class FileServiceClient implements FindReviewImagesPort {
 
     @Override
     public Optional<GetFilesResult> findImagesByReviewIdAndSort(Long reviewId, FileSort sort) {
+        return findImagesByOwnerAndSort(REVIEW, reviewId, sort);
+    }
+
+    @Override
+    public Optional<GetFilesResult> findImagesByPostIdAndSort(Long postId, FileSort sort) {
+        return findImagesByOwnerAndSort(POST, postId, sort);
+    }
+
+    private Optional<GetFilesResult> findImagesByOwnerAndSort(OwnerType ownerType, Long ownerId, FileSort sort) {
         URI uri = UriComponentsBuilder
                 .fromUriString(fileServiceBaseUrl)
                 .path("/api/v1/files")
-                .queryParam("ownerType", REVIEW)
-                .queryParam("ownerId", reviewId)
+                .queryParam("ownerType", ownerType)
+                .queryParam("ownerId", ownerId)
                 .queryParam("sort", sort)
                 .build()
                 .toUri();
@@ -53,10 +65,12 @@ public class FileServiceClient implements FindReviewImagesPort {
         headers.setBearerAuth(adminAccessToken);
         HttpEntity<Void> httpEntity = new HttpEntity<>(headers);
 
-        return sendRequest(uri, httpEntity, reviewId, sort);
+        return sendRequest(uri, httpEntity, ownerId, sort, ownerType);
     }
 
-    private Optional<GetFilesResult> sendRequest(URI uri, HttpEntity<Void> httpEntity, Long reviewId, FileSort sort) {
+    private Optional<GetFilesResult> sendRequest(
+            URI uri, HttpEntity<Void> httpEntity, Long ownerId, FileSort sort, OwnerType ownerType
+    ) {
         for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
             try {
                 ResponseEntity<BaseResponse<FilesContent>> response =
@@ -103,7 +117,7 @@ public class FileServiceClient implements FindReviewImagesPort {
             }
         }
 
-        log.error("Failed to find images by review id: {} and sort: {}", reviewId, sort);
+        log.error("Failed to find images by owner type: {} id: {} and sort: {}", ownerType, ownerId, sort);
         return Optional.empty();
     }
 
