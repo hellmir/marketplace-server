@@ -1,10 +1,12 @@
 package com.personal.marketnote.reward.mapper;
 
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapperCreateState;
+import com.personal.marketnote.reward.domain.point.UserPointChangeType;
 import com.personal.marketnote.reward.domain.point.UserPointCreateState;
 import com.personal.marketnote.reward.domain.point.UserPointHistoryCreateState;
 import com.personal.marketnote.reward.domain.point.UserPointHistorySourceType;
 import com.personal.marketnote.reward.port.in.command.offerwall.RegisterOfferwallRewardCommand;
+import com.personal.marketnote.reward.port.in.command.point.ModifyUserPointCommand;
 import com.personal.marketnote.reward.port.in.command.point.RegisterUserPointCommand;
 
 import java.time.LocalDateTime;
@@ -51,6 +53,23 @@ public class RewardCommandToStateMapper {
                 .sourceType(UserPointHistorySourceType.USER)
                 .sourceId(command.userId())
                 .reason("회원 가입")
+                .accumulatedAt(accumulatedAt != null ? accumulatedAt : LocalDateTime.now())
+                .build();
+    }
+
+    public static UserPointHistoryCreateState mapToUserPointHistoryCreateState(
+            ModifyUserPointCommand command,
+            LocalDateTime accumulatedAt
+    ) {
+        return UserPointHistoryCreateState.builder()
+                .userId(command.userId())
+                .amount(command.changeType().equals(UserPointChangeType.DEDUCTION)
+                        ? -Math.abs(command.amount())
+                        : Math.abs(command.amount()))
+                .isReflected(Boolean.TRUE)
+                .sourceType(command.sourceType())
+                .sourceId(command.sourceId())
+                .reason(command.reason())
                 .accumulatedAt(accumulatedAt != null ? accumulatedAt : LocalDateTime.now())
                 .build();
     }

@@ -1,6 +1,8 @@
 package com.personal.marketnote.reward.service.point;
 
 import com.personal.marketnote.common.application.UseCase;
+import com.personal.marketnote.common.exception.UserNotFoundException;
+import com.personal.marketnote.reward.domain.point.UserPoint;
 import com.personal.marketnote.reward.port.in.usecase.point.GetUserPointUseCase;
 import com.personal.marketnote.reward.port.out.point.FindUserPointPort;
 import lombok.RequiredArgsConstructor;
@@ -17,5 +19,11 @@ public class GetUserPointService implements GetUserPointUseCase {
     @Override
     public boolean existsUserPoint(Long userId) {
         return findUserPointPort.existsByUserId(userId);
+    }
+
+    @Override
+    public UserPoint getUserPoint(Long userId) {
+        return findUserPointPort.findByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException("회원 포인트 정보를 찾을 수 없습니다. userId=" + userId));
     }
 }
