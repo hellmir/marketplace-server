@@ -10,6 +10,7 @@ import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.reward.adapter.in.offerwall.mapper.RewardRequestToCommandMapper;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapper;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallType;
+import com.personal.marketnote.reward.domain.offerwall.UserDeviceType;
 import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorCommunicationTargetType;
 import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorCommunicationType;
 import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorName;
@@ -63,6 +64,7 @@ public class OfferwallController {
             @RequestParam("reward_key") String rewardKey,
             @RequestParam("usn") String userId,
             @RequestParam("campaign_key") String campaignKey,
+            @RequestParam("user_device_type") UserDeviceType userDeviceType,
             @RequestParam(value = "campaign_type", required = false) Integer campaignType,
             @RequestParam(value = "campaign_name", required = false) String campaignName,
             @RequestParam(value = "quantity") Long quantity,
@@ -95,6 +97,7 @@ public class OfferwallController {
                 OfferwallType.ADPOPCORN,
                 rewardKey,
                 userId,
+                userDeviceType,
                 campaignKey,
                 campaignType,
                 campaignName,

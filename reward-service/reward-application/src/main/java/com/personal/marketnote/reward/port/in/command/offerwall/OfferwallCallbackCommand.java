@@ -1,7 +1,7 @@
 package com.personal.marketnote.reward.port.in.command.offerwall;
 
-import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallType;
+import com.personal.marketnote.reward.domain.offerwall.UserDeviceType;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,6 +13,7 @@ public class OfferwallCallbackCommand {
     private final OfferwallType offerwallType;
     private final String rewardKey;
     private final String userId;
+    private final UserDeviceType userDeviceType;
     private final String campaignKey;
     private final Integer campaignType;
     private final String campaignName;
@@ -26,10 +27,10 @@ public class OfferwallCallbackCommand {
     private final LocalDateTime attendedAt;
 
     public boolean isAndroid() {
-        return FormatValidator.hasValue(adid);
+        return userDeviceType.isAndroid();
     }
 
     public boolean isIos() {
-        return FormatValidator.hasValue(idfa);
+        return userDeviceType.isIos();
     }
 }

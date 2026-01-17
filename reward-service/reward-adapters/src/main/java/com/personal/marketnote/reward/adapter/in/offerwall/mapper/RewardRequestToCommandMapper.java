@@ -1,6 +1,7 @@
 package com.personal.marketnote.reward.adapter.in.offerwall.mapper;
 
 import com.personal.marketnote.reward.domain.offerwall.OfferwallType;
+import com.personal.marketnote.reward.domain.offerwall.UserDeviceType;
 import com.personal.marketnote.reward.port.in.command.offerwall.OfferwallCallbackCommand;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ public class RewardRequestToCommandMapper {
             OfferwallType offerwallType,
             String rewardKey,
             String userKey,
+            UserDeviceType userDeviceType,
             String campaignKey,
             Integer campaignType,
             String campaignName,
@@ -27,6 +29,7 @@ public class RewardRequestToCommandMapper {
                 .offerwallType(offerwallType)
                 .rewardKey(rewardKey)
                 .userId(userKey)
+                .userDeviceType(userDeviceType)
                 .campaignKey(campaignKey)
                 .campaignType(campaignType)
                 .campaignName(campaignName)

@@ -4,6 +4,7 @@ import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapper;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapperSnapshotState;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallType;
+import com.personal.marketnote.reward.domain.offerwall.UserDeviceType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -38,6 +39,10 @@ public class OfferwallMapperJpaEntity {
 
     @Column(name = "user_id", nullable = false, length = 128)
     private String userId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_device_type", nullable = false, length = 15)
+    private UserDeviceType userDeviceType;
 
     @Column(name = "campaign_key", nullable = false, length = 50)
     private String campaignKey;
@@ -86,6 +91,7 @@ public class OfferwallMapperJpaEntity {
                 .offerwallType(offerwallMapper.getOfferwallType())
                 .rewardKey(offerwallMapper.getRewardKey())
                 .userId(offerwallMapper.getUserId())
+                .userDeviceType(offerwallMapper.getUserDeviceType())
                 .campaignKey(offerwallMapper.getCampaignKey())
                 .campaignType(offerwallMapper.getCampaignType())
                 .campaignName(offerwallMapper.getCampaignName())
@@ -108,6 +114,7 @@ public class OfferwallMapperJpaEntity {
                         .offerwallType(offerwallType)
                         .rewardKey(rewardKey)
                         .userId(userId)
+                        .userDeviceType(userDeviceType)
                         .campaignKey(campaignKey)
                         .campaignType(campaignType)
                         .campaignName(campaignName)

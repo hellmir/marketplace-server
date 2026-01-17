@@ -6,6 +6,7 @@ import com.personal.marketnote.common.security.vendor.VendorVerificationProcesso
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.reward.configuration.AdpopcornHashKeyProperties;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapper;
+import com.personal.marketnote.reward.exception.RewardTargetInfoNotFoundException;
 import com.personal.marketnote.reward.mapper.RewardCommandToStateMapper;
 import com.personal.marketnote.reward.port.in.command.offerwall.OfferwallCallbackCommand;
 import com.personal.marketnote.reward.port.in.usecase.offerwall.RegisterOfferwallRewardUseCase;
@@ -41,7 +42,7 @@ public class RegisterOfferwallRewardService implements RegisterOfferwallRewardUs
             return requireHashKey(adpopcornHashKeyProperties.getIos());
         }
 
-        throw new VendorVerificationFailedException("애드팝콘 리워드 지급 대상 디바이스 정보가 없습니다.");
+        throw new RewardTargetInfoNotFoundException("애드팝콘 리워드 지급 대상 디바이스 정보가 없습니다.");
     }
 
     private String requireHashKey(String hashKey) {

@@ -10,6 +10,7 @@ public class RewardCommandToStateMapper {
                 .offerwallType(command.getOfferwallType())
                 .rewardKey(command.getRewardKey())
                 .userId(command.getUserId())
+                .userDeviceType(command.getUserDeviceType())
                 .campaignKey(command.getCampaignKey())
                 .campaignType(command.getCampaignType())
                 .campaignName(command.getCampaignName())
