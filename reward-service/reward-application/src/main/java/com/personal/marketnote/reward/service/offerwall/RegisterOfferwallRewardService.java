@@ -1,6 +1,10 @@
 package com.personal.marketnote.reward.service.offerwall;
 
 import com.personal.marketnote.common.application.UseCase;
+import com.personal.marketnote.common.domain.exception.token.VendorVerificationFailedException;
+import com.personal.marketnote.common.security.vendor.VendorVerificationProcessor;
+import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.reward.configuration.AdpopcornHashKeyProperties;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapper;
 import com.personal.marketnote.reward.mapper.RewardCommandToStateMapper;
 import com.personal.marketnote.reward.port.in.command.offerwall.OfferwallCallbackCommand;
@@ -12,11 +16,46 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RegisterOfferwallRewardService implements RegisterOfferwallRewardUseCase {
     private final SaveOfferwallMapperPort saveOfferwallMapperPort;
+    private final AdpopcornHashKeyProperties adpopcornHashKeyProperties;
 
     @Override
     public OfferwallMapper register(OfferwallCallbackCommand command) {
+        validateSignature(command);
         return saveOfferwallMapperPort.save(
                 OfferwallMapper.from(RewardCommandToStateMapper.mapToOfferwallMapperCreateState(command))
         );
+    }
+
+    private void validateSignature(OfferwallCallbackCommand command) {
+        String hashKey = resolveHashKey(command);
+        String plainText = buildPlainText(command);
+        VendorVerificationProcessor.validateAdpopcornSignature(hashKey, plainText, command.getSignedValue());
+    }
+
+    private String resolveHashKey(OfferwallCallbackCommand command) {
+        if (command.isAndroid()) {
+            return requireHashKey(adpopcornHashKeyProperties.getAndroid());
+        }
+
+        if (command.isIos()) {
+            return requireHashKey(adpopcornHashKeyProperties.getIos());
+        }
+
+        throw new VendorVerificationFailedException("애드팝콘 리워드 지급 대상 디바이스 정보가 없습니다.");
+    }
+
+    private String requireHashKey(String hashKey) {
+        if (FormatValidator.hasValue(hashKey)) {
+            return hashKey;
+        }
+
+        throw new VendorVerificationFailedException("애드팝콘 해시 키가 설정되지 않았습니다.");
+    }
+
+    private String buildPlainText(OfferwallCallbackCommand command) {
+        return command.getUserId()
+                + command.getRewardKey()
+                + command.getQuantity()
+                + command.getCampaignKey();
     }
 }
