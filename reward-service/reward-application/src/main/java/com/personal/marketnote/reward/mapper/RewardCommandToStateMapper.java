@@ -1,27 +1,57 @@
 package com.personal.marketnote.reward.mapper;
 
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapperCreateState;
-import com.personal.marketnote.reward.port.in.command.offerwall.OfferwallCallbackCommand;
+import com.personal.marketnote.reward.domain.point.UserPointCreateState;
+import com.personal.marketnote.reward.domain.point.UserPointHistoryCreateState;
+import com.personal.marketnote.reward.domain.point.UserPointHistorySourceType;
+import com.personal.marketnote.reward.port.in.command.offerwall.RegisterOfferwallRewardCommand;
+import com.personal.marketnote.reward.port.in.command.point.RegisterUserPointCommand;
+
+import java.time.LocalDateTime;
 
 public class RewardCommandToStateMapper {
 
-    public static OfferwallMapperCreateState mapToOfferwallMapperCreateState(OfferwallCallbackCommand command) {
+    public static OfferwallMapperCreateState mapToOfferwallMapperCreateState(RegisterOfferwallRewardCommand command) {
         return OfferwallMapperCreateState.builder()
-                .offerwallType(command.getOfferwallType())
-                .rewardKey(command.getRewardKey())
-                .userId(command.getUserId())
-                .userDeviceType(command.getUserDeviceType())
-                .campaignKey(command.getCampaignKey())
-                .campaignType(command.getCampaignType())
-                .campaignName(command.getCampaignName())
-                .quantity(command.getQuantity())
-                .signedValue(command.getSignedValue())
-                .appKey(command.getAppKey())
-                .appName(command.getAppName())
-                .adid(command.getAdid())
-                .idfa(command.getIdfa())
-                .isSuccess(command.getIsSuccess())
-                .attendedAt(command.getAttendedAt())
+                .offerwallType(command.offerwallType())
+                .rewardKey(command.rewardKey())
+                .userId(command.userId())
+                .userDeviceType(command.userDeviceType())
+                .campaignKey(command.campaignKey())
+                .campaignType(command.campaignType())
+                .campaignName(command.campaignName())
+                .quantity(command.quantity())
+                .signedValue(command.signedValue())
+                .appKey(command.appKey())
+                .appName(command.appName())
+                .adid(command.adid())
+                .idfa(command.idfa())
+                .isSuccess(command.isSuccess())
+                .attendedAt(command.attendedAt())
+                .build();
+    }
+
+    public static UserPointCreateState mapToUserPointCreateState(RegisterUserPointCommand command) {
+        return UserPointCreateState.builder()
+                .userId(command.userId())
+                .amount(0L)
+                .addExpectedAmount(0L)
+                .expireExpectedAmount(0L)
+                .build();
+    }
+
+    public static UserPointHistoryCreateState mapToUserPointHistoryCreateState(
+            RegisterUserPointCommand command,
+            LocalDateTime accumulatedAt
+    ) {
+        return UserPointHistoryCreateState.builder()
+                .userId(command.userId())
+                .amount(0L)
+                .isReflected(Boolean.TRUE)
+                .sourceType(UserPointHistorySourceType.USER)
+                .sourceId(command.userId())
+                .reason("회원 가입")
+                .accumulatedAt(accumulatedAt != null ? accumulatedAt : LocalDateTime.now())
                 .build();
     }
 }

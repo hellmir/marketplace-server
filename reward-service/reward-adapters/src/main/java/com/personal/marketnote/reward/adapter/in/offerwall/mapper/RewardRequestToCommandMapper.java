@@ -2,13 +2,13 @@ package com.personal.marketnote.reward.adapter.in.offerwall.mapper;
 
 import com.personal.marketnote.reward.domain.offerwall.OfferwallType;
 import com.personal.marketnote.reward.domain.offerwall.UserDeviceType;
-import com.personal.marketnote.reward.port.in.command.offerwall.OfferwallCallbackCommand;
+import com.personal.marketnote.reward.port.in.command.offerwall.RegisterOfferwallRewardCommand;
 
 import java.time.LocalDateTime;
 
 public class RewardRequestToCommandMapper {
 
-    public static OfferwallCallbackCommand mapToOfferwallCallbackCommand(
+    public static RegisterOfferwallRewardCommand mapToOfferwallCallbackCommand(
             OfferwallType offerwallType,
             String rewardKey,
             String userKey,
@@ -25,7 +25,7 @@ public class RewardRequestToCommandMapper {
             LocalDateTime attendedAt,
             Boolean isSuccess
     ) {
-        return OfferwallCallbackCommand.builder()
+        return RegisterOfferwallRewardCommand.builder()
                 .offerwallType(offerwallType)
                 .rewardKey(rewardKey)
                 .userId(userKey)

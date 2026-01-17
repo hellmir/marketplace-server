@@ -1,8 +1,8 @@
 package com.personal.marketnote.user.service.user;
 
 import com.personal.marketnote.common.application.UseCase;
+import com.personal.marketnote.common.exception.UserNotFoundException;
 import com.personal.marketnote.user.domain.user.User;
-import com.personal.marketnote.user.exception.UserNotFoundException;
 import com.personal.marketnote.user.port.in.usecase.user.RegisterReferredUserCodeUseCase;
 import com.personal.marketnote.user.port.out.user.FindUserPort;
 import com.personal.marketnote.user.port.out.user.UpdateUserPort;

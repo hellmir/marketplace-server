@@ -31,6 +31,7 @@ public class RewardSwaggerConfig {
     private String serverOrigin;
 
     private static final List<String> TAGS_ORDER = List.of(
+            "포인트 API",
             "오퍼월 API"
     );
 

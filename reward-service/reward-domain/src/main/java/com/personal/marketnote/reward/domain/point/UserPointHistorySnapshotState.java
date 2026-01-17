@@ -1,0 +1,19 @@
+package com.personal.marketnote.reward.domain.point;
+
+import lombok.Builder;
+import lombok.Getter;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Builder
+public class UserPointHistorySnapshotState {
+    private final Long userId;
+    private final Long amount;
+    private final Boolean isReflected;
+    private final UserPointHistorySourceType sourceType;
+    private final Long sourceId;
+    private final String reason;
+    private final LocalDateTime accumulatedAt;
+    private final LocalDateTime createdAt;
+}

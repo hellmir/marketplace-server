@@ -1,0 +1,78 @@
+package com.personal.marketnote.reward.adapter.out.persistence.point.entity;
+
+import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.reward.domain.point.UserPointHistory;
+import com.personal.marketnote.reward.domain.point.UserPointHistorySnapshotState;
+import com.personal.marketnote.reward.domain.point.UserPointHistorySourceType;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "user_point_history")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PRIVATE)
+@Getter
+public class UserPointHistoryJpaEntity {
+    @Id
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
+    @Column(name = "amount", nullable = false)
+    private Long amount;
+
+    @Column(name = "reflected_yn", nullable = false)
+    private Boolean isReflected;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "source_type", nullable = false, length = 15)
+    private UserPointHistorySourceType sourceType;
+
+    @Column(name = "source_id", nullable = false)
+    private Long sourceId;
+
+    @Column(name = "reason", length = 255)
+    private String reason;
+
+    @Column(name = "accumulated_at", nullable = false)
+    private LocalDateTime accumulatedAt;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    public static UserPointHistoryJpaEntity from(UserPointHistory history) {
+        if (!FormatValidator.hasValue(history)) {
+            return null;
+        }
+
+        return UserPointHistoryJpaEntity.builder()
+                .userId(history.getUserId())
+                .amount(history.getAmount())
+                .isReflected(history.getIsReflected())
+                .sourceType(history.getSourceType())
+                .sourceId(history.getSourceId())
+                .reason(history.getReason())
+                .accumulatedAt(history.getAccumulatedAt())
+                .createdAt(history.getCreatedAt())
+                .build();
+    }
+
+    public UserPointHistory toDomain() {
+        return UserPointHistory.from(
+                UserPointHistorySnapshotState.builder()
+                        .userId(userId)
+                        .amount(amount)
+                        .isReflected(isReflected)
+                        .sourceType(sourceType)
+                        .sourceId(sourceId)
+                        .reason(reason)
+                        .accumulatedAt(accumulatedAt)
+                        .createdAt(createdAt)
+                        .build()
+        );
+    }
+}

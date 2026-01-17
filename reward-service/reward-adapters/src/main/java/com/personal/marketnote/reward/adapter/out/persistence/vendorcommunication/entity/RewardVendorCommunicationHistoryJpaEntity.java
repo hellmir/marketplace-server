@@ -37,7 +37,7 @@ public class RewardVendorCommunicationHistoryJpaEntity {
     @Column(name = "communication_type", nullable = false, length = 15)
     private RewardVendorCommunicationType communicationType;
 
-    @Column(name = "exception", length = 511)
+    @Column(name = "exception", length = 63)
     private String exception;
 
     @Column(name = "payload", columnDefinition = "TEXT")

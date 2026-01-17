@@ -1,6 +1,7 @@
 package com.personal.marketnote.user.adapter.out.persistence;
 
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
+import com.personal.marketnote.common.exception.UserNotFoundException;
 import com.personal.marketnote.user.adapter.out.mapper.UserJpaEntityToDomainMapper;
 import com.personal.marketnote.user.adapter.out.persistence.user.entity.LoginHistoryJpaEntity;
 import com.personal.marketnote.user.adapter.out.persistence.user.entity.UserJpaEntity;
@@ -8,7 +9,6 @@ import com.personal.marketnote.user.adapter.out.persistence.user.repository.Logi
 import com.personal.marketnote.user.adapter.out.persistence.user.repository.TermsJpaRepository;
 import com.personal.marketnote.user.adapter.out.persistence.user.repository.UserJpaRepository;
 import com.personal.marketnote.user.domain.user.*;
-import com.personal.marketnote.user.exception.UserNotFoundException;
 import com.personal.marketnote.user.port.out.user.*;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.RequiredArgsConstructor;

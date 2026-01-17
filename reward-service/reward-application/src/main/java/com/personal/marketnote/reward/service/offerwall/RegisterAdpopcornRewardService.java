@@ -9,7 +9,7 @@ import com.personal.marketnote.reward.domain.offerwall.OfferwallMapper;
 import com.personal.marketnote.reward.exception.DuplicateOfferwallRewardException;
 import com.personal.marketnote.reward.exception.RewardTargetInfoNotFoundException;
 import com.personal.marketnote.reward.mapper.RewardCommandToStateMapper;
-import com.personal.marketnote.reward.port.in.command.offerwall.OfferwallCallbackCommand;
+import com.personal.marketnote.reward.port.in.command.offerwall.RegisterOfferwallRewardCommand;
 import com.personal.marketnote.reward.port.in.usecase.offerwall.GetPostOfferwallMapperUseCase;
 import com.personal.marketnote.reward.port.in.usecase.offerwall.RegisterOfferwallRewardUseCase;
 import com.personal.marketnote.reward.port.out.offerwall.SaveOfferwallMapperPort;
@@ -23,7 +23,7 @@ public class RegisterAdpopcornRewardService implements RegisterOfferwallRewardUs
     private final AdpopcornHashKeyProperties adpopcornHashKeyProperties;
 
     @Override
-    public OfferwallMapper register(OfferwallCallbackCommand command) {
+    public OfferwallMapper register(RegisterOfferwallRewardCommand command) {
         validateSignature(command);
         validateDuplicate(command);
 
@@ -32,13 +32,13 @@ public class RegisterAdpopcornRewardService implements RegisterOfferwallRewardUs
         );
     }
 
-    private void validateSignature(OfferwallCallbackCommand command) {
+    private void validateSignature(RegisterOfferwallRewardCommand command) {
         String hashKey = resolveHashKey(command);
         String plainText = buildPlainText(command);
-        VendorVerificationProcessor.validateAdpopcornSignature(hashKey, plainText, command.getSignedValue());
+        VendorVerificationProcessor.validateAdpopcornSignature(hashKey, plainText, command.signedValue());
     }
 
-    private String resolveHashKey(OfferwallCallbackCommand command) {
+    private String resolveHashKey(RegisterOfferwallRewardCommand command) {
         if (command.isAndroid()) {
             return requireHashKey(adpopcornHashKeyProperties.getAndroid());
         }
@@ -58,19 +58,19 @@ public class RegisterAdpopcornRewardService implements RegisterOfferwallRewardUs
         throw new VendorVerificationFailedException("애드팝콘 해시 키가 설정되지 않았습니다.");
     }
 
-    private String buildPlainText(OfferwallCallbackCommand command) {
-        return command.getUserId()
-                + command.getRewardKey()
-                + command.getQuantity()
-                + command.getCampaignKey();
+    private String buildPlainText(RegisterOfferwallRewardCommand command) {
+        return command.userId()
+                + command.rewardKey()
+                + command.quantity()
+                + command.campaignKey();
     }
 
-    private void validateDuplicate(OfferwallCallbackCommand command) {
+    private void validateDuplicate(RegisterOfferwallRewardCommand command) {
         if (getPostOfferwallMapperUseCase.existsOfferwallMapper(
-                command.getOfferwallType(),
-                command.getRewardKey()
+                command.offerwallType(),
+                command.rewardKey()
         )) {
-            throw new DuplicateOfferwallRewardException(command.getRewardKey());
+            throw new DuplicateOfferwallRewardException(command.rewardKey());
         }
     }
 }

@@ -28,7 +28,7 @@ public class BoardController {
     private final GetBoardUseCase getBoardUseCase;
 
     /**
-     * 게시판 목록 조회
+     * (비회원) 게시판 목록 조회
      *
      * @return 게시판 목록 조회 응답 {@link GetBoardCategoriesResponse}
      * @Author 성효빈
@@ -52,7 +52,7 @@ public class BoardController {
     }
 
     /**
-     * 게시판 카테고리 목록 조회
+     * (비회원) 게시판 카테고리 목록 조회
      *
      * @param board 게시판
      * @return 게시판 카테고리 목록 조회 응답 {@link GetBoardCategoriesResponse}
