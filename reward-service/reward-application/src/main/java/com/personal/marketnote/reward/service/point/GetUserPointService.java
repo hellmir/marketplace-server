@@ -1,0 +1,21 @@
+package com.personal.marketnote.reward.service.point;
+
+import com.personal.marketnote.common.application.UseCase;
+import com.personal.marketnote.reward.port.in.usecase.point.GetUserPointUseCase;
+import com.personal.marketnote.reward.port.out.point.FindUserPointPort;
+import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
+
+@UseCase
+@RequiredArgsConstructor
+@Transactional(isolation = READ_COMMITTED, readOnly = true)
+public class GetUserPointService implements GetUserPointUseCase {
+    private final FindUserPointPort findUserPointPort;
+
+    @Override
+    public boolean existsUserPoint(Long userId) {
+        return findUserPointPort.existsByUserId(userId);
+    }
+}
