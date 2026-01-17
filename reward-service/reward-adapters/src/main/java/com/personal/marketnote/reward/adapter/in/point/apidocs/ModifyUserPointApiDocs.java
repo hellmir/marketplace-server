@@ -79,7 +79,7 @@ import java.lang.annotation.*;
                                   "amount": 500,
                                   "sourceType": "OFFERWALL",
                                   "sourceId": 123,
-                                  "reason": "오퍼월 적립"
+                                  "reason": "추천인 코드 등록"
                                 }
                                 """)
                 )

@@ -3,9 +3,9 @@ package com.personal.marketnote.reward.adapter.in.point;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.reward.adapter.in.point.apidocs.ModifyUserPointApiDocs;
 import com.personal.marketnote.reward.adapter.in.point.apidocs.RegisterUserPointApiDocs;
+import com.personal.marketnote.reward.adapter.in.point.mapper.PointRequestToCommandMapper;
 import com.personal.marketnote.reward.adapter.in.point.request.ModifyUserPointRequest;
 import com.personal.marketnote.reward.adapter.in.point.response.UpdateUserPointResponse;
-import com.personal.marketnote.reward.port.in.command.point.ModifyUserPointCommand;
 import com.personal.marketnote.reward.port.in.command.point.RegisterUserPointCommand;
 import com.personal.marketnote.reward.port.in.result.point.UpdateUserPointResult;
 import com.personal.marketnote.reward.port.in.usecase.point.ModifyUserPointUseCase;
@@ -68,14 +68,7 @@ public class PointController {
             @RequestBody @jakarta.validation.Valid ModifyUserPointRequest request
     ) {
         UpdateUserPointResult result = modifyUserPointUseCase.modify(
-                ModifyUserPointCommand.of(
-                        userId,
-                        request.getChangeType(),
-                        request.getAmount(),
-                        request.getSourceType(),
-                        request.getSourceId(),
-                        request.getReason()
-                )
+                PointRequestToCommandMapper.mapToModifyUserPointCommand(userId, request)
         );
 
         return ResponseEntity.ok(
