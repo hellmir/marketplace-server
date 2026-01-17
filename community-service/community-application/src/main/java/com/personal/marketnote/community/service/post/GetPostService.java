@@ -1,6 +1,7 @@
 package com.personal.marketnote.community.service.post;
 
 import com.personal.marketnote.common.application.UseCase;
+import com.personal.marketnote.common.application.file.port.in.result.GetFileResult;
 import com.personal.marketnote.common.utility.AuthorityValidator;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.domain.post.*;
@@ -10,6 +11,7 @@ import com.personal.marketnote.community.port.in.result.post.GetPostsResult;
 import com.personal.marketnote.community.port.in.result.post.PostItemResult;
 import com.personal.marketnote.community.port.in.result.post.PostProductInfoResult;
 import com.personal.marketnote.community.port.in.usecase.post.GetPostUseCase;
+import com.personal.marketnote.community.port.out.file.FindPostImagesPort;
 import com.personal.marketnote.community.port.out.post.FindPostPort;
 import com.personal.marketnote.community.port.out.product.FindProductByPricePolicyPort;
 import com.personal.marketnote.community.port.out.result.product.ProductInfoResult;
@@ -22,7 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
+import static com.personal.marketnote.common.domain.file.FileSort.POST_IMAGE;
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
 @UseCase
@@ -31,6 +37,7 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 public class GetPostService implements GetPostUseCase {
     private final FindPostPort findPostPort;
     private final FindProductByPricePolicyPort findProductByPricePolicyPort;
+    private final FindPostImagesPort findPostImagesPort;
 
     @Override
     public boolean existsPost(Long id) {
@@ -145,17 +152,21 @@ public class GetPostService implements GetPostUseCase {
             nextCursor = pagedPosts.getLast().getId();
         }
 
+        Map<Long, List<GetFileResult>> postImages = findPostImages(pagedPosts);
+
         List<PostItemResult> postItems = pagedPosts.stream()
                 .map(post -> {
+                    List<GetFileResult> images = postImages.get(post.getId());
                     if (!FormatValidator.hasValue(post.getTargetId())) {
-                        return PostItemResult.from(post);
+                        return PostItemResult.from(post, images);
                     }
 
                     // 상품 문의 게시판인 경우 각 게시글의 상품 정보 포함
                     ProductInfoResult productInfoResult = targetProducts.get(post.getTargetId());
                     PostItemResult postItemResult = PostItemResult.from(
                             post,
-                            PostProductInfoResult.from(productInfoResult)
+                            PostProductInfoResult.from(productInfoResult),
+                            images
                     );
 
                     // 상품 상세 정보 페이지의 상품 문의 게시판인 경우 비밀글 필터링
@@ -170,7 +181,7 @@ public class GetPostService implements GetPostUseCase {
 
                     // 게시글의 답글 목록 추가
                     if (!postItemResult.isMasked() && post.hasReplies()) {
-                        postItemResult.addReplies(post);
+                        postItemResult.addReplies(post, postImages);
                     }
 
                     return postItemResult;
@@ -235,5 +246,34 @@ public class GetPostService implements GetPostUseCase {
     public Post getPost(Long id) {
         return findPostPort.findById(id)
                 .orElseThrow(() -> new PostNotFoundException(id));
+    }
+
+    private Map<Long, List<GetFileResult>> findPostImages(List<Post> posts) {
+        if (!FormatValidator.hasValue(posts)) {
+            return Map.of();
+        }
+
+        Map<Long, List<GetFileResult>> postImages = new ConcurrentHashMap<>();
+
+        List<Post> photoPosts = posts.stream()
+                .flatMap(post -> {
+                    Stream<Post> replies = post.hasReplies() ? post.getReplies().stream() : Stream.empty();
+                    return Stream.concat(Stream.of(post), replies);
+                })
+                .filter(Post::isPhoto)
+                .toList();
+
+        List<CompletableFuture<Void>> futures = photoPosts.stream()
+                .map(post -> CompletableFuture.runAsync(
+                        () -> findPostImagesPort.findImagesByPostIdAndSort(post.getId(), POST_IMAGE)
+                                .ifPresent(result -> postImages.put(post.getId(), result.images()))
+                ))
+                .toList();
+
+        if (FormatValidator.hasValue(futures)) {
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        }
+
+        return postImages;
     }
 }

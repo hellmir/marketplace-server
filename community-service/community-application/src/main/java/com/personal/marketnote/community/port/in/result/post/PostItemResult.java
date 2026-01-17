@@ -1,5 +1,6 @@
 package com.personal.marketnote.community.port.in.result.post;
 
+import com.personal.marketnote.common.application.file.port.in.result.GetFileResult;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.domain.post.Post;
 import com.personal.marketnote.community.domain.post.PostTargetType;
@@ -8,6 +9,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Builder
 @Getter
@@ -25,6 +27,7 @@ public class PostItemResult {
     private String content;
     private boolean isPrivate;
     private boolean isPhoto;
+    private List<GetFileResult> images;
     private boolean isMasked;
     private boolean isAnswered;
     private LocalDateTime createdAt;
@@ -32,7 +35,7 @@ public class PostItemResult {
     private PostProductInfoResult product;
     private List<PostItemResult> replies;
 
-    public static PostItemResult from(Post post, PostProductInfoResult productInfo) {
+    public static PostItemResult from(Post post, PostProductInfoResult productInfo, List<GetFileResult> images) {
         String categoryCode = null;
         if (FormatValidator.hasValue(post.getCategory())) {
             categoryCode = post.getCategory().getCode();
@@ -52,6 +55,7 @@ public class PostItemResult {
                 .content(post.getContent())
                 .isPrivate(post.isPrivate())
                 .isPhoto(post.isPhoto())
+                .images(images)
                 .isAnswered(post.isAnswered())
                 .createdAt(post.getCreatedAt())
                 .modifiedAt(post.getModifiedAt())
@@ -59,7 +63,7 @@ public class PostItemResult {
                 .build();
     }
 
-    public static PostItemResult from(Post post) {
+    public static PostItemResult from(Post post, List<GetFileResult> images) {
         String categoryCode = null;
         if (FormatValidator.hasValue(post.getCategory())) {
             categoryCode = post.getCategory().getCode();
@@ -79,6 +83,7 @@ public class PostItemResult {
                 .content(post.getContent())
                 .isPrivate(post.isPrivate())
                 .isPhoto(post.isPhoto())
+                .images(images)
                 .isAnswered(post.isAnswered())
                 .createdAt(post.getCreatedAt())
                 .modifiedAt(post.getModifiedAt())
@@ -97,7 +102,10 @@ public class PostItemResult {
         content = null;
     }
 
-    public void addReplies(Post post) {
-        replies = post.getReplies().stream().map(PostItemResult::from).toList();
+    public void addReplies(Post post, Map<Long, List<GetFileResult>> postImages) {
+        replies = post.getReplies()
+                .stream()
+                .map(reply -> PostItemResult.from(reply, postImages.get(reply.getId())))
+                .toList();
     }
 }

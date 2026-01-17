@@ -116,12 +116,26 @@ import java.lang.annotation.*;
                 | content | string | 내용 | "배송 언제 오나요?" |
                 | isPrivate | boolean | 비밀글 여부 | true |
                 | isPhoto | boolean | 이미지 첨부 여부 | true |
+                | images | array | 게시글 이미지 목록 | [ ... ] |
                 | isMasked | boolean | 비밀글 숨김 처리 여부 | true |
                 | isAnswered | boolean | 답변 여부 | true |
                 | createdAt | string(datetime) | 생성 일시 | "2026-01-13T13:12:40.921092" |
                 | modifiedAt | string(datetime) | 수정 일시 | "2026-01-13T13:12:40.921092" |
                 | product | object | 상품 정보(상품 문의글이 아닌 경우 null) | { ... } |
                 | replies | array | 답글 목록(재귀) | [ ... ] |
+                
+                ---
+                
+                ### Response > content > items > images
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | id | number | 이미지 ID | 1 |
+                | sort | string | 이미지 정렬 순서 | "POST_IMAGE" |
+                | extension | string | 이미지 확장자 | "jpg" |
+                | name | string | 이미지 이름 | "게시글 이미지" |
+                | s3Url | string | S3 URL | "https://marketnote.s3.amazonaws.com/post/1/1765528094927_image.png" |
+                | resizedS3Urls | array | 리사이즈 이미지 S3 URL 목록 | [] |
+                | orderNum | number | 정렬 순서 | 1 |
                 """,
         parameters = {
                 @Parameter(
@@ -229,10 +243,52 @@ import java.lang.annotation.*;
                                           "timestamp": "2026-01-13T16:32:18.828188",
                                           "content": {
                                             "posts": {
-                                              "totalElements": 3,
+                                              "totalElements": 0,
                                               "hasNext": false,
                                               "nextCursor": 5,
                                               "items": [
+                                                {
+                                                  "id": 22,
+                                                  "userId": 17,
+                                                  "parentId": null,
+                                                  "board": "PRODUCT_INQUERY",
+                                                  "category": "PRODUCT_QUESTION",
+                                                  "targetType": "PRICE_POLICY",
+                                                  "targetId": 180,
+                                                  "productImageUrl": null,
+                                                  "writerName": "홍*동",
+                                                  "title": "게시글 제목",
+                                                  "content": "게시글 내용",
+                                                  "isPrivate": false,
+                                                  "isPhoto": true,
+                                                  "images": [
+                                                    {
+                                                      "id": 1,
+                                                      "sort": "POST_IMAGE",
+                                                      "extension": "jpg",
+                                                      "name": "게시글 이미지",
+                                                      "s3Url": "https://marketnote.s3.amazonaws.com/post/1/1765528094927_image.png",
+                                                      "resizedS3Urls": [],
+                                                      "orderNum": 1
+                                                    }
+                                                  ],
+                                                  "isMasked": false,
+                                                  "isAnswered": false,
+                                                  "createdAt": "2026-01-16T04:20:11.769461",
+                                                  "modifiedAt": "2026-01-16T04:20:11.777291",
+                                                  "product": {
+                                                    "name": "스프링노트1234",
+                                                    "brandName": "노트왕",
+                                                    "selectedOptions": [
+                                                      {
+                                                        "id": 60,
+                                                        "content": "3박스",
+                                                        "status": "ACTIVE"
+                                                      }
+                                                    ]
+                                                  },
+                                                  "replies": []
+                                                },
                                                 {
                                                   "id": 8,
                                                   "userId": 12,
@@ -241,11 +297,13 @@ import java.lang.annotation.*;
                                                   "category": "PRODUCT_QUESTION",
                                                   "targetType": "PRICE_POLICY",
                                                   "targetId": 180,
+                                                  "productImageUrl": null,
                                                   "writerName": "김*",
                                                   "title": null,
                                                   "content": null,
                                                   "isPrivate": true,
                                                   "isPhoto": false,
+                                                  "images": null,
                                                   "isMasked": true,
                                                   "isAnswered": true,
                                                   "createdAt": "2026-01-13T17:16:05.34468",
@@ -271,12 +329,14 @@ import java.lang.annotation.*;
                                                   "category": "PRODUCT_QUESTION",
                                                   "targetType": "PRICE_POLICY",
                                                   "targetId": 180,
+                                                  "productImageUrl": null,
                                                   "writerName": "김*",
-                                                  "title": "게시글 제목abc",
-                                                  "content": "게시글 내용abc",
+                                                  "title": null,
+                                                  "content": null,
                                                   "isPrivate": true,
                                                   "isPhoto": false,
-                                                  "isMasked": false,
+                                                  "images": null,
+                                                  "isMasked": true,
                                                   "isAnswered": false,
                                                   "createdAt": "2026-01-13T16:45:26.694612",
                                                   "modifiedAt": "2026-01-13T16:45:26.726141",
@@ -301,15 +361,17 @@ import java.lang.annotation.*;
                                                   "category": "PRODUCT_QUESTION",
                                                   "targetType": "PRICE_POLICY",
                                                   "targetId": 180,
+                                                  "productImageUrl": null,
                                                   "writerName": "홍*동",
                                                   "title": "게시글 제목",
                                                   "content": "게시글 내용",
                                                   "isPrivate": false,
                                                   "isPhoto": false,
+                                                  "images": null,
                                                   "isMasked": false,
                                                   "isAnswered": true,
                                                   "createdAt": "2026-01-13T16:44:28.287364",
-                                                  "modifiedAt": "2026-01-13T16:44:28.338047",
+                                                  "modifiedAt": "2026-01-16T01:42:20.116426",
                                                   "product": {
                                                     "name": "스프링노트1234",
                                                     "brandName": "노트왕",
@@ -323,22 +385,24 @@ import java.lang.annotation.*;
                                                   },
                                                   "replies": [
                                                     {
-                                                      "id": 15,
+                                                      "id": 16,
                                                       "userId": 4,
                                                       "parentId": 5,
                                                       "board": "PRODUCT_INQUERY",
                                                       "category": "PRODUCT_QUESTION",
                                                       "targetType": "PRICE_POLICY",
                                                       "targetId": 180,
+                                                      "productImageUrl": null,
                                                       "writerName": "홍*동",
-                                                      "title": "답글 제목",
-                                                      "content": "답글 내용",
+                                                      "title": "게시글 답변 제목",
+                                                      "content": "게시글 답변 내용",
                                                       "isPrivate": false,
                                                       "isPhoto": false,
+                                                      "images": null,
                                                       "isMasked": false,
                                                       "isAnswered": false,
-                                                      "createdAt": "2026-01-14T11:44:40.772724",
-                                                      "modifiedAt": "2026-01-14T11:44:40.827294",
+                                                      "createdAt": "2026-01-15T14:08:02.735176",
+                                                      "modifiedAt": "2026-01-15T16:30:26.869231",
                                                       "product": null,
                                                       "replies": []
                                                     }

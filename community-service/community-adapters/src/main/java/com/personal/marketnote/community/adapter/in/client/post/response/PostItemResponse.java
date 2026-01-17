@@ -1,5 +1,6 @@
 package com.personal.marketnote.community.adapter.in.client.post.response;
 
+import com.personal.marketnote.common.application.file.port.in.result.GetFileResult;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.domain.post.PostTargetType;
 import com.personal.marketnote.community.port.in.result.post.PostItemResult;
@@ -24,6 +25,7 @@ public record PostItemResponse(
         String content,
         boolean isPrivate,
         boolean isPhoto,
+        List<GetFileResult> images,
         boolean isMasked,
         boolean isAnswered,
         LocalDateTime createdAt,
@@ -48,6 +50,7 @@ public record PostItemResponse(
                 .content(result.getContent())
                 .isPrivate(result.isPrivate())
                 .isPhoto(result.isPhoto())
+                .images(result.getImages())
                 .isMasked(result.isMasked())
                 .isAnswered(result.isAnswered())
                 .createdAt(result.getCreatedAt())
