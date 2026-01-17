@@ -9,7 +9,8 @@ public record UpdateUserPointResult(
         Long amount,
         Long addExpectedAmount,
         Long expireExpectedAmount,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        LocalDateTime modifiedAt
 ) {
     public static UpdateUserPointResult from(UserPoint userPoint) {
         return new UpdateUserPointResult(
@@ -17,7 +18,8 @@ public record UpdateUserPointResult(
                 userPoint.getAmount(),
                 userPoint.getAddExpectedAmount(),
                 userPoint.getExpireExpectedAmount(),
-                userPoint.getCreatedAt()
+                userPoint.getCreatedAt(),
+                userPoint.getModifiedAt()
         );
     }
 }
