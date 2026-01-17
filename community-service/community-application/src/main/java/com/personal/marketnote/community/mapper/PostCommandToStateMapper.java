@@ -12,10 +12,12 @@ public class PostCommandToStateMapper {
                 .category(command.category())
                 .targetType(command.targetType())
                 .targetId(command.targetId())
+                .productImageUrl(command.productImageUrl())
                 .writerName(command.writerName())
                 .title(command.title())
                 .content(command.content())
                 .isPrivate(command.isPrivate())
+                .isPhoto(command.isPhoto())
                 .build();
     }
 }

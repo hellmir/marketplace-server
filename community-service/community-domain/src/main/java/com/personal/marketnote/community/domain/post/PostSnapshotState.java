@@ -19,10 +19,12 @@ public class PostSnapshotState {
     private final String category;
     private final PostTargetType targetType;
     private final Long targetId;
+    private final String productImageUrl;
     private final String writerName;
     private final String title;
     private final String content;
-    private final Boolean isPrivate;
+    private final boolean isPrivate;
+    private final boolean isPhoto;
     private final EntityStatus status;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
