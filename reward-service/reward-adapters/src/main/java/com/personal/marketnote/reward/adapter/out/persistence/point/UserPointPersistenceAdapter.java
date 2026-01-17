@@ -23,4 +23,9 @@ public class UserPointPersistenceAdapter implements SaveUserPointPort, FindUserP
     public boolean existsByUserId(Long userId) {
         return repository.existsByUserId(userId);
     }
+
+    @Override
+    public java.util.Optional<UserPoint> findByUserId(Long userId) {
+        return repository.findByUserId(userId).map(UserPointJpaEntity::toDomain);
+    }
 }

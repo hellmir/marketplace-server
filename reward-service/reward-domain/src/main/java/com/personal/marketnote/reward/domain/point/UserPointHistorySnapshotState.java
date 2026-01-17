@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class UserPointHistorySnapshotState {
+    private final Long id;
     private final Long userId;
     private final Long amount;
     private final Boolean isReflected;

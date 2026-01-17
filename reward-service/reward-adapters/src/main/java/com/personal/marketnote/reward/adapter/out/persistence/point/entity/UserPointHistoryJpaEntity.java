@@ -18,6 +18,9 @@ import java.time.LocalDateTime;
 @Getter
 public class UserPointHistoryJpaEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
@@ -50,6 +53,7 @@ public class UserPointHistoryJpaEntity {
         }
 
         return UserPointHistoryJpaEntity.builder()
+                .id(history.getId())
                 .userId(history.getUserId())
                 .amount(history.getAmount())
                 .isReflected(history.getIsReflected())
@@ -64,6 +68,7 @@ public class UserPointHistoryJpaEntity {
     public UserPointHistory toDomain() {
         return UserPointHistory.from(
                 UserPointHistorySnapshotState.builder()
+                        .id(id)
                         .userId(userId)
                         .amount(amount)
                         .isReflected(isReflected)

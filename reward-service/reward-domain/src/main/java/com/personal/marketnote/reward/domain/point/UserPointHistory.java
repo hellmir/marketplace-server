@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 public class UserPointHistory {
+    private Long id;
     private Long userId;
     private Long amount;
     private Boolean isReflected;
@@ -32,6 +33,7 @@ public class UserPointHistory {
 
     public static UserPointHistory from(UserPointHistorySnapshotState state) {
         return UserPointHistory.builder()
+                .id(state.getId())
                 .userId(state.getUserId())
                 .amount(state.getAmount())
                 .isReflected(state.getIsReflected())

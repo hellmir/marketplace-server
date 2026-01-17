@@ -1,19 +1,21 @@
 package com.personal.marketnote.reward.adapter.in.point;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
+import com.personal.marketnote.reward.adapter.in.point.apidocs.ModifyUserPointApiDocs;
 import com.personal.marketnote.reward.adapter.in.point.apidocs.RegisterUserPointApiDocs;
-import com.personal.marketnote.reward.adapter.in.point.response.RegisterUserPointResponse;
+import com.personal.marketnote.reward.adapter.in.point.request.ModifyUserPointRequest;
+import com.personal.marketnote.reward.adapter.in.point.response.UpdateUserPointResponse;
+import com.personal.marketnote.reward.port.in.command.point.ModifyUserPointCommand;
 import com.personal.marketnote.reward.port.in.command.point.RegisterUserPointCommand;
+import com.personal.marketnote.reward.port.in.result.point.UpdateUserPointResult;
+import com.personal.marketnote.reward.port.in.usecase.point.ModifyUserPointUseCase;
 import com.personal.marketnote.reward.port.in.usecase.point.RegisterUserPointUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
 import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
@@ -24,12 +26,13 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 @RequiredArgsConstructor
 public class PointController {
     private final RegisterUserPointUseCase registerUserPointUseCase;
+    private final ModifyUserPointUseCase modifyUserPointUseCase;
 
     /**
      * (관리자) 회원 포인트 정보 생성
      *
      * @param userId 회원 ID
-     * @return 회원 포인트 정보 생성 응답 {@link RegisterUserPointResponse}
+     * @return 회원 포인트 정보 생성 응답 {@link UpdateUserPointResponse}
      * @Author 성효빈
      * @Date 2026-01-17
      * @Description 회원 포인트 정보를 생성합니다.
@@ -51,6 +54,37 @@ public class PointController {
                         "회원 포인트 정보 생성 성공"
                 ),
                 HttpStatus.CREATED
+        );
+    }
+
+    /**
+     * (관리자) 회원 포인트 적립/차감
+     */
+    @PatchMapping
+    @PreAuthorize(ADMIN_POINTCUT)
+    @ModifyUserPointApiDocs
+    public ResponseEntity<BaseResponse<UpdateUserPointResponse>> modifyUserPoint(
+            @PathVariable("userId") Long userId,
+            @RequestBody @jakarta.validation.Valid ModifyUserPointRequest request
+    ) {
+        UpdateUserPointResult result = modifyUserPointUseCase.modify(
+                ModifyUserPointCommand.of(
+                        userId,
+                        request.getChangeType(),
+                        request.getAmount(),
+                        request.getSourceType(),
+                        request.getSourceId(),
+                        request.getReason()
+                )
+        );
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        UpdateUserPointResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "회원 포인트 수정 성공"
+                )
         );
     }
 }

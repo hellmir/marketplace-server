@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserPointJpaRepository extends JpaRepository<UserPointJpaEntity, Long> {
     boolean existsByUserId(Long userId);
+
+    java.util.Optional<UserPointJpaEntity> findByUserId(Long userId);
 }

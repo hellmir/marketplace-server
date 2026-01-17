@@ -16,6 +16,17 @@ public class UserPoint {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
+    public UserPoint withAmount(Long amount) {
+        return UserPoint.builder()
+                .userId(userId)
+                .amount(amount)
+                .addExpectedAmount(addExpectedAmount)
+                .expireExpectedAmount(expireExpectedAmount)
+                .createdAt(createdAt)
+                .modifiedAt(modifiedAt)
+                .build();
+    }
+
     public static UserPoint from(UserPointCreateState state) {
         return UserPoint.builder()
                 .userId(state.getUserId())
