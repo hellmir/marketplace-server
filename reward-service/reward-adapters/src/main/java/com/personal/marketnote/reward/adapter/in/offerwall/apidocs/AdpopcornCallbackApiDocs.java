@@ -35,9 +35,9 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
                 | reward_key | string | 리워드 키 | Y | 20241211-abc |
-                | usn | string | 사용자 식별자 | Y | U1000 |
+                | usn | string | 회원 식별자 | Y | U1000 |
                 | campaign_key | string | 캠페인 키 | Y | C123 |
-                | user_device_type | string | 사용자 디바이스 타입 | Y | ANDROID |
+                | user_device_type | string | 회원 디바이스 유형 | Y | ANDROID |
                 | campaign_type | number | 캠페인 타입 | N | 1 |
                 | campaign_name | string | 캠페인 이름 | N | "앱 설치" |
                 | quantity | number | 지급 수량 | Y | 100 |
@@ -55,19 +55,90 @@ import java.lang.annotation.*;
                 성공/실패 시 각 코드와 메시지를 포함한 JSON 문자열 반환
                 """,
         parameters = {
-                @Parameter(name = "reward_key", in = ParameterIn.QUERY, required = true, description = "리워드 키", schema = @Schema(type = "string", example = "20241211-abc")),
-                @Parameter(name = "usn", in = ParameterIn.QUERY, required = true, description = "사용자 식별자", schema = @Schema(type = "string", example = "U1000")),
-                @Parameter(name = "campaign_key", in = ParameterIn.QUERY, required = true, description = "캠페인 키", schema = @Schema(type = "string", example = "C123")),
-                @Parameter(name = "user_device_type", in = ParameterIn.QUERY, required = true, description = "사용자 디바이스 타입", schema = @Schema(type = "string", example = "ANDROID")),
-                @Parameter(name = "campaign_type", in = ParameterIn.QUERY, description = "캠페인 타입", schema = @Schema(type = "number", example = "1")),
-                @Parameter(name = "campaign_name", in = ParameterIn.QUERY, description = "캠페인 이름", schema = @Schema(type = "string", example = "앱 설치")),
-                @Parameter(name = "quantity", in = ParameterIn.QUERY, required = true, description = "지급 수량", schema = @Schema(type = "number", example = "100")),
-                @Parameter(name = "signed_value", in = ParameterIn.QUERY, required = true, description = "서명 값", schema = @Schema(type = "string", example = "abc123")),
-                @Parameter(name = "app_key", in = ParameterIn.QUERY, description = "앱 키", schema = @Schema(type = "number", example = "10")),
-                @Parameter(name = "app_name", in = ParameterIn.QUERY, description = "앱 이름", schema = @Schema(type = "string", example = "my-app")),
-                @Parameter(name = "adid", in = ParameterIn.QUERY, description = "구글 광고 ID", schema = @Schema(type = "string", example = "adid-1")),
-                @Parameter(name = "idfa", in = ParameterIn.QUERY, description = "IDFA", schema = @Schema(type = "string", example = "idfa-1")),
-                @Parameter(name = "time_stamp", in = ParameterIn.QUERY, description = "캠페인 완료 일시", schema = @Schema(type = "string", example = "2026-01-17T12:00:00"))
+                @Parameter(
+                        name = "reward_key",
+                        in = ParameterIn.QUERY,
+                        required = true,
+                        description = "리워드 키",
+                        schema = @Schema(type = "string")
+                ),
+                @Parameter(
+                        name = "usn",
+                        in = ParameterIn.QUERY,
+                        required = true,
+                        description = "회원 식별자",
+                        schema = @Schema(type = "string")
+                ),
+                @Parameter(
+                        name = "campaign_key",
+                        in = ParameterIn.QUERY,
+                        required = true,
+                        description = "캠페인 키",
+                        schema = @Schema(type = "string")
+                ),
+                @Parameter(
+                        name = "user_device_type",
+                        in = ParameterIn.QUERY,
+                        required = true,
+                        description = "회원 디바이스 유형",
+                        schema = @Schema(type = "string")
+                ),
+                @Parameter(
+                        name = "campaign_type",
+                        in = ParameterIn.QUERY,
+                        description = "캠페인 타입",
+                        schema = @Schema(type = "number")
+                ),
+                @Parameter(
+                        name = "campaign_name",
+                        in = ParameterIn.QUERY,
+                        description = "캠페인 이름",
+                        schema = @Schema(type = "string")
+                ),
+                @Parameter(
+                        name = "quantity",
+                        in = ParameterIn.QUERY,
+                        required = true,
+                        description = "지급 수량",
+                        schema = @Schema(type = "number")
+                ),
+                @Parameter(
+                        name = "signed_value",
+                        in = ParameterIn.QUERY,
+                        required = true,
+                        description = "서명 값",
+                        schema = @Schema(type = "string")
+                ),
+                @Parameter(
+                        name = "app_key",
+                        in = ParameterIn.QUERY,
+                        description = "앱 키",
+                        schema = @Schema(type = "number")
+                ),
+                @Parameter(
+                        name = "app_name",
+                        in = ParameterIn.QUERY,
+                        description = "앱 이름",
+                        schema = @Schema(type = "string")
+                ),
+                @Parameter(
+                        name = "adid",
+                        in = ParameterIn.QUERY,
+                        description = "구글 광고 ID",
+                        schema = @Schema(type = "string")
+                ),
+                @Parameter(
+                        name = "idfa",
+                        in = ParameterIn.QUERY,
+                        description = "IDFA",
+                        schema = @Schema(type = "string")
+                ),
+                @Parameter(
+                        name = "time_stamp",
+                        in = ParameterIn.QUERY,
+                        description = "캠페인 완료 일시",
+                        schema = @Schema(type = "string")
+                )
         },
         responses = {
                 @ApiResponse(
