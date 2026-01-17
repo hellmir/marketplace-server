@@ -50,6 +50,9 @@ dependencies {
     // Spring Data Redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
+    // Redisson
+    implementation("org.redisson:redisson-spring-boot-starter:3.17.4")
+
     //querydsl 설정
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
     annotationProcessor("jakarta.persistence:jakarta.persistence-api:3.1.0")

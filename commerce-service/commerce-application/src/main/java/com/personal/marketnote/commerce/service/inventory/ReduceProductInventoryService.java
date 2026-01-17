@@ -4,10 +4,7 @@ import com.personal.marketnote.commerce.domain.inventory.Inventory;
 import com.personal.marketnote.commerce.domain.inventory.InventoryDeductionHistories;
 import com.personal.marketnote.commerce.domain.order.OrderProduct;
 import com.personal.marketnote.commerce.port.in.usecase.inventory.ReduceProductInventoryUseCase;
-import com.personal.marketnote.commerce.port.out.inventory.FindInventoryPort;
-import com.personal.marketnote.commerce.port.out.inventory.SaveCacheStockPort;
-import com.personal.marketnote.commerce.port.out.inventory.SaveInventoryDeductionHistoryPort;
-import com.personal.marketnote.commerce.port.out.inventory.UpdateInventoryPort;
+import com.personal.marketnote.commerce.port.out.inventory.*;
 import com.personal.marketnote.common.application.UseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +24,7 @@ public class ReduceProductInventoryService implements ReduceProductInventoryUseC
     private final UpdateInventoryPort updateInventoryPort;
     private final SaveInventoryDeductionHistoryPort saveInventoryDeductionHistoryPort;
     private final SaveCacheStockPort saveCacheStockPort;
+    private final InventoryLockPort inventoryLockPort;
 
     @Override
     public void reduce(List<OrderProduct> orderProducts, String reason) {
@@ -36,15 +34,19 @@ public class ReduceProductInventoryService implements ReduceProductInventoryUseC
                                 OrderProduct::getPricePolicyId, Collectors.summingInt(OrderProduct::getQuantity)
                         )
                 );
-        Set<Inventory> inventories = findInventoryPort.findByPricePolicyIds(pricePolicyQuantities.keySet());
-        inventories.forEach(inventory -> inventory.reduce(
-                pricePolicyQuantities.get(inventory.getPricePolicyId())
-        ));
 
-        updateInventoryPort.update(inventories);
-        saveInventoryDeductionHistoryPort.save(
-                InventoryDeductionHistories.from(pricePolicyQuantities, reason)
-        );
-        saveCacheStockPort.save(inventories);
+        // Redisson Pub/Sub 모델 분산 락 기반의 동시성 제어
+        inventoryLockPort.executeWithLock(pricePolicyQuantities.keySet(), () -> {
+            Set<Inventory> inventories = findInventoryPort.findByPricePolicyIds(pricePolicyQuantities.keySet());
+            inventories.forEach(inventory -> inventory.reduce(
+                    pricePolicyQuantities.get(inventory.getPricePolicyId())
+            ));
+
+            updateInventoryPort.update(inventories);
+            saveInventoryDeductionHistoryPort.save(
+                    InventoryDeductionHistories.from(pricePolicyQuantities, reason)
+            );
+            saveCacheStockPort.save(inventories);
+        });
     }
 }
