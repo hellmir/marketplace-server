@@ -12,9 +12,13 @@ import com.personal.marketnote.commerce.port.in.usecase.order.ChangeOrderStatusU
 import com.personal.marketnote.commerce.port.in.usecase.order.GetOrderUseCase;
 import com.personal.marketnote.commerce.port.out.order.DeleteOrderedCartProductsPort;
 import com.personal.marketnote.commerce.port.out.order.UpdateOrderPort;
+import com.personal.marketnote.commerce.port.out.reward.ModifyUserPointPort;
 import com.personal.marketnote.common.application.UseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
@@ -26,6 +30,7 @@ public class ChangeOrderStatusService implements ChangeOrderStatusUseCase {
     private final GetOrderUseCase getOrderUseCase;
     private final UpdateOrderPort updateOrderPort;
     private final DeleteOrderedCartProductsPort deleteOrderedCartProductsPort;
+    private final ModifyUserPointPort modifyUserPointPort;
 
     @Override
     public void changeOrderStatus(ChangeOrderStatusCommand command) {
@@ -52,6 +57,9 @@ public class ChangeOrderStatusService implements ChangeOrderStatusUseCase {
                             .map(OrderProduct::getPricePolicyId)
                             .toList()
             );
+
+            // 링크 공유 회원 포인트 적립
+            modifyUserPointPort.accrueSharedPurchasePoints(extractSharerIds(order.getOrderProducts()));
         }
     }
 
@@ -64,5 +72,12 @@ public class ChangeOrderStatusService implements ChangeOrderStatusUseCase {
         }
 
         order.changeAllProductsStatus(status);
+    }
+
+    private List<Long> extractSharerIds(List<OrderProduct> orderProducts) {
+        return orderProducts.stream()
+                .map(OrderProduct::getSharerId)
+                .filter(Objects::nonNull)
+                .toList();
     }
 }

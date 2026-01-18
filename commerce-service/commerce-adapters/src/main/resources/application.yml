@@ -59,6 +59,10 @@ logging:
 product-service:
   base-url: ${PRODUCT_SERVICE_SERVER_ORIGIN:http://localhost:8081}
 
+reward-service:
+  base-url: ${REWARD_SERVICE_SERVER_ORIGIN:http://localhost:8084}
+  share-point-amount: ${REWARD_SHARE_POINT_AMOUNT:5000}
+
 management:
   endpoints:
     web:
