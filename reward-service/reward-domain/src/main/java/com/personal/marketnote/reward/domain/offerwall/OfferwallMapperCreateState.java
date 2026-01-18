@@ -21,6 +21,6 @@ public class OfferwallMapperCreateState {
     private final String appName;
     private final String adid;
     private final String idfa;
-    private final Boolean isSuccess;
+    private final boolean isSuccess;
     private final LocalDateTime attendedAt;
 }

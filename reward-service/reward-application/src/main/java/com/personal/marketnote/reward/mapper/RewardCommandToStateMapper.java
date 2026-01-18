@@ -12,8 +12,9 @@ import com.personal.marketnote.reward.port.in.command.point.RegisterUserPointCom
 import java.time.LocalDateTime;
 
 public class RewardCommandToStateMapper {
-
-    public static OfferwallMapperCreateState mapToOfferwallMapperCreateState(RegisterOfferwallRewardCommand command) {
+    public static OfferwallMapperCreateState mapToOfferwallMapperCreateState(
+            RegisterOfferwallRewardCommand command, boolean isSuccess
+    ) {
         return OfferwallMapperCreateState.builder()
                 .offerwallType(command.offerwallType())
                 .rewardKey(command.rewardKey())
@@ -28,7 +29,7 @@ public class RewardCommandToStateMapper {
                 .appName(command.appName())
                 .adid(command.adid())
                 .idfa(command.idfa())
-                .isSuccess(command.isSuccess())
+                .isSuccess(isSuccess)
                 .attendedAt(command.attendedAt())
                 .build();
     }
@@ -53,7 +54,7 @@ public class RewardCommandToStateMapper {
                 .sourceType(UserPointHistorySourceType.USER)
                 .sourceId(command.userId())
                 .reason("회원 가입")
-                .accumulatedAt(accumulatedAt != null ? accumulatedAt : LocalDateTime.now())
+                .accumulatedAt(accumulatedAt)
                 .build();
     }
 
@@ -70,7 +71,7 @@ public class RewardCommandToStateMapper {
                 .sourceType(command.sourceType())
                 .sourceId(command.sourceId())
                 .reason(command.reason())
-                .accumulatedAt(accumulatedAt != null ? accumulatedAt : LocalDateTime.now())
+                .accumulatedAt(accumulatedAt)
                 .build();
     }
 }

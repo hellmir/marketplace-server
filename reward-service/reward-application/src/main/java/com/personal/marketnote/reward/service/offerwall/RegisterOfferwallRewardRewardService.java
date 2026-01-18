@@ -38,7 +38,7 @@ public class RegisterOfferwallRewardRewardService implements RegisterOfferwallRe
         validateDuplicate(command);
 
         OfferwallMapper offerwallMapper = saveOfferwallMapperPort.save(
-                OfferwallMapper.from(RewardCommandToStateMapper.mapToOfferwallMapperCreateState(command))
+                OfferwallMapper.from(RewardCommandToStateMapper.mapToOfferwallMapperCreateState(command, true))
         );
 
         // 회원 리워드 포인트 적립
