@@ -8,7 +8,6 @@ import com.personal.marketnote.common.exception.UserNotFoundException;
 import com.personal.marketnote.common.utility.FormatConverter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.reward.adapter.in.offerwall.apidocs.AdpopcornCallbackApiDocs;
-import com.personal.marketnote.reward.domain.offerwall.OfferwallMapper;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallType;
 import com.personal.marketnote.reward.domain.offerwall.UserDeviceType;
 import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorCommunicationTargetType;
@@ -17,7 +16,7 @@ import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorNam
 import com.personal.marketnote.reward.exception.DuplicateOfferwallRewardException;
 import com.personal.marketnote.reward.port.in.command.offerwall.RegisterOfferwallRewardCommand;
 import com.personal.marketnote.reward.port.in.command.vendorcommunication.RewardVendorCommunicationHistoryCommand;
-import com.personal.marketnote.reward.port.in.usecase.offerwall.RegisterOfferwallRewardUseCase;
+import com.personal.marketnote.reward.port.in.usecase.offerwall.HandleOfferwallRewardUseCase;
 import com.personal.marketnote.reward.port.in.usecase.vendorcommunication.RewardRecordVendorCommunicationHistoryUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +36,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Slf4j
 public class OfferwallController {
-    private final RegisterOfferwallRewardUseCase registerOfferwallRewardUseCase;
+    private final HandleOfferwallRewardUseCase handleOfferwallRewardUseCase;
     private final RewardRecordVendorCommunicationHistoryUseCase recordVendorCommunicationHistoryUseCase;
     private final ObjectMapper objectMapper;
 
@@ -115,15 +114,14 @@ public class OfferwallController {
         RewardVendorName vendorName = RewardVendorName.ADPOPCORN;
 
         try {
-            OfferwallMapper saved = registerOfferwallRewardUseCase.register(command);
-            Long targetId = FormatValidator.hasValue(saved) ? saved.getId() : null;
+            Long id = handleOfferwallRewardUseCase.handle(command);
 
-            recordCommunication(targetType, RewardVendorCommunicationType.REQUEST, targetId, vendorName, payloadString, payloadJson, null);
+            recordCommunication(targetType, RewardVendorCommunicationType.REQUEST, id, vendorName, payloadString, payloadJson, null);
 
             JsonNode successPayloadJson = buildResponsePayloadJson(true, 1, "success");
             String successPayload = successPayloadJson.toString();
 
-            recordCommunication(targetType, RewardVendorCommunicationType.RESPONSE, targetId, vendorName, successPayload, successPayloadJson, null);
+            recordCommunication(targetType, RewardVendorCommunicationType.RESPONSE, id, vendorName, successPayload, successPayloadJson, null);
 
             return ResponseEntity.ok(successPayload);
         } catch (VendorVerificationFailedException e) {
