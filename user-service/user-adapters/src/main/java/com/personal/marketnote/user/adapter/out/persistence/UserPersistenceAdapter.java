@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.personal.marketnote.user.exception.ExceptionMessage.USER_ID_NOT_FOUND_EXCEPTION_MESSAGE;
@@ -102,6 +103,11 @@ public class UserPersistenceAdapter
     @Override
     public Optional<User> findAllStatusUserByEmail(String email) {
         return UserJpaEntityToDomainMapper.mapToDomain(userJpaRepository.findAllStatusUserByEmail(email).orElse(null));
+    }
+
+    @Override
+    public Optional<UUID> findUserKeyById(Long id) {
+        return userJpaRepository.findUserKeyById(id);
     }
 
     @Override

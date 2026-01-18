@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface FindUserPort {
     boolean existsByAuthVendorAndOidcId(AuthVendor authVendor, String oidcId);
@@ -33,6 +34,8 @@ public interface FindUserPort {
     Optional<User> findAllStatusUserById(Long id);
 
     Optional<User> findAllStatusUserByEmail(String email);
+
+    Optional<UUID> findUserKeyById(Long id);
 
     List<User> findAllStatusUsers();
 

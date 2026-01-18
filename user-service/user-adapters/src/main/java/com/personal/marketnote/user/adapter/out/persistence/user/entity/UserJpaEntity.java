@@ -16,7 +16,6 @@ import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.personal.marketnote.common.utility.EntityConstant.BOOLEAN_DEFAULT_FALSE;
@@ -30,9 +29,6 @@ import static jakarta.persistence.CascadeType.PERSIST;
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
 public class UserJpaEntity extends BaseOrderedGeneralEntity {
-    @Column(name = "user_key", nullable = false, unique = true)
-    private UUID userKey;
-
     @Column(name = "nickname", nullable = false, unique = true, length = 31)
     private String nickname;
 
@@ -82,7 +78,6 @@ public class UserJpaEntity extends BaseOrderedGeneralEntity {
 
     public static UserJpaEntity from(User user, TermsJpaRepository termsJpaRepository) {
         UserJpaEntity userJpaEntity = UserJpaEntity.builder()
-                .userKey(user.getUserKey())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .password(user.getPassword())
@@ -115,7 +110,6 @@ public class UserJpaEntity extends BaseOrderedGeneralEntity {
 
     public static UserJpaEntity from(User user) {
         UserJpaEntity userJpaEntity = UserJpaEntity.builder()
-                .userKey(user.getUserKey())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .password(user.getPassword())
