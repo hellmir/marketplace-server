@@ -1,5 +1,6 @@
 package com.personal.marketnote.user.security.token.resolver;
 
+import com.personal.marketnote.common.utility.FormatValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
@@ -16,7 +17,7 @@ public class JsonBearerTokenResolver implements BearerTokenResolver {
     @Override
     public String resolve(HttpServletRequest request) {
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authorization == null) {
+        if (!FormatValidator.hasValue(authorization)) {
             return null;
         }
 

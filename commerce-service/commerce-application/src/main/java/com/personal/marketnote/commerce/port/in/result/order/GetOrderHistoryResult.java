@@ -18,25 +18,26 @@ public record GetOrderHistoryResult(
 ) {
     public static GetOrderHistoryResult from(
             List<Order> orders,
-            Map<Long, ProductInfoResult> productInfo
+            Map<Long, ProductInfoResult> productInfoResultsByPricePolicyId
     ) {
-        Map<LocalDate, List<Order>> grouped = new LinkedHashMap<>();
+        Map<LocalDate, List<Order>> ordersByOrderDate = new LinkedHashMap<>();
 
         for (Order order : orders) {
             LocalDate orderDate = FormatValidator.hasValue(order.getCreatedAt())
                     ? order.getCreatedAt().toLocalDate()
                     : LocalDate.now();
 
-            grouped.computeIfAbsent(orderDate, key -> new ArrayList<>())
+            ordersByOrderDate.computeIfAbsent(orderDate, key -> new ArrayList<>())
                     .add(order);
         }
 
-        List<OrderHistoryByDateResult> histories = grouped.entrySet().stream()
+        List<OrderHistoryByDateResult> histories = ordersByOrderDate.entrySet().stream()
                 .map(entry -> OrderHistoryByDateResult.of(
                         entry.getKey(),
                         entry.getValue(),
-                        FormatValidator.hasValue(productInfo) && FormatValidator.hasValue(productInfo.values())
-                                ? productInfo
+                        FormatValidator.hasValue(productInfoResultsByPricePolicyId)
+                                && FormatValidator.hasValue(productInfoResultsByPricePolicyId.values())
+                                ? productInfoResultsByPricePolicyId
                                 : Map.of()
                 ))
                 .toList();

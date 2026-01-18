@@ -6,6 +6,8 @@ import com.personal.marketnote.user.domain.user.UserTerms;
 import jakarta.persistence.*;
 import lombok.*;
 
+import static com.personal.marketnote.common.utility.EntityConstant.BOOLEAN_DEFAULT_FALSE;
+
 @Entity
 @Table(name = "user_terms", uniqueConstraints = {
         @UniqueConstraint(name = "ux_user_terms_user_terms", columnNames = {"user_id", "terms_id"})
@@ -23,7 +25,7 @@ public class UserTermsJpaEntity extends BaseGeneralEntity {
     @JoinColumn(name = "terms_id", nullable = false)
     private TermsJpaEntity termsJpaEntity;
 
-    @Column(name = "agreement_yn", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "agreement_yn", nullable = false, columnDefinition = BOOLEAN_DEFAULT_FALSE)
     private Boolean agreementYn;
 
     public static UserTermsJpaEntity of(UserJpaEntity userJpaEntity, TermsJpaEntity termsJpaEntity, Boolean agreementYn) {

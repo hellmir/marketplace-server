@@ -6,7 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
 import com.personal.marketnote.common.utility.FormatValidator;
-import com.personal.marketnote.common.utility.NameMasker;
+import com.personal.marketnote.common.utility.ValueMasker;
 import jakarta.persistence.Column;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -58,7 +58,7 @@ public class Review {
                 .pricePolicyId(state.getPricePolicyId())
                 .selectedOptions(state.getSelectedOptions())
                 .quantity(state.getQuantity())
-                .reviewerName(NameMasker.mask(state.getReviewerName()))
+                .reviewerName(ValueMasker.mask(state.getReviewerName()))
                 .rating(round(state.getRating()))
                 .content(state.getContent())
                 .isPhoto(state.getIsPhoto())

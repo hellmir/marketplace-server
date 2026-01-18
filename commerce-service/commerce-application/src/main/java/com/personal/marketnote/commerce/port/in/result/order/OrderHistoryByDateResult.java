@@ -16,14 +16,14 @@ public record OrderHistoryByDateResult(
     public static OrderHistoryByDateResult of(
             LocalDate orderDate,
             List<Order> orders,
-            Map<Long, ProductInfoResult> productInfo
+            Map<Long, ProductInfoResult> productInfoResultsByPricePolicyId
     ) {
         List<GetOrderResult> orderResults = orders.stream()
                 .map(order -> GetOrderResult.from(
                         order,
-                        FormatValidator.hasValue(productInfo)
-                                && FormatValidator.hasValue(productInfo.values())
-                                ? productInfo
+                        FormatValidator.hasValue(productInfoResultsByPricePolicyId)
+                                && FormatValidator.hasValue(productInfoResultsByPricePolicyId.values())
+                                ? productInfoResultsByPricePolicyId
                                 : Map.of()
                 ))
                 .toList();

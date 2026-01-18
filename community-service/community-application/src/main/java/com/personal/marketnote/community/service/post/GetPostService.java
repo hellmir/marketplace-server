@@ -125,7 +125,7 @@ public class GetPostService implements GetPostUseCase {
         }
 
         // 상품 문의 게시판인 경우 각 게시글의 주문 상품 정보 조회
-        Map<Long, ProductInfoResult> targetProducts = board.isProductInquery()
+        Map<Long, ProductInfoResult> targetProductsByPricePolicyId = board.isProductInquery()
                 ? getProductInfo(posts.getPosts())
                 : Map.of();
 
@@ -152,17 +152,17 @@ public class GetPostService implements GetPostUseCase {
             nextCursor = pagedPosts.getLast().getId();
         }
 
-        Map<Long, List<GetFileResult>> postImages = findPostImages(pagedPosts);
+        Map<Long, List<GetFileResult>> postImagesByPostId = findPostImages(pagedPosts);
 
         List<PostItemResult> postItems = pagedPosts.stream()
                 .map(post -> {
-                    List<GetFileResult> images = postImages.get(post.getId());
+                    List<GetFileResult> images = postImagesByPostId.get(post.getId());
                     if (!FormatValidator.hasValue(post.getTargetId())) {
                         return PostItemResult.from(post, images);
                     }
 
                     // 상품 문의 게시판인 경우 각 게시글의 상품 정보 포함
-                    ProductInfoResult productInfoResult = targetProducts.get(post.getTargetId());
+                    ProductInfoResult productInfoResult = targetProductsByPricePolicyId.get(post.getTargetId());
                     PostItemResult postItemResult = PostItemResult.from(
                             post,
                             PostProductInfoResult.from(productInfoResult),
@@ -181,7 +181,7 @@ public class GetPostService implements GetPostUseCase {
 
                     // 게시글의 답글 목록 추가
                     if (!postItemResult.isMasked() && post.hasReplies()) {
-                        postItemResult.addReplies(post, postImages);
+                        postItemResult.addReplies(post, postImagesByPostId);
                     }
 
                     return postItemResult;
@@ -212,7 +212,7 @@ public class GetPostService implements GetPostUseCase {
             return PostSortProperty.ORDER_NUM;
         }
 
-        return query.sortProperty() == null ? PostSortProperty.ID : query.sortProperty();
+        return FormatValidator.hasValue(query.sortProperty()) ? query.sortProperty() : PostSortProperty.ID;
     }
 
     private String getSortField(PostSortProperty sortProperty) {

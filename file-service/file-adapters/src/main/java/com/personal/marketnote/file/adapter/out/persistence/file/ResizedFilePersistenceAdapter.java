@@ -1,6 +1,7 @@
 package com.personal.marketnote.file.adapter.out.persistence.file;
 
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.file.adapter.out.persistence.file.entity.FileJpaEntity;
 import com.personal.marketnote.file.adapter.out.persistence.file.entity.ResizedFileJpaEntity;
 import com.personal.marketnote.file.adapter.out.persistence.file.repository.FileJpaRepository;
@@ -21,31 +22,34 @@ public class ResizedFilePersistenceAdapter implements SaveResizedFilesPort, Find
 
     @Override
     public void saveAll(List<ResizedFile> resizedFiles) {
-        if (resizedFiles == null || resizedFiles.isEmpty()) {
+        if (!FormatValidator.hasValue(resizedFiles)) {
             return;
         }
+
         List<ResizedFileJpaEntity> toSave = new ArrayList<>(resizedFiles.size());
         for (ResizedFile f : resizedFiles) {
             FileJpaEntity fileRef = fileJpaRepository.getReferenceById(f.getFileId());
             toSave.add(ResizedFileJpaEntity.of(fileRef, f.getSize(), f.getS3Url()));
         }
+
         resizedFileJpaRepository.saveAll(toSave);
     }
 
     @Override
     public List<ResizedFile> findByFileIds(List<Long> fileIds) {
-        if (fileIds == null || fileIds.isEmpty()) {
-            return List.of();
+        if (FormatValidator.hasValue(fileIds)) {
+            return resizedFileJpaRepository.findAllByFile_IdIn(fileIds).stream()
+                    .map(e -> ResizedFile.of(
+                            e.getId(),
+                            e.getFile().getId(),
+                            e.getSize(),
+                            e.getS3Url(),
+                            e.getCreatedAt(),
+                            e.getStatus()
+                    )).toList();
         }
-        return resizedFileJpaRepository.findAllByFile_IdIn(fileIds).stream()
-                .map(e -> ResizedFile.of(
-                        e.getId(),
-                        e.getFile().getId(),
-                        e.getSize(),
-                        e.getS3Url(),
-                        e.getCreatedAt(),
-                        e.getStatus()
-                )).toList();
+
+        return List.of();
     }
 }
 

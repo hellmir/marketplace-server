@@ -14,9 +14,9 @@ import java.util.Map;
 public class InventoryDeductionHistories {
     private List<InventoryDeductionHistory> inventoryDeductionHistories;
 
-    public static InventoryDeductionHistories from(Map<Long, Integer> pricePolicyQuantities, String reason) {
+    public static InventoryDeductionHistories from(Map<Long, Integer> stocksByPricePolicyId, String reason) {
         return new InventoryDeductionHistories(
-                pricePolicyQuantities.entrySet()
+                stocksByPricePolicyId.entrySet()
                         .stream()
                         .map(entry -> InventoryDeductionHistory.from(
                                 InventoryDeductionHistoryCreateState.builder()

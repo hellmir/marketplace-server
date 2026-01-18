@@ -113,7 +113,7 @@ public class WebBasedAuthenticationServiceAdapter {
 
     private String getRedirectionDestination(String client) {
         String destination = OAuth2WebUtils.extractDestination(client);
-        if (destination != null) {
+        if (FormatValidator.hasValue(destination)) {
             log.debug("From query parameter");
             return destination;
         }

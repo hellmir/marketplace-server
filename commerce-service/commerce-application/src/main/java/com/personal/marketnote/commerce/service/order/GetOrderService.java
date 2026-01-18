@@ -35,7 +35,7 @@ public class GetOrderService implements GetOrderUseCase {
     @Override
     public GetOrderResult getOrderAndOrderProducts(Long id) {
         Order order = getOrder(id);
-        Map<Long, ProductInfoResult> orderedProducts = Optional.ofNullable(
+        Map<Long, ProductInfoResult> orderedProductsByPricePolicyId = Optional.ofNullable(
                         findProductByPricePolicyPort.findByPricePolicyIds(
                                 order.getOrderProducts()
                                         .stream()
@@ -45,7 +45,7 @@ public class GetOrderService implements GetOrderUseCase {
                 )
                 .orElse(Map.of());
 
-        return GetOrderResult.from(order, orderedProducts);
+        return GetOrderResult.from(order, orderedProductsByPricePolicyId);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class GetOrderService implements GetOrderUseCase {
                 .distinct()
                 .toList();
 
-        Map<Long, ProductInfoResult> orderedProducts = findProductByPricePolicyPort.findByPricePolicyIds(pricePolicyIds);
+        Map<Long, ProductInfoResult> orderedProductsByPricePolicyId = findProductByPricePolicyPort.findByPricePolicyIds(pricePolicyIds);
 
         String productNameKeyword = query.resolvedProductName();
         if (FormatValidator.hasValue(productNameKeyword)) {
@@ -83,7 +83,8 @@ public class GetOrderService implements GetOrderUseCase {
             orders = orders.stream()
                     .filter(order -> order.getOrderProducts().stream()
                             .anyMatch(orderProduct -> {
-                                ProductInfoResult productInfo = orderedProducts.get(orderProduct.getPricePolicyId());
+                                ProductInfoResult productInfo
+                                        = orderedProductsByPricePolicyId.get(orderProduct.getPricePolicyId());
 
                                 return FormatValidator.hasValue(productInfo)
                                         && FormatValidator.hasValue(productInfo.name())
@@ -93,7 +94,7 @@ public class GetOrderService implements GetOrderUseCase {
                     .toList();
         }
 
-        return GetOrdersResult.of(orders, orderedProducts);
+        return GetOrdersResult.of(orders, orderedProductsByPricePolicyId);
     }
 
     @Override

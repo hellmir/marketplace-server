@@ -31,7 +31,7 @@ public class JwtUtil {
 
     private final SecretKey secretKey;
     private final JwtParser parser;
-    private final Map<JwtTokenType, Long> ttlOfTokenType;
+    private final Map<JwtTokenType, Long> ttlsByTokenType;
 
     public JwtUtil(@Value("${spring.jwt.secret}") String jwtSecret,
                    // 테스트가 쉬운 구조를 만들기 위해 TTL을 enum이 아닌 Spring properties에 정의하여 생성자로 주입
@@ -42,7 +42,7 @@ public class JwtUtil {
         parser = Jwts.parser().verifyWith(secretKey)
                 .json(new JacksonDeserializer<>())
                 .build();
-        ttlOfTokenType = Map.of(
+        ttlsByTokenType = Map.of(
                 JwtTokenType.ACCESS_TOKEN, accessTokenTtl,
                 JwtTokenType.REFRESH_TOKEN, refreshTokenTtl
         );
@@ -132,7 +132,7 @@ public class JwtUtil {
 
     private void validate(String id, List<String> roleIds, AuthVendor authVendor) {
         List<String> messages = new ArrayList<>(2);
-        if (id == null) {
+        if (!FormatValidator.hasValue(id)) {
             messages.add("memberId cannot be null");
         }
 
@@ -140,7 +140,7 @@ public class JwtUtil {
             messages.add("roleIds cannot be empty");
         }
 
-        if (authVendor == null) {
+        if (!FormatValidator.hasValue(authVendor)) {
             messages.add("authVendor cannot be null");
         }
 
@@ -167,7 +167,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .claim(TOKEN_TYPE_CLAIM_KEY, tokenType)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + ttlOfTokenType.get(tokenType)))
+                .expiration(new Date(System.currentTimeMillis() + ttlsByTokenType.get(tokenType)))
                 .subject(id)
                 .claim(ROLE_IDS_CLAIM_KEY, roleIds)
                 .claim(USER_ID_KEY, userId)

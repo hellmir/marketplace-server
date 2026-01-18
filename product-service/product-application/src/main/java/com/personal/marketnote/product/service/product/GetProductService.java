@@ -245,12 +245,12 @@ public class GetProductService implements GetProductUseCase {
             return ProductItemResult.from(product, pricePolicy);
         }
 
-        Map<Long, ProductOption> optionMap = categories.stream()
+        Map<Long, ProductOption> productOptionsById = categories.stream()
                 .flatMap(c -> c.getOptions().stream())
                 .collect(Collectors.toMap(ProductOption::getId, o -> o, (o1, o2) -> o1));
 
         List<ProductOption> selectedOptions = optionIds.stream()
-                .map(optionMap::get)
+                .map(productOptionsById::get)
                 .filter(Objects::nonNull)
                 .toList();
 

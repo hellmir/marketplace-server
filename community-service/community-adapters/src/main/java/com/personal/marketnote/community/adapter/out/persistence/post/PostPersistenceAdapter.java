@@ -222,7 +222,7 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort, Updat
     }
 
     private boolean shouldSearchIn(PostSearchTarget requestedCategory, PostSearchTarget targetCategory) {
-        return requestedCategory == null || requestedCategory == targetCategory;
+        return !FormatValidator.hasValue(requestedCategory) || requestedCategory == targetCategory;
     }
 
     private String buildSearchPattern(String searchKeyword) {

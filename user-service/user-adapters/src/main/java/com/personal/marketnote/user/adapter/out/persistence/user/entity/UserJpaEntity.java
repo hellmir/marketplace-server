@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.personal.marketnote.common.utility.EntityConstant.BOOLEAN_DEFAULT_FALSE;
 import static jakarta.persistence.CascadeType.MERGE;
 import static jakarta.persistence.CascadeType.PERSIST;
 
@@ -72,7 +73,7 @@ public class UserJpaEntity extends BaseOrderedGeneralEntity {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime lastLoggedInAt;
 
-    @Column(name = "withdrawn_yn", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "withdrawn_yn", nullable = false, columnDefinition = BOOLEAN_DEFAULT_FALSE)
     private Boolean withdrawalYn;
 
     public static UserJpaEntity from(User user, TermsJpaRepository termsJpaRepository) {

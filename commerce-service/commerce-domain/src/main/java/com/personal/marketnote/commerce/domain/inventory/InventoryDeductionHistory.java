@@ -15,7 +15,9 @@ public class InventoryDeductionHistory {
     public static InventoryDeductionHistory from(InventoryDeductionHistoryCreateState state) {
         return InventoryDeductionHistory.builder()
                 .pricePolicyId(state.getPricePolicyId())
-                .stock(Stock.of(state.getStock().toString()))
+                .stock(Stock.of(
+                        String.valueOf(state.getStock())
+                ))
                 .reason(state.getReason())
                 .build();
     }
@@ -24,7 +26,9 @@ public class InventoryDeductionHistory {
         return InventoryDeductionHistory.builder()
                 .id(state.getId())
                 .pricePolicyId(state.getPricePolicyId())
-                .stock(Stock.of(state.getStock().toString()))
+                .stock(Stock.of(
+                        String.valueOf(state.getStock())
+                ))
                 .reason(state.getReason())
                 .build();
     }

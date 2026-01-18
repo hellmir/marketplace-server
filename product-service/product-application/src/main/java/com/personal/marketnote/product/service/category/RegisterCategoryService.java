@@ -1,6 +1,5 @@
 package com.personal.marketnote.product.service.category;
 
-import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.category.Category;
@@ -42,11 +41,7 @@ public class RegisterCategoryService implements RegisterCategoryUseCase {
 
         Category savedCategory = saveCategoryPort.save(
                 Category.from(
-                        CategoryCreateState.builder()
-                                .parentCategoryId(parentCategoryId)
-                                .name(name)
-                                .status(EntityStatus.ACTIVE)
-                                .build()
+                        CategoryCreateState.of(parentCategoryId, name)
                 )
         );
 

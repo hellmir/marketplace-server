@@ -5,6 +5,8 @@ import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.reward.domain.exception.InvalidPointAmountException;
 import com.personal.marketnote.reward.domain.exception.PointAmountNoValueException;
 
+import java.util.regex.Pattern;
+
 import static com.personal.marketnote.common.utility.RegularExpressionConstant.ZERO_OR_POSITIVE_INTEGER_PATTERN;
 
 public class PointAmount {
@@ -34,7 +36,7 @@ public class PointAmount {
     }
 
     private static void checkAmountPattern(String amount) {
-        if (!amount.matches(ZERO_OR_POSITIVE_INTEGER_PATTERN)) {
+        if (!FormatValidator.isValid(amount, Pattern.compile(ZERO_OR_POSITIVE_INTEGER_PATTERN))) {
             throw new InvalidPointAmountException(String.format(INVALID_POINT_AMOUNT_EXCEPTION_MESSAGE, amount));
         }
     }

@@ -1,5 +1,6 @@
 package com.personal.marketnote.user.domain.user;
 
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,11 +25,7 @@ public class UserCreateState {
     private final boolean guest;
 
     public boolean hasPassword() {
-        return encodedPassword != null && !encodedPassword.isBlank();
-    }
-
-    public boolean isGuest() {
-        return guest;
+        return FormatValidator.hasValue(encodedPassword);
     }
 }
 

@@ -1,6 +1,7 @@
 package com.personal.marketnote.product.adapter.out.persistence.productcategory;
 
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.adapter.out.persistence.productcategory.entity.ProductCategoryJpaEntity;
 import com.personal.marketnote.product.adapter.out.persistence.productcategory.repository.ProductCategoryJpaRepository;
 import com.personal.marketnote.product.port.out.productcategory.FindProductCategoryPort;
@@ -27,15 +28,15 @@ public class ProductCategoryPersistenceAdapter implements ReplaceProductCategori
     })
     public void replaceProductCategories(Long productId, List<Long> categoryIds) {
         productCategoryJpaRepository.deleteByProductId(productId);
-        if (categoryIds == null || categoryIds.isEmpty()) {
+        if (!FormatValidator.hasValue(categoryIds)) {
             return;
         }
 
-        List<ProductCategoryJpaEntity> toSave = categoryIds.stream()
-                .map(categoryId -> ProductCategoryJpaEntity.of(productId, categoryId))
-                .toList();
-
-        productCategoryJpaRepository.saveAll(toSave);
+        productCategoryJpaRepository.saveAll(
+                categoryIds.stream()
+                        .map(categoryId -> ProductCategoryJpaEntity.of(productId, categoryId))
+                        .toList()
+        );
     }
 
     @Override

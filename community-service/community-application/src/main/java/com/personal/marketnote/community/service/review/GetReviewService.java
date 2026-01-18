@@ -89,14 +89,14 @@ public class GetReviewService implements GetReviewUseCase {
             totalElements = findReviewPort.countActive(productId, isPhoto);
         }
 
-        Map<Long, List<GetFileResult>> reviewImages = findReviewImages(pagedReviews);
+        Map<Long, List<GetFileResult>> reviewImagesByReviewId = findReviewImages(pagedReviews);
 
         if (!isPhoto && FormatValidator.hasValue(userId)) {
             // 로그인 사용자가 각 리뷰에 좋아요를 눌렀는지 여부 업데이트
             pagedReviews.forEach(review -> review.updateIsUserLiked(userId));
         }
 
-        return GetReviewsResult.from(hasNext, nextCursor, totalElements, pagedReviews, reviewImages);
+        return GetReviewsResult.from(hasNext, nextCursor, totalElements, pagedReviews, reviewImagesByReviewId);
     }
 
     @Override
@@ -162,13 +162,13 @@ public class GetReviewService implements GetReviewUseCase {
             return Map.of();
         }
 
-        Map<Long, List<GetFileResult>> reviewImages = new ConcurrentHashMap<>();
+        Map<Long, List<GetFileResult>> reviewImagesByReviewId = new ConcurrentHashMap<>();
 
         List<CompletableFuture<Void>> futures = reviews.stream()
                 .filter(review -> Boolean.TRUE.equals(review.getIsPhoto()))
                 .map(review -> CompletableFuture.runAsync(
                         () -> findReviewImagesPort.findImagesByReviewIdAndSort(review.getId(), REVIEW_IMAGE)
-                                .ifPresent(result -> reviewImages.put(review.getId(), result.images()))
+                                .ifPresent(result -> reviewImagesByReviewId.put(review.getId(), result.images()))
                 ))
                 .toList();
 
@@ -176,6 +176,6 @@ public class GetReviewService implements GetReviewUseCase {
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
         }
 
-        return reviewImages;
+        return reviewImagesByReviewId;
     }
 }

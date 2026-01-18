@@ -19,6 +19,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.personal.marketnote.common.utility.EntityConstant.BOOLEAN_DEFAULT_FALSE;
 import static jakarta.persistence.CascadeType.MERGE;
 import static jakarta.persistence.CascadeType.PERSIST;
 
@@ -55,7 +56,7 @@ public class ProductJpaEntity extends BaseOrderedGeneralEntity {
     @Column(name = "popularity", nullable = false, insertable = false, columnDefinition = "BIGINT DEFAULT 0")
     private Long popularity;
 
-    @Column(name = "find_all_options_yn", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "find_all_options_yn", nullable = false, columnDefinition = BOOLEAN_DEFAULT_FALSE)
     private boolean findAllOptionsYn;
 
     @OneToMany(mappedBy = "productJpaEntity", cascade = {PERSIST, MERGE}, orphanRemoval = true)

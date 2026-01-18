@@ -1,5 +1,9 @@
 package com.personal.marketnote.common.adapter.in;
 
+import com.personal.marketnote.common.utility.FormatValidator;
+
+import java.util.regex.Pattern;
+
 import static com.personal.marketnote.common.utility.RegularExpressionConstant.POSITIVE_INTEGER_PATTERN;
 
 public class InputFormatValidator {
@@ -12,13 +16,13 @@ public class InputFormatValidator {
     }
 
     private static void checkIdIsNotBlank(String id) {
-        if (id == null || id.isBlank()) {
+        if (!FormatValidator.hasValue(id)) {
             throw new IllegalArgumentException(ID_NO_VALUE_EXCEPTION);
         }
     }
 
     private static void checkIdPattern(String id) {
-        if (!id.matches(POSITIVE_INTEGER_PATTERN)) {
+        if (!FormatValidator.isValid(id, Pattern.compile(POSITIVE_INTEGER_PATTERN))) {
             throw new IllegalArgumentException(INVALID_ID_EXCEPTION + id);
         }
     }

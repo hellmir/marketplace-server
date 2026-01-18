@@ -1,5 +1,6 @@
 package com.personal.marketnote.commerce.domain.order;
 
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.common.utility.RandomCodeGenerator;
 import lombok.*;
 
@@ -27,11 +28,11 @@ public class Order {
     private LocalDateTime modifiedAt;
 
     public static Order from(OrderCreateState state) {
-        List<OrderProduct> orderProducts = state.getOrderProductStates() == null
-                ? List.of()
-                : state.getOrderProductStates().stream()
+        List<OrderProduct> orderProducts = FormatValidator.hasValue(state.getOrderProductStates())
+                ? state.getOrderProductStates().stream()
                 .map(OrderProduct::from)
-                .toList();
+                .toList()
+                : List.of();
 
         return Order.builder()
                 .sellerId(state.getSellerId())
@@ -46,11 +47,11 @@ public class Order {
     }
 
     public static Order from(OrderSnapshotState state) {
-        List<OrderProduct> orderProducts = state.getOrderProductStates() == null
-                ? List.of()
-                : state.getOrderProductStates().stream()
+        List<OrderProduct> orderProducts = FormatValidator.hasValue(state.getOrderProductStates())
+                ? state.getOrderProductStates().stream()
                 .map(OrderProduct::from)
-                .toList();
+                .toList()
+                : List.of();
 
         return Order.builder()
                 .id(state.getId())

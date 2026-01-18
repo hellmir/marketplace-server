@@ -27,7 +27,7 @@ public record GetOrderResult(
 ) {
     public static GetOrderResult from(
             Order order,
-            Map<Long, ProductInfoResult> productInfo
+            Map<Long, ProductInfoResult> productInfoResultsByPricePolicyId
     ) {
         return GetOrderResult.builder()
                 .id(order.getId())
@@ -44,7 +44,7 @@ public record GetOrderResult(
                 .orderProducts(order.getOrderProducts().stream()
                         .map(orderProduct -> GetOrderProductResult.from(
                                         orderProduct,
-                                        productInfo.get(orderProduct.getPricePolicyId()),
+                                        productInfoResultsByPricePolicyId.get(orderProduct.getPricePolicyId()),
                                         order.getOrderStatus()
                                 )
                         )

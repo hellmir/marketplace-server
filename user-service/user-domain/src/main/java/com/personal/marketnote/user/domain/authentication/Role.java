@@ -1,5 +1,6 @@
 package com.personal.marketnote.user.domain.authentication;
 
+import com.personal.marketnote.common.utility.FormatValidator;
 import lombok.Getter;
 
 @Getter
@@ -29,10 +30,11 @@ public class Role {
     }
 
     public String getCode() {
-        if (this.code == null) {
-            this.code = id.substring(ROLE_PREFIX.length());
+        if (!FormatValidator.hasValue(code)) {
+            code = id.substring(ROLE_PREFIX.length());
         }
-        return this.code;
+
+        return code;
     }
 
     public boolean isGuest() {
