@@ -109,8 +109,7 @@ public class OfferwallController {
                 appName,
                 adid,
                 idfa,
-                attendedAt,
-                true
+                attendedAt
         );
 
         RewardVendorCommunicationTargetType targetType = RewardVendorCommunicationTargetType.OFFERWALL;

@@ -13,4 +13,7 @@ public record ModifyUserPointCommand(
         Long sourceId,
         String reason
 ) {
+    public boolean isAccrual() {
+        return changeType.isAccrual();
+    }
 }

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Builder(access = AccessLevel.PRIVATE)
 public class UserPoint {
     private Long userId;
-    private Long amount;
+    private PointAmount amount;
     private Long addExpectedAmount;
     private Long expireExpectedAmount;
     private LocalDateTime createdAt;
@@ -19,7 +19,7 @@ public class UserPoint {
     public UserPoint withAmount(Long amount) {
         return UserPoint.builder()
                 .userId(userId)
-                .amount(amount)
+                .amount(PointAmount.of(String.valueOf(amount)))
                 .addExpectedAmount(addExpectedAmount)
                 .expireExpectedAmount(expireExpectedAmount)
                 .createdAt(createdAt)
@@ -30,7 +30,7 @@ public class UserPoint {
     public static UserPoint from(UserPointCreateState state) {
         return UserPoint.builder()
                 .userId(state.getUserId())
-                .amount(state.getAmount())
+                .amount(PointAmount.of(String.valueOf(state.getAmount())))
                 .addExpectedAmount(state.getAddExpectedAmount())
                 .expireExpectedAmount(state.getExpireExpectedAmount())
                 .build();
@@ -39,11 +39,19 @@ public class UserPoint {
     public static UserPoint from(UserPointSnapshotState state) {
         return UserPoint.builder()
                 .userId(state.getUserId())
-                .amount(state.getAmount())
+                .amount(PointAmount.of(String.valueOf(state.getAmount())))
                 .addExpectedAmount(state.getAddExpectedAmount())
                 .expireExpectedAmount(state.getExpireExpectedAmount())
                 .createdAt(state.getCreatedAt())
                 .modifiedAt(state.getModifiedAt())
                 .build();
+    }
+
+    public void changeAmount(boolean isAccrual, Long amount) {
+        this.amount = PointAmount.generateChangedAmount(isAccrual, this.amount, amount);
+    }
+
+    public Long getAmountValue() {
+        return amount.getValue();
     }
 }

@@ -7,7 +7,6 @@ import com.personal.marketnote.reward.port.in.command.offerwall.RegisterOfferwal
 import java.time.LocalDateTime;
 
 public class RewardRequestToCommandMapper {
-
     public static RegisterOfferwallRewardCommand mapToOfferwallCallbackCommand(
             OfferwallType offerwallType,
             String rewardKey,
@@ -22,8 +21,7 @@ public class RewardRequestToCommandMapper {
             String appName,
             String adid,
             String idfa,
-            LocalDateTime attendedAt,
-            Boolean isSuccess
+            LocalDateTime attendedAt
     ) {
         return RegisterOfferwallRewardCommand.builder()
                 .offerwallType(offerwallType)
@@ -39,7 +37,6 @@ public class RewardRequestToCommandMapper {
                 .appName(appName)
                 .adid(adid)
                 .idfa(idfa)
-                .isSuccess(isSuccess)
                 .attendedAt(attendedAt)
                 .build();
     }
