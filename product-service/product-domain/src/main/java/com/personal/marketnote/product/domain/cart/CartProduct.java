@@ -10,6 +10,7 @@ import lombok.*;
 @Getter
 public class CartProduct extends BaseDomain {
     private Long userId;
+    private Long sharerId;
     private PricePolicy pricePolicy;
     private String imageUrl;
     private Short quantity;
@@ -17,6 +18,7 @@ public class CartProduct extends BaseDomain {
     public static CartProduct from(CartProductCreateState state) {
         CartProduct cartProduct = CartProduct.builder()
                 .userId(state.getUserId())
+                .sharerId(state.getSharerId())
                 .pricePolicy(state.getPricePolicy())
                 .imageUrl(state.getImageUrl())
                 .quantity(state.getQuantity())
@@ -29,6 +31,7 @@ public class CartProduct extends BaseDomain {
     public static CartProduct from(CartProductSnapshotState state) {
         CartProduct cartProduct = CartProduct.builder()
                 .userId(state.getUserId())
+                .sharerId(state.getSharerId())
                 .pricePolicy(state.getPricePolicy())
                 .imageUrl(state.getImageUrl())
                 .quantity(state.getQuantity())

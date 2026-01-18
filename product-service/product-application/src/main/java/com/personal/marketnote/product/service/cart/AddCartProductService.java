@@ -24,6 +24,7 @@ public class AddCartProductService implements AddCartProductUseCase {
     public void addCartProduct(AddCartProductCommand command) {
         PricePolicy pricePolicy = getPricePolicyUseCase.getPricePolicy(command.pricePolicyId());
         saveCartProductPort.save(
-                CartProduct.from(CartProductCommandToStateMapper.mapToState(command, pricePolicy)));
+                CartProduct.from(CartProductCommandToStateMapper.mapToState(command, pricePolicy))
+        );
     }
 }

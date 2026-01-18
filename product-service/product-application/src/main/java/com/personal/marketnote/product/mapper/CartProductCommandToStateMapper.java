@@ -11,6 +11,7 @@ public class CartProductCommandToStateMapper {
         return
                 CartProductCreateState.builder()
                         .userId(addCartProductCommand.userId())
+                        .sharerId(addCartProductCommand.sharerId())
                         .pricePolicy(pricePolicy)
                         .imageUrl(addCartProductCommand.imageUrl())
                         .quantity(addCartProductCommand.quantity())

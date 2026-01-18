@@ -31,6 +31,8 @@ import java.lang.annotation.*;
                 
                 - 옵션 ID 조합에 맞는 가격 정책 ID가 없는 경우, 기본 가격 정책 ID를 전송합니다.
                 
+                - 링크 공유를 통해 구매하는 경우, 링크를 공유한 회원 ID를 전송합니다.
+                
                 ---
                 
                 ## Request
@@ -38,6 +40,7 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
                 | pricePolicyId | number | 가격 정책 ID | Y | 1 |
+                | sharerId | number | 링크 공유 회원 ID | N | 1 |
                 | imageUrl | string | 상품 이미지 URL | Y | "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png" |
                 | quantity | number | 상품 수량 | Y | 1 |
                 ---
@@ -62,6 +65,7 @@ import java.lang.annotation.*;
                         examples = @ExampleObject("""
                                 {
                                     "pricePolicyId": 1,
+                                    "sharerId": 1,
                                     "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
                                     "quantity": 1
                                 }

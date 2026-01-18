@@ -22,6 +22,9 @@ public class CartProductJpaEntity extends BaseEntity {
     @JoinColumn(name = "price_policy_id", nullable = false, foreignKey = @ForeignKey(name = "fk_cart_product_price_policy"))
     private PricePolicyJpaEntity pricePolicyJpaEntity;
 
+    @Column(name = "sharer_id")
+    private Long sharerId;
+
     @Column(name = "image_url", length = 511)
     private String imageUrl;
 
@@ -36,6 +39,7 @@ public class CartProductJpaEntity extends BaseEntity {
         return CartProductJpaEntity.builder()
                 .id(new CartId(cartProduct.getUserId(), pricePolicyJpaEntity.getId()))
                 .pricePolicyJpaEntity(pricePolicyJpaEntity)
+                .sharerId(cartProduct.getSharerId())
                 .imageUrl(cartProduct.getImageUrl())
                 .quantity(cartProduct.getQuantity())
                 .status(cartProduct.getStatus())
