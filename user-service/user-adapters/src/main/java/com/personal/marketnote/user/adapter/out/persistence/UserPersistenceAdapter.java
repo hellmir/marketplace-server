@@ -107,7 +107,7 @@ public class UserPersistenceAdapter
 
     @Override
     public Optional<UUID> findUserKeyById(Long id) {
-        return userJpaRepository.findUserKeyById(id);
+        return Optional.ofNullable(findEntityById(id).getUserKey());
     }
 
     @Override

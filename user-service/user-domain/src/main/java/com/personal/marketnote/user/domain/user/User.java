@@ -4,6 +4,7 @@ import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus
 import com.personal.marketnote.common.domain.BaseDomain;
 import com.personal.marketnote.common.domain.exception.illegalstate.SameUpdateTargetException;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.common.utility.RandomCodeGenerator;
 import com.personal.marketnote.user.domain.authentication.Role;
 import com.personal.marketnote.user.exception.ReferredUserCodeAlreadyExistsException;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.*;
@@ -25,6 +27,7 @@ import static com.personal.marketnote.common.domain.exception.ExceptionCode.*;
 @Getter
 public class User extends BaseDomain {
     private Long id;
+    private UUID userKey;
     private String nickname;
     private String email;
     private String password;
@@ -65,6 +68,7 @@ public class User extends BaseDomain {
         }
 
         User user = User.builder()
+                .userKey(RandomCodeGenerator.generateUserKey())
                 .userOauth2Vendors(userOauth2Vendors)
                 .nickname(state.getNickname())
                 .email(state.getEmail())
@@ -96,6 +100,7 @@ public class User extends BaseDomain {
     public static User from(UserSnapshotState state) {
         User user = User.builder()
                 .id(state.getId())
+                .userKey(state.getUserKey())
                 .nickname(state.getNickname())
                 .email(state.getEmail())
                 .password(state.getPassword())
