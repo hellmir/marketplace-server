@@ -11,7 +11,8 @@ public record GetCartProductResult(
         CartProductItemResult product,
         GetProductPricePolicyResult pricePolicy,
         Integer stock,
-        Short quantity
+        Short quantity,
+        Long sharerId
 ) {
     public static GetCartProductResult from(CartProduct cartProduct, Integer stock) {
         return GetCartProductResult.builder()
@@ -19,6 +20,7 @@ public record GetCartProductResult(
                 .product(CartProductItemResult.from(cartProduct.getPricePolicy().getProduct(), cartProduct.getImageUrl()))
                 .stock(stock)
                 .quantity(cartProduct.getQuantity())
+                .sharerId(cartProduct.getSharerId())
                 .build();
     }
 

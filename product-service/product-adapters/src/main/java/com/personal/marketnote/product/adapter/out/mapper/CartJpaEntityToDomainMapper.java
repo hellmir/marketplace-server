@@ -13,6 +13,7 @@ public class CartJpaEntityToDomainMapper {
                         entity -> CartProduct.from(
                                 CartProductSnapshotState.builder()
                                         .userId(cartProductJpaEntity.getId().getUserId())
+                                        .sharerId(cartProductJpaEntity.getSharerId())
                                         .pricePolicy(
                                                 PricePolicyJpaEntityToDomainMapper.mapToDomainWithOptions(
                                                                 cartProductJpaEntity.getPricePolicyJpaEntity()

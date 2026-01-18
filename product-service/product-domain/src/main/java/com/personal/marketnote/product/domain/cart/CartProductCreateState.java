@@ -11,6 +11,7 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CartProductCreateState {
     private final Long userId;
+    private final Long sharerId;
     private final PricePolicy pricePolicy;
     private final String imageUrl;
     private final Short quantity;

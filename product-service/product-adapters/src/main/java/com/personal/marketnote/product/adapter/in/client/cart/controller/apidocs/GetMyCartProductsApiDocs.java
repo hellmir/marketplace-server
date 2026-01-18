@@ -22,7 +22,7 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                - 회원의 장바구니 상품 목록을 조회합니다.
+                회원의 장바구니 상품 목록을 조회합니다.
                 
                 ---
                 
@@ -60,6 +60,7 @@ import java.lang.annotation.*;
                 | pricePolicy | object | 가격 정책 | { ... } |
                 | stock | number | 재고 수량 | 10 |
                 | quantity | number | 상품 수량 | 1 |
+                | sharerId | number | 링크 공유 회원 ID | 1 |
                 
                 ---
                 
@@ -138,7 +139,8 @@ import java.lang.annotation.*;
                                                   ]
                                                 },
                                                 "stock": 0,
-                                                "quantity": 10
+                                                "quantity": 10,
+                                                "sharerId": 1
                                               },
                                               {
                                                 "product": {
@@ -164,7 +166,8 @@ import java.lang.annotation.*;
                                                   ]
                                                 },
                                                 "stock": 0,
-                                                "quantity": 5
+                                                "quantity": 5,
+                                                "sharerId": 1
                                               },
                                               {
                                                 "product": {
@@ -195,7 +198,8 @@ import java.lang.annotation.*;
                                                   ]
                                                 },
                                                 "stock": 0,
-                                                "quantity": 7
+                                                "quantity": 7,
+                                                "sharerId": null
                                               }
                                             ]
                                           },
