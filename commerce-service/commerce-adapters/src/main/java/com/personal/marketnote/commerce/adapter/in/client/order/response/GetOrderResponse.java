@@ -12,4 +12,3 @@ public record GetOrderResponse(
         return new GetOrderResponse(getOrderResult);
     }
 }
-

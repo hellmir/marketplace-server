@@ -62,6 +62,9 @@ dependencies {
     // SMTP 서버 통신 관련
     implementation("org.springframework:spring-context-support")
 
+    // UUID v7
+    implementation("com.github.f4b6a3:uuid-creator:5.3.0")
+
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

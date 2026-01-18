@@ -13,6 +13,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static jakarta.persistence.CascadeType.MERGE;
@@ -38,8 +39,8 @@ public class OrderJpaEntity extends BaseEntity {
     @Column(name = "buyer_id", nullable = false)
     private Long buyerId;
 
-    @Column(name = "sharer_id")
-    private Long sharerId;
+    @Column(name = "order_key", nullable = false, unique = true)
+    private UUID orderKey;
 
     @Column(name = "order_number", nullable = false, length = 31, unique = true)
     private String orderNumber;
@@ -68,6 +69,7 @@ public class OrderJpaEntity extends BaseEntity {
         return OrderJpaEntity.builder()
                 .sellerId(order.getSellerId())
                 .buyerId(order.getBuyerId())
+                .orderKey(order.getOrderKey())
                 .orderNumber(order.getOrderNumber())
                 .orderStatus(order.getOrderStatus())
                 .totalAmount(order.getTotalAmount())
@@ -78,7 +80,7 @@ public class OrderJpaEntity extends BaseEntity {
     }
 
     public void addOrderProduct(OrderProductJpaEntity orderProductJpaEntity) {
-        this.orderProductJpaEntities.add(orderProductJpaEntity);
+        orderProductJpaEntities.add(orderProductJpaEntity);
     }
 
     public void updateFrom(Order order) {
