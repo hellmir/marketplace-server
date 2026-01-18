@@ -21,7 +21,7 @@ public class OfferwallMapperPersistenceAdapter implements SaveOfferwallMapperPor
     }
 
     @Override
-    public boolean existsByOfferwallTypeAndRewardKey(OfferwallType offerwallType, String rewardKey) {
-        return repository.existsByOfferwallTypeAndRewardKey(offerwallType, rewardKey);
+    public boolean existsByOfferwallTypeAndRewardKeyAndIsSuccess(OfferwallType offerwallType, String rewardKey, boolean isSuccess) {
+        return repository.existsByOfferwallTypeAndRewardKeyAndIsSuccess(offerwallType, rewardKey, isSuccess);
     }
 }
