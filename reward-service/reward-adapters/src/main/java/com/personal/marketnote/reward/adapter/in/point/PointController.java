@@ -1,13 +1,18 @@
 package com.personal.marketnote.reward.adapter.in.point;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
+import com.personal.marketnote.common.utility.ElementExtractor;
+import com.personal.marketnote.reward.adapter.in.point.apidocs.GetUserPointApiDocs;
 import com.personal.marketnote.reward.adapter.in.point.apidocs.ModifyUserPointApiDocs;
 import com.personal.marketnote.reward.adapter.in.point.apidocs.RegisterUserPointApiDocs;
 import com.personal.marketnote.reward.adapter.in.point.mapper.PointRequestToCommandMapper;
 import com.personal.marketnote.reward.adapter.in.point.request.ModifyUserPointRequest;
+import com.personal.marketnote.reward.adapter.in.point.response.GetUserPointReponse;
 import com.personal.marketnote.reward.adapter.in.point.response.UpdateUserPointResponse;
 import com.personal.marketnote.reward.port.in.command.point.RegisterUserPointCommand;
+import com.personal.marketnote.reward.port.in.result.point.GetUserPointResult;
 import com.personal.marketnote.reward.port.in.result.point.UpdateUserPointResult;
+import com.personal.marketnote.reward.port.in.usecase.point.GetUserPointUseCase;
 import com.personal.marketnote.reward.port.in.usecase.point.ModifyUserPointUseCase;
 import com.personal.marketnote.reward.port.in.usecase.point.RegisterUserPointUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
@@ -28,6 +35,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 public class PointController {
     private final RegisterUserPointUseCase registerUserPointUseCase;
     private final ModifyUserPointUseCase modifyUserPointUseCase;
+    private final GetUserPointUseCase getUserPointUseCase;
 
     /**
      * (관리자) 회원 포인트 정보 생성
@@ -55,6 +63,36 @@ public class PointController {
                         "회원 포인트 정보 생성 성공"
                 ),
                 HttpStatus.CREATED
+        );
+    }
+
+    /**
+     * 회원 포인트 정보 조회
+     *
+     * @param principal 인증된 사용자 정보
+     * @return 회원 포인트 정보 조회 응답 {@link GetUserPointReponse}
+     * @Author 성효빈
+     * @Date 2026-01-18
+     * @Description 회원 포인트 정보를 조회합니다.
+     */
+    @GetMapping
+    @GetUserPointApiDocs
+    public ResponseEntity<BaseResponse<GetUserPointReponse>> getUserPoint(
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        GetUserPointResult getUserPointResult = GetUserPointResult.from(
+                getUserPointUseCase.getUserPoint(
+                        ElementExtractor.extractUserId(principal)
+                )
+        );
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        GetUserPointReponse.from(getUserPointResult),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "회원 포인트 정보 조회 성공"
+                )
         );
     }
 

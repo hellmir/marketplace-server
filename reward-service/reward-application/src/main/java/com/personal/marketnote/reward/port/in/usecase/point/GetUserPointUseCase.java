@@ -1,5 +1,7 @@
 package com.personal.marketnote.reward.port.in.usecase.point;
 
+import com.personal.marketnote.reward.domain.point.UserPoint;
+
 public interface GetUserPointUseCase {
     /**
      * @param userId 회원 ID
@@ -17,5 +19,5 @@ public interface GetUserPointUseCase {
      * @Author ALLBUS
      * @Description 회원 포인트 정보를 조회합니다. 존재하지 않으면 {@link com.personal.marketnote.common.exception.UserNotFoundException} 발생
      */
-    com.personal.marketnote.reward.domain.point.UserPoint getUserPoint(Long userId);
+    UserPoint getUserPoint(Long userId);
 }
