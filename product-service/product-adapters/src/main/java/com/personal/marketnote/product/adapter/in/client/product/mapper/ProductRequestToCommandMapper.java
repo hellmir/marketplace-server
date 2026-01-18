@@ -72,7 +72,7 @@ public class ProductRequestToCommandMapper {
                 getMyOrderingProductsRequest.orderingItemRequests()
                         .stream()
                         .map(request -> OrderingItemQuery.of(
-                                request.pricePolicyId(), request.quantity(), request.imageUrl())
+                                request.pricePolicyId(), request.sharerId(), request.quantity(), request.imageUrl())
                         )
                         .toList()
         );

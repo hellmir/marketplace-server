@@ -49,12 +49,13 @@ public class GetMyOrderingProductsService implements GetMyOrderingProductsUseCas
                         )
                         .findFirst()
                         .ifPresent(
-                                command -> orderingProducts.add(
+                                itemQuery -> orderingProducts.add(
                                         GetCartProductResult.of(
                                                 pricePolicy,
-                                                command.imageUrl(),
-                                                command.quantity(),
-                                                stocks.get(pricePolicy.getId())
+                                                itemQuery.imageUrl(),
+                                                itemQuery.quantity(),
+                                                stocks.get(pricePolicy.getId()),
+                                                itemQuery.sharerId()
                                         )
                                 )
                         )

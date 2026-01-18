@@ -1,7 +1,7 @@
 package com.personal.marketnote.reward.port.in.command.point;
 
 import com.personal.marketnote.reward.domain.point.UserPointChangeType;
-import com.personal.marketnote.reward.domain.point.UserPointHistorySourceType;
+import com.personal.marketnote.reward.domain.point.UserPointSourceType;
 import lombok.Builder;
 
 @Builder
@@ -9,7 +9,7 @@ public record ModifyUserPointCommand(
         Long userId,
         UserPointChangeType changeType,
         Long amount,
-        UserPointHistorySourceType sourceType,
+        UserPointSourceType sourceType,
         Long sourceId,
         String reason
 ) {

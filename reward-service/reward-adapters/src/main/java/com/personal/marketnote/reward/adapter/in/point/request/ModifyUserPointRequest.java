@@ -1,7 +1,7 @@
 package com.personal.marketnote.reward.adapter.in.point.request;
 
 import com.personal.marketnote.reward.domain.point.UserPointChangeType;
-import com.personal.marketnote.reward.domain.point.UserPointHistorySourceType;
+import com.personal.marketnote.reward.domain.point.UserPointSourceType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -20,7 +20,7 @@ public class ModifyUserPointRequest {
     private Long amount;
 
     @NotNull
-    private UserPointHistorySourceType sourceType;
+    private UserPointSourceType sourceType;
 
     @NotNull
     private Long sourceId;

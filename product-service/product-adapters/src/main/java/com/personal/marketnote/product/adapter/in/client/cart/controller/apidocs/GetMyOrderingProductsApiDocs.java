@@ -67,6 +67,7 @@ import java.lang.annotation.*;
                 | pricePolicy | object | 가격 정책 | { ... } |
                 | stock | number | 재고 수량 | 10 |
                 | quantity | number | 상품 수량 | 1 |
+                | sharerId | number | 링크 공유 회원 ID | 1 |
                 
                 ---
                 
@@ -172,7 +173,8 @@ import java.lang.annotation.*;
                                                   ]
                                                 },
                                                 "stock": 2000,
-                                                "quantity": 1
+                                                "quantity": 1,
+                                                "sharerId": 1
                                               },
                                               {
                                                 "product": {
@@ -203,7 +205,8 @@ import java.lang.annotation.*;
                                                   ]
                                                 },
                                                 "stock": 2100,
-                                                "quantity": 10
+                                                "quantity": 10,
+                                                "sharerId": null
                                               },
                                               {
                                                 "product": {
@@ -234,7 +237,8 @@ import java.lang.annotation.*;
                                                   ]
                                                 },
                                                 "stock": 2298,
-                                                "quantity": 5
+                                                "quantity": 5,
+                                                "sharerId": null
                                               }
                                             ]
                                           },

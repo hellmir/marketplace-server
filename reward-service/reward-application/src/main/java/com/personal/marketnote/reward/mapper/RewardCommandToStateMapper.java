@@ -4,7 +4,7 @@ import com.personal.marketnote.reward.domain.offerwall.OfferwallMapperCreateStat
 import com.personal.marketnote.reward.domain.point.UserPointChangeType;
 import com.personal.marketnote.reward.domain.point.UserPointCreateState;
 import com.personal.marketnote.reward.domain.point.UserPointHistoryCreateState;
-import com.personal.marketnote.reward.domain.point.UserPointHistorySourceType;
+import com.personal.marketnote.reward.domain.point.UserPointSourceType;
 import com.personal.marketnote.reward.port.in.command.offerwall.RegisterOfferwallRewardCommand;
 import com.personal.marketnote.reward.port.in.command.point.ModifyUserPointCommand;
 import com.personal.marketnote.reward.port.in.command.point.RegisterUserPointCommand;
@@ -51,7 +51,7 @@ public class RewardCommandToStateMapper {
                 .userId(command.userId())
                 .amount(0L)
                 .isReflected(Boolean.TRUE)
-                .sourceType(UserPointHistorySourceType.USER)
+                .sourceType(UserPointSourceType.USER)
                 .sourceId(command.userId())
                 .reason("회원 가입")
                 .accumulatedAt(accumulatedAt)
