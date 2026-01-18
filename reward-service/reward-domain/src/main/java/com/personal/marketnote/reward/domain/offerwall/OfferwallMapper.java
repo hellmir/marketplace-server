@@ -42,7 +42,7 @@ public class OfferwallMapper {
                 .appName(state.getAppName())
                 .adid(state.getAdid())
                 .idfa(state.getIdfa())
-                .isSuccess(state.getIsSuccess() != null ? state.getIsSuccess() : Boolean.TRUE)
+                .isSuccess(state.isSuccess())
                 .attendedAt(state.getAttendedAt())
                 .build();
     }

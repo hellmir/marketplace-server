@@ -8,7 +8,6 @@ import com.personal.marketnote.common.exception.UserNotFoundException;
 import com.personal.marketnote.common.utility.FormatConverter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.reward.adapter.in.offerwall.apidocs.AdpopcornCallbackApiDocs;
-import com.personal.marketnote.reward.adapter.in.offerwall.mapper.RewardRequestToCommandMapper;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapper;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallType;
 import com.personal.marketnote.reward.domain.offerwall.UserDeviceType;
@@ -95,22 +94,22 @@ public class OfferwallController {
         );
         String payloadString = payloadJson.toString();
 
-        RegisterOfferwallRewardCommand command = RewardRequestToCommandMapper.mapToOfferwallCallbackCommand(
-                OfferwallType.ADPOPCORN,
-                rewardKey,
-                userId,
-                userDeviceType,
-                campaignKey,
-                campaignType,
-                campaignName,
-                quantity,
-                signedValue,
-                appKey,
-                appName,
-                adid,
-                idfa,
-                attendedAt
-        );
+        RegisterOfferwallRewardCommand command = RegisterOfferwallRewardCommand.builder()
+                .offerwallType(OfferwallType.ADPOPCORN)
+                .rewardKey(rewardKey)
+                .userId(userId)
+                .userDeviceType(userDeviceType)
+                .campaignKey(campaignKey)
+                .campaignType(campaignType)
+                .campaignName(campaignName)
+                .quantity(quantity)
+                .signedValue(signedValue)
+                .appKey(appKey)
+                .appName(appName)
+                .adid(adid)
+                .idfa(idfa)
+                .attendedAt(attendedAt)
+                .build();
 
         RewardVendorCommunicationTargetType targetType = RewardVendorCommunicationTargetType.OFFERWALL;
         RewardVendorName vendorName = RewardVendorName.ADPOPCORN;
@@ -128,12 +127,16 @@ public class OfferwallController {
 
             return ResponseEntity.ok(successPayload);
         } catch (VendorVerificationFailedException e) {
+            // 서명 검증 실패
             return handleFailure(targetType, vendorName, payloadString, payloadJson, e, 1100, "invalid signed value");
         } catch (UserNotFoundException e) {
+            // 회원 포인트 도메인 정보 조회 실패
             return handleFailure(targetType, vendorName, payloadString, payloadJson, e, 3200, "invalid user");
         } catch (DuplicateOfferwallRewardException e) {
+            // 중복 리워드 지급 시도
             return handleFailure(targetType, vendorName, payloadString, payloadJson, e, 3100, "duplicate transaction");
         } catch (Exception e) {
+            // 그 외
             return handleFailure(targetType, vendorName, payloadString, payloadJson, e, 4000, "custom error message");
         }
     }

@@ -21,7 +21,6 @@ public record RegisterOfferwallRewardCommand(
         String appName,
         String adid,
         String idfa,
-        Boolean isSuccess,
         LocalDateTime attendedAt
 ) {
     public boolean isAndroid() {
