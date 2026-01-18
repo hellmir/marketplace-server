@@ -10,6 +10,8 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Formula;
 
+import static com.personal.marketnote.common.utility.EntityConstant.BOOLEAN_DEFAULT_FALSE;
+
 @Entity
 @Table(name = "review")
 @DynamicInsert
@@ -49,7 +51,7 @@ public class ReviewJpaEntity extends BaseOrderedGeneralEntity {
     @Column(name = "photo_yn", nullable = false)
     private Boolean isPhoto;
 
-    @Column(name = "edited_yn", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "edited_yn", nullable = false, columnDefinition = BOOLEAN_DEFAULT_FALSE)
     private Boolean isEdited;
 
     @Formula("""

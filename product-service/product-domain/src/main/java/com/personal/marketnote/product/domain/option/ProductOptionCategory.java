@@ -1,6 +1,7 @@
 package com.personal.marketnote.product.domain.option;
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.product.Product;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -21,12 +22,12 @@ public class ProductOptionCategory {
     private EntityStatus status;
 
     public static ProductOptionCategory from(ProductOptionCategoryCreateState state) {
-        List<ProductOption> optionList = state.getOptionStates() == null
-                ? List.of()
-                : state.getOptionStates()
+        List<ProductOption> optionList = FormatValidator.hasValue(state.getOptionStates())
+                ? state.getOptionStates()
                 .stream()
                 .map(ProductOption::from)
-                .toList();
+                .toList()
+                : List.of();
 
         return ProductOptionCategory.builder()
                 .product(state.getProduct())

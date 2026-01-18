@@ -28,7 +28,7 @@ public class ReduceProductInventoryService implements ReduceProductInventoryUseC
 
     @Override
     public void reduce(List<OrderProduct> orderProducts, String reason) {
-        Map<Long, Integer> pricePolicyQuantities = orderProducts.stream()
+        Map<Long, Integer> stocksByPricePolicyId = orderProducts.stream()
                 .collect(
                         Collectors.groupingBy(
                                 OrderProduct::getPricePolicyId, Collectors.summingInt(OrderProduct::getQuantity)
@@ -36,15 +36,15 @@ public class ReduceProductInventoryService implements ReduceProductInventoryUseC
                 );
 
         // Redisson Pub/Sub 모델 분산 락 기반의 동시성 제어
-        inventoryLockPort.executeWithLock(pricePolicyQuantities.keySet(), () -> {
-            Set<Inventory> inventories = findInventoryPort.findByPricePolicyIds(pricePolicyQuantities.keySet());
+        inventoryLockPort.executeWithLock(stocksByPricePolicyId.keySet(), () -> {
+            Set<Inventory> inventories = findInventoryPort.findByPricePolicyIds(stocksByPricePolicyId.keySet());
             inventories.forEach(inventory -> inventory.reduce(
-                    pricePolicyQuantities.get(inventory.getPricePolicyId())
+                    stocksByPricePolicyId.get(inventory.getPricePolicyId())
             ));
 
             updateInventoryPort.update(inventories);
             saveInventoryDeductionHistoryPort.save(
-                    InventoryDeductionHistories.from(pricePolicyQuantities, reason)
+                    InventoryDeductionHistories.from(stocksByPricePolicyId, reason)
             );
             saveCacheStockPort.save(inventories);
         });

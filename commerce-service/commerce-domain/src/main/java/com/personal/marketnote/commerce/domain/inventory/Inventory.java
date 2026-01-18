@@ -17,7 +17,9 @@ public class Inventory {
     public static Inventory of(Long pricePolicyId) {
         return Inventory.builder()
                 .pricePolicyId(pricePolicyId)
-                .stock(Stock.of(ZERO.toString()))
+                .stock(Stock.of(
+                        ZERO.toString()
+                ))
                 .version(null)
                 .build();
     }
@@ -25,7 +27,9 @@ public class Inventory {
     public static Inventory of(Long pricePolicyId, Integer stock) {
         return Inventory.builder()
                 .pricePolicyId(pricePolicyId)
-                .stock(Stock.of(stock.toString()))
+                .stock(Stock.of(
+                        String.valueOf(stock)
+                ))
                 .version(null)
                 .build();
     }
@@ -33,14 +37,18 @@ public class Inventory {
     public static Inventory of(Long pricePolicyId, Integer stock, Long version) {
         return Inventory.builder()
                 .pricePolicyId(pricePolicyId)
-                .stock(Stock.of(stock.toString()))
+                .stock(Stock.of(
+                        String.valueOf(stock)
+                ))
                 .version(version)
                 .build();
     }
 
     public void reduce(int stockToReduce) {
         Integer reducedStock = stock.reduce(stockToReduce);
-        stock = Stock.of(reducedStock.toString());
+        stock = Stock.of(
+                String.valueOf(reducedStock)
+        );
     }
 
     public Integer getStockValue() {

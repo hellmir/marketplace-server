@@ -8,6 +8,8 @@ import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import static com.personal.marketnote.common.utility.EntityConstant.BOOLEAN_DEFAULT_FALSE;
+
 @Entity
 @Table(name = "order_product")
 @DynamicInsert
@@ -38,7 +40,7 @@ public class OrderProductJpaEntity extends BaseEntity {
     @Column(name = "order_status", nullable = false, length = 31)
     private OrderStatus orderStatus;
 
-    @Column(name = "review_yn", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "review_yn", nullable = false, columnDefinition = BOOLEAN_DEFAULT_FALSE)
     private Boolean isReviewed;
 
     public static OrderProductJpaEntity from(OrderProduct orderProduct, OrderJpaEntity orderJpaEntity) {
@@ -58,6 +60,10 @@ public class OrderProductJpaEntity extends BaseEntity {
         imageUrl = orderProduct.getImageUrl();
         orderStatus = orderProduct.getOrderStatus();
         isReviewed = orderProduct.getIsReviewed();
+    }
+
+    public Long getPricePolicyId() {
+        return id.getPricePolicyId();
     }
 }
 

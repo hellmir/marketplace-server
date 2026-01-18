@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
 import com.personal.marketnote.common.domain.BaseDomain;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
 import lombok.*;
 
@@ -64,12 +65,12 @@ public class Product extends BaseDomain {
     }
 
     public static Product from(ProductCreateState state) {
-        List<ProductTag> tags = state.getTags() == null
-                ? List.of()
-                : state.getTags()
+        List<ProductTag> tags = FormatValidator.hasValue(state.getTags())
+                ? state.getTags()
                 .stream()
                 .map(ProductTag::from)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList())
+                : List.of();
 
         return Product.builder()
                 .sellerId(state.getSellerId())
@@ -96,20 +97,10 @@ public class Product extends BaseDomain {
                 .productTags(state.getProductTags())
                 .orderNum(state.getOrderNum())
                 .build();
+        product.status = state.getStatus();
 
-        if (state.getDefaultPricePolicy() != null) {
+        if (FormatValidator.hasValue(state.getDefaultPricePolicy())) {
             state.getDefaultPricePolicy().addProduct(product);
-        }
-
-        EntityStatus status = state.getStatus();
-        if (status != null) {
-            if (status.isActive()) {
-                product.activate();
-            } else if (status.isInactive()) {
-                product.deactivate();
-            } else {
-                product.hide();
-            }
         }
 
         return product;
@@ -130,11 +121,7 @@ public class Product extends BaseDomain {
                 .toList();
     }
 
-    public boolean isActive() {
-        return status.isActive();
-    }
-
     public void delete() {
-        status = EntityStatus.INACTIVE;
+        deactivate();
     }
 }

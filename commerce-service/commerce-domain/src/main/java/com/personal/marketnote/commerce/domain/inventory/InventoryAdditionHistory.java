@@ -20,7 +20,9 @@ public class InventoryAdditionHistory {
     public static InventoryAdditionHistory from(InventoryAdditionHistoryCreateState state) {
         return InventoryAdditionHistory.builder()
                 .pricePolicyId(state.getPricePolicyId())
-                .stock(Stock.of(state.getStock().toString()))
+                .stock(Stock.of(
+                        String.valueOf(state.getStock())
+                ))
                 .reason(state.getReason())
                 .unitPrice(state.getUnitPrice())
                 .supplier(state.getSupplier())
@@ -31,7 +33,9 @@ public class InventoryAdditionHistory {
         return InventoryAdditionHistory.builder()
                 .id(state.getId())
                 .pricePolicyId(state.getPricePolicyId())
-                .stock(Stock.of(state.getStock().toString()))
+                .stock(Stock.of(
+                        String.valueOf(state.getStock())
+                ))
                 .reason(state.getReason())
                 .unitPrice(state.getUnitPrice())
                 .supplier(state.getSupplier())

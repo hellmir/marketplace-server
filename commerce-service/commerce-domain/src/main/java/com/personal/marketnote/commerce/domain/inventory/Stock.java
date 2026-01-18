@@ -2,9 +2,11 @@ package com.personal.marketnote.commerce.domain.inventory;
 
 import com.personal.marketnote.common.domain.exception.illegalargument.invalidvalue.InvalidQuantityException;
 import com.personal.marketnote.common.domain.exception.illegalargument.novalue.QuantityNoValueException;
+import com.personal.marketnote.common.utility.FormatConverter;
 import com.personal.marketnote.common.utility.FormatValidator;
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import static com.personal.marketnote.common.utility.RegularExpressionConstant.ZERO_OR_POSITIVE_INTEGER_PATTERN;
 
@@ -20,7 +22,7 @@ public class Stock {
 
     public static Stock of(String stock) {
         validate(stock);
-        return new Stock(Integer.parseInt(stock));
+        return new Stock(FormatConverter.parseToInteger(stock));
     }
 
     @Override
@@ -42,10 +44,6 @@ public class Stock {
         return Objects.hash(stock);
     }
 
-    int getValue() {
-        return stock;
-    }
-
     private static void validate(String stock) {
         checkStockIsNotBlank(stock);
         checkStockPattern(stock);
@@ -58,9 +56,13 @@ public class Stock {
     }
 
     private static void checkStockPattern(String stock) {
-        if (!stock.matches(ZERO_OR_POSITIVE_INTEGER_PATTERN)) {
+        if (!FormatValidator.isValid(stock, Pattern.compile(ZERO_OR_POSITIVE_INTEGER_PATTERN))) {
             throw new InvalidQuantityException(String.format(STOCK_INVALID_EXCEPTION, stock));
         }
+    }
+
+    int getValue() {
+        return stock;
     }
 
     public Integer reduce(int stock) {

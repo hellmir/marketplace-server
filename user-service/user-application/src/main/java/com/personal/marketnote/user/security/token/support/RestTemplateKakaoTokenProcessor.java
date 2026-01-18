@@ -3,6 +3,7 @@ package com.personal.marketnote.user.security.token.support;
 import com.personal.marketnote.common.domain.exception.token.InvalidAccessTokenException;
 import com.personal.marketnote.common.domain.exception.token.InvalidRefreshTokenException;
 import com.personal.marketnote.common.domain.exception.token.UnsupportedCodeException;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.security.token.dto.GrantedTokenInfo;
 import com.personal.marketnote.user.security.token.dto.OAuth2AuthenticationInfo;
 import com.personal.marketnote.user.security.token.dto.OAuth2UserInfo;
@@ -75,26 +76,31 @@ public class RestTemplateKakaoTokenProcessor implements TokenProcessor {
             log.debug("Response Body:\n{}", responseBody);
         }
 
+        if (FormatValidator.hasValue(responseBody)) {
+            return GrantedTokenInfo.builder()
+                    .accessToken(responseBody.getAccessToken())
+                    .refreshToken(responseBody.getRefreshToken())
+                    .id(extractIdFromIdToken(responseBody.getIdToken()))
+                    .authVendor(AuthVendor.KAKAO)
+                    .build();
+        }
+
         return GrantedTokenInfo.builder()
-                .accessToken(responseBody.getAccessToken())
-                .refreshToken(responseBody.getRefreshToken())
-                .id(extractIdFromIdToken(responseBody.getIdToken()))
-                .authVendor(AuthVendor.KAKAO)
                 .build();
     }
 
     private RequestEntity<MultiValueMap<String, String>> buildTokenRequestEntity(String code, String redirectUri) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add(TOKEN_REQUEST_HEADER_KEY_GRANT_TYPE, TOKEN_REQUEST_HEADER_VALUE_GRANT_TYPE);
-        params.add(TOKEN_REQUEST_HEADER_KEY_CLIENT_ID, this.kakaoClientId);
+        params.add(TOKEN_REQUEST_HEADER_KEY_CLIENT_ID, kakaoClientId);
 
-        if (this.kakaoClientSecret != null) {
-            params.add(TOKEN_REQUEST_HEADER_KEY_CLIENT_SECRET, this.kakaoClientSecret);
+        if (FormatValidator.hasValue(kakaoClientSecret)) {
+            params.add(TOKEN_REQUEST_HEADER_KEY_CLIENT_SECRET, kakaoClientSecret);
         }
 
         params.add(TOKEN_REQUEST_HEADER_KEY_REDIRECT_URI, redirectUri);
         params.add(TOKEN_REQUEST_HEADER_KEY_CODE, code);
-//        params.add("client_secret", this.kakaoClientSecret); // TODO: 카카오 로그인 Client Secret 설정
+        params.add("client_secret", kakaoClientSecret);
 
         return RequestEntity.post(KAKAO_TOKEN_REQUEST_URL)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
@@ -102,7 +108,6 @@ public class RestTemplateKakaoTokenProcessor implements TokenProcessor {
     }
 
     private String extractIdFromIdToken(String idToken) {
-        // 참고: https://developers.kakao.com/docs/latest/ko/kakaologin/utilize#oidc-id-token
         if (log.isDebugEnabled()) {
             log.debug("idToken={}", idToken);
         }
@@ -163,9 +168,9 @@ public class RestTemplateKakaoTokenProcessor implements TokenProcessor {
     public GrantedTokenInfo refreshToken(String refreshToken) throws InvalidRefreshTokenException {
         MultiValueMap<String, String> bodyParams = new LinkedMultiValueMap<>();
         bodyParams.add("grant_type", "refresh_token");
-        bodyParams.add("client_id", this.kakaoClientId);
+        bodyParams.add("client_id", kakaoClientId);
         bodyParams.add("refresh_token", refreshToken);
-//        bodyParams.add("client_secret", this.kakaoClientSecret); // TODO: 카카오 로그인 Client Secret 설정
+        bodyParams.add("client_secret", kakaoClientSecret);
 
         RequestEntity<MultiValueMap<String, String>> requestEntity = RequestEntity.post(KAKAO_TOKEN_REQUEST_URL)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)

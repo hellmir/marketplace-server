@@ -46,7 +46,9 @@ public class User extends BaseDomain {
         }
 
         AuthVendor targetAuthVendor = state.getAuthVendor();
-        List<Terms> terms = state.getTerms() == null ? List.of() : state.getTerms();
+        List<Terms> terms = FormatValidator.hasValue(state.getTerms())
+                ? state.getTerms()
+                : List.of();
 
         List<UserOauth2Vendor> userOauth2Vendors = new ArrayList<>(AuthVendor.size());
         AuthVendor[] allAuthVendors = AuthVendor.values();
@@ -111,12 +113,12 @@ public class User extends BaseDomain {
                 .build();
 
         EntityStatus status = state.getStatus();
-        if (status != null && status.isActive()) {
+        if (status.isActive()) {
             user.activate();
             return user;
         }
 
-        if (status != null && status.isInactive()) {
+        if (status.isInactive()) {
             user.deactivate();
             return user;
         }

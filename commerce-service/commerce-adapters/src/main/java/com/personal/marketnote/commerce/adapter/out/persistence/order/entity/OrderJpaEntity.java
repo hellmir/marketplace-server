@@ -4,6 +4,7 @@ import com.personal.marketnote.commerce.domain.order.Order;
 import com.personal.marketnote.commerce.domain.order.OrderProduct;
 import com.personal.marketnote.commerce.domain.order.OrderStatus;
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseEntity;
+import com.personal.marketnote.common.utility.FormatValidator;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -84,17 +85,17 @@ public class OrderJpaEntity extends BaseEntity {
         couponAmount = order.getCouponAmount();
         pointAmount = order.getPointAmount();
 
-        List<OrderProduct> orderProducts = order.getOrderProducts();
-        Map<Long, OrderProduct> orderProductMap = orderProducts.stream()
+        Map<Long, OrderProduct> orderProductsByPricePolicyId = order.getOrderProducts()
+                .stream()
                 .collect(Collectors.toMap(
                         OrderProduct::getPricePolicyId,
                         op -> op
                 ));
 
         orderProductJpaEntities.forEach(entity -> {
-            OrderProduct matched = orderProductMap.get(entity.getId().getPricePolicyId());
-            if (matched != null) {
-                entity.updateFrom(matched);
+            OrderProduct orderProduct = orderProductsByPricePolicyId.get(entity.getPricePolicyId());
+            if (FormatValidator.hasValue(orderProduct)) {
+                entity.updateFrom(orderProduct);
             }
         });
     }

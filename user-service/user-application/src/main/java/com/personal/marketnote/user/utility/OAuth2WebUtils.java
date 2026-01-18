@@ -1,5 +1,6 @@
 package com.personal.marketnote.user.utility;
 
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.port.in.result.LoginResult;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -7,14 +8,13 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OAuth2WebUtils {
     private static final String FRONTEND_REDIRECTION_PATH = "/redirection";
-    private static final Pattern REDIRECTION_DESTINATION_PATTERN =
-            Pattern.compile("^(http|https)://[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)*(:\\d{1,5})?$");
+    private static final Pattern REDIRECTION_DESTINATION_PATTERN
+            = Pattern.compile("^(http|https)://[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)*(:\\d{1,5})?$");
 
     public static String buildAfterLoginRedirectionUrl(
             String redirectionDestination, LoginResult loginResult, String authVendor
@@ -38,7 +38,7 @@ public class OAuth2WebUtils {
     }
 
     private static UriComponentsBuilder addParameterIfNotNull(UriComponentsBuilder builder, String name, String value) {
-        if (value != null) {
+        if (FormatValidator.hasValue(value)) {
             return builder.queryParam(name, value);
         }
         return builder;
@@ -51,14 +51,13 @@ public class OAuth2WebUtils {
 
         URI uri = URI.create(clientUrl);
 
-        if (uri.getAuthority() == null) {
+        if (!FormatValidator.hasValue(uri.getAuthority())) {
             return null;
         }
 
         String redirectionTarget = uri.getScheme() + "://" + uri.getAuthority();
 
-        Matcher matcher = REDIRECTION_DESTINATION_PATTERN.matcher(redirectionTarget);
-        return matcher.matches()
+        return FormatValidator.isValid(redirectionTarget, REDIRECTION_DESTINATION_PATTERN)
                 ? redirectionTarget
                 : null;
     }

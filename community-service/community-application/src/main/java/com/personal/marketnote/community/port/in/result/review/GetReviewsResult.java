@@ -17,14 +17,14 @@ public record GetReviewsResult(
             Long nextCursor,
             Long totalElements,
             List<Review> reviews,
-            Map<Long, List<GetFileResult>> reviewImages
+            Map<Long, List<GetFileResult>> reviewImagesByReviewId
     ) {
         return new GetReviewsResult(
                 totalElements,
                 nextCursor,
                 hasNext,
                 reviews.stream()
-                        .map(review -> ReviewItemResult.from(review, reviewImages.get(review.getId())))
+                        .map(review -> ReviewItemResult.from(review, reviewImagesByReviewId.get(review.getId())))
                         .toList()
         );
     }

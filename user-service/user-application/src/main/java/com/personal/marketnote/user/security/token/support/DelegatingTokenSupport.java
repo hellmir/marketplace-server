@@ -21,17 +21,17 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DelegatingTokenSupport implements TokenSupport {
     private final List<TokenProcessor> processors;
-    private final Map<AuthVendor, TokenProcessor> processorByAuthVendor;
+    private final Map<AuthVendor, TokenProcessor> processorsByAuthVendor;
 
     public DelegatingTokenSupport(List<TokenProcessor> processors) {
         this.processors = processors;
-        this.processorByAuthVendor = processors.stream()
+        this.processorsByAuthVendor = processors.stream()
                 .collect(Collectors.toMap(TokenProcessor::getAuthVendor, (p) -> p));
     }
 
     @Override
     public GrantedTokenInfo grantToken(String code, String redirectUri, AuthVendor authVendor) throws UnsupportedCodeException {
-        TokenProcessor processor = processorByAuthVendor.get(authVendor);
+        TokenProcessor processor = processorsByAuthVendor.get(authVendor);
         if (!FormatValidator.hasValue(processor)) {
             throw new UnsupportedCodeException("No Auth vendor for: " + authVendor);
         }

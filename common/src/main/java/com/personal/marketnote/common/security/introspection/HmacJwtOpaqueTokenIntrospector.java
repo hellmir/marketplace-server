@@ -2,6 +2,7 @@ package com.personal.marketnote.common.security.introspection;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.personal.marketnote.common.utility.FormatValidator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.DefaultOAuth2AuthenticatedPrincipal;
@@ -37,7 +38,9 @@ public class HmacJwtOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
 
     @Override
     public OAuth2AuthenticatedPrincipal introspect(String token) {
-        String[] parts = token != null ? token.split("\\.") : new String[0];
+        String[] parts = FormatValidator.hasValue(token)
+                ? token.split("\\.")
+                : new String[0];
         if (parts.length != 3) {
             throw new BadOpaqueTokenException("Invalid token format");
         }
@@ -118,7 +121,7 @@ public class HmacJwtOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
     }
 
     private boolean constantTimeEquals(String a, String b) {
-        if (a == null || b == null)
+        if (!FormatValidator.hasValue(a) || !FormatValidator.hasValue(b))
             return false;
         if (a.length() != b.length())
             return false;

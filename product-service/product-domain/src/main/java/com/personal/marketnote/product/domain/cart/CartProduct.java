@@ -1,6 +1,5 @@
 package com.personal.marketnote.product.domain.cart;
 
-import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
 import com.personal.marketnote.common.domain.BaseDomain;
 import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
 import lombok.*;
@@ -23,6 +22,7 @@ public class CartProduct extends BaseDomain {
                 .quantity(state.getQuantity())
                 .build();
         cartProduct.activate();
+
         return cartProduct;
     }
 
@@ -33,17 +33,7 @@ public class CartProduct extends BaseDomain {
                 .imageUrl(state.getImageUrl())
                 .quantity(state.getQuantity())
                 .build();
-
-        EntityStatus status = state.getStatus();
-        if (status != null) {
-            if (status.isActive()) {
-                cartProduct.activate();
-            } else if (status.isInactive()) {
-                cartProduct.deactivate();
-            } else {
-                cartProduct.hide();
-            }
-        }
+        cartProduct.status = state.getStatus();
 
         return cartProduct;
     }

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
 import com.personal.marketnote.common.utility.FormatValidator;
-import com.personal.marketnote.common.utility.NameMasker;
+import com.personal.marketnote.common.utility.ValueMasker;
 import jakarta.persistence.Column;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -63,7 +63,7 @@ public class Post {
                 .targetType(state.getTargetType())
                 .targetId(state.getTargetId())
                 .productImageUrl(state.getProductImageUrl())
-                .writerName(NameMasker.mask(state.getWriterName()))
+                .writerName(ValueMasker.mask(state.getWriterName()))
                 .title(state.getTitle())
                 .content(state.getContent())
                 .isPrivate(state.isPrivate())

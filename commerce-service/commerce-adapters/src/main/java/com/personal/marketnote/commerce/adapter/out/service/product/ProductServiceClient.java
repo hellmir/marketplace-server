@@ -68,10 +68,10 @@ public class ProductServiceClient implements FindProductByPricePolicyPort {
 
             List<ProductsInfoResponse> productsInfo = unboxResponse(response);
 
-            Map<Long, ProductInfoResult> productInfoResult = new HashMap<>();
-            generateResult(productInfoResult, productsInfo);
+            Map<Long, ProductInfoResult> productInfoResultsByPricePolicyId = new HashMap<>();
+            generateResult(productInfoResultsByPricePolicyId, productsInfo);
 
-            return productInfoResult;
+            return productInfoResultsByPricePolicyId;
         } catch (Exception e) {
             log.warn("Failed to fetch product info from product-service: {}", e.getMessage(), e);
             return Map.of();
@@ -97,19 +97,21 @@ public class ProductServiceClient implements FindProductByPricePolicyPort {
         return products.items();
     }
 
-    private void generateResult(Map<Long, ProductInfoResult> productInfoResult, List<ProductsInfoResponse> productsInfo) {
+    private void generateResult(
+            Map<Long, ProductInfoResult> productInfoResultsByPricePolicyId, List<ProductsInfoResponse> productsInfo
+    ) {
         for (ProductsInfoResponse productInfo : productsInfo) {
             if (!FormatValidator.hasValue(productInfo) || !FormatValidator.hasValue(productInfo.pricePolicy())) {
                 continue;
             }
 
-            Long policyId = productInfo.getPricePolicyId();
-            if (!FormatValidator.hasValue(policyId) || productInfoResult.containsKey(policyId)) {
+            Long pricePolicyId = productInfo.getPricePolicyId();
+            if (!FormatValidator.hasValue(pricePolicyId) || productInfoResultsByPricePolicyId.containsKey(pricePolicyId)) {
                 continue;
             }
 
-            productInfoResult.put(
-                    policyId,
+            productInfoResultsByPricePolicyId.put(
+                    pricePolicyId,
                     new ProductInfoResult(
                             productInfo.name(),
                             productInfo.brandName(),

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
+import com.personal.marketnote.common.domain.BaseDomain;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.option.ProductOption;
 import com.personal.marketnote.product.domain.product.Product;
@@ -18,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-public class PricePolicy {
+public class PricePolicy extends BaseDomain {
     private Long id;
 
     @JsonIgnore
@@ -30,7 +31,6 @@ public class PricePolicy {
     private Long accumulatedPoint;
     private BigDecimal accumulationRate;
     private Long popularity;
-    private EntityStatus status;
     private Long orderNum;
     private List<Long> optionIds;
     private List<ProductOption> productOptions;
@@ -65,7 +65,6 @@ public class PricePolicy {
     }
 
     public static PricePolicy from(PricePolicyCreateState state) {
-        EntityStatus status = state.getStatus() != null ? state.getStatus() : EntityStatus.ACTIVE;
         return PricePolicy.builder()
                 .product(state.getProduct())
                 .price(state.getPrice())
@@ -74,14 +73,13 @@ public class PricePolicy {
                 .accumulatedPoint(state.getAccumulatedPoint())
                 .accumulationRate(state.getAccumulationRate())
                 .popularity(state.getPopularity())
-                .status(status)
                 .orderNum(state.getOrderNum())
                 .optionIds(state.getOptionIds())
                 .build();
     }
 
     public static PricePolicy from(PricePolicySnapshotState state) {
-        return PricePolicy.builder()
+        PricePolicy pricePolicy = PricePolicy.builder()
                 .id(state.getId())
                 .product(state.getProduct())
                 .price(state.getPrice())
@@ -90,11 +88,13 @@ public class PricePolicy {
                 .accumulatedPoint(state.getAccumulatedPoint())
                 .accumulationRate(state.getAccumulationRate())
                 .popularity(state.getPopularity())
-                .status(state.getStatus())
                 .orderNum(state.getOrderNum())
                 .optionIds(state.getOptionIds())
                 .productOptions(state.getProductOptions())
                 .build();
+        pricePolicy.status = state.getStatus();
+
+        return pricePolicy;
     }
 
     public boolean hasOptions() {

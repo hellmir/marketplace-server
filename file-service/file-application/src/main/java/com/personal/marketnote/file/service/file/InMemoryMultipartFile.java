@@ -1,5 +1,6 @@
 package com.personal.marketnote.file.service.file;
 
+import com.personal.marketnote.common.utility.FormatValidator;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -34,12 +35,14 @@ public class InMemoryMultipartFile implements MultipartFile {
 
     @Override
     public boolean isEmpty() {
-        return content == null || content.length == 0;
+        return !FormatValidator.hasValue(content);
     }
 
     @Override
     public long getSize() {
-        return content == null ? 0 : content.length;
+        return FormatValidator.hasValue(content)
+                ? content.length
+                : 0L;
     }
 
     @Override

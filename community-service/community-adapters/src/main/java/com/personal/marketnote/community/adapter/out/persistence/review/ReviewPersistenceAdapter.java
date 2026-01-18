@@ -1,5 +1,6 @@
 package com.personal.marketnote.community.adapter.out.persistence.review;
 
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.adapter.out.mapper.ProductReviewAggregateJpaEntityToDomainMapper;
 import com.personal.marketnote.community.adapter.out.mapper.ReviewJpaEntityToDomainMapper;
 import com.personal.marketnote.community.adapter.out.persistence.review.entity.ProductReviewAggregateJpaEntity;
@@ -171,7 +172,7 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
     private boolean isAscending(Pageable pageable, ReviewSortProperty sortProperty) {
         Sort.Order order = pageable.getSort().getOrderFor(sortProperty.getCamelCaseValue());
 
-        if (order != null) {
+        if (FormatValidator.hasValue(order)) {
             return order.isAscending();
         }
 

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class BaseDomain {
-    protected EntityStatus status;
+    protected EntityStatus status = EntityStatus.ACTIVE;
 
     protected void activate() {
         status = EntityStatus.ACTIVE;

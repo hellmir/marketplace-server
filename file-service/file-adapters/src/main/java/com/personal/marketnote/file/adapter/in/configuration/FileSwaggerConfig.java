@@ -164,7 +164,7 @@ public class FileSwaggerConfig {
     }
 
     private boolean isAddFilesEndpoint(HandlerMethod handlerMethod) {
-        return handlerMethod != null
+        return FormatValidator.hasValue(handlerMethod)
                 && handlerMethod.getBeanType().equals(FileController.class)
                 && "addFiles".equals(handlerMethod.getMethod().getName());
     }

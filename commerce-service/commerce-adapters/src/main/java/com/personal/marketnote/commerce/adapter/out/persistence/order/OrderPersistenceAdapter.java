@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -88,7 +89,7 @@ public class OrderPersistenceAdapter implements SaveOrderPort, FindOrderPort, Fi
 
         List<OrderJpaEntity> entities = orderJpaRepository.findWithProductsByIds(orderIds);
 
-        var orderIndex = new java.util.HashMap<Long, Integer>();
+        var orderIndex = new HashMap<Long, Integer>();
         for (int i = 0; i < orderIds.size(); i++) {
             orderIndex.put(orderIds.get(i), i);
         }
@@ -124,13 +125,13 @@ public class OrderPersistenceAdapter implements SaveOrderPort, FindOrderPort, Fi
     }
 
     @Override
-    public void update(OrderProduct orderProduct) {
+    public void update(OrderProduct orderProduct) throws OrderProductNotFoundException {
         OrderProductJpaEntity orderProductJpaEntity
                 = findEntityByOrderIdAndPricePolicyId(orderProduct.getOrderId(), orderProduct.getPricePolicyId());
         orderProductJpaEntity.updateFrom(orderProduct);
     }
 
-    private OrderProductJpaEntity findEntityByOrderIdAndPricePolicyId(Long orderId, Long pricePolicyId) {
+    private OrderProductJpaEntity findEntityByOrderIdAndPricePolicyId(Long orderId, Long pricePolicyId) throws OrderProductNotFoundException {
         return orderProductJpaRepository.findByOrderIdAndPricePolicyId(orderId, pricePolicyId)
                 .orElseThrow(() -> new OrderProductNotFoundException(orderId, pricePolicyId));
     }
