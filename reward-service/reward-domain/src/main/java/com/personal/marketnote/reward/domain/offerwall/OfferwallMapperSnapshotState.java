@@ -11,7 +11,7 @@ public class OfferwallMapperSnapshotState {
     private final Long id;
     private final OfferwallType offerwallType;
     private final String rewardKey;
-    private final String userId;
+    private final String userKey;
     private final UserDeviceType userDeviceType;
     private final String campaignKey;
     private final Integer campaignType;

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class OfferwallMapperCreateState {
     private final OfferwallType offerwallType;
     private final String rewardKey;
-    private final String userId;
+    private final String userKey;
     private final UserDeviceType userDeviceType;
     private final String campaignKey;
     private final Integer campaignType;

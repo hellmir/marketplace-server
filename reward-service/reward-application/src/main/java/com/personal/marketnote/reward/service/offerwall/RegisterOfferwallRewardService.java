@@ -4,7 +4,6 @@ import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.domain.exception.token.VendorVerificationFailedException;
 import com.personal.marketnote.common.exception.UserNotFoundException;
 import com.personal.marketnote.common.security.vendor.VendorVerificationProcessor;
-import com.personal.marketnote.common.utility.FormatConverter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.reward.configuration.AdpopcornHashKeyProperties;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapper;
@@ -40,9 +39,9 @@ public class RegisterOfferwallRewardService implements RegisterOfferwallRewardUs
 
     @Override
     public Long register(RegisterOfferwallRewardCommand command) {
-//        validateSignature(command);
+        validateSignature(command);
         validateUser(command);
-//        validateDuplicate(command);
+        validateDuplicate(command);
 
         OfferwallMapper offerwallMapper;
         try {
@@ -60,7 +59,7 @@ public class RegisterOfferwallRewardService implements RegisterOfferwallRewardUs
 
         modifyUserPointService.modify(
                 ModifyUserPointCommand.builder()
-                        .userId(FormatConverter.parseId(command.userId()))
+                        .userId(Long.parseLong(command.userKey()))
                         .changeType(UserPointChangeType.ACCRUAL)
                         .amount(command.quantity())
                         .sourceType(UserPointSourceType.OFFERWALL)
@@ -99,16 +98,16 @@ public class RegisterOfferwallRewardService implements RegisterOfferwallRewardUs
     }
 
     private String buildPlainText(RegisterOfferwallRewardCommand command) {
-        return command.userId()
+        return command.userKey()
                 + command.rewardKey()
                 + command.quantity()
                 + command.campaignKey();
     }
 
     private void validateUser(RegisterOfferwallRewardCommand command) {
-        Long userId = FormatConverter.parseId(command.userId());
-        if (!getUserPointUseCase.existsUserPoint(userId)) {
-            throw new UserNotFoundException(String.format("회원 정보를 찾을 수 없습니다. userId: %s", userId));
+        String userKey = command.userKey();
+        if (!getUserPointUseCase.existsUserPoint(Long.parseLong(userKey))) {
+            throw new UserNotFoundException(String.format("회원 정보를 찾을 수 없습니다. userKey: %s", userKey));
         }
     }
 

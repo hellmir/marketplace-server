@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
     @Query("""
@@ -167,12 +166,4 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
             @Param("byPhone") boolean byPhone,
             @Param("byRefCode") boolean byRefCode,
             @Param("searchKeyword") String searchKeyword);
-
-    @Query("""
-            SELECT u.userKey
-            FROM UserJpaEntity u
-            WHERE 1 = 1
-                AND u.id = :id
-            """)
-    Optional<UUID> findUserKeyById(@Param("id") Long id);
 }

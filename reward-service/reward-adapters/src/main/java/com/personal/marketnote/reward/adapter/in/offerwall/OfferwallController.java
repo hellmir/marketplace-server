@@ -42,7 +42,7 @@ public class OfferwallController {
      * 아드팝콘 리워드 지급 콜백 엔드포인트
      *
      * @param rewardKey    리워드 키
-     * @param userId       사용자 키
+     * @param userKey      회원 키
      * @param campaignKey  캠페인 키
      * @param campaignType 캠페인 타입
      * @param campaignName 캠페인 이름
@@ -60,7 +60,7 @@ public class OfferwallController {
     @AdpopcornCallbackApiDocs
     public ResponseEntity<String> handleAdpopcornCallback(
             @RequestParam("reward_key") String rewardKey,
-            @RequestParam("usn") String userId,
+            @RequestParam("usn") String userKey,
             @RequestParam("campaign_key") String campaignKey,
             @RequestParam("user_device_type") UserDeviceType userDeviceType,
             @RequestParam(value = "campaign_type", required = false) Integer campaignType,
@@ -77,7 +77,7 @@ public class OfferwallController {
 
         JsonNode payloadJson = vendorCommunicationPayloadGenerator.buildPayloadJson(
                 rewardKey,
-                userId,
+                userKey,
                 campaignKey,
                 campaignType,
                 campaignName,
@@ -94,7 +94,7 @@ public class OfferwallController {
         RegisterOfferwallRewardCommand command = RegisterOfferwallRewardCommand.builder()
                 .offerwallType(OfferwallType.ADPOPCORN)
                 .rewardKey(rewardKey)
-                .userId(userId)
+                .userKey(userKey)
                 .userDeviceType(userDeviceType)
                 .campaignKey(campaignKey)
                 .campaignType(campaignType)

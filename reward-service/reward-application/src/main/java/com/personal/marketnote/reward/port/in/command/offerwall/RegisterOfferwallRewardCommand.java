@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public record RegisterOfferwallRewardCommand(
         OfferwallType offerwallType,
         String rewardKey,
-        String userId,
+        String userKey,
         UserDeviceType userDeviceType,
         String campaignKey,
         Integer campaignType,

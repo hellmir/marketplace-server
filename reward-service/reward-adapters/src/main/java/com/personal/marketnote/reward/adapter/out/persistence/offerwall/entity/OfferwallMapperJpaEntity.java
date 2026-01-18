@@ -29,8 +29,8 @@ public class OfferwallMapperJpaEntity {
     @Column(name = "reward_key", nullable = false, length = 256)
     private String rewardKey;
 
-    @Column(name = "user_id", nullable = false, length = 128)
-    private String userId;
+    @Column(name = "user_key", nullable = false, length = 128)
+    private String userKey;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_device_type", nullable = false, length = 15)
@@ -82,7 +82,7 @@ public class OfferwallMapperJpaEntity {
                 .id(offerwallMapper.getId())
                 .offerwallType(offerwallMapper.getOfferwallType())
                 .rewardKey(offerwallMapper.getRewardKey())
-                .userId(offerwallMapper.getUserId())
+                .userKey(offerwallMapper.getUserKey())
                 .userDeviceType(offerwallMapper.getUserDeviceType())
                 .campaignKey(offerwallMapper.getCampaignKey())
                 .campaignType(offerwallMapper.getCampaignType())
@@ -105,7 +105,7 @@ public class OfferwallMapperJpaEntity {
                         .id(id)
                         .offerwallType(offerwallType)
                         .rewardKey(rewardKey)
-                        .userId(userId)
+                        .userKey(userKey)
                         .userDeviceType(userDeviceType)
                         .campaignKey(campaignKey)
                         .campaignType(campaignType)
