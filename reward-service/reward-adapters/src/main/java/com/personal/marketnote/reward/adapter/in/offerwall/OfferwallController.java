@@ -1,12 +1,9 @@
 package com.personal.marketnote.reward.adapter.in.offerwall;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.personal.marketnote.common.domain.exception.token.VendorVerificationFailedException;
 import com.personal.marketnote.common.exception.UserNotFoundException;
 import com.personal.marketnote.common.utility.FormatConverter;
-import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.reward.adapter.in.offerwall.apidocs.AdpopcornCallbackApiDocs;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallType;
 import com.personal.marketnote.reward.domain.offerwall.UserDeviceType;
@@ -15,14 +12,14 @@ import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorCom
 import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorName;
 import com.personal.marketnote.reward.exception.DuplicateOfferwallRewardException;
 import com.personal.marketnote.reward.port.in.command.offerwall.RegisterOfferwallRewardCommand;
-import com.personal.marketnote.reward.port.in.command.vendorcommunication.RewardVendorCommunicationHistoryCommand;
 import com.personal.marketnote.reward.port.in.usecase.offerwall.HandleOfferwallRewardUseCase;
-import com.personal.marketnote.reward.port.in.usecase.vendorcommunication.RewardRecordVendorCommunicationHistoryUseCase;
+import com.personal.marketnote.reward.utility.VendorCommunicationFailureHandler;
+import com.personal.marketnote.reward.utility.VendorCommunicationPayloadGenerator;
+import com.personal.marketnote.reward.utility.VendorCommunicationRecorder;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,8 +34,9 @@ import java.time.LocalDateTime;
 @Slf4j
 public class OfferwallController {
     private final HandleOfferwallRewardUseCase handleOfferwallRewardUseCase;
-    private final RewardRecordVendorCommunicationHistoryUseCase recordVendorCommunicationHistoryUseCase;
-    private final ObjectMapper objectMapper;
+    private final VendorCommunicationRecorder vendorCommunicationRecorder;
+    private final VendorCommunicationFailureHandler vendorCommunicationFailureHandler;
+    private final VendorCommunicationPayloadGenerator vendorCommunicationPayloadGenerator;
 
     /**
      * 아드팝콘 리워드 지급 콜백 엔드포인트
@@ -77,7 +75,7 @@ public class OfferwallController {
     ) {
         LocalDateTime attendedAt = FormatConverter.parseToLocalDateTime(timeStamp);
 
-        JsonNode payloadJson = buildPayloadJson(
+        JsonNode payloadJson = vendorCommunicationPayloadGenerator.buildPayloadJson(
                 rewardKey,
                 userId,
                 campaignKey,
@@ -115,139 +113,29 @@ public class OfferwallController {
 
         try {
             Long id = handleOfferwallRewardUseCase.handle(command);
-
-            recordCommunication(targetType, RewardVendorCommunicationType.REQUEST, id, vendorName, payloadString, payloadJson, null);
-
-            JsonNode successPayloadJson = buildResponsePayloadJson(true, 1, "success");
+            JsonNode successPayloadJson = vendorCommunicationPayloadGenerator.buildResponsePayloadJson(true, 1, "success");
             String successPayload = successPayloadJson.toString();
 
-            recordCommunication(targetType, RewardVendorCommunicationType.RESPONSE, id, vendorName, successPayload, successPayloadJson, null);
+            vendorCommunicationRecorder.record(
+                    targetType, RewardVendorCommunicationType.REQUEST, id, vendorName, payloadString, payloadJson
+            );
+            vendorCommunicationRecorder.record(
+                    targetType, RewardVendorCommunicationType.RESPONSE, id, vendorName, successPayload, successPayloadJson
+            );
 
             return ResponseEntity.ok(successPayload);
         } catch (VendorVerificationFailedException e) {
             // 서명 검증 실패
-            return handleFailure(targetType, vendorName, payloadString, payloadJson, e, 1100, "invalid signed value");
+            return vendorCommunicationFailureHandler.handleFailure(targetType, vendorName, payloadString, payloadJson, e, 1100, "invalid signed value");
         } catch (UserNotFoundException e) {
             // 회원 포인트 도메인 정보 조회 실패
-            return handleFailure(targetType, vendorName, payloadString, payloadJson, e, 3200, "invalid user");
+            return vendorCommunicationFailureHandler.handleFailure(targetType, vendorName, payloadString, payloadJson, e, 3200, "invalid user");
         } catch (DuplicateOfferwallRewardException e) {
             // 중복 리워드 지급 시도
-            return handleFailure(targetType, vendorName, payloadString, payloadJson, e, 3100, "duplicate transaction");
+            return vendorCommunicationFailureHandler.handleFailure(targetType, vendorName, payloadString, payloadJson, e, 3100, "duplicate transaction");
         } catch (Exception e) {
             // 그 외
-            return handleFailure(targetType, vendorName, payloadString, payloadJson, e, 4000, "custom error message");
+            return vendorCommunicationFailureHandler.handleFailure(targetType, vendorName, payloadString, payloadJson, e, 4000, "custom error message");
         }
-    }
-
-    private JsonNode buildPayloadJson(
-            String rewardKey,
-            String usn,
-            String campaignKey,
-            Integer campaignType,
-            String campaignName,
-            Long quantity,
-            String signedValue,
-            Integer appKey,
-            String appName,
-            String adid,
-            String idfa,
-            String timeStamp
-    ) {
-        ObjectNode node = objectMapper.createObjectNode();
-
-        putIfNotBlank(node, "reward_key", rewardKey);
-        putIfNotBlank(node, "usn", usn);
-        putIfNotBlank(node, "campaign_key", campaignKey);
-        putIfNotBlank(node, "campaign_type", campaignType);
-        putIfNotBlank(node, "campaign_name", campaignName);
-        putIfNotBlank(node, "quantity", quantity);
-        putIfNotBlank(node, "signed_value", signedValue);
-        putIfNotBlank(node, "app_key", appKey);
-        putIfNotBlank(node, "app_name", appName);
-        putIfNotBlank(node, "adid", adid);
-        putIfNotBlank(node, "idfa", idfa);
-        putIfNotBlank(node, "time_stamp", timeStamp);
-
-        return node;
-    }
-
-    private void putIfNotBlank(ObjectNode node, String field, String value) {
-        if (StringUtils.hasText(value)) {
-            node.put(field, value);
-        }
-    }
-
-    private void putIfNotBlank(ObjectNode node, String field, Number value) {
-        if (FormatValidator.hasValue(value)) {
-            node.put(field, value.toString());
-        }
-    }
-
-    private ResponseEntity<String> handleFailure(
-            RewardVendorCommunicationTargetType targetType,
-            RewardVendorName vendorName,
-            String requestPayload,
-            JsonNode requestPayloadJson,
-            Exception e,
-            int resultCode,
-            String resultMessage
-    ) {
-        log.error("Exception occured while handling adpopcorn reward: {}", e.getMessage());
-        String exceptionName = e.getClass().getSimpleName();
-        recordCommunication(
-                targetType,
-                RewardVendorCommunicationType.REQUEST,
-                null,
-                vendorName,
-                requestPayload,
-                requestPayloadJson,
-                exceptionName
-        );
-
-        JsonNode responsePayloadJson = buildResponsePayloadJson(false, resultCode, resultMessage);
-        String responsePayload = responsePayloadJson.toString();
-
-        recordCommunication(
-                targetType,
-                RewardVendorCommunicationType.RESPONSE,
-                null,
-                vendorName,
-                responsePayload,
-                responsePayloadJson,
-                exceptionName
-        );
-
-        return ResponseEntity.ok(responsePayload);
-    }
-
-    private void recordCommunication(
-            RewardVendorCommunicationTargetType targetType,
-            RewardVendorCommunicationType communicationType,
-            Long targetId,
-            RewardVendorName vendorName,
-            String payload,
-            JsonNode payloadJson,
-            String exception
-    ) {
-        recordVendorCommunicationHistoryUseCase.record(
-                RewardVendorCommunicationHistoryCommand.builder()
-                        .targetType(targetType)
-                        .targetId(targetId)
-                        .vendorName(vendorName)
-                        .communicationType(communicationType)
-                        .exception(exception)
-                        .payload(payload)
-                        .payloadJson(payloadJson)
-                        .build()
-        );
-    }
-
-    private JsonNode buildResponsePayloadJson(boolean isSuccess, int resultCode, String resultMessage) {
-        ObjectNode node = objectMapper.createObjectNode();
-        node.put("Result", isSuccess);
-        node.put("ResultCode", resultCode);
-        node.put("ResultMsg", resultMessage);
-
-        return node;
     }
 }
