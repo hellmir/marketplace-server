@@ -48,7 +48,7 @@ public class UserPointJpaEntity {
 
         return UserPointJpaEntity.builder()
                 .userId(userPoint.getUserId())
-                .amount(userPoint.getAmount())
+                .amount(userPoint.getAmountValue())
                 .addExpectedAmount(userPoint.getAddExpectedAmount())
                 .expireExpectedAmount(userPoint.getExpireExpectedAmount())
                 .createdAt(userPoint.getCreatedAt())
@@ -67,5 +67,11 @@ public class UserPointJpaEntity {
                         .modifiedAt(modifiedAt)
                         .build()
         );
+    }
+
+    public void updateFrom(UserPoint userPoint) {
+        this.amount = userPoint.getAmountValue();
+        this.addExpectedAmount = userPoint.getAddExpectedAmount();
+        this.expireExpectedAmount = userPoint.getExpireExpectedAmount();
     }
 }
