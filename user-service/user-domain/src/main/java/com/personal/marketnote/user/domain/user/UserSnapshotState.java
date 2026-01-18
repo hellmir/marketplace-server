@@ -9,12 +9,14 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserSnapshotState {
     private final Long id;
+    private final UUID userKey;
     private final String nickname;
     private final String email;
     private final String password;
