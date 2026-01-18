@@ -12,15 +12,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(
-        name = "offerwall_mapper",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_offerwall_type_reward_key",
-                        columnNames = {"offerwall_type", "reward_key"}
-                )
-        }
-)
+@Table(name = "offerwall_mapper")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
