@@ -38,6 +38,9 @@ public class OrderJpaEntity extends BaseEntity {
     @Column(name = "buyer_id", nullable = false)
     private Long buyerId;
 
+    @Column(name = "sharer_id")
+    private Long sharerId;
+
     @Column(name = "order_number", nullable = false, length = 31, unique = true)
     private String orderNumber;
 

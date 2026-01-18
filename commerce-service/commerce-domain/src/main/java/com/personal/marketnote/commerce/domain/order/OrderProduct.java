@@ -9,6 +9,7 @@ import lombok.*;
 public class OrderProduct {
     private Long orderId;
     private Long pricePolicyId;
+    private Long sharerId;
     private Integer quantity;
     private Long unitAmount;
     private String imageUrl;
@@ -18,6 +19,7 @@ public class OrderProduct {
     public static OrderProduct from(OrderProductCreateState state) {
         return OrderProduct.builder()
                 .pricePolicyId(state.getPricePolicyId())
+                .sharerId(state.getSharerId())
                 .quantity(state.getQuantity())
                 .unitAmount(state.getUnitAmount())
                 .imageUrl(state.getImageUrl())
@@ -29,6 +31,7 @@ public class OrderProduct {
         return OrderProduct.builder()
                 .orderId(state.getOrderId())
                 .pricePolicyId(state.getPricePolicyId())
+                .sharerId(state.getSharerId())
                 .quantity(state.getQuantity())
                 .unitAmount(state.getUnitAmount())
                 .imageUrl(state.getImageUrl())

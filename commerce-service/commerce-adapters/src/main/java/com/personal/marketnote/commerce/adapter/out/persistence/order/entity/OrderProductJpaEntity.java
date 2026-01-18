@@ -27,6 +27,9 @@ public class OrderProductJpaEntity extends BaseEntity {
     @JoinColumn(name = "order_id", nullable = false)
     private OrderJpaEntity orderJpaEntity;
 
+    @Column(name = "sharer_id")
+    private Long sharerId;
+
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
@@ -47,6 +50,7 @@ public class OrderProductJpaEntity extends BaseEntity {
         return OrderProductJpaEntity.builder()
                 .id(new OrderProductId(orderProduct.getPricePolicyId(), orderJpaEntity.getId()))
                 .orderJpaEntity(orderJpaEntity)
+                .sharerId(orderProduct.getSharerId())
                 .quantity(orderProduct.getQuantity())
                 .unitAmount(orderProduct.getUnitAmount())
                 .imageUrl(orderProduct.getImageUrl())

@@ -16,7 +16,7 @@ public class OrderJpaEntityToDomainMapper {
         return Optional.ofNullable(orderJpaEntity)
                 .map(entity -> {
                     List<OrderProductSnapshotState> productStates = entity.getOrderProductJpaEntities().stream()
-                            .map(OrderJpaEntityToDomainMapper::mapToSnapshotState)
+                            .map(OrderJpaEntityToDomainMapper::mapToOrderProductSnapshotState)
                             .filter(Optional::isPresent)
                             .map(Optional::get)
                             .toList();
@@ -26,6 +26,7 @@ public class OrderJpaEntityToDomainMapper {
                                     .id(entity.getId())
                                     .sellerId(entity.getSellerId())
                                     .buyerId(entity.getBuyerId())
+                                    .sharerId(entity.getSharerId())
                                     .orderNumber(entity.getOrderNumber())
                                     .orderStatus(entity.getOrderStatus())
                                     .totalAmount(entity.getTotalAmount())
@@ -46,7 +47,7 @@ public class OrderJpaEntityToDomainMapper {
         return Optional.ofNullable(orderJpaEntity)
                 .map(entity -> {
                     List<OrderProductSnapshotState> productStates = entity.getOrderProductJpaEntities().stream()
-                            .map(OrderJpaEntityToDomainMapper::mapToSnapshotState)
+                            .map(OrderJpaEntityToDomainMapper::mapToOrderProductSnapshotState)
                             .filter(Optional::isPresent)
                             .map(Optional::get)
                             .toList();
@@ -56,6 +57,7 @@ public class OrderJpaEntityToDomainMapper {
                                     .id(entity.getId())
                                     .sellerId(entity.getSellerId())
                                     .buyerId(entity.getBuyerId())
+                                    .sharerId(entity.getSharerId())
                                     .orderStatus(entity.getOrderStatus())
                                     .statusChangeReasonCategory(orderStatusInfo.getReasonCategory())
                                     .statusChangeReason(orderStatusInfo.getReason())
@@ -71,11 +73,14 @@ public class OrderJpaEntityToDomainMapper {
                 });
     }
 
-    private static Optional<OrderProductSnapshotState> mapToSnapshotState(OrderProductJpaEntity orderProductJpaEntity) {
+    private static Optional<OrderProductSnapshotState> mapToOrderProductSnapshotState(
+            OrderProductJpaEntity orderProductJpaEntity
+    ) {
         return Optional.ofNullable(orderProductJpaEntity)
                 .map(entity -> OrderProductSnapshotState.builder()
                         .orderId(entity.getId().getOrderId())
                         .pricePolicyId(entity.getId().getPricePolicyId())
+                        .sharerId(entity.getSharerId())
                         .quantity(entity.getQuantity())
                         .unitAmount(entity.getUnitAmount())
                         .imageUrl(entity.getImageUrl())
@@ -84,12 +89,13 @@ public class OrderJpaEntityToDomainMapper {
                         .build());
     }
 
-    public static Optional<OrderProduct> mapToDomain(OrderProductJpaEntity orderProductJpaEntity) {
+    public static Optional<OrderProduct> mapToOrderProductDomain(OrderProductJpaEntity orderProductJpaEntity) {
         return Optional.ofNullable(orderProductJpaEntity)
                 .map(entity -> OrderProduct.from(
                         OrderProductSnapshotState.builder()
                                 .orderId(entity.getId().getOrderId())
                                 .pricePolicyId(entity.getId().getPricePolicyId())
+                                .sharerId(entity.getSharerId())
                                 .quantity(entity.getQuantity())
                                 .unitAmount(entity.getUnitAmount())
                                 .imageUrl(entity.getImageUrl())

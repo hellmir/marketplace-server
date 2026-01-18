@@ -13,7 +13,6 @@ import com.personal.marketnote.commerce.port.out.inventory.SaveInventoryDeductio
 import com.personal.marketnote.commerce.port.out.inventory.SaveInventoryPort;
 import com.personal.marketnote.commerce.port.out.inventory.UpdateInventoryPort;
 import com.personal.marketnote.common.adapter.out.PersistenceAdapter;
-import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
@@ -64,10 +63,6 @@ public class InventoryPersistenceAdapter implements SaveInventoryPort, FindInven
                     .filter(entity -> entity.getPricePolicyId().equals(inventory.getPricePolicyId()))
                     .findFirst()
                     .orElseThrow(() -> new InventoryNotFoundException(inventory.getPricePolicyId()));
-
-            if (!inventoryEntity.getVersion().equals(inventory.getVersion())) {
-                throw new OptimisticLockException("재고 버전 불일치: pricePolicyId=" + inventory.getPricePolicyId());
-            }
 
             inventoryEntity.updateFrom(inventory);
         }

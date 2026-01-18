@@ -10,6 +10,7 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrderProductCreateState {
     private final Long pricePolicyId;
+    private final Long sharerId;
     private final Integer quantity;
     private final Long unitAmount;
     private final String imageUrl;
