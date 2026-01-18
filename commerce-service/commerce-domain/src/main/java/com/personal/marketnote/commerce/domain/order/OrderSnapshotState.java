@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Builder
@@ -15,7 +16,7 @@ public class OrderSnapshotState {
     private final Long id;
     private final Long sellerId;
     private final Long buyerId;
-    private final Long sharerId;
+    private final UUID orderKey;
     private final String orderNumber;
     private final OrderStatus orderStatus;
     private final OrderStatusReasonCategory statusChangeReasonCategory;

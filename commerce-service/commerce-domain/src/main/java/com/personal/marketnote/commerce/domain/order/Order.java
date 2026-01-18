@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -15,6 +16,7 @@ public class Order {
     private Long id;
     private Long sellerId;
     private Long buyerId;
+    private UUID orderKey;
     private String orderNumber;
     private OrderStatus orderStatus;
     private OrderStatusReasonCategory statusChangeReasonCategory;
@@ -37,6 +39,7 @@ public class Order {
         return Order.builder()
                 .sellerId(state.getSellerId())
                 .buyerId(state.getBuyerId())
+                .orderKey(RandomCodeGenerator.generateOrderKey())
                 .orderNumber(RandomCodeGenerator.generateOrderNumber())
                 .orderStatus(OrderStatus.PAYMENT_PENDING)
                 .totalAmount(state.getTotalAmount())
@@ -57,6 +60,7 @@ public class Order {
                 .id(state.getId())
                 .sellerId(state.getSellerId())
                 .buyerId(state.getBuyerId())
+                .orderKey(state.getOrderKey())
                 .orderNumber(state.getOrderNumber())
                 .orderStatus(state.getOrderStatus())
                 .statusChangeReasonCategory(state.getStatusChangeReasonCategory())

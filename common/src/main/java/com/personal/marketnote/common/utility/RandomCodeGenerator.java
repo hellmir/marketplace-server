@@ -1,7 +1,10 @@
 package com.personal.marketnote.common.utility;
 
+import com.github.f4b6a3.uuid.UuidCreator;
+
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class RandomCodeGenerator {
     private static final char[] REFERENCE_CODE_AALLOWED_LETTERS = "ABCDEFGHJKMNPQRTUVWXYZ".toCharArray();
@@ -46,5 +49,13 @@ public class RandomCodeGenerator {
         }
 
         return code.toString();
+    }
+
+    public static UUID generateOrderKey() {
+        return generateUuidV7();
+    }
+
+    private static UUID generateUuidV7() {
+        return UuidCreator.getTimeOrdered();
     }
 }
