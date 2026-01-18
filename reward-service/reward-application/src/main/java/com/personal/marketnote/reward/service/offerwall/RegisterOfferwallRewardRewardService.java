@@ -9,7 +9,7 @@ import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.reward.configuration.AdpopcornHashKeyProperties;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapper;
 import com.personal.marketnote.reward.domain.point.UserPointChangeType;
-import com.personal.marketnote.reward.domain.point.UserPointHistorySourceType;
+import com.personal.marketnote.reward.domain.point.UserPointSourceType;
 import com.personal.marketnote.reward.exception.DuplicateOfferwallRewardException;
 import com.personal.marketnote.reward.exception.RewardTargetInfoNotFoundException;
 import com.personal.marketnote.reward.mapper.RewardCommandToStateMapper;
@@ -47,7 +47,7 @@ public class RegisterOfferwallRewardRewardService implements RegisterOfferwallRe
                         .userId(FormatConverter.parseId(command.userId()))
                         .changeType(UserPointChangeType.ACCRUAL)
                         .amount(command.quantity())
-                        .sourceType(UserPointHistorySourceType.OFFERWALL)
+                        .sourceType(UserPointSourceType.OFFERWALL)
                         .sourceId(offerwallMapper.getId())
                         .reason(String.format("%s 리워드 보상 적립", command.offerwallType().getDescription()))
                         .build()

@@ -24,12 +24,15 @@ public record GetCartProductResult(
                 .build();
     }
 
-    public static GetCartProductResult of(PricePolicy pricePolicy, String imageUrl, Short quantity, Integer stock) {
+    public static GetCartProductResult of(
+            PricePolicy pricePolicy, String imageUrl, Short quantity, Integer stock, Long sharerId
+    ) {
         return GetCartProductResult.builder()
                 .pricePolicy(GetProductPricePolicyResult.fromCart(pricePolicy))
                 .product(CartProductItemResult.from(pricePolicy.getProduct(), imageUrl))
                 .quantity(quantity)
                 .stock(stock)
+                .sharerId(sharerId)
                 .build();
     }
 }

@@ -11,7 +11,7 @@ public class UserPointHistoryCreateState {
     private final Long userId;
     private final Long amount;
     private final Boolean isReflected;
-    private final UserPointHistorySourceType sourceType;
+    private final UserPointSourceType sourceType;
     private final Long sourceId;
     private final String reason;
     private final LocalDateTime accumulatedAt;

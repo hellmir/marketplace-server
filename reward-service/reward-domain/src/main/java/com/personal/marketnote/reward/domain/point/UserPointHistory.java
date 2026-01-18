@@ -13,7 +13,7 @@ public class UserPointHistory {
     private Long userId;
     private Long amount;
     private Boolean isReflected;
-    private UserPointHistorySourceType sourceType;
+    private UserPointSourceType sourceType;
     private Long sourceId;
     private String reason;
     private LocalDateTime accumulatedAt;
