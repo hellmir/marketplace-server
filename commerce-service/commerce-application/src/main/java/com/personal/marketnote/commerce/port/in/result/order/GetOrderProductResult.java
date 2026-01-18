@@ -14,6 +14,7 @@ import java.util.List;
 @Builder(access = AccessLevel.PRIVATE)
 public record GetOrderProductResult(
         Long pricePolicyId,
+        Long sharerId,
         Integer quantity,
         Long unitAmount,
         String imageUrl,
@@ -32,6 +33,7 @@ public record GetOrderProductResult(
 
         return GetOrderProductResult.builder()
                 .pricePolicyId(orderProduct.getPricePolicyId())
+                .sharerId(orderProduct.getSharerId())
                 .quantity(orderProduct.getQuantity())
                 .unitAmount(orderProduct.getUnitAmount())
                 .imageUrl(orderProduct.getImageUrl())

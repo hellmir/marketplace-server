@@ -13,6 +13,7 @@ import java.util.List;
 public class OrderCreateState {
     private final Long sellerId;
     private final Long buyerId;
+    private final Long sharerId;
     private final Long totalAmount;
     private final Long couponAmount;
     private final Long pointAmount;

@@ -119,7 +119,7 @@ public class OrderPersistenceAdapter implements SaveOrderPort, FindOrderPort, Fi
 
     @Override
     public Optional<OrderProduct> findByOrderIdAndPricePolicyId(Long orderId, Long pricePolicyId) {
-        return OrderJpaEntityToDomainMapper.mapToDomain(
+        return OrderJpaEntityToDomainMapper.mapToOrderProductDomain(
                 orderProductJpaRepository.findByOrderIdAndPricePolicyId(orderId, pricePolicyId).orElse(null)
         );
     }

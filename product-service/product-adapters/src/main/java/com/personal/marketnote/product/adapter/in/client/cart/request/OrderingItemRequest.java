@@ -17,7 +17,7 @@ public record OrderingItemRequest(
                 description = "링크 공유 회원 ID",
                 requiredMode = Schema.RequiredMode.NOT_REQUIRED
         )
-        @Min(value = 1, message = "링크 공유 회원는 1 이상이어야 합니다.")
+        @Min(value = 1, message = "링크 공유 회원 ID는 1 이상이어야 합니다.")
         @Max(value = Long.MAX_VALUE, message = "링크 공유 회원 ID는 정수형 최대값을 초과할 수 없습니다.")
         Long sharerId,
 

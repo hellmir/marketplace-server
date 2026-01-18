@@ -110,7 +110,7 @@ import java.lang.annotation.*;
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 403,
-                                          "code": "FORBIDDEN",
+                                          "code": "FORBIDDEN",«
                                           "timestamp": "2025-12-30T12:12:30.013",
                                           "content": null,
                                           "message": "Access Denied"

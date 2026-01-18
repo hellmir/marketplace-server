@@ -3,7 +3,7 @@ package com.personal.marketnote.commerce.adapter.in.client.order.mapper;
 import com.personal.marketnote.commerce.adapter.in.client.order.request.ChangeOrderStatusRequest;
 import com.personal.marketnote.commerce.adapter.in.client.order.request.RegisterOrderRequest;
 import com.personal.marketnote.commerce.port.in.command.order.ChangeOrderStatusCommand;
-import com.personal.marketnote.commerce.port.in.command.order.OrderProductItem;
+import com.personal.marketnote.commerce.port.in.command.order.OrderProductItemCommand;
 import com.personal.marketnote.commerce.port.in.command.order.RegisterOrderCommand;
 
 import java.util.List;
@@ -13,9 +13,10 @@ public class OrderRequestToCommandMapper {
             RegisterOrderRequest request,
             Long buyerId
     ) {
-        List<OrderProductItem> orderProducts = request.getOrderProducts().stream()
-                .map(item -> OrderProductItem.builder()
+        List<OrderProductItemCommand> orderProducts = request.getOrderProducts().stream()
+                .map(item -> OrderProductItemCommand.builder()
                         .pricePolicyId(item.getPricePolicyId())
+                        .sharerId(item.getSharerId())
                         .quantity(item.getQuantity())
                         .unitAmount(item.getUnitAmount())
                         .imageUrl(item.getImageUrl())

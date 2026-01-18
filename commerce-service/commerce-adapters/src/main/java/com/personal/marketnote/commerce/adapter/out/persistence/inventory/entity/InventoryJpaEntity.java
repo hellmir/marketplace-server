@@ -2,6 +2,7 @@ package com.personal.marketnote.commerce.adapter.out.persistence.inventory.entit
 
 import com.personal.marketnote.commerce.domain.inventory.Inventory;
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseEntity;
+import com.personal.marketnote.common.utility.FormatValidator;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,6 +26,7 @@ public class InventoryJpaEntity extends BaseEntity {
 
     // RDBMS 낙관적 락 기반의 동시성 제어
     @Version
+    @Column(name = "version", nullable = false, columnDefinition = "BIGINT DEFAULT 0")
     private Long version;
 
     private InventoryJpaEntity(Long pricePolicyId, Integer stock, Long version) {
@@ -34,15 +36,37 @@ public class InventoryJpaEntity extends BaseEntity {
     }
 
     public static InventoryJpaEntity from(Inventory inventory) {
+        Long version = inventory.getVersion();
+        if (!FormatValidator.hasValue(version)) {
+            version = 0L;
+        }
+
         return new InventoryJpaEntity(
                 inventory.getPricePolicyId(),
                 inventory.getStockValue(),
-                inventory.getVersion()
+                version
         );
     }
 
     public void updateFrom(Inventory inventory) {
+        if (this.version == null) {
+            // 초기 버전 미설정 데이터 보호
+            this.version = 0L;
+        }
         this.stock = inventory.getStockValue();
-        this.version = inventory.getVersion();
+    }
+
+    @PostLoad
+    private void initVersionAfterLoad() {
+        if (this.version == null) {
+            this.version = 0L;
+        }
+    }
+
+    @PrePersist
+    private void initVersionBeforePersist() {
+        if (this.version == null) {
+            this.version = 0L;
+        }
     }
 }

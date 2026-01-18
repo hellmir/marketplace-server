@@ -11,6 +11,6 @@ public record RegisterOrderCommand(
         Long totalAmount,
         Long couponAmount,
         Long pointAmount,
-        List<OrderProductItem> orderProducts
+        List<OrderProductItemCommand> orderProducts
 ) {
 }

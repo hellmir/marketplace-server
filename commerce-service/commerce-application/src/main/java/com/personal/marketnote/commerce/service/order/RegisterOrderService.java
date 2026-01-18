@@ -26,6 +26,7 @@ public class RegisterOrderService implements RegisterOrderUseCase {
         List<OrderProductCreateState> orderProductStates = command.orderProducts().stream()
                 .map(item -> OrderProductCreateState.builder()
                         .pricePolicyId(item.pricePolicyId())
+                        .sharerId(item.sharerId())
                         .quantity(item.quantity())
                         .unitAmount(item.unitAmount())
                         .imageUrl(item.imageUrl())
