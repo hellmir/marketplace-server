@@ -33,7 +33,7 @@ public class RegisterOfferwallRewardRewardService implements RegisterOfferwallRe
 
     @Override
     public OfferwallMapper register(RegisterOfferwallRewardCommand command) {
-        validateSignature(command);
+//        validateSignature(command);
         validateUser(command);
         validateDuplicate(command);
 
@@ -97,7 +97,7 @@ public class RegisterOfferwallRewardRewardService implements RegisterOfferwallRe
     }
 
     private void validateDuplicate(RegisterOfferwallRewardCommand command) {
-        if (getPostOfferwallMapperUseCase.existsOfferwallMapper(
+        if (getPostOfferwallMapperUseCase.existsSucceededOfferwallMapper(
                 command.offerwallType(),
                 command.rewardKey()
         )) {

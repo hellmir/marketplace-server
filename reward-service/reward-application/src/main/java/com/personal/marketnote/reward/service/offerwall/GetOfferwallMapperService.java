@@ -11,8 +11,7 @@ import lombok.RequiredArgsConstructor;
 public class GetOfferwallMapperService implements GetPostOfferwallMapperUseCase {
     private final FindOfferwallMapperPort findOfferwallMapperPort;
 
-    @Override
-    public boolean existsOfferwallMapper(OfferwallType offerwallType, String rewardKey) {
-        return findOfferwallMapperPort.existsByOfferwallTypeAndRewardKey(offerwallType, rewardKey);
+    public boolean existsSucceededOfferwallMapper(OfferwallType offerwallType, String rewardKey) {
+        return findOfferwallMapperPort.existsByOfferwallTypeAndRewardKeyAndIsSuccess(offerwallType, rewardKey, true);
     }
 }
