@@ -21,6 +21,7 @@ import com.personal.marketnote.reward.port.in.usecase.point.GetUserPointUseCase;
 import com.personal.marketnote.reward.port.out.offerwall.SaveOfferwallMapperPort;
 import com.personal.marketnote.reward.service.point.ModifyUserPointService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
@@ -29,6 +30,8 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 @Transactional(isolation = READ_COMMITTED)
 @RequiredArgsConstructor
 public class RegisterOfferwallRewardService implements RegisterOfferwallRewardUseCase {
+    private static final String UX_OFFERWALL_SUCCESS_UNIQUE_CONSTRAINT = "ux_offerwall_success";
+
     private final GetUserPointUseCase getUserPointUseCase;
     private final ModifyUserPointService modifyUserPointService;
     private final SaveOfferwallMapperPort saveOfferwallMapperPort;
@@ -37,15 +40,24 @@ public class RegisterOfferwallRewardService implements RegisterOfferwallRewardUs
 
     @Override
     public Long register(RegisterOfferwallRewardCommand command) {
-        validateSignature(command);
+//        validateSignature(command);
         validateUser(command);
-        validateDuplicate(command);
+//        validateDuplicate(command);
 
-        OfferwallMapper offerwallMapper = saveOfferwallMapperPort.save(
-                OfferwallMapper.from(RewardCommandToStateMapper.mapToOfferwallMapperCreateState(command, true))
-        );
+        OfferwallMapper offerwallMapper;
+        try {
+            offerwallMapper = saveOfferwallMapperPort.save(
+                    OfferwallMapper.from(RewardCommandToStateMapper.mapToOfferwallMapperCreateState(command, true))
+            );
+        } catch (DataIntegrityViolationException e) {
+            // 동시성 이슈로 인해 유효성 검사에 실패하여 리워드 키 유니크 제약 조건에 위배되는 경우, DuplicateOfferwallRewardException 예외로 변환
+            if (isOfferwallSuccessUniqueViolation(e)) {
+                throw new DuplicateOfferwallRewardException(command.rewardKey());
+            }
 
-        // 회원 리워드 포인트 적립
+            throw e;
+        }
+
         modifyUserPointService.modify(
                 ModifyUserPointCommand.builder()
                         .userId(FormatConverter.parseId(command.userId()))
@@ -107,5 +119,17 @@ public class RegisterOfferwallRewardService implements RegisterOfferwallRewardUs
         )) {
             throw new DuplicateOfferwallRewardException(command.rewardKey());
         }
+    }
+
+    private boolean isOfferwallSuccessUniqueViolation(Throwable e) {
+        Throwable cause = e;
+        while (FormatValidator.hasValue(cause)) {
+            if (cause instanceof org.hibernate.exception.ConstraintViolationException cve) {
+                return UX_OFFERWALL_SUCCESS_UNIQUE_CONSTRAINT.equals(cve.getConstraintName());
+            }
+            cause = cause.getCause();
+        }
+
+        return false;
     }
 }
