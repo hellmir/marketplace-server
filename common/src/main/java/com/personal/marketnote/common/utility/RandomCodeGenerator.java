@@ -51,14 +51,6 @@ public class RandomCodeGenerator {
         return code.toString();
     }
 
-    public static UUID generateUserKey() {
-        return generateUuidV4();
-    }
-
-    private static UUID generateUuidV4() {
-        return UUID.randomUUID();
-    }
-
     public static UUID generateOrderKey() {
         return generateUuidV7();
     }

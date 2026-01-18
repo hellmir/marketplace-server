@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface GetUserUseCase {
     /**
@@ -76,6 +77,15 @@ public interface GetUserUseCase {
      * @Description 활성화/비활성화/비노출 회원을 조회합니다.
      */
     User getAllStatusUser(AuthVendor authVendor, String oidcId);
+
+    /**
+     * @param id 회원 ID
+     * @return 회원 키 {@link UUID}
+     * @Date 2026-01-19
+     * @Author 성효빈
+     * @Description 회원 키를 조회합니다.
+     */
+    UUID getUserKey(Long id);
 
     /**
      * @param id 회원 ID

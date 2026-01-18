@@ -283,6 +283,35 @@ public class UserController {
     }
 
     /**
+     * 자신의 회원 키 조회
+     *
+     * @param principal 사용자 인증 정보
+     * @return 회원 키 조회 응답 {@link GetUserKeyResponse}
+     * @Author 성효빈
+     * @Date 2026-01-19
+     * @Description 자신의 회원 키를 조회합니다.
+     */
+    @GetMapping("/my-key")
+    @GetMyKeyApiDocs
+    public ResponseEntity<BaseResponse<GetUserKeyResponse>> getMyKey(
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        GetUserKeyResponse getUserKeyResponse = GetUserKeyResponse.of(
+                getUserUseCase.getUserKey(ElementExtractor.extractUserId(principal))
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        getUserKeyResponse,
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "자신의 회원 키 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
      * 자신의 정보 조회
      *
      * @param principal 사용자 인증 정보
