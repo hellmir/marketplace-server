@@ -36,7 +36,7 @@ public class RandomCodeGenerator {
     }
 
     public static String generateOrderNumber() {
-        return FormatConverter.parseToNumberTime(LocalDateTime.now()) + generateRandomNumberCode(5);
+        return FormatConverter.parseToNumberTime(LocalDateTime.now()) + generateRandomNumberCode(7);
     }
 
     private static String generateRandomNumberCode(int length) {
