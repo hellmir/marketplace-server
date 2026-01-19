@@ -8,10 +8,12 @@ import com.personal.marketnote.community.adapter.in.client.review.mapper.ReviewR
 import com.personal.marketnote.community.adapter.in.client.review.request.RegisterReviewRequest;
 import com.personal.marketnote.community.adapter.in.client.review.request.UpdateReviewRequest;
 import com.personal.marketnote.community.adapter.in.client.review.response.GetProductReviewAggregateResponse;
+import com.personal.marketnote.community.adapter.in.client.review.response.GetReviewsCountResponse;
 import com.personal.marketnote.community.adapter.in.client.review.response.GetReviewsResponse;
 import com.personal.marketnote.community.adapter.in.client.review.response.RegisterReviewResponse;
 import com.personal.marketnote.community.domain.review.ReviewSortProperty;
 import com.personal.marketnote.community.exception.ProductReviewAggregateNotFoundException;
+import com.personal.marketnote.community.port.in.result.review.GetReviewCountResult;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
 import com.personal.marketnote.community.port.in.result.review.ProductReviewAggregateResult;
 import com.personal.marketnote.community.port.in.result.review.RegisterReviewResult;
@@ -137,7 +139,7 @@ public class ReviewController {
      * @Date 2026-01-12
      * @Description 나의 리뷰 목록을 조회합니다.
      */
-    @GetMapping("/reviews")
+    @GetMapping("/reviews/me")
     @GetMyReviewsApiDocs
     public ResponseEntity<BaseResponse<GetReviewsResponse>> getMyReviews(
             @RequestParam(value = "cursor", required = false) Long cursor,
@@ -146,7 +148,7 @@ public class ReviewController {
             @RequestParam(required = false, defaultValue = "ID") ReviewSortProperty sortProperty,
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
-        GetReviewsResult result = getReviewUseCase.getMyReviews(
+        GetReviewsResult result = getReviewUseCase.getWriterReviews(
                 ElementExtractor.extractUserId(principal),
                 cursor,
                 pageSize,
@@ -160,6 +162,35 @@ public class ReviewController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "나의 리뷰 목록 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 나의 리뷰 개수 조회
+     *
+     * @param principal 인증된 사용자 정보
+     * @return 나의 리뷰 개수 조회 응답 {@link GetReviewsCountResponse}
+     * @Author 성효빈
+     * @Date 2026-01-19
+     * @Description 나의 리뷰 개수를 조회합니다.
+     */
+    @GetMapping("/reviews/me/count")
+    @GetMyReviewsCountApiDocs
+    public ResponseEntity<BaseResponse<GetReviewsCountResponse>> getMyReviewsCount(
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        GetReviewCountResult result = getReviewUseCase.getWriterReviewCount(
+                ElementExtractor.extractUserId(principal)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        GetReviewsCountResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "나의 리뷰 개수 조회 성공"
                 ),
                 HttpStatus.OK
         );

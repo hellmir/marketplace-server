@@ -4,6 +4,7 @@ import com.personal.marketnote.community.domain.review.ProductReviewAggregate;
 import com.personal.marketnote.community.domain.review.Review;
 import com.personal.marketnote.community.domain.review.ReviewSortProperty;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
+import com.personal.marketnote.community.port.in.result.review.GetReviewCountResult;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
 import org.springframework.data.domain.Sort;
 
@@ -81,14 +82,23 @@ public interface GetReviewUseCase {
      * @param pageSize      페이지 크기
      * @param sortDirection 정렬 방향
      * @param sortProperty  정렬 속성
-     * @return 나의 리뷰 목록 조회 결과 {@link GetReviewsResult}
+     * @return 회원 리뷰 목록 조회 결과 {@link GetReviewsResult}
      * @Date 2026-01-12
      * @Author 성효빈
      * @Description 회원 리뷰 목록을 조회합니다.
      */
-    GetReviewsResult getMyReviews(
+    GetReviewsResult getWriterReviews(
             Long userId, Long cursor, int pageSize, Sort.Direction sortDirection, ReviewSortProperty sortProperty
     );
+
+    /**
+     * @param userId 회원 ID
+     * @return 회원 리뷰 총 개수 조회 결과 {@link GetReviewCountResult}
+     * @Date 2026-01-19
+     * @Author 성효빈
+     * @Description 회원이 작성한 리뷰 총 개수를 조회합니다.
+     */
+    GetReviewCountResult getWriterReviewCount(Long userId);
 
     /**
      * @param id 리뷰 ID
