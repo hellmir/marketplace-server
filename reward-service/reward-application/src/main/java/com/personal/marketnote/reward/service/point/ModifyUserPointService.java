@@ -44,7 +44,7 @@ public class ModifyUserPointService implements ModifyUserPointUseCase {
     private UserPoint getTargetUserPoint(ModifyUserPointCommand command) {
         Long userId = command.userId();
         if (FormatValidator.hasValue(userId)) {
-            getUserPointUseCase.getUserPoint(userId);
+            return getUserPointUseCase.getUserPoint(userId);
         }
 
         return getUserPointUseCase.getUserPoint(command.userKey());
