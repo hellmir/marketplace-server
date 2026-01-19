@@ -54,6 +54,8 @@ def buildMarketNoteTaskDefinition(env) {
                 [name: "ADPOPCORN_IOS_HASH_KEY",         value: env.ADPOPCORN_IOS_HASH_KEY],
                 [name: "TNK_ANDROID_HASH_KEY",           value: env.TNK_ANDROID_HASH_KEY],
                 [name: "TNK_IOS_HASH_KEY",               value: env.TNK_IOS_HASH_KEY],
+                [name: "ADISCOPE_ANDROID_HASH_KEY",      value: env.ADISCOPE_ANDROID_HASH_KEY],
+                [name: "ADISCOPE_IOS_HASH_KEY",          value: env.ADISCOPE_IOS_HASH_KEY],
             ],
             logConfiguration: [
                 logDriver: "awslogs",
@@ -600,6 +602,8 @@ pipeline {
                         string(credentialsId: 'MARKETNOTE_QA_ADPOPCORN_IOS_HASH_KEY',          variable: 'ADPOPCORN_IOS_HASH_KEY'),
                         string(credentialsId: 'MARKETNOTE_QA_TNK_ANDROID_HASH_KEY',            variable: 'TNK_ANDROID_HASH_KEY'),
                         string(credentialsId: 'MARKETNOTE_QA_TNK_IOS_HASH_KEY',                variable: 'TNK_IOS_HASH_KEY'),
+                        string(credentialsId: 'MARKETNOTE_QA_ADISCOPE_ANDROID_HASH_KEY',       variable: 'ADISCOPE_ANDROID_HASH_KEY'),
+                        string(credentialsId: 'MARKETNOTE_QA_ADISCOPE_IOS_HASH_KEY',           variable: 'ADISCOPE_IOS_HASH_KEY'),
                     ]) {
                         sh '''
                           LG="$CLOUDWATCH_LOG_GROUP"

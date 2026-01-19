@@ -64,7 +64,6 @@ public class VendorCommunicationPayloadGenerator {
             Integer campaignType,
             Long quantity,
             String signedValue,
-            Integer appKey,
             String appName,
             String adid,
             String attendedAt,
@@ -78,11 +77,40 @@ public class VendorCommunicationPayloadGenerator {
         putIfNotBlank(node, "campaign_type", campaignType);
         putIfNotBlank(node, "pay_pnt", quantity);
         putIfNotBlank(node, "md_chk", signedValue);
-        putIfNotBlank(node, "app_key", appKey);
         putIfNotBlank(node, "app_nm", appName);
         putIfNotBlank(node, "app_id", adid);
         putIfNotBlank(node, "pay_dt", attendedAt);
         putIfNotBlank(node, "pay_amt", revenue);
+
+        return node;
+    }
+
+    public JsonNode buildAdiscopePayloadJson(
+            String rewardKey,
+            String userKey,
+            UserDeviceType userDeviceType,
+            String campaignKey,
+            String campaignType,
+            String campaignName,
+            String rewardUnit,
+            Long quantity,
+            String signedValue,
+            String adid,
+            String network
+    ) {
+        ObjectNode node = objectMapper.createObjectNode();
+
+        putIfNotBlank(node, "transactionId", rewardKey);
+        putIfNotBlank(node, "userId", userKey);
+        putIfNotBlank(node, "user_device_type", userDeviceType.name());
+        putIfNotBlank(node, "unitId", campaignKey);
+        putIfNotBlank(node, "shareAdType", campaignType);
+        putIfNotBlank(node, "adname", campaignName);
+        putIfNotBlank(node, "rewardUnit", rewardUnit);
+        putIfNotBlank(node, "rewardAmount", quantity);
+        putIfNotBlank(node, "signature", signedValue);
+        putIfNotBlank(node, "adid", adid);
+        putIfNotBlank(node, "network", network);
 
         return node;
     }

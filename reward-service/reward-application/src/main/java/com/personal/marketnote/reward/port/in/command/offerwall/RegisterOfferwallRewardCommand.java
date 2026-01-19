@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 public record RegisterOfferwallRewardCommand(
         OfferwallType offerwallType,
+        String rewardUnit,
         String rewardKey,
         String userKey,
         UserDeviceType userDeviceType,
@@ -32,6 +33,10 @@ public record RegisterOfferwallRewardCommand(
         return offerwallType.isTnk();
     }
 
+    public boolean isAdiscope() {
+        return offerwallType.isAdiscope();
+    }
+
     public boolean isAndroid() {
         return userDeviceType.isAndroid();
     }
@@ -40,13 +45,17 @@ public record RegisterOfferwallRewardCommand(
         return userDeviceType.isIos();
     }
 
-    public String buildPlainText() {
-        if (offerwallType.isAdpopcorn()) {
+    public String buildPlainText(String hashKey) {
+        if (isAdpopcorn()) {
             return userKey + rewardKey + quantity + campaignKey;
         }
 
-        if (offerwallType.isTnk()) {
-            return appKey + userKey + rewardKey;
+        if (isTnk()) {
+            return hashKey + userKey + rewardKey;
+        }
+
+        if (isAdiscope()) {
+            return userKey + rewardUnit + quantity + rewardKey;
         }
 
         throw new InvalidOfferwallTypeException(offerwallType.name());

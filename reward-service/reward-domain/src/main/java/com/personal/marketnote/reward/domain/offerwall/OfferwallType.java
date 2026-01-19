@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum OfferwallType {
     ADPOPCORN("애드팝콘"),
-    TNK("TNK");
+    TNK("TNK"),
+    ADISCOPE("애디스콥");
 
     private final String description;
 
@@ -17,5 +18,9 @@ public enum OfferwallType {
 
     public boolean isTnk() {
         return this == TNK;
+    }
+
+    public boolean isAdiscope() {
+        return this == ADISCOPE;
     }
 }
