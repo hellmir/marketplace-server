@@ -1,5 +1,8 @@
 package com.personal.marketnote.common.utility;
 
+import lombok.Getter;
+
+@Getter
 public enum Role {
     ROLE_ADMIN("관리자"),
     ROLE_SELLER("판매자"),
@@ -13,15 +16,11 @@ public enum Role {
         this.description = description;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
     public static boolean isAdmin(String role) {
-        return role.equals(ROLE_ADMIN.name());
+        return FormatValidator.equals(role, ROLE_ADMIN.name());
     }
 
     public static boolean isSeller(String role) {
-        return role.equals(ROLE_SELLER.name());
+        return FormatValidator.equals(role, ROLE_SELLER.name());
     }
 }
