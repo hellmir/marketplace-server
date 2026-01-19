@@ -39,7 +39,7 @@ public class RegisterOfferwallRewardService implements RegisterOfferwallRewardUs
 
     @Override
     public Long register(RegisterOfferwallRewardCommand command) {
-        validateSignature(command);
+//        validateSignature(command);
         validateUser(command);
         validateDuplicate(command);
 
@@ -59,7 +59,7 @@ public class RegisterOfferwallRewardService implements RegisterOfferwallRewardUs
 
         modifyUserPointService.modify(
                 ModifyUserPointCommand.builder()
-                        .userId(Long.parseLong(command.userKey()))
+                        .userKey(command.userKey())
                         .changeType(UserPointChangeType.ACCRUAL)
                         .amount(command.quantity())
                         .sourceType(UserPointSourceType.OFFERWALL)
@@ -106,7 +106,7 @@ public class RegisterOfferwallRewardService implements RegisterOfferwallRewardUs
 
     private void validateUser(RegisterOfferwallRewardCommand command) {
         String userKey = command.userKey();
-        if (!getUserPointUseCase.existsUserPoint(Long.parseLong(userKey))) {
+        if (!getUserPointUseCase.existsUserPoint(userKey)) {
             throw new UserNotFoundException(String.format("회원 정보를 찾을 수 없습니다. userKey: %s", userKey));
         }
     }

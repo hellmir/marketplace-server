@@ -50,10 +50,11 @@ public class PointController {
     @PreAuthorize(ADMIN_POINTCUT)
     @RegisterUserPointApiDocs
     public ResponseEntity<BaseResponse<Void>> registerUserPoint(
-            @PathVariable("userId") Long userId
+            @PathVariable("userId") Long userId,
+            @RequestParam(name = "userKey") String userKey
     ) {
         registerUserPointUseCase.register(
-                RegisterUserPointCommand.of(userId)
+                RegisterUserPointCommand.of(userId, userKey)
         );
 
         return new ResponseEntity<>(

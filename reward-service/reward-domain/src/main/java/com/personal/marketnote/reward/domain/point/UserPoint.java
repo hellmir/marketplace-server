@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Builder(access = AccessLevel.PRIVATE)
 public class UserPoint {
     private Long userId;
+    private String userKey;
     private PointAmount amount;
     private Long addExpectedAmount;
     private Long expireExpectedAmount;
@@ -19,6 +20,7 @@ public class UserPoint {
     public UserPoint withAmount(Long amount) {
         return UserPoint.builder()
                 .userId(userId)
+                .userKey(userKey)
                 .amount(PointAmount.of(String.valueOf(amount)))
                 .addExpectedAmount(addExpectedAmount)
                 .expireExpectedAmount(expireExpectedAmount)
@@ -30,6 +32,7 @@ public class UserPoint {
     public static UserPoint from(UserPointCreateState state) {
         return UserPoint.builder()
                 .userId(state.getUserId())
+                .userKey(state.getUserKey())
                 .amount(PointAmount.of(String.valueOf(state.getAmount())))
                 .addExpectedAmount(state.getAddExpectedAmount())
                 .expireExpectedAmount(state.getExpireExpectedAmount())

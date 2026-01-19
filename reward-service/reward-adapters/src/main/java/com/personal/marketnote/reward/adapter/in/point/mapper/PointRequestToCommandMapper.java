@@ -4,11 +4,6 @@ import com.personal.marketnote.reward.adapter.in.point.request.ModifyUserPointRe
 import com.personal.marketnote.reward.port.in.command.point.ModifyUserPointCommand;
 
 public class PointRequestToCommandMapper {
-
-    private PointRequestToCommandMapper() {
-        // utility
-    }
-
     public static ModifyUserPointCommand mapToModifyUserPointCommand(
             Long userId,
             ModifyUserPointRequest request

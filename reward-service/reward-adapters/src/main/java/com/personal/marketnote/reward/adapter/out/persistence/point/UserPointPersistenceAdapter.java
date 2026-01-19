@@ -10,6 +10,8 @@ import com.personal.marketnote.reward.port.out.point.SaveUserPointPort;
 import com.personal.marketnote.reward.port.out.point.UpdateUserPointPort;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 @PersistenceAdapter
 @RequiredArgsConstructor
 public class UserPointPersistenceAdapter implements SaveUserPointPort, FindUserPointPort, UpdateUserPointPort {
@@ -17,8 +19,8 @@ public class UserPointPersistenceAdapter implements SaveUserPointPort, FindUserP
 
     @Override
     public UserPoint save(UserPoint userPoint) {
-        UserPointJpaEntity saved = repository.save(UserPointJpaEntity.from(userPoint));
-        return saved.toDomain();
+        return repository.save(UserPointJpaEntity.from(userPoint))
+                .toDomain();
     }
 
     @Override
@@ -27,8 +29,18 @@ public class UserPointPersistenceAdapter implements SaveUserPointPort, FindUserP
     }
 
     @Override
+    public boolean existsByUserKey(String userKey) {
+        return repository.existsByUserKey(userKey);
+    }
+
+    @Override
     public java.util.Optional<UserPoint> findByUserId(Long userId) {
         return repository.findByUserId(userId).map(UserPointJpaEntity::toDomain);
+    }
+
+    @Override
+    public Optional<UserPoint> findByUserKey(String userKey) {
+        return repository.findByUserKey(userKey).map(UserPointJpaEntity::toDomain);
     }
 
     @Override

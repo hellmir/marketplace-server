@@ -35,6 +35,7 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
                 | userId (path) | number | 회원 ID | Y | 100 |
+                | userKey (query) | string(uuid) | 회원 키 | Y | "1a1c9131-ea3a-4809-b940-3dd665c96698" |
                 
                 ---
                 
@@ -56,6 +57,13 @@ import java.lang.annotation.*;
                         required = true,
                         description = "회원 ID",
                         schema = @Schema(type = "number", example = "100")
+                ),
+                @Parameter(
+                        name = "userKey",
+                        in = ParameterIn.QUERY,
+                        required = true,
+                        description = "회원 키",
+                        schema = @Schema(type = "string", example = "1a1c9131-ea3a-4809-b940-3dd665c96698")
                 )
         },
         responses = {
