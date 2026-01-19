@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "회원 주문 내역 조회",
+        summary = "나의 주문 내역 조회",
         description = """
                 작성일자: 2026-01-06
                 
@@ -22,7 +22,7 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                - 회원의 주문 내역을 조회합니다.
+                - 나의 주문 내역을 조회합니다.
                 
                 - 주문 상태 목록
                 

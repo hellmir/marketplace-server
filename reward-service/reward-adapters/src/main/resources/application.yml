@@ -57,6 +57,10 @@ vendor:
       hash-key:
         android: ${ADPOPCORN_ANDROID_HASH_KEY:abc}
         ios: ${ADPOPCORN_IOS_HASH_KEY:def}
+    tnk:
+      hash-key:
+        android: ${TNK_ANDROID_HASH_KEY:abc}
+        ios: ${TNK_IOS_HASH_KEY:def}
 
 logging:
   config: classpath:logback-spring.xml

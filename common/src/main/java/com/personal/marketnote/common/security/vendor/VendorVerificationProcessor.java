@@ -8,14 +8,14 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 
 public class VendorVerificationProcessor {
-    public static void validateAdpopcornSignature(String secret, String text, String signature) {
+    public static void validateOfferwallSignature(String secret, String text, String signature) {
         try {
             Mac mac = Mac.getInstance("HmacMD5");
             mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacMD5"));
             byte[] result = mac.doFinal(text.getBytes(StandardCharsets.UTF_8));
 
             if (!FormatValidator.equalsIgnoreCase(toHex(result), signature)) {
-                throw new VendorVerificationFailedException("애드팝콘 리워드 지급 연동 중 signed value 검증에 실패했습니다.");
+                throw new VendorVerificationFailedException("오퍼월 리워드 지급 연동 중 signed value 검증에 실패했습니다.");
             }
         } catch (Exception e) {
             throw new VendorVerificationFailedException("invalid signed value");

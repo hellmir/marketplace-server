@@ -27,20 +27,20 @@ public interface GetOrderUseCase {
     Order getOrder(Long id);
 
     /**
-     * @param query 회원 주문 내역 조회 쿼리
-     * @return 회원 주문 내역 조회 결과 {@link GetOrdersResult}
+     * @param query 구매자 주문 내역 조회 쿼리
+     * @return 구매자 주문 내역 조회 결과 {@link GetOrdersResult}
      * @Date 2026-01-05
      * @Author 성효빈
-     * @Description 회원 주문 내역을 조회합니다.
+     * @Description 구매자 주문 내역을 조회합니다.
      */
     GetOrdersResult getBuyerOrderHistory(GetBuyerOrderHistoryQuery query);
 
     /**
-     * @param query 회원 주문 내역 조회 쿼리
-     * @return 회원 주문 내역 개수 조회 결과 {@link GetOrderCountResult}
+     * @param query 구매자 주문 내역 개수 조회 쿼리
+     * @return 구매자 주문 내역 개수 조회 결과 {@link GetOrderCountResult}
      * @Date 2026-01-19
      * @Author 성효빈
-     * @Description 회원 주문 내역 개수를 조회합니다.
+     * @Description 구매자 주문 내역 개수를 조회합니다.
      */
     GetOrderCountResult getBuyerOrderCount(GetBuyerOrderHistoryQuery query);
 

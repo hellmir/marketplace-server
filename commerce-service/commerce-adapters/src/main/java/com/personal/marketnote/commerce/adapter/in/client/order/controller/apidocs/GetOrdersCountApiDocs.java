@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "회원 주문 내역 개수 조회",
+        summary = "나의 주문 내역 개수 조회",
         description = """
                 작성일자: 2026-01-19
                 
@@ -44,7 +44,7 @@ import java.lang.annotation.*;
                 | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
                 | timestamp | string(datetime) | 응답 일시 | "2026-01-15T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
-                | message | string | 처리 결과 | "회원 주문 내역 개수 조회 성공" |
+                | message | string | 처리 결과 | "나의 주문 내역 개수 조회 성공" |
                 
                 ---
                 
@@ -58,7 +58,7 @@ import java.lang.annotation.*;
         responses = {
                 @ApiResponse(
                         responseCode = "200",
-                        description = "회원 주문 내역 개수 조회 성공",
+                        description = "나의 주문 내역 개수 조회 성공",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
@@ -68,7 +68,7 @@ import java.lang.annotation.*;
                                           "content": {
                                             "totalCount": 12
                                           },
-                                          "message": "회원 주문 내역 개수 조회 성공"
+                                          "message": "나의 주문 내역 개수 조회 성공"
                                         }
                                         """)
                         )
