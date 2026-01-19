@@ -4,14 +4,14 @@ import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.common.utility.Role;
-import com.personal.marketnote.reward.adapter.in.point.apidocs.GetUserPointApiDocs;
+import com.personal.marketnote.reward.adapter.in.point.apidocs.GetMyPointApiDocs;
 import com.personal.marketnote.reward.adapter.in.point.apidocs.GetUserPointHistoriesApiDocs;
 import com.personal.marketnote.reward.adapter.in.point.apidocs.ModifyUserPointApiDocs;
 import com.personal.marketnote.reward.adapter.in.point.apidocs.RegisterUserPointApiDocs;
 import com.personal.marketnote.reward.adapter.in.point.mapper.PointRequestToCommandMapper;
 import com.personal.marketnote.reward.adapter.in.point.request.ModifyUserPointRequest;
+import com.personal.marketnote.reward.adapter.in.point.response.GetMyPointReponse;
 import com.personal.marketnote.reward.adapter.in.point.response.GetUserPointHistoryResponse;
-import com.personal.marketnote.reward.adapter.in.point.response.GetUserPointReponse;
 import com.personal.marketnote.reward.adapter.in.point.response.UpdateUserPointResponse;
 import com.personal.marketnote.reward.domain.point.UserPointHistoryFilter;
 import com.personal.marketnote.reward.port.in.command.point.RegisterUserPointCommand;
@@ -80,17 +80,17 @@ public class PointController {
     }
 
     /**
-     * 회원 포인트 정보 조회
+     * 나의 포인트 정보 조회
      *
      * @param principal 인증된 사용자 정보
-     * @return 회원 포인트 정보 조회 응답 {@link GetUserPointReponse}
+     * @return 회원 포인트 정보 조회 응답 {@link GetMyPointReponse}
      * @Author 성효빈
      * @Date 2026-01-18
-     * @Description 회원 포인트 정보를 조회합니다.
+     * @Description 나의 포인트 정보를 조회합니다.
      */
     @GetMapping("/me/point")
-    @GetUserPointApiDocs
-    public ResponseEntity<BaseResponse<GetUserPointReponse>> getUserPoint(
+    @GetMyPointApiDocs
+    public ResponseEntity<BaseResponse<GetMyPointReponse>> getMyPoint(
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
         GetUserPointResult getUserPointResult = GetUserPointResult.from(
@@ -101,10 +101,10 @@ public class PointController {
 
         return ResponseEntity.ok(
                 BaseResponse.of(
-                        GetUserPointReponse.from(getUserPointResult),
+                        GetMyPointReponse.from(getUserPointResult),
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
-                        "회원 포인트 정보 조회 성공"
+                        "나의 포인트 정보 조회 성공"
                 )
         );
     }

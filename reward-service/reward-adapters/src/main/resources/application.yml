@@ -61,6 +61,10 @@ vendor:
       hash-key:
         android: ${TNK_ANDROID_HASH_KEY:abc}
         ios: ${TNK_IOS_HASH_KEY:def}
+    adiscope:
+      hash-key:
+        android: ${ADISCOPE_ANDROID_HASH_KEY:abc}
+        ios: ${ADISCOPE_IOS_HASH_KEY:def}
 
 logging:
   config: classpath:logback-spring.xml

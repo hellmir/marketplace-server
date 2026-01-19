@@ -38,7 +38,7 @@ import java.lang.annotation.*;
                 | md_user_nm | string | 회원 식별자 | Y | U1000 |
                 | user_device_type | string | 회원 디바이스 유형 | Y | ANDROID |
                 | campaign_key | string | 캠페인 키 | Y | C123 |
-                | actn_id | number | 캠페인 타입 | N | 1 |
+                | actn_id | number | 캠페인 유형 | N | 1 |
                 | campaign_name | string | 캠페인 이름 | N | "앱 설치" |
                 | pay_pnt | number | 지급 수량 | Y | 100 |
                 | md_chk | string | 서명 값 | Y | "abc123" |
@@ -80,7 +80,7 @@ import java.lang.annotation.*;
                 @Parameter(
                         name = "campaign_type",
                         in = ParameterIn.QUERY,
-                        description = "캠페인 타입",
+                        description = "캠페인 유형",
                         schema = @Schema(type = "number")
                 ),
                 @Parameter(
@@ -143,7 +143,7 @@ import java.lang.annotation.*;
                                                           "code": "OK",
                                                           "timestamp": "2026-01-19T11:11:38.786628",
                                                           "content": null,
-                                                          "message": "리워드 포인트 지급 성공"
+                                                          "message": "TNK 리워드 포인트 지급 성공"
                                                         }
                                                         """
                                         )

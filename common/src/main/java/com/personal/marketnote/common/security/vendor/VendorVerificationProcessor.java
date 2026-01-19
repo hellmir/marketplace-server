@@ -2,23 +2,24 @@ package com.personal.marketnote.common.security.vendor;
 
 import com.personal.marketnote.common.domain.exception.token.VendorVerificationFailedException;
 import com.personal.marketnote.common.utility.FormatValidator;
+import org.springframework.util.DigestUtils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 
 public class VendorVerificationProcessor {
-    public static void validateOfferwallSignature(String secret, String text, String signature) {
+    public static void validateSignature(String secret, String text, String signature) {
         try {
             Mac mac = Mac.getInstance("HmacMD5");
             mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacMD5"));
             byte[] result = mac.doFinal(text.getBytes(StandardCharsets.UTF_8));
 
             if (!FormatValidator.equalsIgnoreCase(toHex(result), signature)) {
-                throw new VendorVerificationFailedException("오퍼월 리워드 지급 연동 중 signed value 검증에 실패했습니다.");
+                throw new VendorVerificationFailedException("리워드 지급 연동 중 signed value 검증에 실패했습니다.");
             }
         } catch (Exception e) {
-            throw new VendorVerificationFailedException("invalid signed value");
+            throw new VendorVerificationFailedException("유효하지 않은 인증키입니다.");
         }
     }
 
@@ -29,5 +30,17 @@ public class VendorVerificationProcessor {
         }
 
         return sb.toString();
+    }
+
+    public static void validateSignature(String text, String signature) {
+        try {
+            String verifyCode = DigestUtils.md5DigestAsHex(text.getBytes(StandardCharsets.UTF_8));
+
+            if (!FormatValidator.equalsIgnoreCase(verifyCode, signature)) {
+                throw new VendorVerificationFailedException("리워드 지급 연동 중 signed value 검증에 실패했습니다.");
+            }
+        } catch (Exception e) {
+            throw new VendorVerificationFailedException("유효하지 않은 인증키입니다.");
+        }
     }
 }

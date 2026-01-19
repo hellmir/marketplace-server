@@ -5,12 +5,14 @@ import com.personal.marketnote.common.domain.exception.token.VendorVerificationF
 import com.personal.marketnote.common.exception.UserNotFoundException;
 import com.personal.marketnote.common.security.vendor.VendorVerificationProcessor;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.reward.configuration.AdiscopeHashKeyProperties;
 import com.personal.marketnote.reward.configuration.AdpopcornHashKeyProperties;
 import com.personal.marketnote.reward.configuration.TnkHashKeyProperties;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapper;
 import com.personal.marketnote.reward.domain.point.UserPointChangeType;
 import com.personal.marketnote.reward.domain.point.UserPointSourceType;
 import com.personal.marketnote.reward.exception.DuplicateOfferwallRewardException;
+import com.personal.marketnote.reward.exception.InvalidOfferwallTypeException;
 import com.personal.marketnote.reward.exception.RewardTargetInfoNotFoundException;
 import com.personal.marketnote.reward.mapper.RewardCommandToStateMapper;
 import com.personal.marketnote.reward.port.in.command.offerwall.RegisterOfferwallRewardCommand;
@@ -38,6 +40,7 @@ public class RegisterOfferwallRewardService implements RegisterOfferwallRewardUs
     private final GetPostOfferwallMapperUseCase getPostOfferwallMapperUseCase;
     private final AdpopcornHashKeyProperties adpopcornHashKeyProperties;
     private final TnkHashKeyProperties tnkHashKeyProperties;
+    private final AdiscopeHashKeyProperties adiscopeHashKeyProperties;
 
     @Override
     public Long register(RegisterOfferwallRewardCommand command) {
@@ -75,25 +78,53 @@ public class RegisterOfferwallRewardService implements RegisterOfferwallRewardUs
 
     private void validateSignature(RegisterOfferwallRewardCommand command) {
         String hashKey = resolveHashKey(command);
-        String plainText = command.buildPlainText();
-        VendorVerificationProcessor.validateOfferwallSignature(hashKey, plainText, command.signedValue());
+        String plainText = command.buildPlainText(hashKey);
+
+        if (command.isAdpopcorn()) {
+            VendorVerificationProcessor.validateSignature(hashKey, plainText, command.signedValue());
+            return;
+        }
+
+        if (command.isTnk()) {
+            VendorVerificationProcessor.validateSignature(plainText, command.signedValue());
+            return;
+        }
+
+        if (command.isAdiscope()) {
+            VendorVerificationProcessor.validateSignature(hashKey, plainText, command.signedValue());
+            return;
+        }
+
+        throw new InvalidOfferwallTypeException(String.valueOf(command.offerwallType()));
     }
 
     private String resolveHashKey(RegisterOfferwallRewardCommand command) {
-        if (command.isAdpopcorn() && command.isAndroid()) {
-            return requireHashKey(adpopcornHashKeyProperties.getAndroid());
+        if (command.isAndroid()) {
+            if (command.isAdpopcorn()) {
+                return requireHashKey(adpopcornHashKeyProperties.getAndroid());
+            }
+
+            if (command.isTnk()) {
+                return requireHashKey(tnkHashKeyProperties.getAndroid());
+            }
+
+            if (command.isAdiscope()) {
+                return requireHashKey(adiscopeHashKeyProperties.getAndroid());
+            }
         }
 
-        if (command.isAdpopcorn() && command.isIos()) {
-            return requireHashKey(adpopcornHashKeyProperties.getIos());
-        }
+        if (command.isIos()) {
+            if (command.isAdpopcorn()) {
+                return requireHashKey(adpopcornHashKeyProperties.getIos());
+            }
 
-        if (command.isTnk() && command.isAndroid()) {
-            return requireHashKey(tnkHashKeyProperties.getAndroid());
-        }
+            if (command.isTnk()) {
+                return requireHashKey(tnkHashKeyProperties.getIos());
+            }
 
-        if (command.isTnk() && command.isIos()) {
-            return requireHashKey(tnkHashKeyProperties.getIos());
+            if (command.isAdiscope()) {
+                return requireHashKey(adiscopeHashKeyProperties.getIos());
+            }
         }
 
         throw new RewardTargetInfoNotFoundException("오퍼월 리워드 지급 대상 디바이스 정보가 없습니다.");
@@ -123,12 +154,12 @@ public class RegisterOfferwallRewardService implements RegisterOfferwallRewardUs
         }
     }
 
-    private boolean isOfferwallSuccessUniqueViolation(Throwable e) {
-        Throwable cause = e;
+    private boolean isOfferwallSuccessUniqueViolation(Throwable cause) {
         while (FormatValidator.hasValue(cause)) {
             if (cause instanceof org.hibernate.exception.ConstraintViolationException cve) {
                 return UX_OFFERWALL_SUCCESS_UNIQUE_CONSTRAINT.equals(cve.getConstraintName());
             }
+
             cause = cause.getCause();
         }
 

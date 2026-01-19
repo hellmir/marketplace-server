@@ -5,6 +5,8 @@ import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.domain.exception.token.VendorVerificationFailedException;
 import com.personal.marketnote.common.exception.UserNotFoundException;
 import com.personal.marketnote.common.utility.FormatConverter;
+import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.reward.adapter.in.offerwall.apidocs.AdiscopeCallbackApiDocs;
 import com.personal.marketnote.reward.adapter.in.offerwall.apidocs.AdpopcornCallbackApiDocs;
 import com.personal.marketnote.reward.adapter.in.offerwall.apidocs.TnkCallbackApiDocs;
 import com.personal.marketnote.reward.adapter.in.point.response.UpdateUserPointResponse;
@@ -24,14 +26,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
+import static com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorCommunicationTargetType.OFFERWALL;
 
 @RestController
 @RequestMapping("/api/v1/offerwalls")
@@ -47,18 +47,19 @@ public class OfferwallController {
     /**
      * 아드팝콘 리워드 지급 콜백 엔드포인트
      *
-     * @param rewardKey    리워드 키
-     * @param userKey      회원 키
-     * @param campaignKey  캠페인 키
-     * @param campaignType 캠페인 타입
-     * @param campaignName 캠페인 이름
-     * @param quantity     수량
-     * @param signedValue  서명 값(검증 필요)
-     * @param appKey       앱 키
-     * @param appName      앱 이름
-     * @param adid         구글 광고 ID
-     * @param idfa         IDFA
-     * @param attendedAt   캠페인 완료일시
+     * @param rewardKey      리워드 키
+     * @param userKey        회원 키
+     * @param userDeviceType 회원 기기 유형
+     * @param campaignKey    캠페인 키
+     * @param campaignType   캠페인 유형
+     * @param campaignName   캠페인 이름
+     * @param quantity       수량
+     * @param signedValue    서명 값(검증 필요)
+     * @param appKey         앱 키
+     * @param appName        앱 이름
+     * @param adid           구글 광고 ID
+     * @param idfa           애플 광고 ID
+     * @param attendedAt     캠페인 완료일시
      * @Author 성효빈
      * @Date 2026-01-16
      */
@@ -67,8 +68,8 @@ public class OfferwallController {
     public ResponseEntity<String> handleAdpopcornCallback(
             @RequestParam("reward_key") String rewardKey,
             @RequestParam("usn") String userKey,
-            @RequestParam("campaign_key") String campaignKey,
             @RequestParam("user_device_type") UserDeviceType userDeviceType,
+            @RequestParam("campaign_key") String campaignKey,
             @RequestParam(value = "campaign_type", required = false) Integer campaignType,
             @RequestParam(value = "campaign_name", required = false) String campaignName,
             @RequestParam(value = "quantity") Long quantity,
@@ -115,7 +116,7 @@ public class OfferwallController {
                 .attendedAt(parsedAttendedAt)
                 .build();
 
-        RewardVendorCommunicationTargetType targetType = RewardVendorCommunicationTargetType.OFFERWALL;
+        RewardVendorCommunicationTargetType targetType = OFFERWALL;
         RewardVendorName vendorName = RewardVendorName.ADPOPCORN;
 
         try {
@@ -149,18 +150,16 @@ public class OfferwallController {
     /**
      * TNK 리워드 지급 콜백 엔드포인트
      *
-     * @param rewardKey    리워드 키
-     * @param userKey      회원 키
-     * @param campaignKey  캠페인 키
-     * @param campaignType 캠페인 타입
-     * @param campaignName 캠페인 이름
-     * @param quantity     수량
-     * @param signedValue  서명 값(검증 필요)
-     * @param appKey       앱 키
-     * @param appName      앱 이름
-     * @param adid         구글 광고 ID
-     * @param idfa         IDFA
-     * @param attendedAt   캠페인 완료일시
+     * @param rewardKey      리워드 키
+     * @param userKey        회원 키
+     * @param userDeviceType 회원 기기 유형
+     * @param campaignType   캠페인 유형
+     * @param quantity       수량
+     * @param signedValue    서명 값(검증 필요)
+     * @param appName        앱 이름
+     * @param adid           광고 ID
+     * @param attendedAt     캠페인 완료일시
+     * @param revenue        리워드 수익
      * @Author 성효빈
      * @Date 2026-01-19
      */
@@ -170,15 +169,11 @@ public class OfferwallController {
             @RequestParam("seq_id") String rewardKey,
             @RequestParam("md_user_nm") String userKey,
             @RequestParam("user_device_type") UserDeviceType userDeviceType,
-            @RequestParam(value = "campaign_key", required = false) String campaignKey,
             @RequestParam(value = "actn_id", required = false) Integer campaignType,
-            @RequestParam(value = "campaign_name", required = false) String campaignName,
             @RequestParam(value = "pay_pnt") Long quantity,
             @RequestParam(value = "md_chk") String signedValue,
-            @RequestParam(value = "app_key", required = false) Integer appKey,
             @RequestParam(value = "app_nm", required = false) String appName,
             @RequestParam(value = "app_id", required = false) String adid,
-            @RequestParam(value = "idfa", required = false) String idfa,
             @RequestParam(value = "pay_dt", required = false) String attendedAt,
             @RequestParam(value = "pay_amt", required = false) Long revenue
     ) {
@@ -191,7 +186,6 @@ public class OfferwallController {
                 campaignType,
                 quantity,
                 signedValue,
-                appKey,
                 appName,
                 adid,
                 attendedAt,
@@ -204,19 +198,16 @@ public class OfferwallController {
                 .rewardKey(rewardKey)
                 .userKey(userKey)
                 .userDeviceType(userDeviceType)
-                .campaignKey(campaignKey)
                 .campaignType(campaignType)
-                .campaignName(campaignName)
                 .quantity(quantity)
                 .signedValue(signedValue)
-                .appKey(appKey)
                 .appName(appName)
                 .adid(adid)
                 .idfa(adid)
                 .attendedAt(parsedAttendedAt)
                 .build();
 
-        RewardVendorCommunicationTargetType targetType = RewardVendorCommunicationTargetType.OFFERWALL;
+        RewardVendorCommunicationTargetType targetType = OFFERWALL;
         RewardVendorName vendorName = RewardVendorName.TNK;
 
         try {
@@ -235,7 +226,117 @@ public class OfferwallController {
                     BaseResponse.of(
                             HttpStatus.OK,
                             DEFAULT_SUCCESS_CODE,
-                            "리워드 포인트 지급 성공"
+                            "TNK 리워드 포인트 지급 성공"
+                    )
+            );
+        } catch (VendorVerificationFailedException e) {
+            // 서명 검증 실패
+            vendorCommunicationFailureHandler.handleFailure(targetType, vendorName, payloadString, payloadJson, e, 1100, "invalid signed value");
+            throw e;
+        } catch (UserNotFoundException e) {
+            // 회원 포인트 도메인 정보 조회 실패
+            vendorCommunicationFailureHandler.handleFailure(targetType, vendorName, payloadString, payloadJson, e, 3200, "invalid user");
+            throw e;
+        } catch (DuplicateOfferwallRewardException e) {
+            // 중복 리워드 지급 시도
+            vendorCommunicationFailureHandler.handleFailure(targetType, vendorName, payloadString, payloadJson, e, 3100, "duplicate transaction");
+            throw e;
+        } catch (Exception e) {
+            // 그 외
+            vendorCommunicationFailureHandler.handleFailure(targetType, vendorName, payloadString, payloadJson, e, 4000, "custom error message");
+            throw e;
+        }
+    }
+
+    /**
+     * 애디스콥 리워드 지급 콜백 엔드포인트
+     *
+     * @param rewardKey      리워드 키
+     * @param userKey        회원 키
+     * @param userDeviceType 회원 기기 유형
+     * @param campaignKey    캠페인 키
+     * @param campaignType   캠페인 유형
+     * @param campaignName   캠페인 이름
+     * @param rewardUnit     보상 화폐 단위
+     * @param quantity       수량
+     * @param signedValue    서명 값(검증 필요)
+     * @param adid           광고 ID
+     * @param network        보상 지급 네트워크사
+     * @Author 성효빈
+     * @Date 2026-01-20
+     */
+    @GetMapping(value = "/adiscope/callback")
+    @AdiscopeCallbackApiDocs
+    public ResponseEntity<BaseResponse<UpdateUserPointResponse>> handleTnkCallback(
+            @RequestParam("transactionId") String rewardKey,
+            @RequestParam("userId") String userKey,
+            @RequestParam("user_device_type") UserDeviceType userDeviceType,
+            @RequestParam(value = "unitId", required = false) String campaignKey,
+            @RequestParam(value = "shareAdType", required = false) String campaignType,
+            @RequestParam(value = "adname", required = false) String campaignName,
+            @RequestParam(value = "rewardUnit", required = false) String rewardUnit,
+            @RequestParam(value = "rewardAmount") Long quantity,
+            @RequestParam(value = "signature") String signedValue,
+            @RequestParam(value = "adid", required = false) String adid,
+            @RequestParam(value = "network", required = false) String network
+    ) {
+        LocalDateTime attendedAt = LocalDateTime.now();
+
+        JsonNode payloadJson = vendorCommunicationPayloadGenerator.buildAdiscopePayloadJson(
+                rewardKey,
+                userKey,
+                userDeviceType,
+                campaignKey,
+                campaignType,
+                campaignName,
+                rewardUnit,
+                quantity,
+                signedValue,
+                adid,
+                network
+        );
+        String payloadString = payloadJson.toString();
+
+        RegisterOfferwallRewardCommand command = RegisterOfferwallRewardCommand.builder()
+                .offerwallType(OfferwallType.ADISCOPE)
+                .rewardUnit(rewardUnit)
+                .rewardKey(rewardKey)
+                .userKey(userKey)
+                .userDeviceType(userDeviceType)
+                .campaignKey(campaignKey)
+                .campaignType(
+                        FormatValidator.equals(campaignType, OFFERWALL.name())
+                                ? 0
+                                : 1
+                )
+                .campaignName(campaignName)
+                .quantity(quantity)
+                .signedValue(signedValue)
+                .adid(adid)
+                .idfa(adid)
+                .attendedAt(attendedAt)
+                .build();
+
+        RewardVendorCommunicationTargetType targetType = OFFERWALL;
+        RewardVendorName vendorName = RewardVendorName.ADISCOPE;
+
+        try {
+            Long id = handleOfferwallRewardUseCase.handle(command);
+            JsonNode successPayloadJson = vendorCommunicationPayloadGenerator.buildResponsePayloadJson(true, 1, "success");
+            String successPayload = successPayloadJson.toString();
+
+            vendorCommunicationRecorder.record(
+                    targetType, RewardVendorCommunicationType.REQUEST, id, vendorName, payloadString, payloadJson
+            );
+            vendorCommunicationRecorder.record(
+                    targetType, RewardVendorCommunicationType.RESPONSE, id, vendorName, successPayload, successPayloadJson
+            );
+
+            return ResponseEntity.ok(
+                    BaseResponse.of(
+                            HttpStatus.OK,
+                            DEFAULT_SUCCESS_CODE,
+                            "애디스콥 리워드 포인트 지급 성공"
                     )
             );
         } catch (VendorVerificationFailedException e) {
