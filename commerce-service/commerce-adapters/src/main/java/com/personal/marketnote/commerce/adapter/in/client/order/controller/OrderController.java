@@ -4,8 +4,8 @@ import com.personal.marketnote.commerce.adapter.in.client.order.controller.apido
 import com.personal.marketnote.commerce.adapter.in.client.order.mapper.OrderRequestToCommandMapper;
 import com.personal.marketnote.commerce.adapter.in.client.order.request.ChangeOrderStatusRequest;
 import com.personal.marketnote.commerce.adapter.in.client.order.request.RegisterOrderRequest;
+import com.personal.marketnote.commerce.adapter.in.client.order.response.GetOrderCountResponse;
 import com.personal.marketnote.commerce.adapter.in.client.order.response.GetOrderResponse;
-import com.personal.marketnote.commerce.adapter.in.client.order.response.GetOrdersCountResponse;
 import com.personal.marketnote.commerce.adapter.in.client.order.response.GetOrdersResponse;
 import com.personal.marketnote.commerce.adapter.in.client.order.response.RegisterOrderResponse;
 import com.personal.marketnote.commerce.domain.order.OrderPeriod;
@@ -101,15 +101,15 @@ public class OrderController {
     }
 
     /**
-     * 회원 주문 내역 조회
+     * 나의 주문 내역 조회
      *
      * @param principal 인증된 사용자 정보
      * @return 주문 내역 조회 응답 {@link GetOrdersResponse}
      * @Author 성효빈
      * @Date 2026-01-05
-     * @Description 회원 주문 내역을 조회합니다.
+     * @Description 나의 주문 내역을 조회합니다.
      */
-    @GetMapping
+    @GetMapping("/me")
     @GetOrdersApiDocs
     public ResponseEntity<BaseResponse<GetOrdersResponse>> getBuyerOrderHistory(
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal,
@@ -135,24 +135,24 @@ public class OrderController {
                         GetOrdersResponse.from(getOrderHistoryResult),
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
-                        "회원 주문 내역 조회 성공"
+                        "나의 주문 내역 조회 성공"
                 ),
                 HttpStatus.OK
         );
     }
 
     /**
-     * 회원 주문 내역 개수 조회
+     * 나의 주문 내역 개수 조회
      *
      * @param principal 인증된 사용자 정보
-     * @return 회원 주문 내역 개수 조회 응답 {@link GetOrdersCountResponse}
+     * @return 나의 주문 내역 개수 조회 응답 {@link GetOrderCountResponse}
      * @Author 성효빈
      * @Date 2026-01-19
-     * @Description 회원 주문 내역 개수를 조회합니다.
+     * @Description 나의 주문 내역 개수를 조회합니다.
      */
-    @GetMapping("/count")
+    @GetMapping("/me/count")
     @GetOrdersCountApiDocs
-    public ResponseEntity<BaseResponse<GetOrdersCountResponse>> getBuyerOrderCount(
+    public ResponseEntity<BaseResponse<GetOrderCountResponse>> getMyOrderCount(
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal,
             @RequestParam(value = "period", required = false) OrderPeriod period,
             @RequestParam(value = "status", required = false) OrderStatusFilter statusFilter,
@@ -169,10 +169,10 @@ public class OrderController {
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        GetOrdersCountResponse.from(getOrderCountResult),
+                        GetOrderCountResponse.from(getOrderCountResult),
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
-                        "회원 주문 내역 개수 조회 성공"
+                        "나의 주문 내역 개수 조회 성공"
                 ),
                 HttpStatus.OK
         );

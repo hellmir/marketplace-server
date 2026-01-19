@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.reward.domain.offerwall.UserDeviceType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -22,9 +23,10 @@ public class VendorCommunicationPayloadGenerator {
         return node;
     }
 
-    public JsonNode buildPayloadJson(
+    public JsonNode buildAdpopcornPayloadJson(
             String rewardKey,
-            String usn,
+            String userKey,
+            UserDeviceType userDeviceType,
             String campaignKey,
             Integer campaignType,
             String campaignName,
@@ -34,12 +36,13 @@ public class VendorCommunicationPayloadGenerator {
             String appName,
             String adid,
             String idfa,
-            String timeStamp
+            String attendedAt
     ) {
         ObjectNode node = objectMapper.createObjectNode();
 
         putIfNotBlank(node, "reward_key", rewardKey);
-        putIfNotBlank(node, "usn", usn);
+        putIfNotBlank(node, "usn", userKey);
+        putIfNotBlank(node, "user_device_type", userDeviceType.name());
         putIfNotBlank(node, "campaign_key", campaignKey);
         putIfNotBlank(node, "campaign_type", campaignType);
         putIfNotBlank(node, "campaign_name", campaignName);
@@ -49,7 +52,37 @@ public class VendorCommunicationPayloadGenerator {
         putIfNotBlank(node, "app_name", appName);
         putIfNotBlank(node, "adid", adid);
         putIfNotBlank(node, "idfa", idfa);
-        putIfNotBlank(node, "time_stamp", timeStamp);
+        putIfNotBlank(node, "time_stamp", attendedAt);
+
+        return node;
+    }
+
+    public JsonNode buildTnkPayloadJson(
+            String rewardKey,
+            String userKey,
+            UserDeviceType userDeviceType,
+            Integer campaignType,
+            Long quantity,
+            String signedValue,
+            Integer appKey,
+            String appName,
+            String adid,
+            String attendedAt,
+            Long revenue
+    ) {
+        ObjectNode node = objectMapper.createObjectNode();
+
+        putIfNotBlank(node, "seq_id", rewardKey);
+        putIfNotBlank(node, "md_user_nm", userKey);
+        putIfNotBlank(node, "user_device_type", userDeviceType.name());
+        putIfNotBlank(node, "campaign_type", campaignType);
+        putIfNotBlank(node, "pay_pnt", quantity);
+        putIfNotBlank(node, "md_chk", signedValue);
+        putIfNotBlank(node, "app_key", appKey);
+        putIfNotBlank(node, "app_nm", appName);
+        putIfNotBlank(node, "app_id", adid);
+        putIfNotBlank(node, "pay_dt", attendedAt);
+        putIfNotBlank(node, "pay_amt", revenue);
 
         return node;
     }

@@ -14,9 +14,9 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "애드팝콘 리워드 콜백",
+        summary = "TNK 리워드 콜백",
         description = """
-                작성일자: 2026-01-17
+                작성일자: 2026-01-19
                 
                 작성자: 성효빈
                 
@@ -24,7 +24,7 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                - 애드팝콘 리워드 적립 콜백을 처리합니다.
+                - TNK 리워드 적립 콜백을 처리합니다.
                 
                 - 서명 검증에 실패하거나 중복 지급인 경우 오류 코드를 반환합니다.
                 
@@ -35,18 +35,19 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
                 | reward_key | string | 리워드 키 | Y | 20241211-abc |
-                | usn | string | 회원 식별자 | Y | U1000 |
+                | md_user_nm | string | 회원 식별자 | Y | U1000 |
                 | user_device_type | string | 회원 디바이스 유형 | Y | ANDROID |
                 | campaign_key | string | 캠페인 키 | Y | C123 |
-                | campaign_type | number | 캠페인 타입 | N | 1 |
+                | actn_id | number | 캠페인 타입 | N | 1 |
                 | campaign_name | string | 캠페인 이름 | N | "앱 설치" |
-                | quantity | number | 지급 수량 | Y | 100 |
-                | signed_value | string | 서명 값 | Y | "abc123" |
+                | pay_pnt | number | 지급 수량 | Y | 100 |
+                | md_chk | string | 서명 값 | Y | "abc123" |
                 | app_key | number | 앱 키 | N | 10 |
-                | app_name | string | 앱 이름 | N | "my-app" |
-                | adid | string | 구글 광고 ID | N | "adid-1" |
+                | app_nm | string | 앱 이름 | N | "my-app" |
+                | app_id | string | 구글 광고 ID | N | "adid-1" |
                 | idfa | string | IDFA | N | "idfa-1" |
-                | time_stamp | string | 캠페인 완료 일시 | N | "2026-01-17T12:00:00" |
+                | pay_dt | string | 캠페인 완료 일시 | N | "2026-01-17T12:00:00" |
+                | pay_amt | number | 수익 | N | 100 |
                 
                 ---
                 
@@ -56,14 +57,14 @@ import java.lang.annotation.*;
                 """,
         parameters = {
                 @Parameter(
-                        name = "reward_key",
+                        name = "seq_id",
                         in = ParameterIn.QUERY,
                         required = true,
                         description = "리워드 키",
                         schema = @Schema(type = "string")
                 ),
                 @Parameter(
-                        name = "usn",
+                        name = "md_user_nm",
                         in = ParameterIn.QUERY,
                         required = true,
                         description = "회원 식별자",
@@ -77,33 +78,20 @@ import java.lang.annotation.*;
                         schema = @Schema(type = "string")
                 ),
                 @Parameter(
-                        name = "campaign_key",
-                        in = ParameterIn.QUERY,
-                        required = true,
-                        description = "캠페인 키",
-                        schema = @Schema(type = "string")
-                ),
-                @Parameter(
                         name = "campaign_type",
                         in = ParameterIn.QUERY,
                         description = "캠페인 타입",
                         schema = @Schema(type = "number")
                 ),
                 @Parameter(
-                        name = "campaign_name",
-                        in = ParameterIn.QUERY,
-                        description = "캠페인 이름",
-                        schema = @Schema(type = "string")
-                ),
-                @Parameter(
-                        name = "quantity",
+                        name = "pay_pnt",
                         in = ParameterIn.QUERY,
                         required = true,
                         description = "지급 수량",
                         schema = @Schema(type = "number")
                 ),
                 @Parameter(
-                        name = "signed_value",
+                        name = "md_chk",
                         in = ParameterIn.QUERY,
                         required = true,
                         description = "서명 값",
@@ -116,34 +104,34 @@ import java.lang.annotation.*;
                         schema = @Schema(type = "number")
                 ),
                 @Parameter(
-                        name = "app_name",
+                        name = "app_nm",
                         in = ParameterIn.QUERY,
                         description = "앱 이름",
                         schema = @Schema(type = "string")
                 ),
                 @Parameter(
-                        name = "adid",
+                        name = "app_id",
                         in = ParameterIn.QUERY,
                         description = "구글 광고 ID",
                         schema = @Schema(type = "string")
                 ),
                 @Parameter(
-                        name = "idfa",
-                        in = ParameterIn.QUERY,
-                        description = "IDFA",
-                        schema = @Schema(type = "string")
-                ),
-                @Parameter(
-                        name = "time_stamp",
+                        name = "pay_dt",
                         in = ParameterIn.QUERY,
                         description = "캠페인 완료 일시",
                         schema = @Schema(type = "string")
+                ),
+                @Parameter(
+                        name = "pay_amt",
+                        in = ParameterIn.QUERY,
+                        description = "리워드 수익",
+                        schema = @Schema(type = "number")
                 )
         },
         responses = {
                 @ApiResponse(
                         responseCode = "200",
-                        description = "성공 또는 실패",
+                        description = "성공",
                         content = @Content(
                                 mediaType = "application/json",
                                 examples = {
@@ -151,56 +139,81 @@ import java.lang.annotation.*;
                                                 name = "성공",
                                                 value = """
                                                         {
-                                                          "Result": true,
-                                                          "ResultCode": 1,
-                                                          "ResultMsg": "success"
-                                                        }
-                                                        """
-                                        ),
-                                        @ExampleObject(
-                                                name = "서명 검증 실패",
-                                                value = """
-                                                        {
-                                                          "Result": false,
-                                                          "ResultCode": 3101,
-                                                          "ResultMsg": "signature verification failed"
-                                                        }
-                                                        """
-                                        ),
-                                        @ExampleObject(
-                                                name = "회원 정보 존재하지 않음",
-                                                value = """
-                                                        {
-                                                          "Result": false,
-                                                          "ResultCode": 3200,
-                                                          "ResultMsg": "invalid user"
-                                                        }
-                                                        """
-                                        ),
-                                        @ExampleObject(
-                                                name = "중복 지급",
-                                                value = """
-                                                        {
-                                                          "Result": false,
-                                                          "ResultCode": 3100,
-                                                          "ResultMsg": "duplicate transaction"
-                                                        }
-                                                        """
-                                        ),
-                                        @ExampleObject(
-                                                name = "그 외 오류",
-                                                value = """
-                                                        {
-                                                          "Result": false,
-                                                          "ResultCode": 4000,
-                                                          "ResultMsg": "custom error message"
+                                                          "statusCode": 200,
+                                                          "code": "OK",
+                                                          "timestamp": "2026-01-19T11:11:38.786628",
+                                                          "content": null,
+                                                          "message": "리워드 포인트 지급 성공"
                                                         }
                                                         """
                                         )
                                 }
                         )
-                )
+                ),
+                @ApiResponse(
+                        responseCode = "401",
+                        description = "서명 검증 실패",
+                        content = @Content(
+                                mediaType = "application/json",
+                                examples = {
+                                        @ExampleObject(
+                                                name = "서명 검증 실패",
+                                                value = """
+                                                        {
+                                                          "statusCode": 401,
+                                                          "code": "UNAUTHORIZED",
+                                                          "timestamp": "2026-01-19T11:11:38.786628",
+                                                          "content": null,
+                                                          "message": "invalid signed value"
+                                                        }
+                                                        """
+                                        )
+                                }
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "회원 포인트 도메인 정보 조회 실패",
+                        content = @Content(
+                                mediaType = "application/json",
+                                examples = {
+                                        @ExampleObject(
+                                                name = "회원 포인트 도메인 정보 조회 실패",
+                                                value = """
+                                                                                                                {
+                                                          "statusCode": 404,
+                                                          "code": "NOT_FOUND",
+                                                          "timestamp": "2026-01-19T11:16:17.71728",
+                                                          "content": null,
+                                                          "message": "회원 정보를 찾을 수 없습니다. userKey: 165e6421-12a4-41c1-9e56-68d3bb03ca48"
+                                                        }
+                                                        """
+                                        )
+                                }
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "409",
+                        description = "중복 지급",
+                        content = @Content(
+                                mediaType = "application/json",
+                                examples = {
+                                        @ExampleObject(
+                                                name = "중복 지급",
+                                                value = """
+                                                        {
+                                                          "statusCode": 409,
+                                                          "code": "CONFLICT",
+                                                          "timestamp": "2026-01-19T11:11:38.786628",
+                                                          "content": null,
+                                                          "message": "이미 해당 캠페인에 대한 리워드가 지급되었습니다. 전송된 캠페인 ID: abc"
+                                                        }
+                                                        """
+                                        )
+                                }
+                        )
+                ),
         }
 )
-public @interface AdpopcornCallbackApiDocs {
+public @interface TnkCallbackApiDocs {
 }

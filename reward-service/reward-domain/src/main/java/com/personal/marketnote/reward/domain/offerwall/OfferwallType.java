@@ -10,4 +10,12 @@ public enum OfferwallType {
     TNK("TNK");
 
     private final String description;
+
+    public boolean isAdpopcorn() {
+        return this == ADPOPCORN;
+    }
+
+    public boolean isTnk() {
+        return this == TNK;
+    }
 }
