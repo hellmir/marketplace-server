@@ -46,7 +46,7 @@ import java.lang.annotation.*;
                 | statusCode | number | HTTP 상태 코드 | 201 |
                 | code | string | 응답 코드 | "SUC01" |
                 | timestamp | string(datetime) | 응답 시간 | "2026-01-17T12:00:00.000" |
-                | content | object | 포인트 정보 | null |
+                | content | object | 응답 본문 | null |
                 | message | string | 처리 결과 | "회원 포인트 정보 생성 성공" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},

@@ -554,139 +554,142 @@ pipeline {
 		}
 
 		stage('Register Market Note Service Task Definition') {
-			steps {
-				script {
-					withCredentials([
-						string(credentialsId: 'MARKETNOTE_DB_USERNAME',                        variable: 'DB_USERNAME'),
-						string(credentialsId: 'MARKETNOTE_JWT_SECRET_KEY',                     variable: 'JWT_SECRET_KEY'),
-						string(credentialsId: 'MARKETNOTE_ACCESS_TOKEN_EXPIRATION_TIME',       variable: 'ACCESS_TOKEN_EXPIRATION_TIME'),
-						string(credentialsId: 'MARKETNOTE_REFRESH_TOKEN_EXPIRATION_TIME',      variable: 'REFRESH_TOKEN_EXPIRATION_TIME'),
-						string(credentialsId: 'MARKETNOTE_CLIENT_ORIGIN',                      variable: 'CLIENT_ORIGIN'),
-						string(credentialsId: 'MARKETNOTE_COOKIE_DOMAIN',                      variable: 'COOKIE_DOMAIN'),
-						string(credentialsId: 'MARKETNOTE_ACCESS_CONTROL_ALLOWED_ORIGINS',     variable: 'ACCESS_CONTROL_ALLOWED_ORIGINS'),
-						string(credentialsId: 'MARKETNOTE_QA_SPRING_PROFILE',                  variable: 'SPRING_PROFILE'),
-						string(credentialsId: 'MARKETNOTE_GOOGLE_CLIENT_ID',                   variable: 'GOOGLE_CLIENT_ID'),
-						string(credentialsId: 'MARKETNOTE_GOOGLE_CLIENT_SECRET',               variable: 'GOOGLE_CLIENT_SECRET'),
-						string(credentialsId: 'MARKETNOTE_KAKAO_CLIENT_ID',                    variable: 'KAKAO_CLIENT_ID'),
-						string(credentialsId: 'MARKETNOTE_KAKAO_CLIENT_SECRET',                variable: 'KAKAO_CLIENT_SECRET'),
-						string(credentialsId: 'MARKETNOTE_KAKAO_ADMIN_KEY',                    variable: 'KAKAO_ADMIN_KEY'),
-						string(credentialsId: 'MARKETNOTE_S3_ACCESS_KEY',                      variable: 'S3_ACCESS_KEY'),
-						string(credentialsId: 'MARKETNOTE_S3_SECRET_KEY',                      variable: 'S3_SECRET_KEY'),
-						string(credentialsId: 'MARKETNOTE_S3_BUCKET_NAME',                     variable: 'S3_BUCKET_NAME'),
-						string(credentialsId: 'MARKETNOTE_AWS_ACCOUNT_ID',                     variable: 'AWS_ACCOUNT_ID'),
-						string(credentialsId: 'MARKETNOTE_AWS_ACCESS_KEY_ID',                  variable: 'AWS_ACCESS_KEY_ID'),
-						string(credentialsId: 'MARKETNOTE_AWS_SECRET_ACCESS_KEY',              variable: 'AWS_SECRET_ACCESS_KEY'),
-						string(credentialsId: 'MARKETNOTE_AWS_DEFAULT_REGION',                 variable: 'AWS_DEFAULT_REGION'),
-						string(credentialsId: 'MARKETNOTE_ECS_TASK_EXECUTION_ROLE_ARN',        variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
-						string(credentialsId: 'MARKETNOTE_ECS_TASK_ROLE_ARN',                  variable: 'ECS_TASK_ROLE_ARN'),
-						string(credentialsId: 'MARKETNOTE_CLOUDWATCH_LOG_GROUP',               variable: 'CLOUDWATCH_LOG_GROUP'),
-						string(credentialsId: 'MARKETNOTE_SES_SMTP_USERNAME',                  variable: 'SES_SMTP_USERNAME'),
-						string(credentialsId: 'MARKETNOTE_SES_SMTP_PASSWORD',                  variable: 'SES_SMTP_PASSWORD'),
-						string(credentialsId: 'MARKETNOTE_MAIL_FROM',                          variable: 'MAIL_FROM'),
-						string(credentialsId: 'MARKETNOTE_MAIL_SENDER_NAME',                   variable: 'MAIL_SENDER_NAME'),
-						string(credentialsId: 'MARKETNOTE_MAIL_VERIFICATION_TTL_MINUTES',      variable: 'MAIL_VERIFICATION_TTL_MINUTES'),
-						string(credentialsId: 'MARKETNOTE_REDIS_PASSWORD',                     variable: 'REDIS_PASSWORD'),
-						string(credentialsId: 'MARKETNOTE_REDIS_HOST_NAME',                    variable: 'REDIS_HOST_NAME'),
-						string(credentialsId: 'MARKETNOTE_REDIS_EMAIL_VERIFICATION_PREFIX',    variable: 'REDIS_EMAIL_VERIFICATION_PREFIX'),
-						string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_SERVER_ORIGIN',      variable: 'FILE_SERVICE_SERVER_ORIGIN'),
-						string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_SERVER_ORIGIN',   variable: 'PRODUCT_SERVICE_SERVER_ORIGIN'),
-						string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_SERVER_ORIGIN',  variable: 'COMMERCE_SERVICE_SERVER_ORIGIN'),
-						string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_SERVER_ORIGIN', variable: 'COMMUNITY_SERVICE_SERVER_ORIGIN'),
-						string(credentialsId: 'MARKETNOTE_QA_REWARD_SERVICE_SERVER_ORIGIN',    variable: 'REWARD_SERVICE_SERVER_ORIGIN'),
-						string(credentialsId: 'MARKETNOTE_QA_JWT_ADMIN_ACCESS_TOKEN',          variable: 'JWT_ADMIN_ACCESS_TOKEN'),
-						string(credentialsId: 'MARKETNOTE_QA_ADPOPCORN_ANDROID_HASH_KEY',      variable: 'ADPOPCORN_ANDROID_HASH_KEY'),
-						string(credentialsId: 'MARKETNOTE_QA_ADPOPCORN_IOS_HASH_KEY',          variable: 'ADPOPCORN_IOS_HASH_KEY'),
-					]) {
-						sh '''
-                  LG="$CLOUDWATCH_LOG_GROUP"
-                  EXISTS=$(aws logs describe-log-groups --log-group-name-prefix "$LG" --region "$AWS_DEFAULT_REGION" --query "length(logGroups[?logGroupName=='$LG'])" --output text || echo 0)
-                  if [ "$EXISTS" = "0" ]; then
-                    aws logs create-log-group --log-group-name "$LG" --region "$AWS_DEFAULT_REGION"
-                  fi
-                '''
+            steps {
+                script {
+                    withCredentials([
+                        string(credentialsId: 'MARKETNOTE_DB_USERNAME',                        variable: 'DB_USERNAME'),
+                        string(credentialsId: 'MARKETNOTE_JWT_SECRET_KEY',                     variable: 'JWT_SECRET_KEY'),
+                        string(credentialsId: 'MARKETNOTE_ACCESS_TOKEN_EXPIRATION_TIME',       variable: 'ACCESS_TOKEN_EXPIRATION_TIME'),
+                        string(credentialsId: 'MARKETNOTE_REFRESH_TOKEN_EXPIRATION_TIME',      variable: 'REFRESH_TOKEN_EXPIRATION_TIME'),
+                        string(credentialsId: 'MARKETNOTE_CLIENT_ORIGIN',                      variable: 'CLIENT_ORIGIN'),
+                        string(credentialsId: 'MARKETNOTE_COOKIE_DOMAIN',                      variable: 'COOKIE_DOMAIN'),
+                        string(credentialsId: 'MARKETNOTE_ACCESS_CONTROL_ALLOWED_ORIGINS',     variable: 'ACCESS_CONTROL_ALLOWED_ORIGINS'),
+                        string(credentialsId: 'MARKETNOTE_QA_SPRING_PROFILE',                  variable: 'SPRING_PROFILE'),
+                        string(credentialsId: 'MARKETNOTE_GOOGLE_CLIENT_ID',                   variable: 'GOOGLE_CLIENT_ID'),
+                        string(credentialsId: 'MARKETNOTE_GOOGLE_CLIENT_SECRET',               variable: 'GOOGLE_CLIENT_SECRET'),
+                        string(credentialsId: 'MARKETNOTE_KAKAO_CLIENT_ID',                    variable: 'KAKAO_CLIENT_ID'),
+                        string(credentialsId: 'MARKETNOTE_KAKAO_CLIENT_SECRET',                variable: 'KAKAO_CLIENT_SECRET'),
+                        string(credentialsId: 'MARKETNOTE_KAKAO_ADMIN_KEY',                    variable: 'KAKAO_ADMIN_KEY'),
+                        string(credentialsId: 'MARKETNOTE_S3_ACCESS_KEY',                      variable: 'S3_ACCESS_KEY'),
+                        string(credentialsId: 'MARKETNOTE_S3_SECRET_KEY',                      variable: 'S3_SECRET_KEY'),
+                        string(credentialsId: 'MARKETNOTE_S3_BUCKET_NAME',                     variable: 'S3_BUCKET_NAME'),
+                        string(credentialsId: 'MARKETNOTE_AWS_ACCOUNT_ID',                     variable: 'AWS_ACCOUNT_ID'),
+                        string(credentialsId: 'MARKETNOTE_AWS_ACCESS_KEY_ID',                  variable: 'AWS_ACCESS_KEY_ID'),
+                        string(credentialsId: 'MARKETNOTE_AWS_SECRET_ACCESS_KEY',              variable: 'AWS_SECRET_ACCESS_KEY'),
+                        string(credentialsId: 'MARKETNOTE_AWS_DEFAULT_REGION',                 variable: 'AWS_DEFAULT_REGION'),
+                        string(credentialsId: 'MARKETNOTE_ECS_TASK_EXECUTION_ROLE_ARN',        variable: 'ECS_TASK_EXECUTION_ROLE_ARN'),
+                        string(credentialsId: 'MARKETNOTE_ECS_TASK_ROLE_ARN',                  variable: 'ECS_TASK_ROLE_ARN'),
+                        string(credentialsId: 'MARKETNOTE_CLOUDWATCH_LOG_GROUP',               variable: 'CLOUDWATCH_LOG_GROUP'),
+                        string(credentialsId: 'MARKETNOTE_SES_SMTP_USERNAME',                  variable: 'SES_SMTP_USERNAME'),
+                        string(credentialsId: 'MARKETNOTE_SES_SMTP_PASSWORD',                  variable: 'SES_SMTP_PASSWORD'),
+                        string(credentialsId: 'MARKETNOTE_MAIL_FROM',                          variable: 'MAIL_FROM'),
+                        string(credentialsId: 'MARKETNOTE_MAIL_SENDER_NAME',                   variable: 'MAIL_SENDER_NAME'),
+                        string(credentialsId: 'MARKETNOTE_MAIL_VERIFICATION_TTL_MINUTES',      variable: 'MAIL_VERIFICATION_TTL_MINUTES'),
+                        string(credentialsId: 'MARKETNOTE_REDIS_PASSWORD',                     variable: 'REDIS_PASSWORD'),
+                        string(credentialsId: 'MARKETNOTE_REDIS_HOST_NAME',                    variable: 'REDIS_HOST_NAME'),
+                        string(credentialsId: 'MARKETNOTE_REDIS_EMAIL_VERIFICATION_PREFIX',    variable: 'REDIS_EMAIL_VERIFICATION_PREFIX'),
+                        string(credentialsId: 'MARKETNOTE_QA_FILE_SERVICE_SERVER_ORIGIN',      variable: 'FILE_SERVICE_SERVER_ORIGIN'),
+                        string(credentialsId: 'MARKETNOTE_QA_PRODUCT_SERVICE_SERVER_ORIGIN',   variable: 'PRODUCT_SERVICE_SERVER_ORIGIN'),
+                        string(credentialsId: 'MARKETNOTE_QA_COMMERCE_SERVICE_SERVER_ORIGIN',  variable: 'COMMERCE_SERVICE_SERVER_ORIGIN'),
+                        string(credentialsId: 'MARKETNOTE_QA_COMMUNITY_SERVICE_SERVER_ORIGIN', variable: 'COMMUNITY_SERVICE_SERVER_ORIGIN'),
+                        string(credentialsId: 'MARKETNOTE_QA_REWARD_SERVICE_SERVER_ORIGIN',    variable: 'REWARD_SERVICE_SERVER_ORIGIN'),
+                        string(credentialsId: 'MARKETNOTE_QA_JWT_ADMIN_ACCESS_TOKEN',          variable: 'JWT_ADMIN_ACCESS_TOKEN'),
+                        string(credentialsId: 'MARKETNOTE_QA_ADPOPCORN_ANDROID_HASH_KEY',      variable: 'ADPOPCORN_ANDROID_HASH_KEY'),
+                        string(credentialsId: 'MARKETNOTE_QA_ADPOPCORN_IOS_HASH_KEY',          variable: 'ADPOPCORN_IOS_HASH_KEY'),
+                    ]) {
+                        sh '''
+                          LG="$CLOUDWATCH_LOG_GROUP"
+                          EXISTS=$(aws logs describe-log-groups --log-group-name-prefix "$LG" --region "$AWS_DEFAULT_REGION" --query "length(logGroups[?logGroupName=='$LG'])" --output text || echo 0)
+                          if [ "$EXISTS" = "0" ]; then
+                            aws logs create-log-group --log-group-name "$LG" --region "$AWS_DEFAULT_REGION"
+                          fi
+                        '''
 
-						def td = buildMarketNoteTaskDefinition(env)
+                        def td = buildMarketNoteTaskDefinition(env)
 
-						def json = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(td))
-						writeFile file: 'taskdef.json', text: json
+                        def json = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(td))
+                        writeFile file: 'taskdef.json', text: json
 
-						def out = sh(
-							script: 'set -eu; aws ecs register-task-definition --cli-input-json file://taskdef.json --region $AWS_DEFAULT_REGION --query "taskDefinition.taskDefinitionArn" --output text',
-							returnStdout: true
-						).trim()
-						echo "Registered TaskDef ARN = ${out}"
-					}
-				}
-			}
-		}
+                        def out = sh(
+                            script: 'set -eu; aws ecs register-task-definition --cli-input-json file://taskdef.json --region $AWS_DEFAULT_REGION --query "taskDefinition.taskDefinitionArn" --output text',
+                            returnStdout: true
+                        ).trim()
+
+                        if (!out || out == 'None') {
+                            error 'Failed to register application task definition'
+                        }
+
+                        env.APP_TASK_DEF_ARN = out
+                        echo "Registered TaskDef ARN = ${env.APP_TASK_DEF_ARN}"
+                    }
+                }
+            }
+        }
 
 		stage('Deploy Market Note Service') {
-			steps {
-				script {
-					withCredentials([
-						string(credentialsId: 'MARKETNOTE_AWS_ACCOUNT_ID',        variable: 'AWS_ACCOUNT_ID'),
-						string(credentialsId: 'MARKETNOTE_AWS_ACCESS_KEY_ID',     variable: 'AWS_ACCESS_KEY_ID'),
-						string(credentialsId: 'MARKETNOTE_AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
-						string(credentialsId: 'MARKETNOTE_AWS_DEFAULT_REGION',    variable: 'AWS_DEFAULT_REGION'),
-						string(credentialsId: 'MARKETNOTE_ECS_CLUSTER_NAME',      variable: 'ECS_CLUSTER_NAME'),
-						string(credentialsId: 'MARKETNOTE_SUBNET_IDS',            variable: 'SUBNET_IDS'),
-						string(credentialsId: 'MARKETNOTE_SECURITY_GROUP_IDS',    variable: 'SECURITY_GROUP_IDS'),
-					]) {
-						def newTaskDefArn = sh(script: 'aws ecs list-task-definitions --family-prefix $PROJECT_NAME --sort DESC --region $AWS_DEFAULT_REGION --query \'taskDefinitionArns[0]\' --output text', returnStdout: true).trim()
-						if (!newTaskDefArn || newTaskDefArn == 'None') {
-							error 'No application TaskDefinition found to deploy'
-						}
-						def exists = sh(script: 'aws ecs describe-services --cluster $ECS_CLUSTER_NAME --services $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION --query \'services[0].status\' --output text || true', returnStdout: true).trim()
-						def subnets = sh(script: 'printf "%s" "$SUBNET_IDS" | awk -F, \'{for(i=1;i<=NF;i++){gsub(/^ +| +$/,"",$i);printf "%s%s",$i,(i<NF?",":"")}}\'', returnStdout: true).trim()
-						def sgs = sh(script: 'printf "%s" "$SECURITY_GROUP_IDS" | awk -F, \'{for(i=1;i<=NF;i++){gsub(/^ +| +$/,"",$i);printf "%s%s",$i,(i<NF?",":"")}}\'', returnStdout: true).trim()
+            steps {
+                script {
+                    withCredentials([
+                        string(credentialsId: 'MARKETNOTE_AWS_ACCOUNT_ID',        variable: 'AWS_ACCOUNT_ID'),
+                        string(credentialsId: 'MARKETNOTE_AWS_ACCESS_KEY_ID',     variable: 'AWS_ACCESS_KEY_ID'),
+                        string(credentialsId: 'MARKETNOTE_AWS_SECRET_ACCESS_KEY', variable: 'AWS_SECRET_ACCESS_KEY'),
+                        string(credentialsId: 'MARKETNOTE_AWS_DEFAULT_REGION',    variable: 'AWS_DEFAULT_REGION'),
+                        string(credentialsId: 'MARKETNOTE_ECS_CLUSTER_NAME',      variable: 'ECS_CLUSTER_NAME'),
+                        string(credentialsId: 'MARKETNOTE_SUBNET_IDS',            variable: 'SUBNET_IDS'),
+                        string(credentialsId: 'MARKETNOTE_SECURITY_GROUP_IDS',    variable: 'SECURITY_GROUP_IDS'),
+                    ]) {
+                        if (!env.APP_TASK_DEF_ARN?.trim()) {
+                            error 'No application TaskDefinition ARN (APP_TASK_DEF_ARN) found to deploy'
+                        }
 
-						if (exists == "ACTIVE" || exists == "DRAINING") {
-							sh """
+                        sh '''
+                          EXISTS=$(aws ecs describe-services --cluster "$ECS_CLUSTER_NAME" --services "$ECS_SERVICE_NAME" --region "$AWS_DEFAULT_REGION" --query 'services[0].status' --output text 2>/dev/null || true)
+                          SUBNETS=$(printf "%s" "$SUBNET_IDS" | awk -F, '{for(i=1;i<=NF;i++){gsub(/^ +| +$/,"",$i);printf "%s%s",$i,(i<NF?",":"")}}')
+                          SGS=$(printf "%s" "$SECURITY_GROUP_IDS" | awk -F, '{for(i=1;i<=NF;i++){gsub(/^ +| +$/,"",$i);printf "%s%s",$i,(i<NF?",":"")}}')
+
+                          if [ "$EXISTS" = "ACTIVE" ] || [ "$EXISTS" = "DRAINING" ]; then
                             aws ecs update-service \
-                              --cluster \$ECS_CLUSTER_NAME \
-                              --service \$ECS_SERVICE_NAME \
-                              --task-definition ${newTaskDefArn} \
+                              --cluster "$ECS_CLUSTER_NAME" \
+                              --service "$ECS_SERVICE_NAME" \
+                              --task-definition "$APP_TASK_DEF_ARN" \
                               --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
                               --desired-count 1 \
                               --health-check-grace-period-seconds 180 \
-                              --region \$AWS_DEFAULT_REGION \
+                              --region "$AWS_DEFAULT_REGION" \
                               --force-new-deployment
-                            """
-							sh 'aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION --health-check-grace-period-seconds 180 || true'
-						} else {
-							sh """
+                          else
                             aws ecs create-service \
-                              --cluster \$ECS_CLUSTER_NAME \
-                              --service-name \$ECS_SERVICE_NAME \
-                              --task-definition ${newTaskDefArn} \
+                              --cluster "$ECS_CLUSTER_NAME" \
+                              --service-name "$ECS_SERVICE_NAME" \
+                              --task-definition "$APP_TASK_DEF_ARN" \
                               --desired-count 1 \
                               --capacity-provider-strategy capacityProvider=FARGATE,weight=0 capacityProvider=FARGATE_SPOT,weight=1 \
-                              --load-balancers targetGroupArn=\$TARGET_GROUP_ARN,containerName=${env.PROJECT_NAME},containerPort=8080 \
-                              --network-configuration "awsvpcConfiguration={subnets=[${subnets}],securityGroups=[${sgs}],assignPublicIp=ENABLED}" \
-                              --region \$AWS_DEFAULT_REGION
-                            """
-							sh 'aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION --health-check-grace-period-seconds 180 || true'
-						}
-						int maxWaitRetries = 20
-						for (int i = 1; i <= maxWaitRetries; i++) {
-							def rc = sh(
-								script: 'aws ecs wait services-stable --cluster $ECS_CLUSTER_NAME --services $ECS_SERVICE_NAME --region $AWS_DEFAULT_REGION',
-								returnStatus: true
-							)
-							if (rc == 0) {
-								echo "ECS services-stable 성공 (attempt ${i})"
-								break
-							}
-							echo "ECS services-stable 타임아웃 (attempt ${i}) → 재시도"
-							sleep time: 20, unit: 'SECONDS'
-							if (i == maxWaitRetries) {
-								error "ECS 서비스가 안정화되지 않음 (총 ${maxWaitRetries}회 대기 실패)"
-							}
-						}
-					}
-				}
-			}
-		}
+                              --load-balancers targetGroupArn="$TARGET_GROUP_ARN",containerName="$PROJECT_NAME",containerPort=8080 \
+                              --network-configuration "awsvpcConfiguration={subnets=[$SUBNETS],securityGroups=[$SGS],assignPublicIp=ENABLED}" \
+                              --region "$AWS_DEFAULT_REGION"
+                          fi
+
+                          aws ecs update-service --cluster "$ECS_CLUSTER_NAME" --service "$ECS_SERVICE_NAME" --region "$AWS_DEFAULT_REGION" --health-check-grace-period-seconds 180 || true
+
+                          MAX_WAIT_RETRIES=20
+                          i=1
+                          while [ $i -le $MAX_WAIT_RETRIES ]; do
+                            if aws ecs wait services-stable --cluster "$ECS_CLUSTER_NAME" --services "$ECS_SERVICE_NAME" --region "$AWS_DEFAULT_REGION"; then
+                              echo "ECS services-stable 성공 (attempt $i)"
+                              break
+                            fi
+                            echo "ECS services-stable 타임아웃 (attempt $i) → 재시도"
+                            sleep 20
+                            if [ $i -eq $MAX_WAIT_RETRIES ]; then
+                              exit 1
+                            fi
+                            i=$((i+1))
+                          done
+                        '''
+                    }
+                }
+            }
+        }
 
 		stage('Build Prometheus Image') {
 			steps {

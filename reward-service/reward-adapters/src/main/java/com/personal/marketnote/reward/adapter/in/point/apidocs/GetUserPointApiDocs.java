@@ -42,7 +42,7 @@ import java.lang.annotation.*;
                 | statusCode | number | HTTP 상태 코드 | 200 |
                 | code | string | 응답 코드 | "SUC01" |
                 | timestamp | string(datetime) | 응답 시간 | "2026-01-18T12:00:00.000" |
-                | content | object | 포인트 정보 | { ... } |
+                | content | object | 응답 본문 | { ... } |
                 | message | string | 처리 결과 | "회원 포인트 정보 조회 성공" |
                 
                 ---
