@@ -7,6 +7,7 @@ import lombok.Builder;
 @Builder
 public record ModifyUserPointCommand(
         Long userId,
+        String userKey,
         UserPointChangeType changeType,
         Long amount,
         UserPointSourceType sourceType,

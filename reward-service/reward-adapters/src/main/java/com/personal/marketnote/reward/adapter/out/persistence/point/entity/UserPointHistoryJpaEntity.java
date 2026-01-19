@@ -37,7 +37,7 @@ public class UserPointHistoryJpaEntity {
     @Column(name = "source_id", nullable = false)
     private Long sourceId;
 
-    @Column(name = "reason", length = 255)
+    @Column(name = "reason")
     private String reason;
 
     @Column(name = "accumulated_at", nullable = false)

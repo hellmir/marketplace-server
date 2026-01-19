@@ -4,20 +4,29 @@ import com.personal.marketnote.reward.domain.point.UserPoint;
 
 public interface GetUserPointUseCase {
     /**
-     * @param userId 회원 ID
+     * @param userKey 회원 키
      * @return 회원 포인트 존재 여부 {@link boolean}
      * @Date 2026-01-17
      * @Author 성효빈
      * @Description 회원 포인트가 존재하는지 여부를 확인합니다.
      */
-    boolean existsUserPoint(Long userId);
+    boolean existsUserPoint(String userKey);
 
     /**
      * @param userId 회원 ID
      * @return 회원 포인트 정보
      * @Date 2026-01-17
-     * @Author ALLBUS
-     * @Description 회원 포인트 정보를 조회합니다. 존재하지 않으면 {@link com.personal.marketnote.common.exception.UserNotFoundException} 발생
+     * @Author 성효빈
+     * @Description 회원 포인트 정보를 조회합니다.
      */
     UserPoint getUserPoint(Long userId);
+
+    /**
+     * @param userKey 회원 키
+     * @return 회원 포인트 정보
+     * @Date 2026-01-19
+     * @Author 성효빈
+     * @Description 회원 포인트 정보를 조회합니다.
+     */
+    UserPoint getUserPoint(String userKey);
 }

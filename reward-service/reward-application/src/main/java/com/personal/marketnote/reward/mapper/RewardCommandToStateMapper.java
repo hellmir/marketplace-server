@@ -37,6 +37,7 @@ public class RewardCommandToStateMapper {
     public static UserPointCreateState mapToUserPointCreateState(RegisterUserPointCommand command) {
         return UserPointCreateState.builder()
                 .userId(command.userId())
+                .userKey(command.userKey())
                 .amount(0L)
                 .addExpectedAmount(0L)
                 .expireExpectedAmount(0L)
@@ -60,10 +61,11 @@ public class RewardCommandToStateMapper {
 
     public static UserPointHistoryCreateState mapToUserPointHistoryCreateState(
             ModifyUserPointCommand command,
+            Long userId,
             LocalDateTime accumulatedAt
     ) {
         return UserPointHistoryCreateState.builder()
-                .userId(command.userId())
+                .userId(userId)
                 .amount(command.changeType().equals(UserPointChangeType.DEDUCTION)
                         ? -Math.abs(command.amount())
                         : Math.abs(command.amount()))

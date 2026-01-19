@@ -1,6 +1,6 @@
 package com.personal.marketnote.reward.adapter.out.persistence.point.entity;
 
-import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.common.adapter.out.persistence.audit.BaseEntity;
 import com.personal.marketnote.reward.domain.point.UserPoint;
 import com.personal.marketnote.reward.domain.point.UserPointSnapshotState;
 import jakarta.persistence.Column;
@@ -8,10 +8,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_point")
@@ -19,10 +15,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-public class UserPointJpaEntity {
+public class UserPointJpaEntity extends BaseEntity {
     @Id
     @Column(name = "user_id", nullable = false)
     private Long userId;
+
+    @Column(name = "user_key", nullable = false, unique = true)
+    private String userKey;
 
     @Column(name = "amount", nullable = false)
     private Long amount;
@@ -33,26 +32,13 @@ public class UserPointJpaEntity {
     @Column(name = "expire_expected_amount", nullable = false)
     private Long expireExpectedAmount;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "modified_at")
-    private LocalDateTime modifiedAt;
-
     public static UserPointJpaEntity from(UserPoint userPoint) {
-        if (!FormatValidator.hasValue(userPoint)) {
-            return null;
-        }
-
         return UserPointJpaEntity.builder()
                 .userId(userPoint.getUserId())
+                .userKey(userPoint.getUserKey())
                 .amount(userPoint.getAmountValue())
                 .addExpectedAmount(userPoint.getAddExpectedAmount())
                 .expireExpectedAmount(userPoint.getExpireExpectedAmount())
-                .createdAt(userPoint.getCreatedAt())
-                .modifiedAt(userPoint.getModifiedAt())
                 .build();
     }
 
@@ -60,11 +46,12 @@ public class UserPointJpaEntity {
         return UserPoint.from(
                 UserPointSnapshotState.builder()
                         .userId(userId)
+                        .userKey(userKey)
                         .amount(amount)
                         .addExpectedAmount(addExpectedAmount)
                         .expireExpectedAmount(expireExpectedAmount)
-                        .createdAt(createdAt)
-                        .modifiedAt(modifiedAt)
+                        .createdAt(getCreatedAt())
+                        .modifiedAt(getModifiedAt())
                         .build()
         );
     }
