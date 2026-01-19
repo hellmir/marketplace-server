@@ -144,7 +144,7 @@ public class UserPersistenceAdapter
     @Override
     public List<Terms> findAll() {
         return termsJpaRepository.findAllByOrderByIdAsc().stream()
-                .map(UserJpaEntityToDomainMapper::mapToDomain)
+                .map(UserJpaEntityToDomainMapper::mapToTermsDomain)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());

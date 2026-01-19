@@ -31,6 +31,46 @@ public class RewardServiceClient implements ModifyUserPointPort {
     private final RestTemplate restTemplate;
 
     @Override
+    public void registerUserPoint(Long userId, String userKey) {
+        if (!FormatValidator.hasValue(userId) || !FormatValidator.hasValue(userKey)) {
+            return;
+        }
+
+        URI uri = buildRegisterUserPointUri(userId, userKey);
+        HttpHeaders headers = buildHeaders();
+        HttpEntity<Void> httpEntity = new HttpEntity<>(headers);
+
+        for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            try {
+                ResponseEntity<Void> response = restTemplate.exchange(uri, HttpMethod.POST, httpEntity, Void.class);
+
+                if (FormatValidator.hasValue(response) && response.getStatusCode().is2xxSuccessful()) {
+                    return;
+                }
+
+                HttpStatusCode statusCode = null;
+                if (FormatValidator.hasValue(response)) {
+                    statusCode = response.getStatusCode();
+                }
+
+                log.warn(
+                        "Reward service responded with non-2xx status for userId={}, status={}",
+                        userId, statusCode
+                );
+            } catch (Exception e) {
+                log.warn(
+                        "Failed to register user point on reward-service: userId={}, attempt={}, message={}",
+                        userId, i + 1, e.getMessage(), e
+                );
+            }
+
+            sleep(1000);
+        }
+
+        throw new RewardServiceRequestFailedException(new IOException());
+    }
+
+    @Override
     public void accrueReferralPoints(Long referrerUserId, Long referredUserId) {
         accrueUserPoint(
                 referrerUserId,
@@ -109,6 +149,15 @@ public class RewardServiceClient implements ModifyUserPointPort {
         return UriComponentsBuilder
                 .fromUriString(rewardServiceBaseUrl)
                 .path("/api/v1/users/{userId}/points")
+                .buildAndExpand(userId)
+                .toUri();
+    }
+
+    private URI buildRegisterUserPointUri(Long userId, String userKey) {
+        return UriComponentsBuilder
+                .fromUriString(rewardServiceBaseUrl)
+                .path("/api/v1/users/{userId}/points")
+                .queryParam("userKey", userKey)
                 .buildAndExpand(userId)
                 .toUri();
     }

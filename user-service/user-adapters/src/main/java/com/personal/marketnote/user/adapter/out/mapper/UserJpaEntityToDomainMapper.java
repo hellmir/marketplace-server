@@ -17,13 +17,14 @@ public class UserJpaEntityToDomainMapper {
     public static Optional<User> mapToDomain(UserJpaEntity userJpaEntity) {
         return Optional.ofNullable(userJpaEntity)
                 .map(entity -> {
-                    Role role = mapToDomain(entity.getRoleJpaEntity()).orElse(null);
-                    List<UserTerms> userTerms = mapToDomain(entity.getUserTermsJpaEntities()).orElse(List.of());
+                    Role role = mapToRoleDomain(entity.getRoleJpaEntity()).orElse(null);
+                    List<UserTerms> userTerms = mapToUserTermsDomain(entity.getUserTermsJpaEntities()).orElse(List.of());
                     List<UserOauth2Vendor> vendors = mapToVendorDomainWithoutUser(entity.getUserOauth2VendorsJpaEntities()).orElse(List.of());
 
                     User user = User.from(
                             UserSnapshotState.builder()
                                     .id(entity.getId())
+                                    .userKey(entity.getUserKey())
                                     .nickname(entity.getNickname())
                                     .email(entity.getEmail())
                                     .password(entity.getPassword())
@@ -48,7 +49,7 @@ public class UserJpaEntityToDomainMapper {
                 });
     }
 
-    private static Optional<Role> mapToDomain(RoleJpaEntity roleJpaEntity) {
+    private static Optional<Role> mapToRoleDomain(RoleJpaEntity roleJpaEntity) {
         return Optional.ofNullable(roleJpaEntity)
                 .filter(Objects::nonNull)
                 .map(entity -> Role.of(entity.getId(), entity.getName()));
@@ -62,7 +63,7 @@ public class UserJpaEntityToDomainMapper {
                         .collect(Collectors.toList()));
     }
 
-    private static Optional<List<UserTerms>> mapToDomain(List<UserTermsJpaEntity> userTermsJpaEntities) {
+    private static Optional<List<UserTerms>> mapToUserTermsDomain(List<UserTermsJpaEntity> userTermsJpaEntities) {
         return Optional.ofNullable(userTermsJpaEntities)
                 .filter(Objects::nonNull)
                 .map(entities -> entities.stream()
@@ -88,7 +89,7 @@ public class UserJpaEntityToDomainMapper {
                         .collect(Collectors.toList()));
     }
 
-    public static Optional<Terms> mapToDomain(TermsJpaEntity termsJpaEntity) {
+    public static Optional<Terms> mapToTermsDomain(TermsJpaEntity termsJpaEntity) {
         return Optional.ofNullable(termsJpaEntity)
                 .filter(Objects::nonNull)
                 .map(entity -> Terms.from(

@@ -15,6 +15,7 @@ import com.personal.marketnote.user.port.in.result.SignUpResult;
 import com.personal.marketnote.user.port.in.usecase.user.GetUserUseCase;
 import com.personal.marketnote.user.port.in.usecase.user.SignUpUseCase;
 import com.personal.marketnote.user.port.out.authentication.VerifyCodePort;
+import com.personal.marketnote.user.port.out.reward.ModifyUserPointPort;
 import com.personal.marketnote.user.port.out.user.*;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,7 @@ public class SignUpService implements SignUpUseCase {
     private final UpdateUserPort updateUserPort;
     private final VerifyCodePort verifyCodePort;
     private final SaveLoginHistoryPort saveLoginHistoryPort;
+    private final ModifyUserPointPort modifyUserPointPort;
 
     @Override
     public SignUpResult signUp(SignUpCommand signUpCommand, AuthVendor authVendor, String oidcId, String ipAddress) {
@@ -70,6 +72,11 @@ public class SignUpService implements SignUpUseCase {
                                 passwordEncoder
                         )
                 )
+        );
+
+        modifyUserPointPort.registerUserPoint(
+                signedUpUser.getId(),
+                signedUpUser.getUserKey().toString()
         );
 
         saveLoginHistoryPort.saveLoginHistory(
