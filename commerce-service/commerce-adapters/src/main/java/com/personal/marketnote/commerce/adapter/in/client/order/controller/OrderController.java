@@ -5,16 +5,14 @@ import com.personal.marketnote.commerce.adapter.in.client.order.mapper.OrderRequ
 import com.personal.marketnote.commerce.adapter.in.client.order.request.ChangeOrderStatusRequest;
 import com.personal.marketnote.commerce.adapter.in.client.order.request.RegisterOrderRequest;
 import com.personal.marketnote.commerce.adapter.in.client.order.response.GetOrderResponse;
+import com.personal.marketnote.commerce.adapter.in.client.order.response.GetOrdersCountResponse;
 import com.personal.marketnote.commerce.adapter.in.client.order.response.GetOrdersResponse;
 import com.personal.marketnote.commerce.adapter.in.client.order.response.RegisterOrderResponse;
 import com.personal.marketnote.commerce.domain.order.OrderPeriod;
 import com.personal.marketnote.commerce.domain.order.OrderStatusFilter;
 import com.personal.marketnote.commerce.port.in.command.order.GetBuyerOrderHistoryQuery;
 import com.personal.marketnote.commerce.port.in.command.order.UpdateOrderProductReviewStatusCommand;
-import com.personal.marketnote.commerce.port.in.result.order.GetOrderHistoryResult;
-import com.personal.marketnote.commerce.port.in.result.order.GetOrderResult;
-import com.personal.marketnote.commerce.port.in.result.order.GetOrdersResult;
-import com.personal.marketnote.commerce.port.in.result.order.RegisterOrderResult;
+import com.personal.marketnote.commerce.port.in.result.order.*;
 import com.personal.marketnote.commerce.port.in.usecase.order.ChangeOrderStatusUseCase;
 import com.personal.marketnote.commerce.port.in.usecase.order.GetOrderUseCase;
 import com.personal.marketnote.commerce.port.in.usecase.order.RegisterOrderUseCase;
@@ -138,6 +136,43 @@ public class OrderController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "회원 주문 내역 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 회원 주문 내역 개수 조회
+     *
+     * @param principal 인증된 사용자 정보
+     * @return 회원 주문 내역 개수 조회 응답 {@link GetOrdersCountResponse}
+     * @Author 성효빈
+     * @Date 2026-01-19
+     * @Description 회원 주문 내역 개수를 조회합니다.
+     */
+    @GetMapping("/count")
+    @GetOrdersCountApiDocs
+    public ResponseEntity<BaseResponse<GetOrdersCountResponse>> getBuyerOrderCount(
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal,
+            @RequestParam(value = "period", required = false) OrderPeriod period,
+            @RequestParam(value = "status", required = false) OrderStatusFilter statusFilter,
+            @RequestParam(value = "productName", required = false) String productName
+    ) {
+        GetOrderCountResult getOrderCountResult = getOrderUseCase.getBuyerOrderCount(
+                GetBuyerOrderHistoryQuery.of(
+                        ElementExtractor.extractUserId(principal),
+                        period,
+                        statusFilter,
+                        productName
+                )
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        GetOrdersCountResponse.from(getOrderCountResult),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "회원 주문 내역 개수 조회 성공"
                 ),
                 HttpStatus.OK
         );
