@@ -3,6 +3,7 @@ package com.personal.marketnote.reward.adapter.in.point;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.common.utility.Role;
 import com.personal.marketnote.reward.adapter.in.point.apidocs.GetUserPointApiDocs;
 import com.personal.marketnote.reward.adapter.in.point.apidocs.GetUserPointHistoriesApiDocs;
 import com.personal.marketnote.reward.adapter.in.point.apidocs.ModifyUserPointApiDocs;
@@ -39,7 +40,7 @@ import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFA
 import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 
 @RestController
-@RequestMapping("/api/v1/users/{userId}/point")
+@RequestMapping("/api/v1/users")
 @Tag(name = "포인트 API", description = "회원 포인트 관련 API")
 @RequiredArgsConstructor
 public class PointController {
@@ -57,7 +58,7 @@ public class PointController {
      * @Date 2026-01-17
      * @Description 회원 포인트 정보를 생성합니다.
      */
-    @PostMapping
+    @PostMapping("/{userId}/point")
     @PreAuthorize(ADMIN_POINTCUT)
     @RegisterUserPointApiDocs
     public ResponseEntity<BaseResponse<Void>> registerUserPoint(
@@ -87,7 +88,7 @@ public class PointController {
      * @Date 2026-01-18
      * @Description 회원 포인트 정보를 조회합니다.
      */
-    @GetMapping
+    @GetMapping("/me/point")
     @GetUserPointApiDocs
     public ResponseEntity<BaseResponse<GetUserPointReponse>> getUserPoint(
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
@@ -115,7 +116,7 @@ public class PointController {
      * @param filter    포인트 내역 조회 필터 (ALL/ACCRUAL/DEDUCTION)
      * @return 회원 포인트 내역 조회 응답 {@link GetUserPointHistoryResponse}
      */
-    @GetMapping("/histories")
+    @GetMapping("/{userId}/point/histories")
     @GetUserPointHistoriesApiDocs
     public ResponseEntity<BaseResponse<GetUserPointHistoryResponse>> getUserPointHistories(
             @PathVariable("userId") Long userId,
@@ -145,7 +146,8 @@ public class PointController {
                 .toList();
 
         if (
-                authorities.contains("ROLE_ADMIN")
+                authorities.stream()
+                        .anyMatch(Role::isAdmin)
                         || FormatValidator.equals(ElementExtractor.extractUserId(principal), userId)
         ) {
             return;
@@ -157,7 +159,7 @@ public class PointController {
     /**
      * (관리자) 회원 포인트 적립/차감
      */
-    @PatchMapping
+    @PatchMapping("/{userId}/point")
     @PreAuthorize(ADMIN_POINTCUT)
     @ModifyUserPointApiDocs
     public ResponseEntity<BaseResponse<UpdateUserPointResponse>> modifyUserPoint(

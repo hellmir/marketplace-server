@@ -4,6 +4,7 @@ import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.domain.exception.token.AuthenticationFailedException;
 import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.common.utility.Role;
 import com.personal.marketnote.community.adapter.in.client.post.controller.apidocs.GetPostsApiDocs;
 import com.personal.marketnote.community.adapter.in.client.post.controller.apidocs.RegisterPostApiDocs;
 import com.personal.marketnote.community.adapter.in.client.post.controller.apidocs.UpdatePostApiDocs;
@@ -87,8 +88,10 @@ public class PostController {
                 .map(GrantedAuthority::getAuthority)
                 .toList();
 
-        boolean isAdmin = authorities.contains("ROLE_ADMIN");
-        boolean isSeller = authorities.contains("ROLE_SELLER");
+        boolean isAdmin = authorities.stream()
+                .anyMatch(Role::isAdmin);
+        boolean isSeller = authorities.stream()
+                .anyMatch(Role::isSeller);
         request.validate(isAdmin, isSeller);
 
         return isSeller;

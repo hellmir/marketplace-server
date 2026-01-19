@@ -39,7 +39,7 @@ public class RegisterOfferwallRewardService implements RegisterOfferwallRewardUs
 
     @Override
     public Long register(RegisterOfferwallRewardCommand command) {
-//        validateSignature(command);
+        validateSignature(command);
         validateUser(command);
         validateDuplicate(command);
 
