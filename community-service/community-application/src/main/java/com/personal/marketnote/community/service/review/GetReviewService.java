@@ -12,6 +12,7 @@ import com.personal.marketnote.community.exception.ProductReviewAggregateNotFoun
 import com.personal.marketnote.community.exception.ReviewAlreadyExistsException;
 import com.personal.marketnote.community.exception.ReviewNotFoundException;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
+import com.personal.marketnote.community.port.in.result.review.GetReviewCountResult;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
 import com.personal.marketnote.community.port.in.usecase.review.GetReviewUseCase;
 import com.personal.marketnote.community.port.out.file.FindReviewImagesPort;
@@ -112,7 +113,7 @@ public class GetReviewService implements GetReviewUseCase {
     }
 
     @Override
-    public GetReviewsResult getMyReviews(
+    public GetReviewsResult getWriterReviews(
             Long userId, Long cursor, int pageSize, Sort.Direction sortDirection, ReviewSortProperty sortProperty
     ) {
         Pageable pageable = PageRequest.of(
@@ -143,6 +144,13 @@ public class GetReviewService implements GetReviewUseCase {
         Map<Long, List<GetFileResult>> reviewImages = findReviewImages(pagedReviews);
 
         return GetReviewsResult.from(hasNext, nextCursor, totalElements, pagedReviews, reviewImages);
+    }
+
+    @Override
+    public GetReviewCountResult getWriterReviewCount(Long userId) {
+        long totalCount = findReviewPort.countActive(userId);
+
+        return GetReviewCountResult.of(totalCount);
     }
 
     @Override
