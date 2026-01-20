@@ -30,7 +30,7 @@ public class PointAmount {
     }
 
     private static void checkAmountIsNotBlank(String amount) {
-        if (!FormatValidator.hasValue(amount)) {
+        if (FormatValidator.hasNoValue(amount)) {
             throw new PointAmountNoValueException(POINT_AMOUNT_NO_VALUE_EXCEPTION_MESSAGE);
         }
     }

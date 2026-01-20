@@ -28,10 +28,10 @@ public class GetProductInventoryService implements GetProductInventoryUseCase {
         Map<Long, Integer> inventories = findCacheStockPort.findByPricePolicyIds(pricePolicyIds);
 
         List<Long> pricePolicyIdsWithoutStocks = pricePolicyIds.stream()
-                .filter(pricePolicyId -> !FormatValidator.hasValue(inventories.get(pricePolicyId)))
+                .filter(pricePolicyId -> FormatValidator.hasNoValue(inventories.get(pricePolicyId)))
                 .toList();
 
-        if (!FormatValidator.hasValue(pricePolicyIdsWithoutStocks)) {
+        if (FormatValidator.hasNoValue(pricePolicyIdsWithoutStocks)) {
             return inventories;
         }
 

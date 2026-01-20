@@ -17,7 +17,7 @@ public class JsonBearerTokenResolver implements BearerTokenResolver {
     @Override
     public String resolve(HttpServletRequest request) {
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (!FormatValidator.hasValue(authorization)) {
+        if (FormatValidator.hasNoValue(authorization)) {
             return null;
         }
 

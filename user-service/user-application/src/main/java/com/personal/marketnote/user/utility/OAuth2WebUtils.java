@@ -51,7 +51,7 @@ public class OAuth2WebUtils {
 
         URI uri = URI.create(clientUrl);
 
-        if (!FormatValidator.hasValue(uri.getAuthority())) {
+        if (FormatValidator.hasNoValue(uri.getAuthority())) {
             return null;
         }
 

@@ -51,7 +51,7 @@ public class ProductOptionPersistenceAdapter implements SaveProductOptionsPort, 
         // 생성된 각 옵션 및 기존 옵션과의 조합에 대해 기본 가격 정책 등록
         PricePolicyJpaEntity defaultPricePolicy = product.getDefaultPricePolicy();
 
-        if (!FormatValidator.hasValue(defaultPricePolicy)) {
+        if (FormatValidator.hasNoValue(defaultPricePolicy)) {
             return ProductJpaEntityToDomainMapper.mapToDomain(savedCategory).orElse(null);
         }
 
@@ -120,7 +120,7 @@ public class ProductOptionPersistenceAdapter implements SaveProductOptionsPort, 
             List<List<ProductOptionJpaEntity>> optionGroups
     ) {
         List<List<ProductOptionJpaEntity>> result = new ArrayList<>();
-        if (!FormatValidator.hasValue(optionGroups)) {
+        if (FormatValidator.hasNoValue(optionGroups)) {
             return result;
         }
 

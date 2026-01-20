@@ -9,7 +9,7 @@ import java.util.Optional;
 public class RewardJpaEntityToDomainMapper {
 
     public static Optional<OfferwallMapper> mapToDomain(OfferwallMapperJpaEntity entity) {
-        if (!FormatValidator.hasValue(entity)) {
+        if (FormatValidator.hasNoValue(entity)) {
             return Optional.empty();
         }
         return Optional.of(entity.toDomain());

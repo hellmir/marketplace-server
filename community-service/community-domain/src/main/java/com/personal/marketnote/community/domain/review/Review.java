@@ -113,7 +113,7 @@ public class Review {
     }
 
     public boolean isStatusChanged(boolean isVisible) {
-        return !FormatValidator.equals(status.isActive(), isVisible);
+        return FormatValidator.notEquals(status.isActive(), isVisible);
     }
 
     public void delete() {

@@ -95,7 +95,7 @@ public class GetProductService implements GetProductUseCase {
                     .orElse(defaultPricePolicy);
         }
 
-        if (!FormatValidator.hasValue(selectedPricePolicy)) {
+        if (FormatValidator.hasNoValue(selectedPricePolicy)) {
             throw new PricePolicyNotFoundException(null);
         }
 
@@ -138,7 +138,7 @@ public class GetProductService implements GetProductUseCase {
             ProductSearchTarget searchTarget,
             String searchKeyword
     ) {
-        boolean isFirstPage = !FormatValidator.hasValue(cursor);
+        boolean isFirstPage = FormatValidator.hasNoValue(cursor);
 
         Pageable pageable = PageRequest.of(
                 0, pageSize + 1, Sort.by(sortDirection, sortProperty.getCamelCaseValue())
@@ -233,7 +233,7 @@ public class GetProductService implements GetProductUseCase {
         }
 
         List<Long> optionIds = pricePolicy.getOptionIds();
-        if (!FormatValidator.hasValue(optionIds)) {
+        if (FormatValidator.hasNoValue(optionIds)) {
             return ProductItemResult.from(product, pricePolicy);
         }
 
@@ -241,7 +241,7 @@ public class GetProductService implements GetProductUseCase {
         List<ProductOptionCategory> categories =
                 findProductOptionCategoryPort.findActiveWithOptionsByProductId(product.getId());
 
-        if (!FormatValidator.hasValue(categories)) {
+        if (FormatValidator.hasNoValue(categories)) {
             return ProductItemResult.from(product, pricePolicy);
         }
 

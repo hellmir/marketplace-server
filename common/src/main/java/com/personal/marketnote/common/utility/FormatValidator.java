@@ -10,20 +10,40 @@ public class FormatValidator {
         return hasValue(value) && hasValue(pattern) && pattern.matcher(value).matches();
     }
 
+    public static boolean hasNoValue(Object value) {
+        return !hasValue(value);
+    }
+
     public static boolean hasValue(Object value) {
         return value != null && !value.toString().isBlank();
+    }
+
+    public static boolean hasNoValue(Collection<?> value) {
+        return !hasValue(value);
     }
 
     public static boolean hasValue(Collection<?> value) {
         return value != null && !value.isEmpty();
     }
 
-    public static boolean hasValue(Number number) {
-        return number != null && !equals(number.toString(), MINUS_ONE);
+    public static boolean hasNoValue(Number value) {
+        return !hasValue(value);
+    }
+
+    public static boolean hasValue(Number value) {
+        return value != null && !equals(value.toString(), MINUS_ONE);
+    }
+
+    public static boolean notEquals(Object value1, Object value2) {
+        return !equals(value1, value2);
     }
 
     public static boolean equals(Object value1, Object value2) {
         return hasValue(value1) && hasValue(value2) && value1.equals(value2);
+    }
+
+    public static boolean notEqualsIgnoreCase(String value1, String value2) {
+        return !equalsIgnoreCase(value1, value2);
     }
 
     public static boolean equalsIgnoreCase(String value1, String value2) {

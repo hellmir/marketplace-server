@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
     private String message;
 
     private void initializeMessage(String errorMessage) {
-        if (!FormatValidator.hasValue(errorMessage)) {
+        if (FormatValidator.hasNoValue(errorMessage)) {
             return;
         }
 

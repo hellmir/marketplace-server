@@ -22,7 +22,7 @@ public class ProductReviewAggregateResult {
     public static ProductReviewAggregateResult from(
             ProductReviewAggregate productReviewAggregate
     ) {
-        if (!FormatValidator.hasValue(productReviewAggregate)) {
+        if (FormatValidator.hasNoValue(productReviewAggregate)) {
             return new ProductReviewAggregateResult();
         }
 

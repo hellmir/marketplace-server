@@ -37,7 +37,7 @@ public class InventoryJpaEntity extends BaseEntity {
 
     public static InventoryJpaEntity from(Inventory inventory) {
         Long version = inventory.getVersion();
-        if (!FormatValidator.hasValue(version)) {
+        if (FormatValidator.hasNoValue(version)) {
             version = 0L;
         }
 

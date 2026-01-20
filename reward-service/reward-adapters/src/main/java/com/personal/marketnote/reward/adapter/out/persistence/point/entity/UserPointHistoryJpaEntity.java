@@ -48,7 +48,7 @@ public class UserPointHistoryJpaEntity {
     private LocalDateTime createdAt;
 
     public static UserPointHistoryJpaEntity from(UserPointHistory history) {
-        if (!FormatValidator.hasValue(history)) {
+        if (FormatValidator.hasNoValue(history)) {
             return null;
         }
 

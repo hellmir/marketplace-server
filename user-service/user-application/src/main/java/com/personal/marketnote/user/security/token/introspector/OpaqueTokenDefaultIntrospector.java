@@ -131,7 +131,7 @@ public class OpaqueTokenDefaultIntrospector implements OpaqueTokenIntrospector {
     }
 
     private boolean looksLikeIdToken(String token, java.util.function.Predicate<String> issPredicate) {
-        if (!FormatValidator.hasValue(token)) {
+        if (FormatValidator.hasNoValue(token)) {
             return false;
         }
 

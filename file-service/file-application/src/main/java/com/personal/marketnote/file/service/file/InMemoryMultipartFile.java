@@ -35,7 +35,7 @@ public class InMemoryMultipartFile implements MultipartFile {
 
     @Override
     public boolean isEmpty() {
-        return !FormatValidator.hasValue(content);
+        return FormatValidator.hasNoValue(content);
     }
 
     @Override

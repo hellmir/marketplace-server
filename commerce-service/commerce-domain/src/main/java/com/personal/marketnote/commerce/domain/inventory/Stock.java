@@ -30,7 +30,7 @@ public class Stock {
         if (this == o) {
             return true;
         }
-        if (!FormatValidator.hasValue(o) || getClass() != o.getClass()) {
+        if (FormatValidator.hasNoValue(o) || getClass() != o.getClass()) {
             return false;
         }
 
@@ -50,7 +50,7 @@ public class Stock {
     }
 
     private static void checkStockIsNotBlank(String stock) {
-        if (!FormatValidator.hasValue(stock)) {
+        if (FormatValidator.hasNoValue(stock)) {
             throw new QuantityNoValueException(STOCK_NO_VALUE_EXCEPTION);
         }
     }

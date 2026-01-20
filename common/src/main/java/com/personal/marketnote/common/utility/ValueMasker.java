@@ -4,7 +4,7 @@ import static com.personal.marketnote.common.utility.CharacterConstant.WILD_CARD
 
 public class ValueMasker {
     public static String mask(String value) {
-        if (!FormatValidator.hasValue(value)) {
+        if (FormatValidator.hasNoValue(value)) {
             return value;
         }
 

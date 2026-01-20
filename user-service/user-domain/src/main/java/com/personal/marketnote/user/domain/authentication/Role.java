@@ -30,7 +30,7 @@ public class Role {
     }
 
     public String getCode() {
-        if (!FormatValidator.hasValue(code)) {
+        if (FormatValidator.hasNoValue(code)) {
             code = id.substring(ROLE_PREFIX.length());
         }
 

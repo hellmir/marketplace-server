@@ -18,7 +18,7 @@ public enum OrderPeriod {
     private final Integer months;
 
     public LocalDateTime startDate(LocalDate now) {
-        if (!FormatValidator.hasValue(months)) {
+        if (FormatValidator.hasNoValue(months)) {
             return null;
         }
 

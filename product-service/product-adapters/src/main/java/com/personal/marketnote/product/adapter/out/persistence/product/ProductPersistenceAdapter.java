@@ -220,7 +220,7 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
     }
 
     private List<ProductJpaEntity> loadProductsWithAssociations(List<ProductJpaEntity> baseEntities) {
-        if (!FormatValidator.hasValue(baseEntities)) {
+        if (FormatValidator.hasNoValue(baseEntities)) {
             return List.of();
         }
 
@@ -229,12 +229,12 @@ public class ProductPersistenceAdapter implements SaveProductPort, FindProductPo
                 .filter(Objects::nonNull)
                 .toList();
 
-        if (!FormatValidator.hasValue(ids)) {
+        if (FormatValidator.hasNoValue(ids)) {
             return List.of();
         }
 
         List<ProductJpaEntity> hydrated = productJpaRepository.findAllWithTagsAndPoliciesByIdIn(ids);
-        if (!FormatValidator.hasValue(hydrated)) {
+        if (FormatValidator.hasNoValue(hydrated)) {
             return List.of();
         }
 

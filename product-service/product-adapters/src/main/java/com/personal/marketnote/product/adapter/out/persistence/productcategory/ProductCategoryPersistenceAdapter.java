@@ -28,7 +28,7 @@ public class ProductCategoryPersistenceAdapter implements ReplaceProductCategori
     })
     public void replaceProductCategories(Long productId, List<Long> categoryIds) {
         productCategoryJpaRepository.deleteByProductId(productId);
-        if (!FormatValidator.hasValue(categoryIds)) {
+        if (FormatValidator.hasNoValue(categoryIds)) {
             return;
         }
 

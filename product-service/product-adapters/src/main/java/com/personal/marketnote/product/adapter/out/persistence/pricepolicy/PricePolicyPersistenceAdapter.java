@@ -51,12 +51,12 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
 
     @Override
     public Optional<PricePolicy> findByProductAndOptionIds(Long productId, List<Long> optionIds) {
-        if (!FormatValidator.hasValue(optionIds)) {
+        if (FormatValidator.hasNoValue(optionIds)) {
             return Optional.empty();
         }
 
         List<Long> candidateIds = productOptionPricePolicyJpaRepository.findCandidatePricePolicyIds(optionIds, optionIds.size());
-        if (!FormatValidator.hasValue(candidateIds)) {
+        if (FormatValidator.hasNoValue(candidateIds)) {
             return Optional.empty();
         }
 
@@ -67,21 +67,21 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
                 Optional<PricePolicyJpaEntity> policyOpt = pricePolicyJpaRepository.findById(id);
 
                 if (policyOpt.isPresent() && policyOpt.get().getProductJpaEntity().getId().equals(productId)) {
-                    if (!FormatValidator.hasValue(matchedId) || id > matchedId) {
+                    if (FormatValidator.hasNoValue(matchedId) || id > matchedId) {
                         matchedId = id;
                     }
                 }
             }
         }
 
-        if (!FormatValidator.hasValue(matchedId)) {
+        if (FormatValidator.hasNoValue(matchedId)) {
             return Optional.empty();
         }
 
         PricePolicyJpaEntity entity = pricePolicyJpaRepository.findById(matchedId)
                 .orElse(null);
 
-        if (!FormatValidator.hasValue(entity)) {
+        if (FormatValidator.hasNoValue(entity)) {
             return Optional.empty();
         }
 
@@ -300,7 +300,7 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
     }
 
     private List<PricePolicyJpaEntity> loadPricePoliciesWithAssociations(List<PricePolicyJpaEntity> baseEntities) {
-        if (!FormatValidator.hasValue(baseEntities)) {
+        if (FormatValidator.hasNoValue(baseEntities)) {
             return List.of();
         }
 
@@ -313,12 +313,12 @@ public class PricePolicyPersistenceAdapter implements SavePricePolicyPort, FindP
     }
 
     private List<PricePolicyJpaEntity> loadPricePoliciesWithAssociationsByIds(List<Long> ids) {
-        if (!FormatValidator.hasValue(ids)) {
+        if (FormatValidator.hasNoValue(ids)) {
             return List.of();
         }
 
         List<PricePolicyJpaEntity> hydrated = pricePolicyJpaRepository.findAllWithProductAndOptionMappingsByIdIn(ids);
-        if (!FormatValidator.hasValue(hydrated)) {
+        if (FormatValidator.hasNoValue(hydrated)) {
             return List.of();
         }
 

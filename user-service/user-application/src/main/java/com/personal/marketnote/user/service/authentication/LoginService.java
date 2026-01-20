@@ -42,7 +42,7 @@ public class LoginService implements LoginUseCase {
 
         OAuth2UserInfo userInfo = grantedTokenInfo.userInfo();
 
-        if (!FormatValidator.hasValue(userInfo)) {
+        if (FormatValidator.hasNoValue(userInfo)) {
             throw new OauthTokenNoValueException();
         }
 

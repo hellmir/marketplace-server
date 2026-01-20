@@ -145,7 +145,7 @@ public class AddFilesService implements AddFileUseCase {
     }
 
     private String getExtension(String filename, String defaultExtension) {
-        if (!FormatValidator.hasValue(filename)) {
+        if (FormatValidator.hasNoValue(filename)) {
             return defaultExtension;
         }
 
@@ -158,7 +158,7 @@ public class AddFilesService implements AddFileUseCase {
     }
 
     private String appendSizeToFilename(String originalFilename, String sizeTag) {
-        if (!FormatValidator.hasValue(originalFilename)) {
+        if (FormatValidator.hasNoValue(originalFilename)) {
             return sizeTag;
         }
 

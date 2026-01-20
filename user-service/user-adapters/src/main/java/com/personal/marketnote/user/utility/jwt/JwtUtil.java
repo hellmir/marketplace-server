@@ -69,7 +69,7 @@ public class JwtUtil {
 
         String authVendorKey = claims.get(AUTH_VENDOR_CLAIM_KEY, String.class);
 
-        if (!FormatValidator.hasValue(authVendorKey)) {
+        if (FormatValidator.hasNoValue(authVendorKey)) {
             String iss = claims.get(ISS_CLAIM_KEY, String.class);
 
             authVendorKey = chooseVendor(iss);
@@ -132,7 +132,7 @@ public class JwtUtil {
 
     private void validate(String id, List<String> roleIds, AuthVendor authVendor) {
         List<String> messages = new ArrayList<>(2);
-        if (!FormatValidator.hasValue(id)) {
+        if (FormatValidator.hasNoValue(id)) {
             messages.add("memberId cannot be null");
         }
 
@@ -140,7 +140,7 @@ public class JwtUtil {
             messages.add("roleIds cannot be empty");
         }
 
-        if (!FormatValidator.hasValue(authVendor)) {
+        if (FormatValidator.hasNoValue(authVendor)) {
             messages.add("authVendor cannot be null");
         }
 
