@@ -83,7 +83,7 @@ public class OrderPersistenceAdapter implements SaveOrderPort, FindOrderPort, Fi
                 statusNames.size()
         );
 
-        if (!FormatValidator.hasValue(orderIds)) {
+        if (FormatValidator.hasNoValue(orderIds)) {
             return List.of();
         }
 

@@ -57,7 +57,7 @@ public record GetOrderProductResult(
             OrderStatus defaultOrderStatus
     ) {
         OrderStatus status = orderProduct.getOrderStatus();
-        if (!FormatValidator.hasValue(status) || status.isPending()) {
+        if (FormatValidator.hasNoValue(status) || status.isPending()) {
             return FormatValidator.hasValue(defaultOrderStatus)
                     ? defaultOrderStatus
                     : OrderStatus.PAYMENT_PENDING;

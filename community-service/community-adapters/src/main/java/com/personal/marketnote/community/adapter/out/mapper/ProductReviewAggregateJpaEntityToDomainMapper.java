@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class ProductReviewAggregateJpaEntityToDomainMapper {
     public static Optional<ProductReviewAggregate> mapToDomain(ProductReviewAggregateJpaEntity entity) {
-        if (!FormatValidator.hasValue(entity)) {
+        if (FormatValidator.hasNoValue(entity)) {
             return Optional.empty();
         }
 

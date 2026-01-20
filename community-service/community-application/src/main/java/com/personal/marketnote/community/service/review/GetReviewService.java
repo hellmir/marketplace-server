@@ -84,7 +84,7 @@ public class GetReviewService implements GetReviewUseCase {
             nextCursor = pagedReviews.getLast().getId();
         }
 
-        boolean isFirstPage = !FormatValidator.hasValue(cursor);
+        boolean isFirstPage = FormatValidator.hasNoValue(cursor);
         Long totalElements = null;
         if (isFirstPage) {
             totalElements = findReviewPort.countActive(productId, isPhoto);
@@ -135,7 +135,7 @@ public class GetReviewService implements GetReviewUseCase {
             nextCursor = pagedReviews.getLast().getId();
         }
 
-        boolean isFirstPage = !FormatValidator.hasValue(cursor);
+        boolean isFirstPage = FormatValidator.hasNoValue(cursor);
         Long totalElements = null;
         if (isFirstPage) {
             totalElements = findReviewPort.countActive(userId);
@@ -166,7 +166,7 @@ public class GetReviewService implements GetReviewUseCase {
     }
 
     private Map<Long, List<GetFileResult>> findReviewImages(List<Review> reviews) {
-        if (!FormatValidator.hasValue(reviews)) {
+        if (FormatValidator.hasNoValue(reviews)) {
             return Map.of();
         }
 

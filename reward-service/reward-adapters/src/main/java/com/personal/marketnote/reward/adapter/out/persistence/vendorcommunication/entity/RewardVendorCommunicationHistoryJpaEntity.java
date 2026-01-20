@@ -52,7 +52,7 @@ public class RewardVendorCommunicationHistoryJpaEntity {
     private LocalDateTime createdAt;
 
     public static RewardVendorCommunicationHistoryJpaEntity from(RewardVendorCommunicationHistory history) {
-        if (!FormatValidator.hasValue(history)) {
+        if (FormatValidator.hasNoValue(history)) {
             return null;
         }
 

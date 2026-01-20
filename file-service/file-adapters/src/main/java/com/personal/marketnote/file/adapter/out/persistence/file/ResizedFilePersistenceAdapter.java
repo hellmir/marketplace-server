@@ -22,7 +22,7 @@ public class ResizedFilePersistenceAdapter implements SaveResizedFilesPort, Find
 
     @Override
     public void saveAll(List<ResizedFile> resizedFiles) {
-        if (!FormatValidator.hasValue(resizedFiles)) {
+        if (FormatValidator.hasNoValue(resizedFiles)) {
             return;
         }
 

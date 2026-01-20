@@ -16,7 +16,7 @@ public class InputFormatValidator {
     }
 
     private static void checkIdIsNotBlank(String id) {
-        if (!FormatValidator.hasValue(id)) {
+        if (FormatValidator.hasNoValue(id)) {
             throw new IllegalArgumentException(ID_NO_VALUE_EXCEPTION);
         }
     }

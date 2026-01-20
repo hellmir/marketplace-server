@@ -25,10 +25,10 @@ public class FilePersistenceAdapter implements SaveFilesPort, FindFilePort, Upda
 
     @Override
     public List<FileDomain> saveAll(List<FileDomain> fileDomains, List<String> s3Urls) {
-        if (!FormatValidator.hasValue(fileDomains)) {
+        if (FormatValidator.hasNoValue(fileDomains)) {
             return List.of();
         }
-        if (!FormatValidator.hasValue(s3Urls) || s3Urls.size() != fileDomains.size()) {
+        if (FormatValidator.hasNoValue(s3Urls) || s3Urls.size() != fileDomains.size()) {
             throw new IllegalArgumentException("s3Urls size must match fileDomains size");
         }
 

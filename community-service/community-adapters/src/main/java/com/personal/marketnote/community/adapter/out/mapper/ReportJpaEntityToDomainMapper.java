@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public class ReportJpaEntityToDomainMapper {
     public static Optional<Report> mapToDomain(ReportJpaEntity entity) {
-        if (!FormatValidator.hasValue(entity)) {
+        if (FormatValidator.hasNoValue(entity)) {
             return Optional.empty();
         }
 

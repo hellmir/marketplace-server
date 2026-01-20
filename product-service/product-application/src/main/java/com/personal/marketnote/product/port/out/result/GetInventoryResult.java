@@ -18,7 +18,7 @@ public record GetInventoryResult(
     }
 
     public boolean hasNoStock() {
-        return !FormatValidator.hasValue(stock);
+        return FormatValidator.hasNoValue(stock);
     }
 
     public boolean isMe(Long pricePolicyId) {

@@ -15,7 +15,7 @@ public class VendorVerificationProcessor {
             mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacMD5"));
             byte[] result = mac.doFinal(text.getBytes(StandardCharsets.UTF_8));
 
-            if (!FormatValidator.equalsIgnoreCase(toHex(result), signature)) {
+            if (FormatValidator.notEqualsIgnoreCase(toHex(result), signature)) {
                 throw new VendorVerificationFailedException("리워드 지급 연동 중 signed value 검증에 실패했습니다.");
             }
         } catch (Exception e) {
@@ -36,7 +36,7 @@ public class VendorVerificationProcessor {
         try {
             String verifyCode = DigestUtils.md5DigestAsHex(text.getBytes(StandardCharsets.UTF_8));
 
-            if (!FormatValidator.equalsIgnoreCase(verifyCode, signature)) {
+            if (FormatValidator.notEqualsIgnoreCase(verifyCode, signature)) {
                 throw new VendorVerificationFailedException("리워드 지급 연동 중 signed value 검증에 실패했습니다.");
             }
         } catch (Exception e) {

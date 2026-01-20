@@ -34,7 +34,7 @@ public class UserOauth2Vendor {
     }
 
     public void addUser(User user) {
-        if (!FormatValidator.hasValue(this.user)) {
+        if (FormatValidator.hasNoValue(this.user)) {
             this.user = user;
         }
     }

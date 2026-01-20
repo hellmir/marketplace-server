@@ -1,9 +1,0 @@
-package com.personal.marketnote.community.adapter.in.client.report.response;
-
-public record UpdateTargetStatusResponse(
-        boolean isVisible
-) {
-    public static UpdateTargetStatusResponse of(boolean isVisible) {
-        return new UpdateTargetStatusResponse(isVisible);
-    }
-}

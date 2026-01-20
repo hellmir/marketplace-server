@@ -91,7 +91,7 @@ public class PostItemResult {
     }
 
     public void maskPrivatePost(Long userId) {
-        if (isPrivate && !FormatValidator.equals(userId, this.userId)) {
+        if (isPrivate && FormatValidator.notEquals(userId, this.userId)) {
             maskContent();
             isMasked = true;
         }

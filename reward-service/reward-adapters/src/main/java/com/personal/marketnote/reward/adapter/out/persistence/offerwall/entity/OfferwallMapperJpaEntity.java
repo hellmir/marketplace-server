@@ -74,7 +74,7 @@ public class OfferwallMapperJpaEntity {
     private LocalDateTime createdAt;
 
     public static OfferwallMapperJpaEntity from(OfferwallMapper offerwallMapper) {
-        if (!FormatValidator.hasValue(offerwallMapper)) {
+        if (FormatValidator.hasNoValue(offerwallMapper)) {
             return null;
         }
 

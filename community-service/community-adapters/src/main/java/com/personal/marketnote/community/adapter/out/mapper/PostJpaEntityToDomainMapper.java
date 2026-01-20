@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class PostJpaEntityToDomainMapper {
     public static Optional<Post> mapToDomain(PostJpaEntity entity) {
-        if (!FormatValidator.hasValue(entity)) {
+        if (FormatValidator.hasNoValue(entity)) {
             return Optional.empty();
         }
 

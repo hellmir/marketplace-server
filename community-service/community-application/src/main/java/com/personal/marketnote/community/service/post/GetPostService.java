@@ -55,7 +55,7 @@ public class GetPostService implements GetPostUseCase {
         Posts posts = getBoardPosts(query, pageable, sortProperty);
 
         Long totalElements = null;
-        if (!FormatValidator.hasValue(query.cursor())) {
+        if (FormatValidator.hasNoValue(query.cursor())) {
             totalElements = findPostPort.count(
                     query.userId(),
                     query.board(),
@@ -110,7 +110,7 @@ public class GetPostService implements GetPostUseCase {
         PostTargetType targetType = query.targetType();
         Board board = query.board();
 
-        if (!FormatValidator.hasValue(totalElements) && !FormatValidator.hasValue(query.cursor())) {
+        if (FormatValidator.hasNoValue(totalElements) && FormatValidator.hasNoValue(query.cursor())) {
             totalElements = findPostPort.count(
                     board,
                     query.category(),
@@ -132,7 +132,7 @@ public class GetPostService implements GetPostUseCase {
         List<Post> filteredPosts = posts.getPosts();
 
         // 나의 상품 문의 게시판 또는 1:1 문의 게시판인 경우 검색어 적용
-        if (board.isOneOnOneInquery() || board.isProductInquery() && !FormatValidator.hasValue(targetType)) {
+        if (board.isOneOnOneInquery() || board.isProductInquery() && FormatValidator.hasNoValue(targetType)) {
             if (FormatValidator.hasValue(query.searchKeyword())) {
                 PostSearchTarget keywordCategory = query.searchTarget();
                 String searchKeyword = query.searchKeyword().toLowerCase();
@@ -157,7 +157,7 @@ public class GetPostService implements GetPostUseCase {
         List<PostItemResult> postItems = pagedPosts.stream()
                 .map(post -> {
                     List<GetFileResult> images = postImagesByPostId.get(post.getId());
-                    if (!FormatValidator.hasValue(post.getTargetId())) {
+                    if (FormatValidator.hasNoValue(post.getTargetId())) {
                         return PostItemResult.from(post, images);
                     }
 
@@ -235,7 +235,7 @@ public class GetPostService implements GetPostUseCase {
     }
 
     private boolean containsKeyword(String target, String keyword) {
-        if (!FormatValidator.hasValue(target)) {
+        if (FormatValidator.hasNoValue(target)) {
             return false;
         }
 
@@ -249,7 +249,7 @@ public class GetPostService implements GetPostUseCase {
     }
 
     private Map<Long, List<GetFileResult>> findPostImages(List<Post> posts) {
-        if (!FormatValidator.hasValue(posts)) {
+        if (FormatValidator.hasNoValue(posts)) {
             return Map.of();
         }
 

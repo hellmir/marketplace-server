@@ -41,7 +41,7 @@ public class RegisterProductOptionsService implements RegisterProductOptionsUseC
         Product product = getProductUseCase.getProduct(productId);
 
         List<RegisterProductOptionsCommand.OptionItem> optionItems = command.options();
-        if (!FormatValidator.hasValue(optionItems)) {
+        if (FormatValidator.hasNoValue(optionItems)) {
             throw new OptionsNoValueException(SECOND_ERROR_CODE);
         }
 

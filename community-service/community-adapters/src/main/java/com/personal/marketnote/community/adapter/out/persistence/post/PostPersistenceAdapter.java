@@ -199,7 +199,7 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort, Updat
                 .map(Optional::get)
                 .toList();
 
-        if (!FormatValidator.hasValue(parents)) {
+        if (FormatValidator.hasNoValue(parents)) {
             return Posts.from(parents);
         }
 
@@ -222,11 +222,11 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort, Updat
     }
 
     private boolean shouldSearchIn(PostSearchTarget requestedCategory, PostSearchTarget targetCategory) {
-        return !FormatValidator.hasValue(requestedCategory) || requestedCategory == targetCategory;
+        return FormatValidator.hasNoValue(requestedCategory) || requestedCategory == targetCategory;
     }
 
     private String buildSearchPattern(String searchKeyword) {
-        if (!FormatValidator.hasValue(searchKeyword)) {
+        if (FormatValidator.hasNoValue(searchKeyword)) {
             return null;
         }
         return "%" + searchKeyword.toLowerCase() + "%";

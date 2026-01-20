@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class LikeJpaEntityToDomainMapper {
     public static Optional<Like> mapToDomain(LikeJpaEntity entity) {
-        if (!FormatValidator.hasValue(entity)) {
+        if (FormatValidator.hasNoValue(entity)) {
             return Optional.empty();
         }
 

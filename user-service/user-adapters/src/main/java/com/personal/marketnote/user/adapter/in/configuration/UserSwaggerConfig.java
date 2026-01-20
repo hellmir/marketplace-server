@@ -50,7 +50,7 @@ public class UserSwaggerConfig {
     @Bean
     public OpenApiCustomizer tagOnlySorter() {
         return (OpenAPI openApi) -> {
-            if (!FormatValidator.hasValue(openApi.getTags())) {
+            if (FormatValidator.hasNoValue(openApi.getTags())) {
                 return;
             }
 
@@ -66,7 +66,7 @@ public class UserSwaggerConfig {
                 Integer p2 = ORDER_MAP.get(t2.getName());
 
                 // 두 태그 모두 지정 목록에 없으면 → 원래 순서 보존
-                if (!FormatValidator.hasValue(p1) && !FormatValidator.hasValue(p2)) {
+                if (FormatValidator.hasNoValue(p1) && FormatValidator.hasNoValue(p2)) {
                     return Integer.compare(
                             originalIndex.getOrDefault(t1.getName(), Integer.MAX_VALUE),
                             originalIndex.getOrDefault(t2.getName(), Integer.MAX_VALUE)
@@ -74,11 +74,11 @@ public class UserSwaggerConfig {
                 }
 
                 // 하나만 목록에 있으면 목록에 있는 쪽이 먼저
-                if (!FormatValidator.hasValue(p1)) {
+                if (FormatValidator.hasNoValue(p1)) {
                     return 1;
                 }
 
-                if (!FormatValidator.hasValue(p2)) {
+                if (FormatValidator.hasNoValue(p2)) {
                     return -1;
                 }
 

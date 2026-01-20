@@ -49,7 +49,7 @@ public class CommunitySwaggerConfig {
     @Bean
     public OpenApiCustomizer tagOnlySorter() {
         return (OpenAPI openApi) -> {
-            if (!FormatValidator.hasValue(openApi.getTags())) {
+            if (FormatValidator.hasNoValue(openApi.getTags())) {
                 return;
             }
 
@@ -62,18 +62,18 @@ public class CommunitySwaggerConfig {
                 Integer p1 = ORDER_MAP.get(t1.getName());
                 Integer p2 = ORDER_MAP.get(t2.getName());
 
-                if (!FormatValidator.hasValue(p1) && !FormatValidator.hasValue(p2)) {
+                if (FormatValidator.hasNoValue(p1) && FormatValidator.hasNoValue(p2)) {
                     return Integer.compare(
                             originalIndex.getOrDefault(t1.getName(), Integer.MAX_VALUE),
                             originalIndex.getOrDefault(t2.getName(), Integer.MAX_VALUE)
                     );
                 }
 
-                if (!FormatValidator.hasValue(p1)) {
+                if (FormatValidator.hasNoValue(p1)) {
                     return 1;
                 }
 
-                if (!FormatValidator.hasValue(p2)) {
+                if (FormatValidator.hasNoValue(p2)) {
                     return -1;
                 }
 

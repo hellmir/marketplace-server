@@ -16,7 +16,7 @@ public class FileRequestToCommandMapper {
         List<String> extensions = addFilesRequest.getExtension();
         List<String> names = addFilesRequest.getName();
 
-        if (!FormatValidator.hasValue(files)) {
+        if (FormatValidator.hasNoValue(files)) {
             return AddFilesCommand.builder()
                     .fileInfo(new ArrayList<>(0))
                     .ownerType(addFilesRequest.getOwnerType())
@@ -43,7 +43,7 @@ public class FileRequestToCommandMapper {
     }
 
     private static String getOrNull(List<String> values, int index) {
-        if (!FormatValidator.hasValue(values) || index >= values.size()) {
+        if (FormatValidator.hasNoValue(values) || index >= values.size()) {
             return null;
         }
 

@@ -121,7 +121,7 @@ public class HmacJwtOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
     }
 
     private boolean constantTimeEquals(String a, String b) {
-        if (!FormatValidator.hasValue(a) || !FormatValidator.hasValue(b))
+        if (FormatValidator.hasNoValue(a) || FormatValidator.hasNoValue(b))
             return false;
         if (a.length() != b.length())
             return false;

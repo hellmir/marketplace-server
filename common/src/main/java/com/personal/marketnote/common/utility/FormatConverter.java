@@ -81,7 +81,7 @@ public class FormatConverter {
     }
 
     public static String toUpperCase(String value) {
-        if (!FormatValidator.hasValue(value)) {
+        if (FormatValidator.hasNoValue(value)) {
             return "";
         }
 
@@ -89,7 +89,7 @@ public class FormatConverter {
     }
 
     public static String snakeToCamel(String name) {
-        if (!FormatValidator.hasValue(name)) {
+        if (FormatValidator.hasNoValue(name)) {
             return "";
         }
 

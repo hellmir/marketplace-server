@@ -34,7 +34,7 @@ public class S3FileStorageAdapter implements UploadFilesPort {
 
     @Override
     public List<String> uploadFiles(List<MultipartFile> files, OwnerType ownerType, Long ownerId) {
-        if (!FormatValidator.hasValue(files)) {
+        if (FormatValidator.hasNoValue(files)) {
             return List.of();
         }
 

@@ -7,7 +7,7 @@ import static com.personal.marketnote.common.domain.exception.ExceptionMessage.I
 
 public class ElementExtractor {
     public static Long extractUserId(OAuth2AuthenticatedPrincipal principal) {
-        if (!FormatValidator.hasValue(principal) || FormatValidator.equals(principal.getName(), "-1")) {
+        if (FormatValidator.hasNoValue(principal) || FormatValidator.equals(principal.getName(), "-1")) {
             throw new AuthenticationFailedException(INVALID_ACCESS_TOKEN_EXCEPTION_MESSAGE);
         }
 

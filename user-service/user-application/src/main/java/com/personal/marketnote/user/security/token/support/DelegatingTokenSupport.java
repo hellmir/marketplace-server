@@ -32,7 +32,7 @@ public class DelegatingTokenSupport implements TokenSupport {
     @Override
     public GrantedTokenInfo grantToken(String code, String redirectUri, AuthVendor authVendor) throws UnsupportedCodeException {
         TokenProcessor processor = processorsByAuthVendor.get(authVendor);
-        if (!FormatValidator.hasValue(processor)) {
+        if (FormatValidator.hasNoValue(processor)) {
             throw new UnsupportedCodeException("No Auth vendor for: " + authVendor);
         }
         return processor.grantToken(code, redirectUri);
