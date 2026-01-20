@@ -24,6 +24,7 @@ public class OfferwallMapper {
     private String adid;
     private String idfa;
     private Boolean isSuccess;
+    private short failureCount;
     private LocalDateTime attendedAt;
     private LocalDateTime createdAt;
 
@@ -47,6 +48,27 @@ public class OfferwallMapper {
                 .build();
     }
 
+    public static OfferwallMapper fromFailed(OfferwallMapperCreateState state, short previousFailureCount) {
+        return OfferwallMapper.builder()
+                .offerwallType(state.getOfferwallType())
+                .rewardKey(state.getRewardKey())
+                .userKey(state.getUserKey())
+                .userDeviceType(state.getUserDeviceType())
+                .campaignKey(state.getCampaignKey())
+                .campaignType(state.getCampaignType())
+                .campaignName(state.getCampaignName())
+                .quantity(state.getQuantity())
+                .signedValue(state.getSignedValue())
+                .appKey(state.getAppKey())
+                .appName(state.getAppName())
+                .adid(state.getAdid())
+                .idfa(state.getIdfa())
+                .isSuccess(false)
+                .failureCount(++previousFailureCount)
+                .attendedAt(state.getAttendedAt())
+                .build();
+    }
+
     public static OfferwallMapper from(OfferwallMapperSnapshotState state) {
         return OfferwallMapper.builder()
                 .id(state.getId())
@@ -64,8 +86,13 @@ public class OfferwallMapper {
                 .adid(state.getAdid())
                 .idfa(state.getIdfa())
                 .isSuccess(state.getIsSuccess())
+                .failureCount(state.getFailureCount())
                 .attendedAt(state.getAttendedAt())
                 .createdAt(state.getCreatedAt())
                 .build();
+    }
+
+    public void addFailureCount() {
+
     }
 }

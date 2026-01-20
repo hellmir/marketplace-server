@@ -23,6 +23,7 @@ public class OfferwallMapperSnapshotState {
     private final String adid;
     private final String idfa;
     private final Boolean isSuccess;
+    private final short failureCount;
     private final LocalDateTime attendedAt;
     private final LocalDateTime createdAt;
 }
