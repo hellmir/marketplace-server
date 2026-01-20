@@ -9,6 +9,8 @@ import com.personal.marketnote.reward.port.out.offerwall.FindOfferwallMapperPort
 import com.personal.marketnote.reward.port.out.offerwall.SaveOfferwallMapperPort;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 @PersistenceAdapter
 @RequiredArgsConstructor
 public class OfferwallMapperPersistenceAdapter implements SaveOfferwallMapperPort, FindOfferwallMapperPort {
@@ -16,12 +18,22 @@ public class OfferwallMapperPersistenceAdapter implements SaveOfferwallMapperPor
 
     @Override
     public OfferwallMapper save(OfferwallMapper offerwallMapper) {
-        OfferwallMapperJpaEntity saved = repository.save(OfferwallMapperJpaEntity.from(offerwallMapper));
-        return saved.toDomain();
+        OfferwallMapperJpaEntity savedEntity = repository.save(OfferwallMapperJpaEntity.from(offerwallMapper));
+        return savedEntity.toDomain();
     }
 
     @Override
-    public boolean existsByOfferwallTypeAndRewardKeyAndIsSuccess(OfferwallType offerwallType, String rewardKey, boolean isSuccess) {
+    public boolean existsByOfferwallTypeAndRewardKeyAndIsSuccess(
+            OfferwallType offerwallType, String rewardKey, boolean isSuccess
+    ) {
         return repository.existsByOfferwallTypeAndRewardKeyAndIsSuccess(offerwallType, rewardKey, isSuccess);
+    }
+
+    @Override
+    public Optional<OfferwallMapper> findTopFailedOfferwallMapper(OfferwallType offerwallType, String rewardKey) {
+        return repository.findTop1ByOfferwallTypeAndRewardKeyAndIsSuccessFalseOrderByFailureCountDesc(
+                        offerwallType, rewardKey
+                )
+                .map(OfferwallMapperJpaEntity::toDomain);
     }
 }

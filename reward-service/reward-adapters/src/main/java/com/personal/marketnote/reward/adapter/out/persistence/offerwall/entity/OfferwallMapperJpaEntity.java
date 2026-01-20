@@ -1,6 +1,5 @@
 package com.personal.marketnote.reward.adapter.out.persistence.offerwall.entity;
 
-import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapper;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapperSnapshotState;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallType;
@@ -12,7 +11,15 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "offerwall_mapper")
+@Table(
+        name = "offerwall_mapper",
+        indexes = {
+                @Index(
+                        name = "idx_offerwall_type_reward_key_success_failure_desc",
+                        columnList = "offerwall_type, reward_key, success_yn, failure_count DESC"
+                )
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
@@ -66,6 +73,9 @@ public class OfferwallMapperJpaEntity {
     @Column(name = "success_yn", nullable = false)
     private Boolean isSuccess;
 
+    @Column(name = "failure_count", nullable = false, columnDefinition = "SMALLINT DEFAULT 0")
+    private short failureCount;
+
     @Column(name = "attended_at")
     private LocalDateTime attendedAt;
 
@@ -74,10 +84,6 @@ public class OfferwallMapperJpaEntity {
     private LocalDateTime createdAt;
 
     public static OfferwallMapperJpaEntity from(OfferwallMapper offerwallMapper) {
-        if (FormatValidator.hasNoValue(offerwallMapper)) {
-            return null;
-        }
-
         return OfferwallMapperJpaEntity.builder()
                 .id(offerwallMapper.getId())
                 .offerwallType(offerwallMapper.getOfferwallType())
@@ -94,6 +100,7 @@ public class OfferwallMapperJpaEntity {
                 .adid(offerwallMapper.getAdid())
                 .idfa(offerwallMapper.getIdfa())
                 .isSuccess(offerwallMapper.getIsSuccess())
+                .failureCount(offerwallMapper.getFailureCount())
                 .attendedAt(offerwallMapper.getAttendedAt())
                 .createdAt(offerwallMapper.getCreatedAt())
                 .build();
@@ -117,6 +124,7 @@ public class OfferwallMapperJpaEntity {
                         .adid(adid)
                         .idfa(idfa)
                         .isSuccess(isSuccess)
+                        .failureCount(failureCount)
                         .attendedAt(attendedAt)
                         .createdAt(createdAt)
                         .build()

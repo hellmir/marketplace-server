@@ -17,7 +17,7 @@ import com.personal.marketnote.reward.exception.RewardTargetInfoNotFoundExceptio
 import com.personal.marketnote.reward.mapper.RewardCommandToStateMapper;
 import com.personal.marketnote.reward.port.in.command.offerwall.RegisterOfferwallRewardCommand;
 import com.personal.marketnote.reward.port.in.command.point.ModifyUserPointCommand;
-import com.personal.marketnote.reward.port.in.usecase.offerwall.GetPostOfferwallMapperUseCase;
+import com.personal.marketnote.reward.port.in.usecase.offerwall.GetOfferwallMapperUseCase;
 import com.personal.marketnote.reward.port.in.usecase.offerwall.RegisterOfferwallRewardUseCase;
 import com.personal.marketnote.reward.port.in.usecase.point.GetUserPointUseCase;
 import com.personal.marketnote.reward.port.out.offerwall.SaveOfferwallMapperPort;
@@ -37,7 +37,7 @@ public class RegisterOfferwallRewardService implements RegisterOfferwallRewardUs
     private final GetUserPointUseCase getUserPointUseCase;
     private final ModifyUserPointService modifyUserPointService;
     private final SaveOfferwallMapperPort saveOfferwallMapperPort;
-    private final GetPostOfferwallMapperUseCase getPostOfferwallMapperUseCase;
+    private final GetOfferwallMapperUseCase getOfferwallMapperUseCase;
     private final AdpopcornHashKeyProperties adpopcornHashKeyProperties;
     private final TnkHashKeyProperties tnkHashKeyProperties;
     private final AdiscopeHashKeyProperties adiscopeHashKeyProperties;
@@ -146,7 +146,7 @@ public class RegisterOfferwallRewardService implements RegisterOfferwallRewardUs
     }
 
     private void validateDuplicate(RegisterOfferwallRewardCommand command) {
-        if (getPostOfferwallMapperUseCase.existsSucceededOfferwallMapper(
+        if (getOfferwallMapperUseCase.existsSucceededOfferwallMapper(
                 command.offerwallType(),
                 command.rewardKey()
         )) {

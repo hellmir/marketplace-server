@@ -267,7 +267,7 @@ public class OfferwallController {
      */
     @GetMapping(value = "/adiscope/callback")
     @AdiscopeCallbackApiDocs
-    public ResponseEntity<BaseResponse<UpdateUserPointResponse>> handleTnkCallback(
+    public ResponseEntity<BaseResponse<UpdateUserPointResponse>> handleAdiscopeCallback(
             @RequestParam("transactionId") String rewardKey,
             @RequestParam("userId") String userKey,
             @RequestParam("user_device_type") UserDeviceType userDeviceType,
