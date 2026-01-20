@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_MAX_REQUEST_COUNT;
+import static com.personal.marketnote.common.utility.ApiConstant.*;
 
 @ServiceAdapter
 @RequiredArgsConstructor
@@ -57,22 +57,31 @@ public class CommerceServiceClient implements RegisterInventoryPort, FindStockPo
     }
 
     public void sendRequest(URI uri, HttpEntity<RegisterInventoryRequest> httpEntity, Long pricePolicyId) {
+        long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
+        Exception error = new Exception();
+
         for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
             try {
                 restTemplate.postForEntity(uri, httpEntity, Void.class);
                 return;
             } catch (Exception e) {
                 log.warn(e.getMessage(), e);
+                if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
+                    error = e;
+                }
 
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(sleepMillis);
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
+                    return;
                 }
+
+                sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
             }
         }
 
-        log.error("Failed to register inventory: {}", pricePolicyId);
+        log.error("Failed to register inventory: {} with error: {}", uri, error.getMessage(), error);
         throw new CommerceServiceRequestFailedException(new IOException());
     }
 

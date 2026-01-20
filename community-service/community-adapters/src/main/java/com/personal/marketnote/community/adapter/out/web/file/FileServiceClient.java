@@ -110,7 +110,7 @@ public class FileServiceClient implements FindReviewImagesPort, FindPostImagesPo
                 log.warn(e.getMessage(), e);
 
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
                 }

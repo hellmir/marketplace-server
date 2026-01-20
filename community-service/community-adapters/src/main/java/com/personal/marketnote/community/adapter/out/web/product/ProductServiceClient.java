@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_MAX_REQUEST_COUNT;
+
 @ServiceAdapter
 @RequiredArgsConstructor
 @Slf4j
@@ -56,25 +58,39 @@ public class ProductServiceClient implements FindProductByPricePolicyPort {
     }
 
     private Map<Long, ProductInfoResult> sendRequest(URI uri, HttpEntity<Void> request) {
-        try {
-            ResponseEntity<BaseResponse<OrderedProductsResponse>> response = restTemplate.exchange(
-                    uri,
-                    HttpMethod.GET,
-                    request,
-                    new ParameterizedTypeReference<>() {
-                    }
-            );
+        Exception error = new Exception();
 
-            List<ProductsInfoResponse> productsInfo = unboxResponse(response);
+        for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            try {
+                ResponseEntity<BaseResponse<OrderedProductsResponse>> response = restTemplate.exchange(
+                        uri,
+                        HttpMethod.GET,
+                        request,
+                        new ParameterizedTypeReference<>() {
+                        }
+                );
 
-            Map<Long, ProductInfoResult> productInfoResult = new HashMap<>();
-            generateResult(productInfoResult, productsInfo);
+                List<ProductsInfoResponse> productsInfo = unboxResponse(response);
 
-            return productInfoResult;
-        } catch (Exception e) {
-            log.warn("Failed to fetch product info from product-service: {}", e.getMessage(), e);
-            return Map.of();
+                Map<Long, ProductInfoResult> productInfoResult = new HashMap<>();
+                generateResult(productInfoResult, productsInfo);
+
+                return productInfoResult;
+            } catch (Exception e) {
+                log.warn(e.getMessage(), e);
+                if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
+                    error = e;
+                }
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
+        log.error("Failed to fetch product info from product-service: {} with error: {}", uri, error.getMessage(), error);
+        return Map.of();
     }
 
     private List<ProductsInfoResponse> unboxResponse(ResponseEntity<BaseResponse<OrderedProductsResponse>> response) {

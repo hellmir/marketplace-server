@@ -16,7 +16,7 @@ import java.net.URI;
 
 import static com.personal.marketnote.common.utility.AccrualPointAmountConstant.REFERRED_USER_POINT_AMOUNT;
 import static com.personal.marketnote.common.utility.AccrualPointAmountConstant.REFERRER_USER_POINT_AMOUNT;
-import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_MAX_REQUEST_COUNT;
+import static com.personal.marketnote.common.utility.ApiConstant.*;
 
 @ServiceAdapter
 @RequiredArgsConstructor
@@ -98,7 +98,7 @@ public class RewardServiceClient implements ModifyUserPointPort {
         ModifyUserPointRequest request = ModifyUserPointRequest.from(userId, amount, reason);
         HttpEntity<ModifyUserPointRequest> httpEntity = new HttpEntity<>(request, headers);
 
-        sendModifyRequest(uri, httpEntity, userId, amount);
+        sendRequest(uri, httpEntity, userId, amount);
     }
 
     private void ensureUserPointExists(URI uri, HttpHeaders headers, Long userId) {
@@ -109,39 +109,40 @@ public class RewardServiceClient implements ModifyUserPointPort {
         }
     }
 
-    private void sendModifyRequest(
+    private void sendRequest(
             URI uri,
             HttpEntity<ModifyUserPointRequest> httpEntity,
             Long userId,
             long amount
     ) {
+        long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
+        Exception error = new Exception();
         for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
             try {
                 ResponseEntity<Void> response = restTemplate.exchange(uri, HttpMethod.PATCH, httpEntity, Void.class);
-
                 if (FormatValidator.hasValue(response) && response.getStatusCode().is2xxSuccessful()) {
                     return;
                 }
 
-                HttpStatusCode statusCode = null;
-                if (FormatValidator.hasValue(response)) {
-                    statusCode = response.getStatusCode();
-                }
-
                 log.warn(
                         "Reward service responded with non-2xx status for userId={}, amount={}, status={}",
-                        userId, amount, statusCode
+                        userId, amount, response.getStatusCode()
                 );
             } catch (Exception e) {
                 log.warn(
                         "Failed to accrue user point on reward-service: userId={}, amount={}, attempt={}, message={}",
                         userId, amount, i + 1, e.getMessage(), e
                 );
+                if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
+                    error = e;
+                }
             }
 
-            sleep(1000);
+            sleep(sleepMillis);
+            sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
         }
 
+        log.error("Failed to accrue user point: {} with error: {}", uri, error.getMessage(), error);
         throw new RewardServiceRequestFailedException(new IOException());
     }
 
