@@ -45,21 +45,26 @@ public class CommerceServiceClient implements UpdateOrderProductReviewStatusPort
     }
 
     public void sendRequest(URI uri, HttpEntity<Void> httpEntity) {
+        Exception error = new Exception();
+
         for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
             try {
                 restTemplate.exchange(uri, HttpMethod.PATCH, httpEntity, Void.class);
                 return;
             } catch (Exception e) {
                 log.warn(e.getMessage(), e);
+                if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
+                    error = e;
+                }
 
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
                 }
             }
         }
 
-        log.error("Failed to update order product review status: {}", uri);
+        log.error("Failed to update order product review status: {} with error: {}", uri, error.getMessage(), error);
     }
 }

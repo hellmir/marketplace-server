@@ -16,7 +16,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 
-import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_MAX_REQUEST_COUNT;
+import static com.personal.marketnote.common.utility.ApiConstant.*;
 
 @ServiceAdapter
 @RequiredArgsConstructor
@@ -61,7 +61,7 @@ public class RewardServiceClient implements ModifyUserPointPort {
         ModifyUserPointRequest request = ModifyUserPointRequest.of(sharePointAmount, sharerId);
         HttpEntity<ModifyUserPointRequest> httpEntity = new HttpEntity<>(request, headers);
 
-        sendModifyRequest(uri, httpEntity, sharerId);
+        sendRequest(uri, httpEntity, sharerId);
     }
 
     private void ensureUserPointExists(URI uri, HttpHeaders headers, Long userId) {
@@ -72,7 +72,10 @@ public class RewardServiceClient implements ModifyUserPointPort {
         }
     }
 
-    private void sendModifyRequest(URI uri, HttpEntity<ModifyUserPointRequest> httpEntity, Long userId) {
+    private void sendRequest(URI uri, HttpEntity<ModifyUserPointRequest> httpEntity, Long userId) {
+        long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
+        Exception error = new Exception();
+
         for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
             try {
                 ResponseEntity<Void> response = restTemplate.exchange(uri, HttpMethod.PATCH, httpEntity, Void.class);
@@ -80,16 +83,25 @@ public class RewardServiceClient implements ModifyUserPointPort {
                     return;
                 }
 
-                log.warn("Reward service responded with non-2xx status for userId={}, status={}",
-                        userId, response != null ? response.getStatusCode() : null);
+                log.warn(
+                        "Reward service responded with non-2xx status for userId={}, status={}",
+                        userId, response.getStatusCode()
+                );
             } catch (Exception e) {
-                log.warn("Failed to accrue user point on reward-service: userId={}, attempt={}, message={}",
-                        userId, i + 1, e.getMessage(), e);
+                log.warn(
+                        "Failed to accrue user point on reward-service: userId={}, attempt={}, message={}",
+                        userId, i + 1, e.getMessage(), e
+                );
+                if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
+                    error = e;
+                }
             }
 
-            sleep(1000);
+            sleep(sleepMillis);
+            sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
         }
 
+        log.error("Failed to accrue user point: {} with error: {}", uri, error.getMessage(), error);
         throw new RewardServiceRequestFailedException(new IOException());
     }
 
@@ -105,6 +117,7 @@ public class RewardServiceClient implements ModifyUserPointPort {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(adminAccessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
+        
         return headers;
     }
 
