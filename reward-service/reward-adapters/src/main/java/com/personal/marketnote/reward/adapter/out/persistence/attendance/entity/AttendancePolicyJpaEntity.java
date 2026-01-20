@@ -1,0 +1,71 @@
+package com.personal.marketnote.reward.adapter.out.persistence.attendance.entity;
+
+import com.personal.marketnote.common.adapter.out.persistence.audit.BaseEntity;
+import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
+import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.reward.domain.attendance.AttendancePolicy;
+import com.personal.marketnote.reward.domain.attendance.AttendancePolicySnapshotState;
+import com.personal.marketnote.reward.domain.attendance.AttendanceRewardType;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "attendance_policy")
+@DynamicInsert
+@DynamicUpdate
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PRIVATE)
+@Getter
+public class AttendancePolicyJpaEntity extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Short id;
+
+    @Column(name = "continuous_period", nullable = false)
+    private short continuousPeriod;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "reward_type", nullable = false, length = 31)
+    private AttendanceRewardType rewardType;
+
+    @Column(name = "reward_quantity", nullable = false)
+    private long rewardQuantity;
+
+    @Column(name = "attendence_date")
+    private LocalDateTime attendenceDate;
+
+    @Column(nullable = false, columnDefinition = "VARCHAR DEFAULT 'ACTIVE'")
+    @Enumerated(EnumType.STRING)
+    private EntityStatus status;
+
+    public static AttendancePolicyJpaEntity from(AttendancePolicy policy) {
+        if (FormatValidator.hasNoValue(policy)) {
+            return null;
+        }
+
+        return AttendancePolicyJpaEntity.builder()
+                .continuousPeriod(policy.getContinuousPeriod())
+                .rewardType(policy.getRewardType())
+                .rewardQuantity(policy.getRewardQuantity())
+                .attendenceDate(policy.getAttendenceDate())
+                .build();
+    }
+
+    public AttendancePolicy toDomain() {
+        return AttendancePolicy.from(
+                AttendancePolicySnapshotState.builder()
+                        .id(id)
+                        .continuousPeriod(continuousPeriod)
+                        .rewardType(rewardType)
+                        .rewardQuantity(rewardQuantity)
+                        .attendenceDate(attendenceDate)
+                        .build()
+        );
+    }
+}
+

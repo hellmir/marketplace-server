@@ -117,7 +117,7 @@ public class RewardServiceClient implements ModifyUserPointPort {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(adminAccessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
-        
+
         return headers;
     }
 
