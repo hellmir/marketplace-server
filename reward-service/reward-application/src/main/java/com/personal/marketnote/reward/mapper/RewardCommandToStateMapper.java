@@ -1,10 +1,15 @@
 package com.personal.marketnote.reward.mapper;
 
+import com.personal.marketnote.common.domain.calendar.Month;
+import com.personal.marketnote.common.domain.calendar.Year;
+import com.personal.marketnote.reward.domain.attendance.AttendancePolicy;
+import com.personal.marketnote.reward.domain.attendance.UserAttendanceHistoryCreateState;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapperCreateState;
 import com.personal.marketnote.reward.domain.point.UserPointChangeType;
 import com.personal.marketnote.reward.domain.point.UserPointCreateState;
 import com.personal.marketnote.reward.domain.point.UserPointHistoryCreateState;
 import com.personal.marketnote.reward.domain.point.UserPointSourceType;
+import com.personal.marketnote.reward.port.in.command.attendance.RegisterAttendanceCommand;
 import com.personal.marketnote.reward.port.in.command.offerwall.RegisterOfferwallRewardCommand;
 import com.personal.marketnote.reward.port.in.command.point.ModifyUserPointCommand;
 import com.personal.marketnote.reward.port.in.command.point.RegisterUserPointCommand;
@@ -74,6 +79,24 @@ public class RewardCommandToStateMapper {
                 .sourceId(command.sourceId())
                 .reason(command.reason())
                 .accumulatedAt(accumulatedAt)
+                .build();
+    }
+
+    public static UserAttendanceHistoryCreateState mapToUserAttendanceHistoryCreateState(
+            RegisterAttendanceCommand command,
+            AttendancePolicy attendancePolicy,
+            short continuousPeriod
+    ) {
+        return UserAttendanceHistoryCreateState.builder()
+                .userId(command.userId())
+                .attendancePolicyId(attendancePolicy.getId())
+                .year(Year.from(command.attendedAt().getYear()))
+                .month(Month.from(command.attendedAt().getMonthValue()))
+                .rewardType(attendancePolicy.getRewardType())
+                .rewardQuantity(attendancePolicy.getRewardQuantity())
+                .continuousPeriod(continuousPeriod)
+                .rewardYn(Boolean.TRUE)
+                .attendedAt(command.attendedAt())
                 .build();
     }
 }
