@@ -20,6 +20,31 @@ public class AttendancePolicy {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
+    public AttendancePolicy withStatus(EntityStatus status) {
+        return AttendancePolicy.builder()
+                .id(id)
+                .continuousPeriod(continuousPeriod)
+                .rewardType(rewardType)
+                .rewardQuantity(rewardQuantity)
+                .attendenceDate(attendenceDate)
+                .status(status)
+                .createdAt(createdAt)
+                .modifiedAt(modifiedAt)
+                .build();
+    }
+
+    public boolean isActive() {
+        return status.isActive();
+    }
+
+    public boolean isInactive() {
+        return status.isInactive();
+    }
+
+    public void delete() {
+        status = EntityStatus.INACTIVE;
+    }
+
     public static AttendancePolicy from(AttendancePolicyCreateState state) {
         return AttendancePolicy.builder()
                 .continuousPeriod(state.getContinuousPeriod())
@@ -42,4 +67,3 @@ public class AttendancePolicy {
                 .build();
     }
 }
-

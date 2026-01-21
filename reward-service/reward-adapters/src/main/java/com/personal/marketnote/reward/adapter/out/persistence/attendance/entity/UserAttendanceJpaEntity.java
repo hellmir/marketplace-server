@@ -10,6 +10,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "user_attendance")
@@ -42,7 +43,7 @@ public class UserAttendanceJpaEntity {
     private long totalRewardQuantity;
 
     @OneToMany(mappedBy = "userAttendanceId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private java.util.List<UserAttendanceHistoryJpaEntity> histories;
+    private List<UserAttendanceHistoryJpaEntity> histories;
 
     public static UserAttendanceJpaEntity from(UserAttendance attendance) {
         if (FormatValidator.hasNoValue(attendance)) {

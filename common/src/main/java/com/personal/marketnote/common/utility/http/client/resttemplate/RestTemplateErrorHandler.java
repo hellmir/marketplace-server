@@ -14,6 +14,6 @@ public class RestTemplateErrorHandler implements ResponseErrorHandler {
 
     @Override
     @SuppressWarnings("removal")
-    public void handleError(ClientHttpResponse response) throws IOException {
+    public void handleError(ClientHttpResponse response) {
     }
 }

@@ -5,6 +5,7 @@ import com.personal.marketnote.common.domain.calendar.Year;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,7 +18,7 @@ public class UserAttendance {
     private Month month;
     private LocalDateTime createdAt;
     private long totalRewardQuantity;
-    private java.util.List<UserAttendanceHistory> histories;
+    private List<UserAttendanceHistory> histories;
 
     public static UserAttendance from(UserAttendanceCreateState state) {
         return UserAttendance.builder()
