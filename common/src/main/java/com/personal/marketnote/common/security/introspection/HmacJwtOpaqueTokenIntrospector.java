@@ -134,7 +134,6 @@ public class HmacJwtOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
 
     @SuppressWarnings("unchecked")
     private Collection<GrantedAuthority> extractAuthorities(Map<String, Object> claims) {
-        // roles, roleIds, authorities (array) 우선
         List<String> roles = new ArrayList<>();
         for (String key : List.of("roles", "roleIds", "authorities")) {
             Object v = claims.get(key);

@@ -14,5 +14,7 @@ public interface FindAttendancePolicyPort {
     Optional<AttendancePolicy> findByContinuousPeriodAndAttendenceDateIsNull(short continuousPeriod);
 
     List<AttendancePolicy> findAllOrderByOrderNumDesc();
+
+    Optional<AttendancePolicy> findByIdForUpdate(Short id);
 }
 

@@ -16,7 +16,6 @@ public class UserAttendancePersistenceAdapter implements SaveUserAttendancePort,
     private final UserAttendanceJpaRepository repository;
 
     @Override
-    @SuppressWarnings({"null", "DataFlowIssue"})
     public UserAttendance save(UserAttendance attendance) {
         UserAttendanceJpaEntity saved = java.util.Objects.requireNonNull(
                 repository.save(UserAttendanceJpaEntity.from(attendance)),

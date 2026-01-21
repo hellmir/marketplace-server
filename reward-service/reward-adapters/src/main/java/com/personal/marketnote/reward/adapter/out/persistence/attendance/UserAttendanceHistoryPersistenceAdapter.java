@@ -13,7 +13,6 @@ public class UserAttendanceHistoryPersistenceAdapter implements SaveUserAttendan
     private final UserAttendanceHistoryJpaRepository repository;
 
     @Override
-    @SuppressWarnings({"null", "DataFlowIssue"})
     public UserAttendanceHistory save(UserAttendanceHistory history) {
         UserAttendanceHistoryJpaEntity saved = java.util.Objects.requireNonNull(
                 repository.save(UserAttendanceHistoryJpaEntity.from(history)),

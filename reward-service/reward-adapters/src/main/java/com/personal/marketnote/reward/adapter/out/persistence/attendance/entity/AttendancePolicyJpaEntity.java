@@ -69,8 +69,41 @@ public class AttendancePolicyJpaEntity extends BaseEntity {
         );
     }
 
+    public void updateFrom(AttendancePolicy policy) {
+        updateActivation(policy);
+        continuousPeriod = policy.getContinuousPeriod();
+        rewardType = policy.getRewardType();
+        rewardQuantity = policy.getRewardQuantity();
+        attendenceDate = policy.getAttendenceDate();
+    }
+
+    private void updateActivation(AttendancePolicy policy) {
+        if (policy.isActive()) {
+            activate();
+            return;
+        }
+
+        if (policy.isInactive()) {
+            deactivate();
+            return;
+        }
+
+        hide();
+    }
+
+    private void activate() {
+        status = EntityStatus.ACTIVE;
+    }
+
+    private void deactivate() {
+        status = EntityStatus.INACTIVE;
+    }
+
+    private void hide() {
+        status = EntityStatus.UNEXPOSED;
+    }
+
     public void setIdToOrderNum() {
         orderNum = id;
     }
 }
-
