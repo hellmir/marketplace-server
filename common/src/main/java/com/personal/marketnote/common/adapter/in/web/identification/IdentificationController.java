@@ -45,7 +45,7 @@ public class IdentificationController {
      * @Date 2026-01-21
      * @Description 자신의 공인 IP를 조회합니다.
      */
-    @GetMapping("/whoami")
+    @GetMapping("/who-am-i")
     @PreAuthorize(ADMIN_POINTCUT)
     @WhoAmIApiDocs
     public ResponseEntity<BaseResponse<WhoAmIResponse>> whoAmI() {
