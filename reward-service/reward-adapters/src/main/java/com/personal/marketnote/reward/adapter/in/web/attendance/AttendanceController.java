@@ -2,11 +2,16 @@ package com.personal.marketnote.reward.adapter.in.web.attendance;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.utility.ElementExtractor;
+import com.personal.marketnote.reward.adapter.in.web.attendance.apidocs.GetMonthlyAttendanceApiDocs;
 import com.personal.marketnote.reward.adapter.in.web.attendance.apidocs.RegisterAttendanceApiDocs;
 import com.personal.marketnote.reward.adapter.in.web.attendance.mapper.AttendanceRequestToCommandMapper;
 import com.personal.marketnote.reward.adapter.in.web.attendance.request.RegisterAttendanceRequest;
+import com.personal.marketnote.reward.adapter.in.web.attendance.response.GetMonthlyAttendanceResponse;
 import com.personal.marketnote.reward.adapter.in.web.attendance.response.RegisterAttendanceResponse;
+import com.personal.marketnote.reward.port.in.command.attendance.GetMonthlyAttendanceQuery;
+import com.personal.marketnote.reward.port.in.result.attendance.GetMonthlyAttendanceResult;
 import com.personal.marketnote.reward.port.in.result.attendance.RegisterAttendanceResult;
+import com.personal.marketnote.reward.port.in.usecase.attendance.GetMonthlyAttendanceUseCase;
 import com.personal.marketnote.reward.port.in.usecase.attendance.RegisterAttendanceUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -15,10 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
 
@@ -28,6 +30,7 @@ import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFA
 @RequiredArgsConstructor
 public class AttendanceController {
     private final RegisterAttendanceUseCase registerAttendanceUseCase;
+    private final GetMonthlyAttendanceUseCase getMonthlyAttendanceUseCase;
 
     /**
      * 회원 출석체크 등록
@@ -59,6 +62,42 @@ public class AttendanceController {
                         "회원 출석체크 등록 성공"
                 ),
                 HttpStatus.CREATED
+        );
+    }
+
+    /**
+     * 월별 출석 내역 조회
+     *
+     * @param principal 인증된 사용자 정보
+     * @param year      조회 연도 (미전달 시 이번 연도)
+     * @param month     조회 월 (미전달 시 이번 달)
+     * @return 월별 출석 내역 조회 응답
+     * @Author 성효빈
+     * @Date 2026-01-21
+     * @Description 월별 출석 내역을 조회합니다.
+     */
+    @GetMapping
+    @GetMonthlyAttendanceApiDocs
+    public ResponseEntity<BaseResponse<GetMonthlyAttendanceResponse>> getMonthlyAttendanceHistories(
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal,
+            @RequestParam(value = "year", required = false) Integer year,
+            @RequestParam(value = "month", required = false) Integer month
+    ) {
+        GetMonthlyAttendanceResult result = getMonthlyAttendanceUseCase.getMonthlyAttendanceHistories(
+                GetMonthlyAttendanceQuery.of(
+                        ElementExtractor.extractUserId(principal),
+                        year,
+                        month
+                )
+        );
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        GetMonthlyAttendanceResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "월별 출석 내역 조회 성공"
+                )
         );
     }
 }
