@@ -1,4 +1,4 @@
-package com.personal.marketnote.commerce.configuration;
+package com.personal.marketnote.community.configuration;
 
 import com.personal.marketnote.common.application.aop.LoggingAspect;
 import com.personal.marketnote.common.configuration.security.OpaqueTokenIntrospectorConfig;
