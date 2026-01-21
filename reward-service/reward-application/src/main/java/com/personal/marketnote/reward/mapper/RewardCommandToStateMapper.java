@@ -1,6 +1,7 @@
 package com.personal.marketnote.reward.mapper;
 
 import com.personal.marketnote.reward.domain.attendance.AttendancePolicy;
+import com.personal.marketnote.reward.domain.attendance.AttendancePolicyCreateState;
 import com.personal.marketnote.reward.domain.attendance.UserAttendanceHistoryCreateState;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapperCreateState;
 import com.personal.marketnote.reward.domain.point.UserPointChangeType;
@@ -8,6 +9,7 @@ import com.personal.marketnote.reward.domain.point.UserPointCreateState;
 import com.personal.marketnote.reward.domain.point.UserPointHistoryCreateState;
 import com.personal.marketnote.reward.domain.point.UserPointSourceType;
 import com.personal.marketnote.reward.port.in.command.attendance.RegisterAttendanceCommand;
+import com.personal.marketnote.reward.port.in.command.attendance.RegisterAttendancePolicyCommand;
 import com.personal.marketnote.reward.port.in.command.offerwall.RegisterOfferwallRewardCommand;
 import com.personal.marketnote.reward.port.in.command.point.ModifyUserPointCommand;
 import com.personal.marketnote.reward.port.in.command.point.RegisterUserPointCommand;
@@ -94,6 +96,17 @@ public class RewardCommandToStateMapper {
                 .continuousPeriod(continuousPeriod)
                 .rewardYn(Boolean.TRUE)
                 .attendedAt(command.attendedAt())
+                .build();
+    }
+
+    public static AttendancePolicyCreateState mapToAttendancePolicyCreateState(
+            RegisterAttendancePolicyCommand command
+    ) {
+        return AttendancePolicyCreateState.builder()
+                .continuousPeriod(command.continuousPeriod())
+                .rewardType(command.rewardType())
+                .rewardQuantity(command.rewardQuantity())
+                .attendenceDate(command.attendenceDate())
                 .build();
     }
 }

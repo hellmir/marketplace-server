@@ -3,12 +3,12 @@ package com.personal.marketnote.reward.adapter.out.persistence.attendance.reposi
 import com.personal.marketnote.reward.adapter.out.persistence.attendance.entity.AttendancePolicyJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 public interface AttendancePolicyJpaRepository extends JpaRepository<AttendancePolicyJpaEntity, Short> {
-    Optional<AttendancePolicyJpaEntity> findTop1ByContinuousPeriodAndAttendenceDate(short continuousPeriod, LocalDateTime attendenceDate);
+    Optional<AttendancePolicyJpaEntity> findTop1ByContinuousPeriodAndAttendenceDate(short continuousPeriod, LocalDate attendenceDate);
 
-    Optional<AttendancePolicyJpaEntity> findTop1ByContinuousPeriodAndAttendenceDateIsNull(short continuousPeriod);
+    Optional<AttendancePolicyJpaEntity> findTop1ByContinuousPeriodAndAttendenceDateIsNullOrderByOrderNumDesc(short continuousPeriod);
 }
 
