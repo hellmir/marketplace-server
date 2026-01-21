@@ -35,7 +35,8 @@ public class UserSwaggerConfig {
             "인증 API",
             "회원 관리자 API",
             "회원 API",
-            "회원 약관 API"
+            "회원 약관 API",
+            "서버 정보 API"
     );
 
     /* ❷ 태그 이름 → 우선순위 맵(캐시) */
