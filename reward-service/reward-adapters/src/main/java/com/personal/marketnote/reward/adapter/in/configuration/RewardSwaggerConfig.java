@@ -33,7 +33,8 @@ public class RewardSwaggerConfig {
     private static final List<String> TAGS_ORDER = List.of(
             "포인트 API",
             "오퍼월 API",
-            "출석체크 API"
+            "출석체크 API",
+            "서버 정보 API"
     );
 
     private static final Map<String, Integer> ORDER_MAP = new ConcurrentHashMap<>();

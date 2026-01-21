@@ -35,7 +35,8 @@ public class CommunitySwaggerConfig {
             "게시글 API",
             "리뷰 API",
             "좋아요 API",
-            "신고 API"
+            "신고 API",
+            "서버 정보 API"
     );
 
     private static final Map<String, Integer> ORDER_MAP = new ConcurrentHashMap<>();
