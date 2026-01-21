@@ -1,7 +1,9 @@
 package com.personal.marketnote.reward.domain.attendance;
 
+import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -13,10 +15,19 @@ public class AttendancePolicy {
     private short continuousPeriod;
     private AttendanceRewardType rewardType;
     private long rewardQuantity;
-    private LocalDateTime attendenceDate;
-    private AttendancePolicyStatus status;
+    private LocalDate attendenceDate;
+    private EntityStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+
+    public static AttendancePolicy from(AttendancePolicyCreateState state) {
+        return AttendancePolicy.builder()
+                .continuousPeriod(state.getContinuousPeriod())
+                .rewardType(state.getRewardType())
+                .rewardQuantity(state.getRewardQuantity())
+                .attendenceDate(state.getAttendenceDate())
+                .build();
+    }
 
     public static AttendancePolicy from(AttendancePolicySnapshotState state) {
         return AttendancePolicy.builder()

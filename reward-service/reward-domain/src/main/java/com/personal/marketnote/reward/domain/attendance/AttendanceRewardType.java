@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @SuppressWarnings("unused")
 public enum AttendanceRewardType {
-    POINT("POINT"),
-    BOOSTER("BOOSTER");
+    POINT("포인트"),
+    BOOSTER("영양제 제조 속도 향상 부스터");
 
     private final String description;
 }

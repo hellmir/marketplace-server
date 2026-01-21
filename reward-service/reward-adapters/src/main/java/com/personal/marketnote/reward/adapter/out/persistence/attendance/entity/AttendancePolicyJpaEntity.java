@@ -2,7 +2,6 @@ package com.personal.marketnote.reward.adapter.out.persistence.attendance.entity
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseEntity;
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
-import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.reward.domain.attendance.AttendancePolicy;
 import com.personal.marketnote.reward.domain.attendance.AttendancePolicySnapshotState;
 import com.personal.marketnote.reward.domain.attendance.AttendanceRewardType;
@@ -11,7 +10,7 @@ import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "attendance_policy")
@@ -37,22 +36,21 @@ public class AttendancePolicyJpaEntity extends BaseEntity {
     private long rewardQuantity;
 
     @Column(name = "attendence_date")
-    private LocalDateTime attendenceDate;
+    private LocalDate attendenceDate;
 
-    @Column(nullable = false, columnDefinition = "VARCHAR DEFAULT 'ACTIVE'")
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EntityStatus status;
 
-    public static AttendancePolicyJpaEntity from(AttendancePolicy policy) {
-        if (FormatValidator.hasNoValue(policy)) {
-            return null;
-        }
+    private Short orderNum;
 
+    public static AttendancePolicyJpaEntity from(AttendancePolicy policy) {
         return AttendancePolicyJpaEntity.builder()
                 .continuousPeriod(policy.getContinuousPeriod())
                 .rewardType(policy.getRewardType())
                 .rewardQuantity(policy.getRewardQuantity())
                 .attendenceDate(policy.getAttendenceDate())
+                .status(EntityStatus.ACTIVE)
                 .build();
     }
 
@@ -64,8 +62,15 @@ public class AttendancePolicyJpaEntity extends BaseEntity {
                         .rewardType(rewardType)
                         .rewardQuantity(rewardQuantity)
                         .attendenceDate(attendenceDate)
+                        .status(status)
+                        .createdAt(getCreatedAt())
+                        .modifiedAt(getModifiedAt())
                         .build()
         );
+    }
+
+    public void setIdToOrderNum() {
+        orderNum = id;
     }
 }
 
