@@ -27,6 +27,11 @@ include("reward-service:reward-adapters")
 include("reward-service:reward-application")
 include("reward-service:reward-domain")
 
+include("fulfillment-service")
+include("fulfillment-service:fulfillment-adapters")
+include("fulfillment-service:fulfillment-application")
+include("fulfillment-service:fulfillment-domain")
+
 include("file-service")
 include("file-service:file-adapters")
 include("file-service:file-application")

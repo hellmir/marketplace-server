@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  fulfillment-adapters:
+    image: shop-fulfillment-adapters:1.0.0
+    networks:
+      - shop_network
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVICE_NAME=${env.SERVICE_NAME:fulfillment-service}
+      - SPRING_PROFILES_ACTIVE=qa.test
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:dev-secret-change-me}
+      - ALLOWED_ORIGINS=${ACCESS_CONTROL_ALLOWED_ORIGINS:http://localhost:3000}
+      - SERVER_ORIGIN=${SERVER_ORIGIN:http://localhost:8085}
+      - CLIENT_ORIGIN=${CLIENT_ORIGIN:http://localhost:3000}
+      - COOKIE_DOMAIN=${COOKIE_DOMAIN:localhost}
+      - DB_URL=${DB_URL:jdbc:postgresql://localhost:5432/marketnote_fulfillment}
+      - DB_USERNAME=${DB_USERNAME:root}
+      - DB_PASSWORD=${DB_PASSWORD:root}
+
+networks:
+  shop_network:
+    driver: bridge
