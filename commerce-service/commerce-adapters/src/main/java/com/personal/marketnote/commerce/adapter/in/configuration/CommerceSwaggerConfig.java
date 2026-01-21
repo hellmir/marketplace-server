@@ -32,7 +32,8 @@ public class CommerceSwaggerConfig {
 
     private static final List<String> TAGS_ORDER = List.of(
             "재고 API",
-            "주문 API"
+            "주문 API",
+            "서버 정보 API"
     );
 
     private static final Map<String, Integer> ORDER_MAP = new ConcurrentHashMap<>();

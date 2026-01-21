@@ -34,7 +34,8 @@ public class FileSwaggerConfig {
     private String serverOrigin;
 
     private static final List<String> TAGS_ORDER = List.of(
-            "파일 API"
+            "파일 API",
+            "서버 정보 API"
     );
 
     private static final Map<String, Integer> ORDER_MAP = new ConcurrentHashMap<>();
