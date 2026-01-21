@@ -6,6 +6,7 @@ import com.personal.marketnote.reward.domain.attendance.UserAttendanceHistory;
 import com.personal.marketnote.reward.port.out.attendance.FindUserAttendanceHistoryPort;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @PersistenceAdapter
@@ -14,9 +15,18 @@ public class UserAttendanceHistoryQueryAdapter implements FindUserAttendanceHist
     private final UserAttendanceHistoryJpaRepository repository;
 
     @Override
-    public Optional<UserAttendanceHistory> findLatestByUserId(Long userId) {
-        return repository.findTop1ByUserIdOrderByAttendedAtDesc(userId)
+    public Optional<UserAttendanceHistory> findLatestByUserAttendanceId(Long userAttendanceId) {
+        return repository.findTop1ByUserAttendanceIdOrderByAttendedAtDesc(userAttendanceId)
                 .map(entity -> entity.toDomain());
+    }
+
+    @Override
+    public boolean existsByUserAttendanceIdAndAttendedAtBetween(Long userAttendanceId, LocalDateTime startInclusive, LocalDateTime endExclusive) {
+        return repository.existsByUserAttendanceIdAndAttendedAtGreaterThanEqualAndAttendedAtLessThan(
+                userAttendanceId,
+                startInclusive,
+                endExclusive
+        );
     }
 }
 

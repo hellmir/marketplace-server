@@ -111,21 +111,39 @@ import java.lang.annotation.*;
                 ),
                 @ApiResponse(
                         responseCode = "409",
-                        description = "기본 출석 정책 조회 실패",
+                        description = "중복 출석 요청 및 기본 출석 정책 조회 실패",
                         content = @Content(
-                                examples = @ExampleObject("""
-                                        {
-                                          "statusCode": 409,
-                                          "code": "CONFLICT",
-                                          "timestamp": "2026-01-20T14:13:11.731434",
-                                          "content": null,
-                                          "message": "기본 출석 정책을 찾을 수 없습니다. 서버 담당자에게 문의 바랍니다."
-                                        }
-                                        """)
+                                examples = {
+                                        @ExampleObject(
+                                                name = "중복 출석 요청",
+                                                summary = "중복 출석 요청",
+                                                value = """
+                                                        {
+                                                          "statusCode": 409,
+                                                          "code": "CONFLICT",
+                                                          "timestamp": "2026-01-21T13:59:16.397054",
+                                                          "content": null,
+                                                          "message": "이미 오늘 출석이 등록되었습니다."
+                                                        }
+                                                        """
+                                        ),
+                                        @ExampleObject(
+                                                name = "기본 출석 정책 조회 실패",
+                                                summary = "기본 출석 정책 조회 실패",
+                                                value = """
+                                                        {
+                                                          "statusCode": 409,
+                                                          "code": "CONFLICT",
+                                                          "timestamp": "2026-01-20T14:13:11.731434",
+                                                          "content": null,
+                                                          "message": "기본 출석 정책을 찾을 수 없습니다. 서버 담당자에게 문의 바랍니다."
+                                                        }
+                                                        """
+                                        )
+                                }
                         )
                 )
         }
 )
 public @interface RegisterAttendanceApiDocs {
 }
-
