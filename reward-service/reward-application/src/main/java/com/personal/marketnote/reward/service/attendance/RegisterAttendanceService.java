@@ -1,17 +1,19 @@
 package com.personal.marketnote.reward.service.attendance;
 
 import com.personal.marketnote.common.application.UseCase;
+import com.personal.marketnote.common.domain.calendar.Month;
+import com.personal.marketnote.common.domain.calendar.Year;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.reward.domain.attendance.AttendancePolicy;
+import com.personal.marketnote.reward.domain.attendance.UserAttendance;
+import com.personal.marketnote.reward.domain.attendance.UserAttendanceCreateState;
 import com.personal.marketnote.reward.domain.attendance.UserAttendanceHistory;
 import com.personal.marketnote.reward.exception.InvalidAttendanceTimeException;
 import com.personal.marketnote.reward.mapper.RewardCommandToStateMapper;
 import com.personal.marketnote.reward.port.in.command.attendance.RegisterAttendanceCommand;
 import com.personal.marketnote.reward.port.in.result.attendance.RegisterAttendanceResult;
 import com.personal.marketnote.reward.port.in.usecase.attendance.RegisterAttendanceUseCase;
-import com.personal.marketnote.reward.port.out.attendance.FindAttendancePolicyPort;
-import com.personal.marketnote.reward.port.out.attendance.FindUserAttendanceHistoryPort;
-import com.personal.marketnote.reward.port.out.attendance.SaveUserAttendanceHistoryPort;
+import com.personal.marketnote.reward.port.out.attendance.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,8 @@ public class RegisterAttendanceService implements RegisterAttendanceUseCase {
     private static final short DEFAULT_POLICY_ID = 10_000;
 
     private final SaveUserAttendanceHistoryPort saveUserAttendanceHistoryPort;
+    private final SaveUserAttendancePort saveUserAttendancePort;
+    private final FindUserAttendancePort findUserAttendancePort;
     private final FindUserAttendanceHistoryPort findUserAttendanceHistoryPort;
     private final FindAttendancePolicyPort findAttendancePolicyPort;
 
@@ -35,16 +39,26 @@ public class RegisterAttendanceService implements RegisterAttendanceUseCase {
     public RegisterAttendanceResult register(RegisterAttendanceCommand command) {
         validateAttendedAt(command.attendedAt());
 
-        short continuousPeriod = calculateContinuousPeriod(command.userId(), command.attendedAt());
-        AttendancePolicy attendancePolicy = selectAttendancePolicy(continuousPeriod, command.attendedAt().toLocalDate());
+        LocalDate attendedDate = command.attendedAt().toLocalDate();
+        UserAttendance userAttendance = findOrCreateUserAttendance(command.userId(), attendedDate);
+
+        assertNoDuplicateAttendanceToday(userAttendance.getId(), command.attendedAt());
+
+        short continuousPeriod = calculateContinuousPeriod(userAttendance.getId(), command.attendedAt());
+        AttendancePolicy attendancePolicy = selectAttendancePolicy(continuousPeriod, attendedDate);
         UserAttendanceHistory savedHistory = saveUserAttendanceHistoryPort.save(
                 UserAttendanceHistory.from(
                         RewardCommandToStateMapper.mapToUserAttendanceHistoryCreateState(
                                 command,
                                 attendancePolicy,
-                                continuousPeriod
+                                continuousPeriod,
+                                userAttendance.getId()
                         )
                 )
+        );
+
+        saveUserAttendancePort.save(
+                userAttendance.withAddedReward(attendancePolicy.getRewardQuantity())
         );
 
         return RegisterAttendanceResult.builder()
@@ -63,13 +77,40 @@ public class RegisterAttendanceService implements RegisterAttendanceUseCase {
         }
     }
 
-    private short calculateContinuousPeriod(Long userId, LocalDateTime attendedAt) {
+    private UserAttendance findOrCreateUserAttendance(Long userId, LocalDate attendedDate) {
+        Year year = Year.from(attendedDate.getYear());
+        Month month = Month.from(attendedDate.getMonthValue());
+
+        return findUserAttendancePort.findByUserIdAndYearAndMonth(userId, year, month)
+                .orElseGet(() -> saveUserAttendancePort.save(
+                        UserAttendance.from(
+                                UserAttendanceCreateState.builder()
+                                        .userId(userId)
+                                        .year(year)
+                                        .month(month)
+                                        .totalRewardQuantity(0L)
+                                        .build()
+                        )
+                ));
+    }
+
+    private short calculateContinuousPeriod(Long userAttendanceId, LocalDateTime attendedAt) {
         LocalDate attendedDate = attendedAt.toLocalDate();
 
-        return findUserAttendanceHistoryPort.findLatestByUserId(userId)
+        return findUserAttendanceHistoryPort.findLatestByUserAttendanceId(userAttendanceId)
                 .filter(last -> last.getAttendedAt().toLocalDate().equals(attendedDate.minusDays(1)))
                 .map(last -> (short) (last.getContinuousPeriod() + 1))
                 .orElse((short) 1);
+    }
+
+    private void assertNoDuplicateAttendanceToday(Long userAttendanceId, LocalDateTime attendedAt) {
+        LocalDateTime startOfDay = attendedAt.toLocalDate().atStartOfDay();
+        LocalDateTime endOfDayExclusive = startOfDay.plusDays(1);
+        if (findUserAttendanceHistoryPort.existsByUserAttendanceIdAndAttendedAtBetween(
+                userAttendanceId, startOfDay, endOfDayExclusive
+        )) {
+            throw new InvalidAttendanceTimeException("이미 오늘 출석이 등록되었습니다.");
+        }
     }
 
     private AttendancePolicy selectAttendancePolicy(short continuousPeriod, LocalDate attendedDate) {

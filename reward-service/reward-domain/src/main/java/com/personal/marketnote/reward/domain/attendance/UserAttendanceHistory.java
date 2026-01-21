@@ -1,7 +1,5 @@
 package com.personal.marketnote.reward.domain.attendance;
 
-import com.personal.marketnote.common.domain.calendar.Month;
-import com.personal.marketnote.common.domain.calendar.Year;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -12,10 +10,8 @@ import java.time.LocalDateTime;
 @Builder(access = AccessLevel.PRIVATE)
 public class UserAttendanceHistory {
     private Long id;
-    private Long userId;
+    private Long userAttendanceId;
     private Short attendancePolicyId;
-    private Year year;
-    private Month month;
     private AttendanceRewardType rewardType;
     private long rewardQuantity;
     private short continuousPeriod;
@@ -26,10 +22,8 @@ public class UserAttendanceHistory {
 
     public static UserAttendanceHistory from(UserAttendanceHistoryCreateState state) {
         return UserAttendanceHistory.builder()
-                .userId(state.getUserId())
+                .userAttendanceId(state.getUserAttendanceId())
                 .attendancePolicyId(state.getAttendancePolicyId())
-                .year(state.getYear())
-                .month(state.getMonth())
                 .rewardType(state.getRewardType())
                 .rewardQuantity(state.getRewardQuantity())
                 .continuousPeriod(state.getContinuousPeriod())
@@ -41,10 +35,8 @@ public class UserAttendanceHistory {
     public static UserAttendanceHistory from(UserAttendanceHistorySnapshotState state) {
         return UserAttendanceHistory.builder()
                 .id(state.getId())
-                .userId(state.getUserId())
+                .userAttendanceId(state.getUserAttendanceId())
                 .attendancePolicyId(state.getAttendancePolicyId())
-                .year(state.getYear())
-                .month(state.getMonth())
                 .rewardType(state.getRewardType())
                 .rewardQuantity(state.getRewardQuantity())
                 .continuousPeriod(state.getContinuousPeriod())

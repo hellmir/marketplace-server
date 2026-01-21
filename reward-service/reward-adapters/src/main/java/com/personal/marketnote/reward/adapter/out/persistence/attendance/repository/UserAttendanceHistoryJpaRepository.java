@@ -3,9 +3,16 @@ package com.personal.marketnote.reward.adapter.out.persistence.attendance.reposi
 import com.personal.marketnote.reward.adapter.out.persistence.attendance.entity.UserAttendanceHistoryJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface UserAttendanceHistoryJpaRepository extends JpaRepository<UserAttendanceHistoryJpaEntity, Long> {
-    Optional<UserAttendanceHistoryJpaEntity> findTop1ByUserIdOrderByAttendedAtDesc(Long userId);
+    Optional<UserAttendanceHistoryJpaEntity> findTop1ByUserAttendanceIdOrderByAttendedAtDesc(Long userAttendanceId);
+
+    boolean existsByUserAttendanceIdAndAttendedAtGreaterThanEqualAndAttendedAtLessThan(
+            Long userAttendanceId,
+            LocalDateTime startInclusive,
+            LocalDateTime endExclusive
+    );
 }
 
