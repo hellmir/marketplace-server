@@ -45,7 +45,7 @@ public class OfferwallController {
     private final VendorCommunicationPayloadGenerator vendorCommunicationPayloadGenerator;
 
     /**
-     * 아드팝콘 리워드 지급 콜백 엔드포인트
+     * 애드팝콘 리워드 지급 콜백 엔드포인트
      *
      * @param rewardKey      리워드 키
      * @param userKey        회원 키
@@ -270,7 +270,7 @@ public class OfferwallController {
     public ResponseEntity<BaseResponse<UpdateUserPointResponse>> handleAdiscopeCallback(
             @RequestParam("transactionId") String rewardKey,
             @RequestParam("userId") String userKey,
-            @RequestParam("user_device_type") UserDeviceType userDeviceType,
+            @RequestParam("userDeviceType") UserDeviceType userDeviceType,
             @RequestParam(value = "unitId", required = false) String campaignKey,
             @RequestParam(value = "shareAdType", required = false) String campaignType,
             @RequestParam(value = "adname", required = false) String campaignName,
