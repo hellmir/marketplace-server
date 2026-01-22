@@ -1,7 +1,7 @@
 import com.cloudbees.groovy.cps.NonCPS
 
 @NonCPS
-def buildMarketNoteTaskDefinition(env) {
+def buildMarketnoteTaskDefinition(env) {
     [
         family: env.PROJECT_NAME,
         networkMode: "awsvpc",
@@ -534,7 +534,7 @@ pipeline {
 			}
 		}
 
-		stage('Build Market Note Service Image') {
+		stage('Build Marketnote Service Image') {
 			steps {
 				script {
 					def dockerImageTag = "${env.PROJECT_NAME}:${env.PROJECT_VERSION}"
@@ -550,7 +550,7 @@ pipeline {
 			}
 		}
 
-		stage('Push Market Note Service Image') {
+		stage('Push Marketnote Service Image') {
 			steps {
 				script {
 					withCredentials([
@@ -572,7 +572,7 @@ pipeline {
 			}
 		}
 
-		stage('Register Market Note Service Task Definition') {
+		stage('Register Marketnote Service Task Definition') {
             steps {
                 script {
                     withCredentials([
@@ -629,7 +629,7 @@ pipeline {
                           fi
                         '''
 
-                        def td = buildMarketNoteTaskDefinition(env)
+                        def td = buildMarketnoteTaskDefinition(env)
 
                         def json = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(td))
                         writeFile file: 'taskdef.json', text: json
@@ -650,7 +650,7 @@ pipeline {
             }
         }
 
-		stage('Deploy Market Note Service') {
+		stage('Deploy Marketnote Service') {
             steps {
                 script {
                     withCredentials([
