@@ -169,7 +169,7 @@ public class AuthenticationController {
      * @param email 이메일 주소
      * @Author 성효빈
      * @Date 2025-12-28
-     * @Description Access Token을 재발급합니다.
+     * @Description 이메일 인증 요청을 전송합니다.
      */
     @SendEmailVerificationApiDocs
     @PostMapping("/email/verification")
