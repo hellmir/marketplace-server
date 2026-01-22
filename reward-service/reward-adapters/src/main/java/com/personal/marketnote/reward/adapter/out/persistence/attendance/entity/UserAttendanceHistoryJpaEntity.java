@@ -1,5 +1,6 @@
 package com.personal.marketnote.reward.adapter.out.persistence.attendance.entity;
 
+import com.personal.marketnote.common.adapter.out.persistence.audit.BaseEntity;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.reward.domain.attendance.AttendanceRewardType;
 import com.personal.marketnote.reward.domain.attendance.UserAttendanceHistory;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-public class UserAttendanceHistoryJpaEntity {
+public class UserAttendanceHistoryJpaEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,13 +43,6 @@ public class UserAttendanceHistoryJpaEntity {
     @Column(name = "attended_at", nullable = false)
     private LocalDateTime attendedAt;
 
-    @org.hibernate.annotations.CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "modified_at")
-    private LocalDateTime modifiedAt;
-
     public static UserAttendanceHistoryJpaEntity from(UserAttendanceHistory history) {
         if (FormatValidator.hasNoValue(history)) {
             return null;
@@ -63,8 +57,6 @@ public class UserAttendanceHistoryJpaEntity {
                 .continuousPeriod(history.getContinuousPeriod())
                 .rewardYn(history.getRewardYn())
                 .attendedAt(history.getAttendedAt())
-                .createdAt(history.getCreatedAt())
-                .modifiedAt(history.getModifiedAt())
                 .build();
     }
 
@@ -79,8 +71,8 @@ public class UserAttendanceHistoryJpaEntity {
                         .continuousPeriod(continuousPeriod)
                         .rewardYn(rewardYn)
                         .attendedAt(attendedAt)
-                        .createdAt(createdAt)
-                        .modifiedAt(modifiedAt)
+                        .createdAt(getCreatedAt())
+                        .modifiedAt(getModifiedAt())
                         .build()
         );
     }

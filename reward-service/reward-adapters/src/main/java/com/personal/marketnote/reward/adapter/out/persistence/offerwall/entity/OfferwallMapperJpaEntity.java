@@ -1,12 +1,16 @@
 package com.personal.marketnote.reward.adapter.out.persistence.offerwall.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapper;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallMapperSnapshotState;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallType;
 import com.personal.marketnote.reward.domain.offerwall.UserDeviceType;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -79,8 +83,10 @@ public class OfferwallMapperJpaEntity {
     @Column(name = "attended_at")
     private LocalDateTime attendedAt;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime createdAt;
 
     public static OfferwallMapperJpaEntity from(OfferwallMapper offerwallMapper) {
