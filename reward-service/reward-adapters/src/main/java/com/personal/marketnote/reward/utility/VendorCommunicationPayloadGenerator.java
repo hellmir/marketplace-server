@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
+
 @Component
 @RequiredArgsConstructor
 public class VendorCommunicationPayloadGenerator {
@@ -67,7 +69,7 @@ public class VendorCommunicationPayloadGenerator {
             String appName,
             String adid,
             String attendedAt,
-            Long revenue
+            BigDecimal revenue
     ) {
         ObjectNode node = objectMapper.createObjectNode();
 
