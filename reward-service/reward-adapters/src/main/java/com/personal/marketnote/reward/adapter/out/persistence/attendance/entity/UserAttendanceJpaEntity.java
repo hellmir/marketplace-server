@@ -12,12 +12,14 @@ import com.personal.marketnote.reward.domain.attendance.UserAttendanceSnapshotSt
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "user_attendance")
+@EntityListeners(value = AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
@@ -25,7 +27,6 @@ import java.util.List;
 public class UserAttendanceJpaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "\"Key\"")
     private Long id;
 
     @Column(name = "user_id", nullable = false)
