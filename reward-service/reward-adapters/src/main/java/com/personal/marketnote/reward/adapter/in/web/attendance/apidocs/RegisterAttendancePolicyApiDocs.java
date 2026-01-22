@@ -43,7 +43,7 @@ import java.lang.annotation.*;
                 | continuousPeriod | number | 대상 연속 출석 일수 | Y | 3 |
                 | rewardType | string(enum) | 리워드 유형 | Y | "BOOSTER" |
                 | rewardQuantity | number | 리워드 수량 | Y | 100 |
-                | attendenceDate | string(date) | 대상 출석일자(크리스마스 등 특정 기념일 설정용) | N | "2025-12-25" |
+                | attendenceDate | string(date) | 대상 출석일자(크리스마스 등 특정 기념일 설정용) | N | "2026-01-22" |
                 
                 ---
                 
@@ -63,7 +63,7 @@ import java.lang.annotation.*;
                                   "continuousPeriod": 3,
                                   "rewardType": "POINT",
                                   "rewardQuantity": 100,
-                                  "attendenceDate": "2025-12-25"
+                                  "attendenceDate": "2026-01-22"
                                 }
                                 """)
                 )

@@ -61,7 +61,7 @@ import java.lang.annotation.*;
                                                 "continuousPeriod": 3,
                                                 "rewardType": "POINT",
                                                 "rewardQuantity": 100,
-                                                "attendenceDate": "2025-12-25",
+                                                "attendenceDate": "2026-01-22",
                                                 "status": "ACTIVE"
                                               },
                                               {
