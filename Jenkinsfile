@@ -17,6 +17,7 @@ def buildMarketnoteTaskDefinition(env) {
             essential: true,
             environment: [
                 [name: "SERVICE_NAME",                      value: env.ECS_SERVICE_NAME],
+                [name: "JAVA_TOOL_OPTIONS",                 value: "-Duser.timezone=Asia/Seoul"],
                 [name: "DB_URL",                            value: env.DB_URL],
                 [name: "DB_USERNAME",                       value: env.DB_USERNAME],
                 [name: "DB_PASSWORD",                       value: env.DB_PASSWORD],
