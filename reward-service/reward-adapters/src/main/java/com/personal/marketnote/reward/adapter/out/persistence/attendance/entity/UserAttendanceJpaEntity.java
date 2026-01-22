@@ -1,5 +1,9 @@
 package com.personal.marketnote.reward.adapter.out.persistence.attendance.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.personal.marketnote.common.domain.calendar.Month;
 import com.personal.marketnote.common.domain.calendar.Year;
 import com.personal.marketnote.common.utility.FormatValidator;
@@ -7,7 +11,7 @@ import com.personal.marketnote.reward.domain.attendance.UserAttendance;
 import com.personal.marketnote.reward.domain.attendance.UserAttendanceSnapshotState;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,15 +39,17 @@ public class UserAttendanceJpaEntity {
     @Column(name = "month", length = 15)
     private Month month;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
     @Column(name = "total_reward_quantity", nullable = false)
     private long totalRewardQuantity;
 
     @OneToMany(mappedBy = "userAttendanceId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<UserAttendanceHistoryJpaEntity> histories;
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDateTime createdAt;
 
     public static UserAttendanceJpaEntity from(UserAttendance attendance) {
         if (FormatValidator.hasNoValue(attendance)) {
