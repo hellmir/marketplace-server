@@ -13,7 +13,6 @@ import java.util.Map;
 @Builder(access = AccessLevel.PRIVATE)
 public record GetOrderResult(
         Long id,
-        Long sellerId,
         Long buyerId,
         String orderNumber,
         OrderStatus orderStatus,
@@ -31,7 +30,6 @@ public record GetOrderResult(
     ) {
         return GetOrderResult.builder()
                 .id(order.getId())
-                .sellerId(order.getSellerId())
                 .buyerId(order.getBuyerId())
                 .orderNumber(order.getOrderNumber())
                 .orderStatus(order.getOrderStatus())

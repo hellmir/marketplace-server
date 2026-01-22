@@ -104,7 +104,6 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | id | number | 주문 ID | 1 |
-                | sellerId | number | 판매자 회원 ID | 1 |
                 | buyerId | number | 구매자 회원 ID | 1 |
                 | orderNumber | string | 주문 번호 | "2026011300001" |
                 | orderStatus | string | 주문 상태 | "CANCELLED" |
@@ -122,6 +121,7 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
+                | sellerId | number | 판매자 회원 ID | 1 |
                 | pricePolicyId | number | 가격 정책 ID | 1 |
                 | sharerId | number | 링크 공유 회원 ID | 1 |
                 | quantity | number | 주문 수량 | 2 |
@@ -164,7 +164,6 @@ import java.lang.annotation.*;
                                           "content": {
                                             "orderInfo": {
                                               "id": 15,
-                                              "sellerId": 12,
                                               "buyerId": 17,
                                               "orderNumber": "2026011300001",
                                               "orderStatus": "CANCELLED",
@@ -176,6 +175,7 @@ import java.lang.annotation.*;
                                               "pointAmount": 5000,
                                               "orderPrducts": [
                                                 {
+                                                  "sellerId": 12,
                                                   "pricePolicyId": 180,
                                                   "sharerId": 1,
                                                   "quantity": 10,
@@ -198,6 +198,7 @@ import java.lang.annotation.*;
                                                   "isReviewed": false
                                                 },
                                                 {
+                                                  "sellerId": 11,
                                                   "pricePolicyId": 166,
                                                   "sharerId": null,
                                                   "quantity": 2,

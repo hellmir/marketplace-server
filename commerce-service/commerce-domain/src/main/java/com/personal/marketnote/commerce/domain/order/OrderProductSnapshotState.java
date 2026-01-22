@@ -10,6 +10,7 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrderProductSnapshotState {
     private final Long orderId;
+    private final Long sellerId;
     private final Long pricePolicyId;
     private final Long sharerId;
     private final Integer quantity;

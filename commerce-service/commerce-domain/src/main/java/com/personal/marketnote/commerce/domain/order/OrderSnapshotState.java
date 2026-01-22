@@ -14,7 +14,6 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrderSnapshotState {
     private final Long id;
-    private final Long sellerId;
     private final Long buyerId;
     private final UUID orderKey;
     private final String orderNumber;

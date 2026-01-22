@@ -6,7 +6,6 @@ import java.util.List;
 
 @Builder
 public record RegisterOrderCommand(
-        Long sellerId,
         Long buyerId,
         Long totalAmount,
         Long couponAmount,

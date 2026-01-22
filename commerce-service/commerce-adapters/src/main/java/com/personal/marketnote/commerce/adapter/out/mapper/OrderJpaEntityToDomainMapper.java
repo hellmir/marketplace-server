@@ -24,7 +24,6 @@ public class OrderJpaEntityToDomainMapper {
                     return Order.from(
                             OrderSnapshotState.builder()
                                     .id(entity.getId())
-                                    .sellerId(entity.getSellerId())
                                     .buyerId(entity.getBuyerId())
                                     .orderKey(entity.getOrderKey())
                                     .orderNumber(entity.getOrderNumber())
@@ -55,7 +54,6 @@ public class OrderJpaEntityToDomainMapper {
                     return Order.from(
                             OrderSnapshotState.builder()
                                     .id(entity.getId())
-                                    .sellerId(entity.getSellerId())
                                     .buyerId(entity.getBuyerId())
                                     .orderKey(entity.getOrderKey())
                                     .orderNumber(entity.getOrderNumber())
@@ -80,6 +78,7 @@ public class OrderJpaEntityToDomainMapper {
         return Optional.ofNullable(orderProductJpaEntity)
                 .map(entity -> OrderProductSnapshotState.builder()
                         .orderId(entity.getId().getOrderId())
+                        .sellerId(entity.getSellerId())
                         .pricePolicyId(entity.getId().getPricePolicyId())
                         .sharerId(entity.getSharerId())
                         .quantity(entity.getQuantity())
@@ -95,6 +94,7 @@ public class OrderJpaEntityToDomainMapper {
                 .map(entity -> OrderProduct.from(
                         OrderProductSnapshotState.builder()
                                 .orderId(entity.getId().getOrderId())
+                                .sellerId(entity.getSellerId())
                                 .pricePolicyId(entity.getId().getPricePolicyId())
                                 .sharerId(entity.getSharerId())
                                 .quantity(entity.getQuantity())

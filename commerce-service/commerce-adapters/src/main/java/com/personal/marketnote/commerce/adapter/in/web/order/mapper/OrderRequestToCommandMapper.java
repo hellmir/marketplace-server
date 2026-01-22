@@ -15,6 +15,7 @@ public class OrderRequestToCommandMapper {
     ) {
         List<OrderProductItemCommand> orderProducts = request.getOrderProducts().stream()
                 .map(item -> OrderProductItemCommand.builder()
+                        .sellerId(item.getSellerId())
                         .pricePolicyId(item.getPricePolicyId())
                         .sharerId(item.getSharerId())
                         .quantity(item.getQuantity())
@@ -24,7 +25,6 @@ public class OrderRequestToCommandMapper {
                 .toList();
 
         return RegisterOrderCommand.builder()
-                .sellerId(request.getSellerId())
                 .buyerId(buyerId)
                 .totalAmount(request.getTotalAmount())
                 .couponAmount(request.getCouponAmount())

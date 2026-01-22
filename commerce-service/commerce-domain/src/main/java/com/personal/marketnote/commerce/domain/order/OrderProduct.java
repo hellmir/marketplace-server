@@ -8,6 +8,7 @@ import lombok.*;
 @Getter
 public class OrderProduct {
     private Long orderId;
+    private Long sellerId;
     private Long pricePolicyId;
     private Long sharerId;
     private Integer quantity;
@@ -18,6 +19,7 @@ public class OrderProduct {
 
     public static OrderProduct from(OrderProductCreateState state) {
         return OrderProduct.builder()
+                .sellerId(state.getSellerId())
                 .pricePolicyId(state.getPricePolicyId())
                 .sharerId(state.getSharerId())
                 .quantity(state.getQuantity())
@@ -30,6 +32,7 @@ public class OrderProduct {
     public static OrderProduct from(OrderProductSnapshotState state) {
         return OrderProduct.builder()
                 .orderId(state.getOrderId())
+                .sellerId(state.getSellerId())
                 .pricePolicyId(state.getPricePolicyId())
                 .sharerId(state.getSharerId())
                 .quantity(state.getQuantity())
@@ -48,4 +51,3 @@ public class OrderProduct {
         this.isReviewed = isReviewed;
     }
 }
-

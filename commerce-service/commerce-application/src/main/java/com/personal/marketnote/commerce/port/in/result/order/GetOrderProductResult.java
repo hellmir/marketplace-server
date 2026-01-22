@@ -13,6 +13,7 @@ import java.util.List;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record GetOrderProductResult(
+        Long sellerId,
         Long pricePolicyId,
         Long sharerId,
         Integer quantity,
@@ -32,6 +33,7 @@ public record GetOrderProductResult(
         boolean orderedProductExists = FormatValidator.hasValue(productInfo);
 
         return GetOrderProductResult.builder()
+                .sellerId(orderProduct.getSellerId())
                 .pricePolicyId(orderProduct.getPricePolicyId())
                 .sharerId(orderProduct.getSharerId())
                 .quantity(orderProduct.getQuantity())
