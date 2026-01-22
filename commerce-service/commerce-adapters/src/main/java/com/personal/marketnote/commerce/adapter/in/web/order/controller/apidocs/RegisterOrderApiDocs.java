@@ -35,7 +35,6 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
-                | sellerId | number | 판매자 회원 ID | Y | 1 |
                 | totalAmount | number | 총 주문 금액(원) | Y | 100000 |
                 | couponAmount | number | 쿠폰 할인 금액(원) | N | 5000 |
                 | pointAmount | number | 포인트 사용 금액(원) | N | 5000 |
@@ -47,6 +46,7 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
+                | sellerId | number | 판매자 회원 ID | Y | 1 |
                 | pricePolicyId | number | 가격 정책 ID | Y | 1 |
                 | sharerId | number | 링크 공유 회원 ID | N | 1 |
                 | quantity | number | 주문 수량 | Y | 2 |
@@ -80,12 +80,12 @@ import java.lang.annotation.*;
                         schema = @Schema(implementation = RegisterOrderRequest.class),
                         examples = @ExampleObject("""
                                 {
-                                  "sellerId": 1,
                                   "totalAmount": 120000,
                                   "couponAmount": 5000,
                                   "pointAmount": 5000,
                                   "orderProducts": [
                                     {
+                                      "sellerId": 1,
                                       "pricePolicyId": 23,
                                       "sharerId": 1,
                                       "quantity": 2,
@@ -93,6 +93,7 @@ import java.lang.annotation.*;
                                       "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png"
                                     },
                                     {
+                                      "sellerId": 2,
                                       "pricePolicyId": 14,
                                       "quantity": 10,
                                       "unitAmount": 70000,

@@ -25,6 +25,7 @@ public class RegisterOrderService implements RegisterOrderUseCase {
     public RegisterOrderResult registerOrder(RegisterOrderCommand command) {
         List<OrderProductCreateState> orderProductStates = command.orderProducts().stream()
                 .map(item -> OrderProductCreateState.builder()
+                        .sellerId(item.sellerId())
                         .pricePolicyId(item.pricePolicyId())
                         .sharerId(item.sharerId())
                         .quantity(item.quantity())
@@ -36,7 +37,6 @@ public class RegisterOrderService implements RegisterOrderUseCase {
         Order savedOrder = saveOrderPort.save(
                 Order.from(
                         OrderCreateState.builder()
-                                .sellerId(command.sellerId())
                                 .buyerId(command.buyerId())
                                 .totalAmount(command.totalAmount())
                                 .couponAmount(command.couponAmount())

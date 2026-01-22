@@ -110,7 +110,6 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | id | number | 주문 ID | 1 |
-                | sellerId | number | 판매자 회원 ID | 1 |
                 | buyerId | number | 구매자 회원 ID | 1 |
                 | orderNumber | string | 주문 번호 | "2026011300001" |
                 | orderStatus | string | 주문 상태 | "DELIVERED" |
@@ -126,6 +125,7 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
+                | sellerId | number | 판매자 회원 ID | 1 |
                 | pricePolicyId | number | 가격 정책 ID | 1 |
                 | sharerId | number | 링크 공유 회원 ID | 1 |
                 | quantity | number | 주문 수량 | 2 |
@@ -165,7 +165,6 @@ import java.lang.annotation.*;
                                                 "orders": [
                                                   {
                                                     "id": 15,
-                                                    "sellerId": 12,
                                                     "buyerId": 17,
                                                     "orderNumber": "2026011300001",
                                                     "orderStatus": "PAID",
@@ -175,6 +174,7 @@ import java.lang.annotation.*;
                                                     "pointAmount": 5000,
                                                     "orderProducts": [
                                                       {
+                                                        "sellerId": 12,
                                                         "pricePolicyId": 166,
                                                         "sharerId": 1,
                                                         "quantity": 2,
@@ -192,6 +192,7 @@ import java.lang.annotation.*;
                                                         "isReviewed": false
                                                       },
                                                       {
+                                                        "sellerId": 12,
                                                         "pricePolicyId": 180,
                                                         "sharerId": 1,
                                                         "quantity": 10,
@@ -218,7 +219,6 @@ import java.lang.annotation.*;
                                                 "orders": [
                                                   {
                                                     "id": 3,
-                                                    "sellerId": 1,
                                                     "buyerId": 17,
                                                     "orderNumber": "2026011300002",
                                                     "orderStatus": "CONFIRMED",
@@ -228,6 +228,7 @@ import java.lang.annotation.*;
                                                     "pointAmount": 5000,
                                                     "orderProducts": [
                                                       {
+                                                        "sellerId": 1,
                                                         "pricePolicyId": 144,
                                                         "sharerId": 1,
                                                         "quantity": 10,
@@ -255,6 +256,7 @@ import java.lang.annotation.*;
                                                         "isReviewed": false
                                                       },
                                                       {
+                                                        "sellerId": 1,
                                                         "pricePolicyId": 189,
                                                         "sharerId": null,
                                                         "quantity": 2,
@@ -286,7 +288,6 @@ import java.lang.annotation.*;
                                                 "orders": [
                                                   {
                                                     "id": 2,
-                                                    "sellerId": 1,
                                                     "buyerId": 17,
                                                     "orderNumber": "2026011300003",
                                                     "orderStatus": "DELIVERED",
@@ -296,6 +297,7 @@ import java.lang.annotation.*;
                                                     "pointAmount": 5000,
                                                     "orderProducts": [
                                                       {
+                                                        "sellerId": 1,
                                                         "pricePolicyId": 159,
                                                         "sharerId": null,
                                                         "quantity": 2,
@@ -318,6 +320,7 @@ import java.lang.annotation.*;
                                                         "isReviewed": false
                                                       },
                                                       {
+                                                        "sellerId": 1,
                                                         "pricePolicyId": 185,
                                                         "sharerId": 1,
                                                         "quantity": 10,

@@ -33,9 +33,6 @@ public class OrderJpaEntity extends BaseEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "seller_id", nullable = false)
-    private Long sellerId;
-
     @Column(name = "buyer_id", nullable = false)
     private Long buyerId;
 
@@ -67,7 +64,6 @@ public class OrderJpaEntity extends BaseEntity {
 
     public static OrderJpaEntity from(Order order) {
         return OrderJpaEntity.builder()
-                .sellerId(order.getSellerId())
                 .buyerId(order.getBuyerId())
                 .orderKey(order.getOrderKey())
                 .orderNumber(order.getOrderNumber())

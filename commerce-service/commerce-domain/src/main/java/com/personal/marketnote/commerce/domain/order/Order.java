@@ -14,7 +14,6 @@ import java.util.UUID;
 @Getter
 public class Order {
     private Long id;
-    private Long sellerId;
     private Long buyerId;
     private UUID orderKey;
     private String orderNumber;
@@ -37,7 +36,6 @@ public class Order {
                 : List.of();
 
         return Order.builder()
-                .sellerId(state.getSellerId())
                 .buyerId(state.getBuyerId())
                 .orderKey(RandomCodeGenerator.generateOrderKey())
                 .orderNumber(RandomCodeGenerator.generateOrderNumber())
@@ -58,7 +56,6 @@ public class Order {
 
         return Order.builder()
                 .id(state.getId())
-                .sellerId(state.getSellerId())
                 .buyerId(state.getBuyerId())
                 .orderKey(state.getOrderKey())
                 .orderNumber(state.getOrderNumber())

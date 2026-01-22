@@ -11,7 +11,6 @@ import java.util.List;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrderCreateState {
-    private final Long sellerId;
     private final Long buyerId;
     private final Long sharerId;
     private final Long totalAmount;
