@@ -28,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
@@ -175,7 +176,7 @@ public class OfferwallController {
             @RequestParam(value = "app_nm", required = false) String appName,
             @RequestParam(value = "app_id", required = false) String adid,
             @RequestParam(value = "pay_dt", required = false) String attendedAt,
-            @RequestParam(value = "pay_amt", required = false) Long revenue
+            @RequestParam(value = "pay_amt", required = true) BigDecimal revenue
     ) {
         LocalDateTime parsedAttendedAt = FormatConverter.parseToLocalDateTime(attendedAt);
 
