@@ -119,7 +119,7 @@ public class FulfillmentSwaggerConfig {
                                                             new Example().value("""
                                                                     {
                                                                         "statusCode": 401,
-                                                                        "timestamp": "2025-12-26T19:56:58.7278032",
+                                                                        "timestamp": "2026-01-22T19:56:58.7278032",
                                                                         "errorCode": "AUTH001",
                                                                         "errorName": "AUTHENTICATION_FAILED",
                                                                         "message": "Authentication Failed"
@@ -137,7 +137,7 @@ public class FulfillmentSwaggerConfig {
                                                             new Example().value("""
                                                                     {
                                                                         "statusCode": 403,
-                                                                        "timestamp": "2025-12-26T19:56:58.7278032",
+                                                                        "timestamp": "2026-01-22T19:56:58.7278032",
                                                                         "errorCode": "AUTH002",
                                                                         "errorName": "AUTHORIZATION_FAILED",
                                                                         "message": "Authorization Failed"

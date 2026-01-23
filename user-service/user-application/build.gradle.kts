@@ -29,6 +29,12 @@ configurations {
     }
 }
 
+val mockitoAgent by configurations.creating {
+    isCanBeResolved = true
+    isCanBeConsumed = false
+    isTransitive = false
+}
+
 repositories {
     mavenCentral()
 }
@@ -75,6 +81,7 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test") // Spring Security 테스트 지원
     testRuntimeOnly("org.junit.platform:junit-platform-launcher") // JUnit 테스트 런처
     testImplementation("org.awaitility:awaitility:4.2.0") // 비동기,스케줄링 테스트 지원
+    mockitoAgent("org.mockito:mockito-core")
     // 🔹 추가 라이브러리
     // dotenv
     implementation("io.github.cdimascio:dotenv-java:$dotenvVersion")
@@ -113,6 +120,7 @@ dependencies {
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
     systemProperty("spring.profiles.active", "test")
+    jvmArgs("-javaagent:${mockitoAgent.singleFile.absolutePath}")
 }
 
 // ✅ UTF-8 인코딩 설정 (한글 깨짐 방지)

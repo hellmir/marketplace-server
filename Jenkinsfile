@@ -255,19 +255,19 @@ pipeline {
         }
 
 		stage('Test') {
-			steps {
-				dir("${WORKSPACE}") {
-				}
-				echo 'Tests complete'
-			}
-		}
+            steps {
+                sh "chmod u+x ${WORKSPACE}/gradlew"
+                sh "./gradlew -p ${env.SERVICE_DIRECTORY} clean test"
+                echo "Tests complete"
+            }
+        }
 
-		stage('Build') {
-			steps {
-				sh "chmod u+x ${WORKSPACE}/gradlew"
-				sh "./gradlew -p ${env.SERVICE_DIRECTORY} clean build -x test"
-			}
-		}
+        stage('Build') {
+            steps {
+                sh "./gradlew -p ${env.SERVICE_DIRECTORY} build -x test"
+                echo "Build complete"
+            }
+        }
 
 		stage('Resolve Service Mappings') {
 			steps {
