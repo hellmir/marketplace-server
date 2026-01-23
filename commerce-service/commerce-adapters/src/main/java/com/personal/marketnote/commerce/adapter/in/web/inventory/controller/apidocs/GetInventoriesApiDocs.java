@@ -42,9 +42,24 @@ import java.lang.annotation.*;
                 | statusCode | number | 상태 코드 | 201: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
                 | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "CONFLICT" / "INTERNAL_SERVER_ERROR" |
                 | timestamp | string(datetime) | 응답 일시 | "2026-01-07T12:12:30.013" |
-                | content | object | 응답 본문 | null |
+                | content | object | 응답 본문 | { ... } |
                 | message | string | 처리 결과 | "상품 재고 목록 조회 성공" |
                 
+                ---
+                
+                ### Response > content
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | inventories | array | 상품 재고 목록 | [ ... ] |
+                
+                ---
+                
+                ### Response > content > inventories
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | pricePolicyId | number | 가격 정책 ID | 188 |
+                | stock | number | 재고 | 980 |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         parameters = {
@@ -58,15 +73,30 @@ import java.lang.annotation.*;
         },
         responses = {
                 @ApiResponse(
-                        responseCode = "201",
+                        responseCode = "200",
                         description = "상품 재고 목록 조회 성공",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
-                                          "statusCode": 201,
+                                          "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-07T12:12:30.013",
-                                          "content": { ... },
+                                          "timestamp": "2026-01-24T13:42:54.309143665",
+                                          "content": {
+                                            "inventories": [
+                                              {
+                                                "pricePolicyId": 188,
+                                                "stock": 980
+                                              },
+                                              {
+                                                "pricePolicyId": 184,
+                                                "stock": 0
+                                              },
+                                              {
+                                                "pricePolicyId": 200,
+                                                "stock": 0
+                                              }
+                                            ]
+                                          },
                                           "message": "상품 재고 목록 조회 성공"
                                         }
                                         """)
