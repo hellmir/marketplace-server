@@ -116,6 +116,84 @@ class GetUserUseCaseTest {
     }
 
     @Test
+    @DisplayName("회원 ID를 전송해 전체 회원 정보 결과를 조회한다")
+    void getAllStatusUserInfo_success_getResult() {
+        // given
+        Long id = 4L;
+        String nickname = "tester2";
+        String email = "user2@test.com";
+        String fullName = "김영희";
+        String phoneNumber = "010-2222-3333";
+        String referenceCode = "ref-456";
+        Role role = Role.getBuyer();
+        List<UserOauth2Vendor> userOauth2Vendors = List.of(
+                UserOauth2Vendor.of(AuthVendor.KAKAO, "kakao-oidc-2")
+        );
+        LocalDateTime signedUpAt = LocalDateTime.of(2024, 2, 1, 9, 0);
+        LocalDateTime lastLoggedInAt = LocalDateTime.of(2024, 2, 2, 10, 0);
+        EntityStatus status = EntityStatus.INACTIVE;
+        boolean withdrawalYn = true;
+        Long orderNum = 3L;
+
+        User user = buildUser(
+                id,
+                nickname,
+                email,
+                fullName,
+                phoneNumber,
+                referenceCode,
+                role,
+                userOauth2Vendors,
+                signedUpAt,
+                lastLoggedInAt,
+                status,
+                withdrawalYn,
+                orderNum
+        );
+
+        when(findUserPort.findAllStatusUserById(id)).thenReturn(Optional.of(user));
+
+        // when
+        GetUserInfoResult result = getUserService.getAllStatusUserInfo(id);
+
+        // then
+        assertThat(result.id()).isEqualTo(id);
+        assertThat(result.nickname()).isEqualTo(nickname);
+        assertThat(result.email()).isEqualTo(email);
+        assertThat(result.fullName()).isEqualTo(fullName);
+        assertThat(result.phoneNumber()).isEqualTo(phoneNumber);
+        assertThat(result.referenceCode()).isEqualTo(referenceCode);
+        assertThat(result.roleId()).isEqualTo(role.getId());
+        assertThat(result.signedUpAt()).isEqualTo(signedUpAt);
+        assertThat(result.lastLoggedInAt()).isEqualTo(lastLoggedInAt);
+        assertThat(result.status()).isEqualTo(status.name());
+        assertThat(result.isWithdrawn()).isTrue();
+        assertThat(result.orderNum()).isEqualTo(orderNum);
+        assertThat(result.accountInfo().accounts()).containsExactly(
+                new AccountResult(AuthVendor.KAKAO, "kakao-oidc-2")
+        );
+
+        verify(findUserPort).findAllStatusUserById(id);
+        verifyNoMoreInteractions(findUserPort);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 회원 ID로 전체 회원을 조회하면 예외를 던진다")
+    void getAllStatusUserInfo_notFound_throws() {
+        // given
+        Long id = 100L;
+        when(findUserPort.findAllStatusUserById(id)).thenReturn(Optional.empty());
+
+        // expect
+        assertThatThrownBy(() -> getUserService.getAllStatusUserInfo(id))
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessage(String.format(USER_ID_NOT_FOUND_EXCEPTION_MESSAGE, id));
+
+        verify(findUserPort).findAllStatusUserById(id);
+        verifyNoMoreInteractions(findUserPort);
+    }
+
+    @Test
     @DisplayName("회원 ID를 전송해 회원 도메인을 조회한다")
     void getUser_success_returnsUser() {
         // given
@@ -134,7 +212,111 @@ class GetUserUseCaseTest {
     }
 
     @Test
-    @DisplayName("회원 ID로 조회 시 존재하지 않으면 예외를 던진다")
+    @DisplayName("회원 ID를 전송해 전체 회원 도메인을 조회한다")
+    void getAllStatusUser_byId_success_returnsUser() {
+        // given
+        Long id = 13L;
+        User user = buildDefaultUser(id, EntityStatus.INACTIVE, true, List.of());
+
+        when(findUserPort.findAllStatusUserById(id)).thenReturn(Optional.of(user));
+
+        // when
+        User result = getUserService.getAllStatusUser(id);
+
+        // then
+        assertThat(result).isSameAs(user);
+        verify(findUserPort).findAllStatusUserById(id);
+        verifyNoMoreInteractions(findUserPort);
+    }
+
+    @Test
+    @DisplayName("회원 ID로 전체 회원 조회 시 회원이 존재하지 않으면 예외를 던진다")
+    void getAllStatusUser_byId_notFound_throws() {
+        // given
+        Long id = 101L;
+        when(findUserPort.findAllStatusUserById(id)).thenReturn(Optional.empty());
+
+        // expect
+        assertThatThrownBy(() -> getUserService.getAllStatusUser(id))
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessage(String.format(USER_ID_NOT_FOUND_EXCEPTION_MESSAGE, id));
+
+        verify(findUserPort).findAllStatusUserById(id);
+        verifyNoMoreInteractions(findUserPort);
+    }
+
+    @Test
+    @DisplayName("이메일을 전송해 전체 회원 도메인을 조회한다")
+    void getAllStatusUser_byEmail_success_returnsUser() {
+        // given
+        String email = "allstatus@test.com";
+        User user = buildDefaultUser(14L, EntityStatus.UNEXPOSED, false, List.of());
+
+        when(findUserPort.findAllStatusUserByEmail(email)).thenReturn(Optional.of(user));
+
+        // when
+        User result = getUserService.getAllStatusUser(email);
+
+        // then
+        assertThat(result).isSameAs(user);
+        verify(findUserPort).findAllStatusUserByEmail(email);
+        verifyNoMoreInteractions(findUserPort);
+    }
+
+    @Test
+    @DisplayName("이메일로 전체 회원 조회 시 회원이 존재하지 않으면 예외를 던진다")
+    void getAllStatusUser_byEmail_notFound_throws() {
+        // given
+        String email = "missing@test.com";
+        when(findUserPort.findAllStatusUserByEmail(email)).thenReturn(Optional.empty());
+
+        // expect
+        assertThatThrownBy(() -> getUserService.getAllStatusUser(email))
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessage(String.format(USER_EMAIL_NOT_FOUND_EXCEPTION_MESSAGE, email));
+
+        verify(findUserPort).findAllStatusUserByEmail(email);
+        verifyNoMoreInteractions(findUserPort);
+    }
+
+    @Test
+    @DisplayName("Auth Vendor와 OIDC ID를 전송해 전체 회원 도메인을 조회한다")
+    void getAllStatusUser_byAuthVendorAndOidcId_success_returnsUser() {
+        // given
+        AuthVendor authVendor = AuthVendor.APPLE;
+        String oidcId = "oidc-apple";
+        User user = buildDefaultUser(15L, EntityStatus.ACTIVE, false, List.of());
+
+        when(findUserPort.findByAuthVendorAndOidcId(authVendor, oidcId)).thenReturn(Optional.of(user));
+
+        // when
+        User result = getUserService.getAllStatusUser(authVendor, oidcId);
+
+        // then
+        assertThat(result).isSameAs(user);
+        verify(findUserPort).findByAuthVendorAndOidcId(authVendor, oidcId);
+        verifyNoMoreInteractions(findUserPort);
+    }
+
+    @Test
+    @DisplayName("Auth Vendor와 OIDC ID로 전체 회원 조회 시 회원이 존재하지 않으면 예외를 던진다")
+    void getAllStatusUser_byAuthVendorAndOidcId_notFound_throws() {
+        // given
+        AuthVendor authVendor = AuthVendor.KAKAO;
+        String oidcId = "missing-oidc-all";
+        when(findUserPort.findByAuthVendorAndOidcId(authVendor, oidcId)).thenReturn(Optional.empty());
+
+        // expect
+        assertThatThrownBy(() -> getUserService.getAllStatusUser(authVendor, oidcId))
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessage(String.format(USER_OIDC_ID_NOT_FOUND_EXCEPTION_MESSAGE, oidcId));
+
+        verify(findUserPort).findByAuthVendorAndOidcId(authVendor, oidcId);
+        verifyNoMoreInteractions(findUserPort);
+    }
+
+    @Test
+    @DisplayName("회원 ID로 조회 시 회원이 존재하지 않으면 예외를 던진다")
     void getUser_notFound_throws() {
         // given
         Long id = 404L;
@@ -169,7 +351,7 @@ class GetUserUseCaseTest {
     }
 
     @Test
-    @DisplayName("인증 제공자와 OIDC ID로 조회 시 존재하지 않으면 예외를 던진다")
+    @DisplayName("인증 제공자와 OIDC ID로 조회 시 회원이 존재하지 않으면 예외를 던진다")
     void getUser_byAuthVendorAndOidcId_notFound_throws() {
         // given
         AuthVendor authVendor = AuthVendor.GOOGLE;
@@ -204,7 +386,7 @@ class GetUserUseCaseTest {
     }
 
     @Test
-    @DisplayName("추천 코드로 조회 시 존재하지 않으면 예외를 던진다")
+    @DisplayName("추천 코드로 조회 시 회원이 존재하지 않으면 예외를 던진다")
     void getUser_byReferenceCode_notFound_throws() {
         // given
         String referenceCode = "missing-ref";
