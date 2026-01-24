@@ -436,6 +436,38 @@ class GetUserUseCaseTest {
     }
 
     @Test
+    @DisplayName("전송한 추천인 코드를 가진 회원이 존재하면 true를 반환한다")
+    void existsUser_whenReferenceCodeExists_returnsTrue() {
+        // given
+        String referenceCode = "ref-exists";
+        when(findUserPort.existsByReferenceCode(referenceCode)).thenReturn(true);
+
+        // when
+        boolean result = getUserService.existsUser(referenceCode);
+
+        // then
+        assertThat(result).isTrue();
+        verify(findUserPort).existsByReferenceCode(referenceCode);
+        verifyNoMoreInteractions(findUserPort);
+    }
+
+    @Test
+    @DisplayName("전송한 추천인 코드를 가진 회원이 존재하지 않으면 false를 반환한다")
+    void existsUser_whenReferenceCodeMissing_returnsFalse() {
+        // given
+        String referenceCode = "ref-missing";
+        when(findUserPort.existsByReferenceCode(referenceCode)).thenReturn(false);
+
+        // when
+        boolean result = getUserService.existsUser(referenceCode);
+
+        // then
+        assertThat(result).isFalse();
+        verify(findUserPort).existsByReferenceCode(referenceCode);
+        verifyNoMoreInteractions(findUserPort);
+    }
+
+    @Test
     @DisplayName("비활성 회원이면 상태와 탈퇴 여부를 반환한다")
     void getUserInfo_inactiveUser_mapsStatusAndWithdrawn() {
         // given
