@@ -29,18 +29,13 @@ public class GetUserService implements GetUserUseCase {
     private final FindUserPort findUserPort;
 
     @Override
-    public GetUserInfoResult getUserInfo(Long id) {
-        return GetUserInfoResult.from(getUser(id));
-    }
-
-    @Override
-    public GetUserInfoResult getAllStatusUserInfo(Long id) {
-        return GetUserInfoResult.from(getAllStatusUser(id));
-    }
-
-    @Override
     public boolean existsUser(String referredUserCode) {
         return findUserPort.existsByReferenceCode(referredUserCode);
+    }
+
+    @Override
+    public GetUserInfoResult getUserInfo(Long id) {
+        return GetUserInfoResult.from(getUser(id));
     }
 
     @Override
@@ -52,13 +47,22 @@ public class GetUserService implements GetUserUseCase {
     @Override
     public User getUser(AuthVendor authVendor, String oidcId) {
         return findUserPort.findByAuthVendorAndOidcId(authVendor, oidcId)
-                .orElseThrow(() -> new UserNotFoundException(String.format(USER_OIDC_ID_NOT_FOUND_EXCEPTION_MESSAGE, oidcId)));
+                .orElseThrow(() -> new UserNotFoundException(
+                        String.format(USER_OIDC_ID_NOT_FOUND_EXCEPTION_MESSAGE, oidcId)
+                ));
     }
 
     @Override
     public User getUser(String referredUserCode) {
         return findUserPort.findByReferenceCode(referredUserCode)
-                .orElseThrow(() -> new UserNotFoundException(String.format(USER_REFERENCE_CODE_NOT_FOUND_EXCEPTION_MESSAGE, referredUserCode)));
+                .orElseThrow(() -> new UserNotFoundException(
+                        String.format(USER_REFERENCE_CODE_NOT_FOUND_EXCEPTION_MESSAGE, referredUserCode)
+                ));
+    }
+
+    @Override
+    public GetUserInfoResult getAllStatusUserInfo(Long id) {
+        return GetUserInfoResult.from(getAllStatusUser(id));
     }
 
     @Override
@@ -78,9 +82,9 @@ public class GetUserService implements GetUserUseCase {
     @Override
     public User getAllStatusUser(AuthVendor authVendor, String oidcId) {
         return findUserPort.findByAuthVendorAndOidcId(authVendor, oidcId)
-                .orElseThrow(
-                        () -> new UserNotFoundException(String.format(USER_OIDC_ID_NOT_FOUND_EXCEPTION_MESSAGE, oidcId))
-                );
+                .orElseThrow(() -> new UserNotFoundException(
+                        String.format(USER_OIDC_ID_NOT_FOUND_EXCEPTION_MESSAGE, oidcId)
+                ));
     }
 
     @Override
