@@ -45,6 +45,13 @@ server:
     whitelabel:
       enabled: false
 
+vendor:
+  fassto:
+    auth:
+      base-url: ${FASSTO_BASE_URL:abc}
+      api-cd: ${FASSTO_API_CD:change-me}
+      api-key: ${FASSTO_API_KEY:change-me}
+
 logging:
   config: classpath:logback-spring.xml
   level:
