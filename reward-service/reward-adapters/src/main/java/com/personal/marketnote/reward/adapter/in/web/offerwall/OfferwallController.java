@@ -271,7 +271,7 @@ public class OfferwallController {
     public ResponseEntity<BaseResponse<UpdateUserPointResponse>> handleAdiscopeCallback(
             @RequestParam("transactionId") String rewardKey,
             @RequestParam("userId") String userKey,
-            @RequestParam("userDeviceType") UserDeviceType userDeviceType,
+            @RequestParam("user_device_type") UserDeviceType userDeviceType,
             @RequestParam(value = "unitId", required = false) String campaignKey,
             @RequestParam(value = "shareAdType", required = false) String campaignType,
             @RequestParam(value = "adname", required = false) String campaignName,
