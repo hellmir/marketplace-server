@@ -402,6 +402,40 @@ class GetUserUseCaseTest {
     }
 
     @Test
+    @DisplayName("회원 ID를 전송해 회원 키를 조회한다")
+    void getUserKey_success_returnsUserKey() {
+        // given
+        Long id = 20L;
+        UUID userKey = UUID.fromString("00000000-0000-0000-0000-000000000020");
+
+        when(findUserPort.findUserKeyById(id)).thenReturn(Optional.of(userKey));
+
+        // when
+        UUID result = getUserService.getUserKey(id);
+
+        // then
+        assertThat(result).isEqualTo(userKey);
+        verify(findUserPort).findUserKeyById(id);
+        verifyNoMoreInteractions(findUserPort);
+    }
+
+    @Test
+    @DisplayName("회원 ID로 회원 키 조회 시 회원이 존재하지 않으면 예외를 던진다")
+    void getUserKey_notFound_throws() {
+        // given
+        Long id = 21L;
+        when(findUserPort.findUserKeyById(id)).thenReturn(Optional.empty());
+
+        // expect
+        assertThatThrownBy(() -> getUserService.getUserKey(id))
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessage(String.format(USER_ID_NOT_FOUND_EXCEPTION_MESSAGE, id));
+
+        verify(findUserPort).findUserKeyById(id);
+        verifyNoMoreInteractions(findUserPort);
+    }
+
+    @Test
     @DisplayName("비활성 회원이면 상태와 탈퇴 여부를 반환한다")
     void getUserInfo_inactiveUser_mapsStatusAndWithdrawn() {
         // given
