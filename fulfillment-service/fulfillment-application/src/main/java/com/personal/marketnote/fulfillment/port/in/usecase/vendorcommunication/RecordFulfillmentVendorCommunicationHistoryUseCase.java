@@ -1,0 +1,8 @@
+package com.personal.marketnote.fulfillment.port.in.usecase.vendorcommunication;
+
+import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationHistory;
+import com.personal.marketnote.fulfillment.port.in.command.vendorcommunication.FulfillmentVendorCommunicationHistoryCommand;
+
+public interface RecordFulfillmentVendorCommunicationHistoryUseCase {
+    FulfillmentVendorCommunicationHistory record(FulfillmentVendorCommunicationHistoryCommand command);
+}

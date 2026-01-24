@@ -34,7 +34,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.DEFAULT_PAGE_NU
  * 회원 관리자 컨트롤러
  *
  * @Author 성효빈
- * @Date 2026-01-23
+ * @Date 2026-01-24
  * @Description 회원 관련 관리자 API를 제공합니다.
  */
 @RestController
@@ -64,7 +64,7 @@ public class UserAdminController {
      * @param searchKeyword 검색 키워드
      * @return 회원 목록 조회 응답 {@link GetUsersResponse}
      * @Author 성효빈
-     * @Date 2026-01-23
+     * @Date 2026-01-24
      * @Description 회원 정보를 조회합니다. 관리자만 가능합니다.
      */
     @GetMapping
@@ -106,7 +106,7 @@ public class UserAdminController {
      * @param id 회원 ID
      * @return 회원 정보 조회 응답 {@link GetUserInfoResponse}
      * @Author 성효빈
-     * @Date 2026-01-23
+     * @Date 2026-01-24
      * @Description 회원 정보를 조회합니다. 관리자만 가능합니다.
      */
     @GetMapping("/{id}")
@@ -134,7 +134,7 @@ public class UserAdminController {
      * @param updateUserInfoRequest 회원 정보 수정 요청
      * @return 회원 정보 수정 응답 {@link Void}
      * @Author 성효빈
-     * @Date 2026-01-23
+     * @Date 2026-01-24
      * @Description 계정 비활성화를 포함한 회원 정보를 수정합니다. 관리자만 가능합니다.
      */
     @PatchMapping("/{id}")
@@ -169,7 +169,7 @@ public class UserAdminController {
      * @param sortProperty  정렬 속성
      * @return 로그인 내역 목록 조회 응답 {@link GetLoginHistoriesResponse}
      * @Author 시스템
-     * @Date 2025-12-30
+     * @Date 2026-01-25
      * @Description 특정 회원의 로그인 내역을 조회합니다. 관리자만 가능합니다.
      */
     @GetMapping("/{userId}/login-histories")

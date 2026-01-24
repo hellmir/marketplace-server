@@ -113,7 +113,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 401,
                                           "code": "UNAUTHORIZED",
-                                          "timestamp": "2026-01-23T10:19:52.558748",
+                                          "timestamp": "2026-01-24T10:19:52.558748",
                                           "content": null,
                                           "message": "Invalid token"
                                         }
@@ -128,7 +128,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 403,
                                           "code": "FORBIDDEN",
-                                          "timestamp": "2026-01-23T10:19:52.558748",
+                                          "timestamp": "2026-01-24T10:19:52.558748",
                                           "content": null,
                                           "message": "Access Denied"
                                         }

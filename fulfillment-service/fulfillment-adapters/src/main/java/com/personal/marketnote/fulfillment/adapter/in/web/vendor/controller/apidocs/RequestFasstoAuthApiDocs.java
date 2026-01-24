@@ -14,7 +14,7 @@ import java.lang.annotation.*;
 @Operation(
         summary = "(관리자) 파스토 엑세스 토큰 발급 요청",
         description = """
-                작성일자: 2026-01-23
+                작성일자: 2026-01-24
                 
                 작성자: 성효빈
                 
@@ -37,7 +37,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 500: 그 외 |
                 | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "INTERNAL_SERVER_ERROR" |
-                | timestamp | string(datetime) | 응답 일시 | "2026-01-23T12:12:30.013" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-01-24T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
                 | message | string | 처리 결과 | "파스토 엑세스 토큰 발급 성공" |
                 
@@ -56,7 +56,7 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | accessToken | string | 파스토 액세스 토큰 | "ede4785770ab4949816247d1f0beff55" |
-                | expiresAt | string(datetime) | 만료 일시 | "2025-12-30T14:40:32" |
+                | expiresAt | string(datetime) | 만료 일시 | "2026-01-25T14:40:32" |
                 
                 """,
         security = {@SecurityRequirement(name = "bearer")},
@@ -69,11 +69,11 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-23T14:40:32.868332",
+                                          "timestamp": "2026-01-24T14:40:32.868332",
                                           "content": {
                                             "tokenInfo": {
                                               "accessToken": "ede4785770ab4949816247d1f0beff55",
-                                              "expiresAt": "2025-12-30T14:40:32"
+                                              "expiresAt": "2026-01-25T14:40:32"
                                             }
                                           },
                                           "message": "파스토 엑세스 토큰 발급 성공"
@@ -89,7 +89,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 401,
                                           "code": "UNAUTHORIZED",
-                                          "timestamp": "2026-01-23T12:12:30.013",
+                                          "timestamp": "2026-01-24T12:12:30.013",
                                           "content": null,
                                           "message": "Invalid token"
                                         }
@@ -104,7 +104,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 403,
                                           "code": "FORBIDDEN",
-                                          "timestamp": "2026-01-23T12:12:30.013",
+                                          "timestamp": "2026-01-24T12:12:30.013",
                                           "content": null,
                                           "message": "Access Denied"
                                         }

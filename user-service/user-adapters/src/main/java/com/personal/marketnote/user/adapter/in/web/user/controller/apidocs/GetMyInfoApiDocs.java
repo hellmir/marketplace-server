@@ -65,8 +65,8 @@ import java.lang.annotation.*;
                 | phoneNumber | string | 전화번호 | "010-1234-5678" |
                 | referenceCode | string | 참조 코드 | "1234567890" |
                 | roleId | string | 역할 ID | "ROLE_BUYER" |
-                | signedUpAt | string(datetime) | 가입 일시 | "2026-01-23T10:19:52.558748" |
-                | lastLoggedInAt | string(datetime) | 마지막 로그인 일시 | "2026-01-23T10:19:52.558748" |
+                | signedUpAt | string(datetime) | 가입 일시 | "2026-01-24T10:19:52.558748" |
+                | lastLoggedInAt | string(datetime) | 마지막 로그인 일시 | "2026-01-24T10:19:52.558748" |
                 | status | string | 상태 | "ACTIVE" / "INACTIVE" / "DELETED" |
                 
                 ---
@@ -96,7 +96,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-23T14:48:49.550308",
+                                          "timestamp": "2026-01-24T14:48:49.550308",
                                           "content": {
                                             "userInfo": {
                                               "id": 83,

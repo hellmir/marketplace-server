@@ -5,7 +5,7 @@ import com.personal.marketnote.fulfillment.domain.vendor.FasstoAccessToken;
 public interface RequestFasstoAuthUseCase {
     /**
      * @return Fassto access token {@link FasstoAccessToken}
-     * @Date 2026-01-23
+     * @Date 2026-01-24
      * @Author 성효빈
      * @Description Request a Fassto access token.
      */
