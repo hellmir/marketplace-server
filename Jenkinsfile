@@ -58,6 +58,9 @@ def buildMarketnoteTaskDefinition(env) {
                 [name: "TNK_IOS_HASH_KEY",                  value: env.TNK_IOS_HASH_KEY],
                 [name: "ADISCOPE_ANDROID_HASH_KEY",         value: env.ADISCOPE_ANDROID_HASH_KEY],
                 [name: "ADISCOPE_IOS_HASH_KEY",             value: env.ADISCOPE_IOS_HASH_KEY],
+                [name: "FASSTO_BASE_URL",                   value: env.FASSTO_BASE_URL],
+                [name: "FASSTO_API_CD",                     value: env.FASSTO_API_CD],
+                [name: "FASSTO_API_KEY",                    value: env.FASSTO_API_KEY],
             ],
             logConfiguration: [
                 logDriver: "awslogs",
@@ -621,6 +624,9 @@ pipeline {
                         string(credentialsId: 'MARKETNOTE_QA_TNK_IOS_HASH_KEY',                   variable: 'TNK_IOS_HASH_KEY'),
                         string(credentialsId: 'MARKETNOTE_QA_ADISCOPE_ANDROID_HASH_KEY',          variable: 'ADISCOPE_ANDROID_HASH_KEY'),
                         string(credentialsId: 'MARKETNOTE_QA_ADISCOPE_IOS_HASH_KEY',              variable: 'ADISCOPE_IOS_HASH_KEY'),
+                        string(credentialsId: 'MARKETNOTE_QA_FASSTO_BASE_URL',                    variable: 'FASSTO_BASE_URL'),
+                        string(credentialsId: 'MARKETNOTE_QA_FASSTO_API_CD',                      variable: 'FASSTO_API_CD'),
+                        string(credentialsId: 'MARKETNOTE_QA_FASSTO_API_KEY',                     variable: 'FASSTO_API_KEY'),
                     ]) {
                         sh '''
                           LG="$CLOUDWATCH_LOG_GROUP"
