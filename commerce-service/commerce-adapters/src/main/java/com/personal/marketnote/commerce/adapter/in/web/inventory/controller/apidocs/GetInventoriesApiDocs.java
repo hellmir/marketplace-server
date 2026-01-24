@@ -80,7 +80,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-23T13:42:54.309143665",
+                                          "timestamp": "2026-01-24T13:42:54.309143665",
                                           "content": {
                                             "inventories": [
                                               {

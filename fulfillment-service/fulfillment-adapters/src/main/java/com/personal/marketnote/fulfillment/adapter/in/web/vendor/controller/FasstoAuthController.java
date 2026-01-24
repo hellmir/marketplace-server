@@ -28,7 +28,7 @@ public class FasstoAuthController {
      * (관리자) 파스토 엑세스 토큰 요청
      *
      * @Author 성효빈
-     * @Date 2026-01-23
+     * @Date 2026-01-24
      * @Description 파스토 엑세스 토큰 발급을 요청합니다.
      */
     @PostMapping

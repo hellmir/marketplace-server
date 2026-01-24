@@ -17,7 +17,7 @@ import java.lang.annotation.*;
 @Operation(
         summary = "(관리자) 회원 로그인 내역 조회",
         description = """
-                작성일자: 2025-12-30
+                작성일자: 2026-01-25
                 
                 작성자: 성효빈
                 
@@ -49,7 +49,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 200 |
                 | code | string | 응답 코드 | "SUC01" |
-                | timestamp | string(datetime) | 응답 일시 | "2025-12-30T12:12:30.013" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-01-25T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
                 | message | string | 처리 결과 | "회원 로그인 내역 조회 성공" |
                 
@@ -122,7 +122,7 @@ import java.lang.annotation.*;
                                 {
                                   "statusCode": 200,
                                   "code": "SUC01",
-                                  "timestamp": "2025-12-30T13:32:27.721435519",
+                                  "timestamp": "2026-01-25T13:32:27.721435519",
                                   "content": {
                                     "pageSize": 10,
                                     "pageNumber": 1,
@@ -135,49 +135,49 @@ import java.lang.annotation.*;
                                         "userId": 13,
                                         "authVendor": "KAKAO",
                                         "ipAddress": "221.147.24.144",
-                                        "loggedInAt": "2025-12-30T13:31:08.926108"
+                                        "loggedInAt": "2026-01-25T13:31:08.926108"
                                       },
                                       {
                                         "id": 12,
                                         "userId": 13,
                                         "authVendor": "KAKAO",
                                         "ipAddress": "221.147.24.144",
-                                        "loggedInAt": "2025-12-30T13:30:04.124981"
+                                        "loggedInAt": "2026-01-25T13:30:04.124981"
                                       },
                                       {
                                         "id": 11,
                                         "userId": 13,
                                         "authVendor": "KAKAO",
                                         "ipAddress": "221.147.24.144",
-                                        "loggedInAt": "2025-12-30T13:29:48.890364"
+                                        "loggedInAt": "2026-01-25T13:29:48.890364"
                                       },
                                       {
                                         "id": 10,
                                         "userId": 13,
                                         "authVendor": "KAKAO",
                                         "ipAddress": "221.147.24.144",
-                                        "loggedInAt": "2025-12-30T22:28:21.960414"
+                                        "loggedInAt": "2026-01-25T22:28:21.960414"
                                       },
                                       {
                                         "id": 9,
                                         "userId": 13,
                                         "authVendor": "NATIVE",
                                         "ipAddress": "221.147.24.144",
-                                        "loggedInAt": "2025-12-30T13:16:49.951182"
+                                        "loggedInAt": "2026-01-25T13:16:49.951182"
                                       },
                                       {
                                         "id": 8,
                                         "userId": 13,
                                         "authVendor": "GOOGLE",
                                         "ipAddress": "221.147.24.144",
-                                        "loggedInAt": "2025-12-30T13:16:39.257946"
+                                        "loggedInAt": "2026-01-25T13:16:39.257946"
                                       },
                                       {
                                         "id": 7,
                                         "userId": 13,
                                         "authVendor": "GOOGLE",
                                         "ipAddress": "221.147.24.144",
-                                        "loggedInAt": "2025-12-30T13:16:16.724356"
+                                        "loggedInAt": "2026-01-25T13:16:16.724356"
                                       }
                                     ]
                                   },
