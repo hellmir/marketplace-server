@@ -3,19 +3,21 @@ package com.personal.marketnote.user.service.user;
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
 import com.personal.marketnote.common.exception.UserNotFoundException;
 import com.personal.marketnote.user.domain.authentication.Role;
-import com.personal.marketnote.user.domain.user.User;
-import com.personal.marketnote.user.domain.user.UserOauth2Vendor;
-import com.personal.marketnote.user.domain.user.UserSnapshotState;
+import com.personal.marketnote.user.domain.user.*;
 import com.personal.marketnote.user.port.in.result.AccountResult;
 import com.personal.marketnote.user.port.in.result.GetUserInfoResult;
+import com.personal.marketnote.user.port.in.result.GetUserResult;
 import com.personal.marketnote.user.port.out.user.FindUserPort;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -464,6 +466,170 @@ class GetUserUseCaseTest {
         // then
         assertThat(result).isFalse();
         verify(findUserPort).existsByReferenceCode(referenceCode);
+        verifyNoMoreInteractions(findUserPort);
+    }
+
+    @Test
+    @DisplayName("회원 목록 조회 시 페이징과 검색 조건을 전달하고 결과를 매핑한다")
+    void getAllStatusUsers_success_mapsResultsAndUsesPageable() {
+        // given
+        int pageSize = 2;
+        int pageNumber = 1;
+        Sort.Direction sortDirection = Sort.Direction.DESC;
+        UserSortProperty sortProperty = UserSortProperty.PHONE_NUMBER;
+        UserSearchTarget searchTarget = UserSearchTarget.EMAIL;
+        String searchKeyword = "test";
+
+        User user1 = buildUser(
+                30L,
+                "nick1",
+                "user1@test.com",
+                "홍길동",
+                "010-1000-0001",
+                "ref-1",
+                Role.getBuyer(),
+                List.of(UserOauth2Vendor.of(AuthVendor.KAKAO, "kakao-1")),
+                LocalDateTime.of(2024, 3, 1, 9, 0),
+                LocalDateTime.of(2024, 3, 2, 10, 0),
+                EntityStatus.ACTIVE,
+                false,
+                1L
+        );
+        User user2 = buildUser(
+                31L,
+                "nick2",
+                "user2@test.com",
+                "김철수",
+                "010-1000-0002",
+                "ref-2",
+                Role.getBuyer(),
+                List.of(UserOauth2Vendor.of(AuthVendor.GOOGLE, "google-2")),
+                LocalDateTime.of(2024, 3, 3, 9, 0),
+                LocalDateTime.of(2024, 3, 4, 10, 0),
+                EntityStatus.INACTIVE,
+                true,
+                2L
+        );
+
+        Page<User> users = new PageImpl<>(
+                List.of(user1, user2),
+                PageRequest.of(pageNumber, pageSize, Sort.by(sortDirection, sortProperty.getCamelCaseValue())),
+                4
+        );
+
+        when(findUserPort.findAllStatusUsersByPage(
+                ArgumentMatchers.any(Pageable.class),
+                ArgumentMatchers.eq(searchTarget),
+                ArgumentMatchers.eq(searchKeyword)
+        )).thenReturn(users);
+
+        // when
+        Page<GetUserResult> result = getUserService.getAllStatusUsers(
+                pageSize,
+                pageNumber,
+                sortDirection,
+                sortProperty,
+                searchTarget,
+                searchKeyword
+        );
+
+        // then
+        assertThat(result.getTotalElements()).isEqualTo(4);
+        assertThat(result.getContent()).hasSize(2);
+
+        GetUserResult first = result.getContent().get(0);
+        assertThat(first.id()).isEqualTo(30L);
+        assertThat(first.nickname()).isEqualTo("nick1");
+        assertThat(first.email()).isEqualTo("user1@test.com");
+        assertThat(first.fullName()).isEqualTo("홍길동");
+        assertThat(first.phoneNumber()).isEqualTo("010-1000-0001");
+        assertThat(first.referenceCode()).isEqualTo("ref-1");
+        assertThat(first.roleId()).isEqualTo(Role.getBuyer().getId());
+        assertThat(first.signedUpAt()).isEqualTo(LocalDateTime.of(2024, 3, 1, 9, 0));
+        assertThat(first.lastLoggedInAt()).isEqualTo(LocalDateTime.of(2024, 3, 2, 10, 0));
+        assertThat(first.status()).isEqualTo(EntityStatus.ACTIVE.name());
+        assertThat(first.isWithdrawn()).isFalse();
+        assertThat(first.orderNum()).isEqualTo(1L);
+        assertThat(first.accountInfo().accounts()).containsExactly(
+                new AccountResult(AuthVendor.KAKAO, "kakao-1")
+        );
+
+        GetUserResult second = result.getContent().get(1);
+        assertThat(second.id()).isEqualTo(31L);
+        assertThat(second.nickname()).isEqualTo("nick2");
+        assertThat(second.email()).isEqualTo("user2@test.com");
+        assertThat(second.fullName()).isEqualTo("김철수");
+        assertThat(second.phoneNumber()).isEqualTo("010-1000-0002");
+        assertThat(second.referenceCode()).isEqualTo("ref-2");
+        assertThat(second.roleId()).isEqualTo(Role.getBuyer().getId());
+        assertThat(second.signedUpAt()).isEqualTo(LocalDateTime.of(2024, 3, 3, 9, 0));
+        assertThat(second.lastLoggedInAt()).isEqualTo(LocalDateTime.of(2024, 3, 4, 10, 0));
+        assertThat(second.status()).isEqualTo(EntityStatus.INACTIVE.name());
+        assertThat(second.isWithdrawn()).isTrue();
+        assertThat(second.orderNum()).isEqualTo(2L);
+        assertThat(second.accountInfo().accounts()).containsExactly(
+                new AccountResult(AuthVendor.GOOGLE, "google-2")
+        );
+
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(findUserPort).findAllStatusUsersByPage(
+                pageableCaptor.capture(),
+                ArgumentMatchers.eq(searchTarget),
+                ArgumentMatchers.eq(searchKeyword)
+        );
+
+        Pageable pageable = pageableCaptor.getValue();
+        assertThat(pageable.getPageNumber()).isEqualTo(pageNumber);
+        assertThat(pageable.getPageSize()).isEqualTo(pageSize);
+        Sort.Order order = pageable.getSort().getOrderFor(sortProperty.getCamelCaseValue());
+        assertThat(order).isNotNull();
+        assertThat(order.getDirection()).isEqualTo(sortDirection);
+
+        verifyNoMoreInteractions(findUserPort);
+    }
+
+    @Test
+    @DisplayName("회원 목록이 비어 있으면 빈 페이지를 반환한다")
+    void getAllStatusUsers_empty_returnsEmptyPage() {
+        // given
+        int pageSize = 10;
+        int pageNumber = 0;
+        Sort.Direction sortDirection = Sort.Direction.ASC;
+        UserSortProperty sortProperty = UserSortProperty.ID;
+        UserSearchTarget searchTarget = UserSearchTarget.NICKNAME;
+        String searchKeyword = "none";
+
+        Page<User> users = new PageImpl<>(
+                List.of(),
+                PageRequest.of(pageNumber, pageSize, Sort.by(sortDirection, sortProperty.getCamelCaseValue())),
+                0
+        );
+
+        when(findUserPort.findAllStatusUsersByPage(
+                ArgumentMatchers.any(Pageable.class),
+                ArgumentMatchers.eq(searchTarget),
+                ArgumentMatchers.eq(searchKeyword)
+        )).thenReturn(users);
+
+        // when
+        Page<GetUserResult> result = getUserService.getAllStatusUsers(
+                pageSize,
+                pageNumber,
+                sortDirection,
+                sortProperty,
+                searchTarget,
+                searchKeyword
+        );
+
+        // then
+        assertThat(result.getTotalElements()).isZero();
+        assertThat(result.getContent()).isEmpty();
+
+        verify(findUserPort).findAllStatusUsersByPage(
+                ArgumentMatchers.any(Pageable.class),
+                ArgumentMatchers.eq(searchTarget),
+                ArgumentMatchers.eq(searchKeyword)
+        );
         verifyNoMoreInteractions(findUserPort);
     }
 
