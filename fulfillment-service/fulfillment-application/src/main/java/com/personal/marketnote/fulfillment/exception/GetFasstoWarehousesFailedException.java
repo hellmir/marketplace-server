@@ -11,4 +11,15 @@ public class GetFasstoWarehousesFailedException extends ExternalOperationFailedE
     public GetFasstoWarehousesFailedException(IOException cause) {
         super(GET_FASSTO_WAREHOUSE_LIST_FAILED_EXCEPTION_MESSAGE, cause);
     }
+
+    public GetFasstoWarehousesFailedException(String vendorMessage, IOException cause) {
+        super(resolveMessage(vendorMessage), cause);
+    }
+
+    private static String resolveMessage(String vendorMessage) {
+        if (vendorMessage == null || vendorMessage.isBlank()) {
+            return GET_FASSTO_WAREHOUSE_LIST_FAILED_EXCEPTION_MESSAGE;
+        }
+        return vendorMessage;
+    }
 }

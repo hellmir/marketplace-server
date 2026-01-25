@@ -11,4 +11,15 @@ public class FasstoAuthDisconnectFailedException extends ExternalOperationFailed
     public FasstoAuthDisconnectFailedException(IOException cause) {
         super(FASSTO_AUTH_DISCONNECT_FAILED_EXCEPTION_MESSAGE, cause);
     }
+
+    public FasstoAuthDisconnectFailedException(String vendorMessage, IOException cause) {
+        super(resolveMessage(vendorMessage), cause);
+    }
+
+    private static String resolveMessage(String vendorMessage) {
+        if (vendorMessage == null || vendorMessage.isBlank()) {
+            return FASSTO_AUTH_DISCONNECT_FAILED_EXCEPTION_MESSAGE;
+        }
+        return vendorMessage;
+    }
 }

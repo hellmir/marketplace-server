@@ -11,4 +11,15 @@ public class FasstoAuthRequestFailedException extends ExternalOperationFailedExc
     public FasstoAuthRequestFailedException(IOException cause) {
         super(FASSTO_AUTH_REQUEST_FAILED_EXCEPTION_MESSAGE, cause);
     }
+
+    public FasstoAuthRequestFailedException(String vendorMessage, IOException cause) {
+        super(resolveMessage(vendorMessage), cause);
+    }
+
+    private static String resolveMessage(String vendorMessage) {
+        if (vendorMessage == null || vendorMessage.isBlank()) {
+            return FASSTO_AUTH_REQUEST_FAILED_EXCEPTION_MESSAGE;
+        }
+        return vendorMessage;
+    }
 }

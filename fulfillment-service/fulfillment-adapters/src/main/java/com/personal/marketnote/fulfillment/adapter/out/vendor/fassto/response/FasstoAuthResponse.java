@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public record FasstoAuthResponse(
         FasstoResponseHeader header,
         FasstoAuthDataResponse data,
-        Object errorInfo
-) {
+        FasstoErrorInfo errorInfo
+) implements FasstoApiResponse {
     public boolean isSuccess() {
         return header != null && header.isSuccess();
     }

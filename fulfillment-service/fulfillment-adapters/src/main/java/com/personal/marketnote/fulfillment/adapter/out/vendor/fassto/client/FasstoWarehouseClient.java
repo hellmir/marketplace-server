@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.personal.marketnote.common.adapter.out.VendorAdapter;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoErrorResponse;
 import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoWarehousesItemResponse;
 import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoWarehousesResponse;
 import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.RegisterFasstoWarehouseResponse;
@@ -29,6 +30,7 @@ import com.personal.marketnote.fulfillment.utility.VendorCommunicationRecorder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -75,6 +77,7 @@ public class FasstoWarehouseClient implements RegisterFasstoWarehousePort, GetFa
         HttpEntity<Void> httpEntity = new HttpEntity<>(buildHeaders(query.getAccessToken(), false));
 
         Exception error = new Exception();
+        String failureMessage = null;
         long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
         FulfillmentVendorCommunicationTargetType targetType = FulfillmentVendorCommunicationTargetType.WAREHOUSE;
         FulfillmentVendorName vendorName = FulfillmentVendorName.FASSTO;
@@ -106,6 +109,12 @@ public class FasstoWarehouseClient implements RegisterFasstoWarehousePort, GetFa
                         errorPayload,
                         e
                 );
+
+                String vendorMessage = resolveVendorMessageFromException(e);
+                if (FormatValidator.hasValue(vendorMessage)) {
+                    failureMessage = vendorMessage;
+                    error = new Exception(vendorMessage);
+                }
 
                 log.warn("Failed to get Fassto warehouse list: attempt={}, message={}", attempt, e.getMessage(), e);
                 if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
@@ -145,6 +154,12 @@ public class FasstoWarehouseClient implements RegisterFasstoWarehousePort, GetFa
                 return mapWarehousesResult(parsedResponse);
             }
 
+            String vendorMessage = resolveVendorMessage(parsedResponse, FormatValidator.hasValue(response) ? response.getBody() : null);
+            if (FormatValidator.hasValue(vendorMessage)) {
+                failureMessage = vendorMessage;
+                error = new Exception(vendorMessage);
+            }
+
             log.warn("Fassto warehouse list request failed: attempt={}, status={}, exception={}",
                     attempt,
                     FormatValidator.hasValue(response) ? response.getStatusCode() : null,
@@ -156,7 +171,7 @@ public class FasstoWarehouseClient implements RegisterFasstoWarehousePort, GetFa
         }
 
         log.error("Failed to get Fassto warehouse list: {} with error: {}", uri, error.getMessage(), error);
-        throw new GetFasstoWarehousesFailedException(new IOException(error));
+        throw new GetFasstoWarehousesFailedException(failureMessage, new IOException(error));
     }
 
     private URI buildShopUri(String customerCode) {
@@ -344,6 +359,7 @@ public class FasstoWarehouseClient implements RegisterFasstoWarehousePort, GetFa
         HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(request.toPayload(), buildHeaders(request.getAccessToken()));
 
         Exception error = new Exception();
+        String failureMessage = null;
         long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
         FulfillmentVendorCommunicationTargetType targetType = FulfillmentVendorCommunicationTargetType.WAREHOUSE;
         FulfillmentVendorName vendorName = FulfillmentVendorName.FASSTO;
@@ -375,6 +391,12 @@ public class FasstoWarehouseClient implements RegisterFasstoWarehousePort, GetFa
                         errorPayload,
                         e
                 );
+
+                String vendorMessage = resolveVendorMessageFromException(e);
+                if (FormatValidator.hasValue(vendorMessage)) {
+                    failureMessage = vendorMessage;
+                    error = new Exception(vendorMessage);
+                }
 
                 log.warn("Failed to {} Fassto warehouse: attempt={}, message={}", action.toLowerCase(), attempt, e.getMessage(), e);
                 if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
@@ -418,6 +440,12 @@ public class FasstoWarehouseClient implements RegisterFasstoWarehousePort, GetFa
                 );
             }
 
+            String vendorMessage = resolveVendorMessage(parsedResponse, FormatValidator.hasValue(response) ? response.getBody() : null);
+            if (FormatValidator.hasValue(vendorMessage)) {
+                failureMessage = vendorMessage;
+                error = new Exception(vendorMessage);
+            }
+
             log.warn("Fassto warehouse {} failed: attempt={}, status={}, exception={}",
                     action.toLowerCase(),
                     attempt,
@@ -432,9 +460,9 @@ public class FasstoWarehouseClient implements RegisterFasstoWarehousePort, GetFa
         log.error("Failed to {} Fassto warehouse: {} with error: {}", action.toLowerCase(), uri, error.getMessage(), error);
 
         if (isUpdate) {
-            throw new UpdateFasstoWarehouseFailedException(new IOException(error));
+            throw new UpdateFasstoWarehouseFailedException(failureMessage, new IOException(error));
         }
-        throw new RegisterFasstoWarehouseFailedException(new IOException(error));
+        throw new RegisterFasstoWarehouseFailedException(failureMessage, new IOException(error));
     }
 
     private JsonNode buildListRequestPayloadJson(FasstoWarehouseQuery query, URI uri, int attempt) {
@@ -527,5 +555,48 @@ public class FasstoWarehouseClient implements RegisterFasstoWarehousePort, GetFa
                 item.empTelNo(),
                 item.useYn()
         );
+    }
+
+    private String resolveVendorMessage(FasstoWarehousesResponse response, String rawBody) {
+        if (FormatValidator.hasValue(response)) {
+            String message = response.resolveErrorMessage();
+            if (FormatValidator.hasValue(message)) {
+                return message;
+            }
+        }
+        return resolveVendorMessage(rawBody);
+    }
+
+    private String resolveVendorMessage(RegisterFasstoWarehouseResponse response, String rawBody) {
+        if (FormatValidator.hasValue(response)) {
+            String message = response.resolveErrorMessage();
+            if (FormatValidator.hasValue(message)) {
+                return message;
+            }
+        }
+        return resolveVendorMessage(rawBody);
+    }
+
+    private String resolveVendorMessage(String rawBody) {
+        if (FormatValidator.hasNoValue(rawBody)) {
+            return null;
+        }
+
+        try {
+            FasstoErrorResponse response = objectMapper.readValue(rawBody, FasstoErrorResponse.class);
+            return response.resolveErrorMessage();
+        } catch (Exception e) {
+            log.warn("Failed to parse Fassto error response: {}", e.getMessage(), e);
+            return null;
+        }
+    }
+
+    private String resolveVendorMessageFromException(Exception e) {
+        if (!(e instanceof RestClientResponseException responseException)) {
+            return null;
+        }
+
+        String body = responseException.getResponseBodyAsString();
+        return resolveVendorMessage(body);
     }
 }

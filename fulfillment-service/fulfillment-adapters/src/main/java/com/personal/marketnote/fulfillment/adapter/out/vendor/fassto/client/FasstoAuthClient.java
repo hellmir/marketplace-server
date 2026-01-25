@@ -1,9 +1,11 @@
 package com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.personal.marketnote.common.adapter.out.VendorAdapter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoAuthResponse;
+import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoErrorResponse;
 import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoResponseHeader;
 import com.personal.marketnote.fulfillment.configuration.FasstoAuthProperties;
 import com.personal.marketnote.fulfillment.domain.FasstoAccessToken;
@@ -20,6 +22,7 @@ import com.personal.marketnote.fulfillment.utility.VendorCommunicationRecorder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -40,6 +43,7 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
     private static final String ACCESS_TOKEN_HEADER = "accessToken";
 
     private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
     private final FasstoAuthProperties properties;
     private final VendorCommunicationRecorder vendorCommunicationRecorder;
     private final VendorCommunicationPayloadGenerator vendorCommunicationPayloadGenerator;
@@ -51,6 +55,7 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
         HttpEntity<Void> request = new HttpEntity<>(buildHeaders());
 
         Exception error = new Exception();
+        String failureMessage = null;
         long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
         FulfillmentVendorCommunicationTargetType targetType = FulfillmentVendorCommunicationTargetType.AUTHENTICATION;
         FulfillmentVendorName vendorName = FulfillmentVendorName.FASSTO;
@@ -82,6 +87,12 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
                         errorPayload,
                         e
                 );
+
+                String vendorMessage = resolveVendorMessageFromException(e);
+                if (FormatValidator.hasValue(vendorMessage)) {
+                    failureMessage = vendorMessage;
+                    error = new Exception(vendorMessage);
+                }
 
                 log.warn("Failed to request Fassto auth: attempt={}, message={}", attempt, e.getMessage(), e);
                 if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
@@ -120,12 +131,18 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
                 return accessToken;
             }
 
+            String vendorMessage = resolveAuthFailureMessage(response);
+            if (FormatValidator.hasValue(vendorMessage)) {
+                failureMessage = vendorMessage;
+                error = new Exception(vendorMessage);
+            }
+
             sleep(sleepMillis);
             sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
         }
 
         log.error("Failed to request Fassto auth: {} with error: {}", uri, error.getMessage(), error);
-        throw new FasstoAuthRequestFailedException(new IOException(error));
+        throw new FasstoAuthRequestFailedException(failureMessage, new IOException(error));
     }
 
     @Override
@@ -140,6 +157,7 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
         HttpEntity<Void> request = new HttpEntity<>(headers);
 
         Exception error = new Exception();
+        String failureMessage = null;
         long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
         FulfillmentVendorCommunicationTargetType targetType = FulfillmentVendorCommunicationTargetType.AUTHENTICATION;
         FulfillmentVendorName vendorName = FulfillmentVendorName.FASSTO;
@@ -171,6 +189,12 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
                         errorPayload,
                         e
                 );
+
+                String vendorMessage = resolveVendorMessageFromException(e);
+                if (FormatValidator.hasValue(vendorMessage)) {
+                    failureMessage = vendorMessage;
+                    error = new Exception(vendorMessage);
+                }
 
                 log.warn("Failed to disconnect Fassto auth: attempt={}, message={}", attempt, e.getMessage(), e);
                 if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
@@ -209,6 +233,12 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
                 return;
             }
 
+            String vendorMessage = resolveDisconnectFailureMessage(response);
+            if (FormatValidator.hasValue(vendorMessage)) {
+                failureMessage = vendorMessage;
+                error = new Exception(vendorMessage);
+            }
+
             log.warn("Fassto disconnect returned non-200 status: attempt={}, status={}",
                     attempt,
                     response.getStatusCode()
@@ -219,7 +249,7 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
         }
 
         log.error("Failed to disconnect Fassto auth: {} with error: {}", uri, error.getMessage(), error);
-        throw new FasstoAuthDisconnectFailedException(new IOException(error));
+        throw new FasstoAuthDisconnectFailedException(failureMessage, new IOException(error));
     }
 
     private URI buildAuthUri() {
@@ -340,7 +370,7 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
         }
 
         if (FormatValidator.hasValue(body) && FormatValidator.hasValue(body.errorInfo())) {
-            payload.put("errorInfo", String.valueOf(body.errorInfo()));
+            payload.put("errorInfo", body.errorInfo());
         }
 
         payload.put("attempt", attempt);
@@ -455,5 +485,56 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
         }
 
         return null;
+    }
+
+    private String resolveAuthFailureMessage(ResponseEntity<FasstoAuthResponse> response) {
+        if (FormatValidator.hasNoValue(response)) {
+            return null;
+        }
+
+        FasstoAuthResponse body = response.getBody();
+        if (FormatValidator.hasNoValue(body)) {
+            return null;
+        }
+
+        return body.resolveErrorMessage();
+    }
+
+    private String resolveDisconnectFailureMessage(ResponseEntity<String> response) {
+        if (FormatValidator.hasNoValue(response)) {
+            return null;
+        }
+
+        String body = response.getBody();
+        if (FormatValidator.hasNoValue(body)) {
+            return null;
+        }
+
+        try {
+            FasstoErrorResponse parsedResponse = objectMapper.readValue(body, FasstoErrorResponse.class);
+            return parsedResponse.resolveErrorMessage();
+        } catch (Exception e) {
+            log.warn("Failed to parse Fassto disconnect error response: {}", e.getMessage(), e);
+            return null;
+        }
+    }
+
+    private String resolveVendorMessageFromException(Exception e) {
+        if (!(e instanceof RestClientResponseException responseException)) {
+            return null;
+        }
+
+        String body = responseException.getResponseBodyAsString();
+        if (FormatValidator.hasNoValue(body)) {
+            return null;
+        }
+
+        try {
+            FasstoErrorResponse parsedResponse = objectMapper.readValue(body, FasstoErrorResponse.class);
+            return parsedResponse.resolveErrorMessage();
+        } catch (Exception parseException) {
+            log.warn("Failed to parse Fassto error response from exception: {}", parseException.getMessage(), parseException);
+            return null;
+        }
     }
 }
