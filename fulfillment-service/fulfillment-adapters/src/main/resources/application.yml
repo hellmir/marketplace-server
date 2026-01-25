@@ -52,6 +52,7 @@ vendor:
       connect-path: ${FASSTO_AUTH_CONNECT_PATH:/api/v1/auth/connect}
       disconnect-path: ${FASSTO_AUTH_DISCONNECT_PATH:/api/v1/auth/disconnect}
       shop-path: ${FASSTO_MARKETNOTE_PATH:/api/v1/marketnote/{customerCode}}
+      supplier-path: ${FASSTO_SUPPLIER_PATH:/api/v1/supplier/{customerCode}}
       api-cd: ${FASSTO_API_CD:change-me}
       api-key: ${FASSTO_API_KEY:change-me}
 

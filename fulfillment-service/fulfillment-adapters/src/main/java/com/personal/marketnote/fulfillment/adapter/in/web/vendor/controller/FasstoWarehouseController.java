@@ -7,9 +7,9 @@ import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apid
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.mapper.FasstoWarehouseRequestToCommandMapper;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.RegisterFasstoWarehouseRequest;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.UpdateFasstoWarehouseRequest;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.FasstoWarehouseRegisterResponse;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.FasstoWarehouseUpdateResponse;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.GetFasstoWarehousesResponse;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.RegisterFasstoWarehouseResponse;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.UpdateFasstoWarehouseResponse;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoWarehousesResult;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.RegisterFasstoWarehouseResult;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.UpdateFasstoWarehouseResult;
@@ -49,7 +49,7 @@ public class FasstoWarehouseController {
     @PostMapping("/{customerCode}")
     @PreAuthorize(ADMIN_POINTCUT)
     @RegisterFasstoWarehouseApiDocs
-    public ResponseEntity<BaseResponse<FasstoWarehouseRegisterResponse>> registerWarehouse(
+    public ResponseEntity<BaseResponse<RegisterFasstoWarehouseResponse>> registerWarehouse(
             @PathVariable String customerCode,
             @RequestHeader("accessToken") String accessToken,
             @Valid @RequestBody RegisterFasstoWarehouseRequest request
@@ -60,7 +60,7 @@ public class FasstoWarehouseController {
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        FasstoWarehouseRegisterResponse.from(result),
+                        RegisterFasstoWarehouseResponse.from(result),
                         HttpStatus.CREATED,
                         DEFAULT_SUCCESS_CODE,
                         "파스토 출고처 등록 성공"
@@ -113,7 +113,7 @@ public class FasstoWarehouseController {
     @PutMapping("/{customerCode}")
     @PreAuthorize(ADMIN_POINTCUT)
     @UpdateFasstoWarehouseApiDocs
-    public ResponseEntity<BaseResponse<FasstoWarehouseUpdateResponse>> updateWarehouse(
+    public ResponseEntity<BaseResponse<UpdateFasstoWarehouseResponse>> updateWarehouse(
             @PathVariable String customerCode,
             @RequestHeader("accessToken") String accessToken,
             @Valid @RequestBody UpdateFasstoWarehouseRequest request
@@ -124,7 +124,7 @@ public class FasstoWarehouseController {
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        FasstoWarehouseUpdateResponse.from(result),
+                        UpdateFasstoWarehouseResponse.from(result),
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "파스토 출고처 수정 성공"

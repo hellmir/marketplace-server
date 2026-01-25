@@ -1,0 +1,15 @@
+package com.personal.marketnote.fulfillment.port.in.usecase.vendor;
+
+import com.personal.marketnote.fulfillment.port.in.command.vendor.RegisterFasstoSupplierCommand;
+import com.personal.marketnote.fulfillment.port.in.result.vendor.RegisterFasstoSupplierResult;
+
+public interface RegisterFasstoSupplierUseCase {
+    /**
+     * @param command 공급사 등록 커맨드
+     * @return 공급사 등록 결과 {@link RegisterFasstoSupplierResult}
+     * @Date 2025-01-02
+     * @Author 성효빈
+     * @Description 파스토 공급사를 등록합니다.
+     */
+    RegisterFasstoSupplierResult registerSupplier(RegisterFasstoSupplierCommand command);
+}
