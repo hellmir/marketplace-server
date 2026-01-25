@@ -1,4 +1,4 @@
-package com.personal.marketnote.fulfillment.adapter.out.vendor.fassto;
+package com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.personal.marketnote.common.adapter.out.VendorAdapter;
@@ -328,7 +328,7 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
             payload.put("status", response.getStatusCode().value());
         }
 
-        FasstoAuthResponse body = response != null ? response.getBody() : null;
+        FasstoAuthResponse body = FormatValidator.hasValue(response) ? response.getBody() : null;
         if (FormatValidator.hasValue(body) && FormatValidator.hasValue(body.header())) {
             payload.put("code", body.header().code());
             payload.put("message", body.header().msg());

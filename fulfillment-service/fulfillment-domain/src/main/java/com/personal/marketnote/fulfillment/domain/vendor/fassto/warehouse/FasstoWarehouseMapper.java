@@ -57,31 +57,77 @@ public class FasstoWarehouseMapper {
             String empTelNo,
             String useYn
     ) {
-        FasstoWarehouseMapper mapper = FasstoWarehouseMapper.builder()
-                .customerCode(customerCode)
-                .accessToken(accessToken)
-                .shopCd(REGISTRATION_MARKETNOTE_CODE)
-                .shopNm(shopNm)
-                .cstShopCd(cstShopCd)
-                .dealStrDt(dealStrDt)
-                .dealEndDt(dealEndDt)
-                .zipNo(zipNo)
-                .addr1(addr1)
-                .addr2(addr2)
-                .ceoNm(ceoNm)
-                .busNo(busNo)
-                .telNo(telNo)
-                .unloadWay(unloadWay)
-                .checkWay(checkWay)
-                .standYn(standYn)
-                .formType(formType)
-                .empNm(empNm)
-                .empPosit(empPosit)
-                .empTelNo(empTelNo)
-                .useYn(useYn)
-                .build();
-        mapper.validate();
-        return mapper;
+        return create(
+                customerCode,
+                accessToken,
+                REGISTRATION_MARKETNOTE_CODE,
+                shopNm,
+                cstShopCd,
+                dealStrDt,
+                dealEndDt,
+                zipNo,
+                addr1,
+                addr2,
+                ceoNm,
+                busNo,
+                telNo,
+                unloadWay,
+                checkWay,
+                standYn,
+                formType,
+                empNm,
+                empPosit,
+                empTelNo,
+                useYn
+        );
+    }
+
+    public static FasstoWarehouseMapper update(
+            String customerCode,
+            String accessToken,
+            String shopCd,
+            String shopNm,
+            String cstShopCd,
+            String dealStrDt,
+            String dealEndDt,
+            String zipNo,
+            String addr1,
+            String addr2,
+            String ceoNm,
+            String busNo,
+            String telNo,
+            String unloadWay,
+            String checkWay,
+            String standYn,
+            String formType,
+            String empNm,
+            String empPosit,
+            String empTelNo,
+            String useYn
+    ) {
+        return create(
+                customerCode,
+                accessToken,
+                shopCd,
+                shopNm,
+                cstShopCd,
+                dealStrDt,
+                dealEndDt,
+                zipNo,
+                addr1,
+                addr2,
+                ceoNm,
+                busNo,
+                telNo,
+                unloadWay,
+                checkWay,
+                standYn,
+                formType,
+                empNm,
+                empPosit,
+                empTelNo,
+                useYn
+        );
     }
 
     public Map<String, Object> toPayload() {
@@ -118,10 +164,10 @@ public class FasstoWarehouseMapper {
             throw new IllegalArgumentException("accessToken is required.");
         }
         if (FormatValidator.hasNoValue(shopCd)) {
-            throw new IllegalArgumentException("shopCd is required for shop registration.");
+            throw new IllegalArgumentException("shopCd is required for warehouse request.");
         }
         if (FormatValidator.hasNoValue(shopNm)) {
-            throw new IllegalArgumentException("shopNm is required for shop registration.");
+            throw new IllegalArgumentException("shopNm is required for warehouse request.");
         }
     }
 
@@ -129,5 +175,55 @@ public class FasstoWarehouseMapper {
         if (FormatValidator.hasValue(value)) {
             payload.put(key, value);
         }
+    }
+
+    private static FasstoWarehouseMapper create(
+            String customerCode,
+            String accessToken,
+            String shopCd,
+            String shopNm,
+            String cstShopCd,
+            String dealStrDt,
+            String dealEndDt,
+            String zipNo,
+            String addr1,
+            String addr2,
+            String ceoNm,
+            String busNo,
+            String telNo,
+            String unloadWay,
+            String checkWay,
+            String standYn,
+            String formType,
+            String empNm,
+            String empPosit,
+            String empTelNo,
+            String useYn
+    ) {
+        FasstoWarehouseMapper mapper = FasstoWarehouseMapper.builder()
+                .customerCode(customerCode)
+                .accessToken(accessToken)
+                .shopCd(shopCd)
+                .shopNm(shopNm)
+                .cstShopCd(cstShopCd)
+                .dealStrDt(dealStrDt)
+                .dealEndDt(dealEndDt)
+                .zipNo(zipNo)
+                .addr1(addr1)
+                .addr2(addr2)
+                .ceoNm(ceoNm)
+                .busNo(busNo)
+                .telNo(telNo)
+                .unloadWay(unloadWay)
+                .checkWay(checkWay)
+                .standYn(standYn)
+                .formType(formType)
+                .empNm(empNm)
+                .empPosit(empPosit)
+                .empTelNo(empTelNo)
+                .useYn(useYn)
+                .build();
+        mapper.validate();
+        return mapper;
     }
 }
