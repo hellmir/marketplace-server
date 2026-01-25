@@ -1,6 +1,6 @@
 package com.personal.marketnote.fulfillment.port.in.result.vendor;
 
-import com.personal.marketnote.fulfillment.domain.vendor.FasstoAccessToken;
+import com.personal.marketnote.fulfillment.domain.FasstoAccessToken;
 
 import java.time.LocalDateTime;
 

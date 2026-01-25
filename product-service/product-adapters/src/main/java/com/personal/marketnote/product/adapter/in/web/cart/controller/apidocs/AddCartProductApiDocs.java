@@ -81,7 +81,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 201,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-25T12:12:30.013",
+                                          "timestamp": "2025-12-30T12:12:30.013",
                                           "content": null,
                                           "message": "장바구니 상품 추가 성공"
                                         }
@@ -96,7 +96,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 401,
                                           "code": "UNAUTHORIZED",
-                                          "timestamp": "2026-01-25T12:12:30.013",
+                                          "timestamp": "2025-12-30T12:12:30.013",
                                           "content": null,
                                           "message": "Invalid token"
                                         }
@@ -111,7 +111,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 403,
                                           "code": "FORBIDDEN",«
-                                          "timestamp": "2026-01-25T12:12:30.013",
+                                          "timestamp": "2025-12-30T12:12:30.013",
                                           "content": null,
                                           "message": "Access Denied"
                                         }

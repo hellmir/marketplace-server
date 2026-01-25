@@ -54,7 +54,7 @@ public class ProductController {
      * @param request 상품 등록 요청
      * @return 상품 등록 응답 {@link RegisterProductResponse}
      * @Author 성효빈
-     * @Date 2026-01-25
+     * @Date 2025-12-30
      * @Description 상품을 등록합니다.
      */
     @PostMapping

@@ -19,7 +19,7 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 
 @RequiredArgsConstructor
 @UseCase
-@Transactional(isolation = READ_COMMITTED, timeout = 180)
+@Transactional(isolation = READ_COMMITTED)
 public class UpdateUserService implements UpdateUserUseCase {
     private final GetUserUseCase getUserUseCase;
     private final FindUserPort findUserPort;
@@ -52,6 +52,7 @@ public class UpdateUserService implements UpdateUserUseCase {
             user.validateDifferentEmail(email);
             validateDuplicateEmail(email);
             user.updateEmail(email);
+
             return;
         }
 
@@ -60,6 +61,7 @@ public class UpdateUserService implements UpdateUserUseCase {
             user.validateDifferentNickname(nickname);
             validateDuplicateNickname(nickname);
             user.updateNickname(nickname);
+
             return;
         }
 
@@ -68,6 +70,7 @@ public class UpdateUserService implements UpdateUserUseCase {
             user.validateDifferentPhoneNumber(phoneNumber);
             validateDuplicatePhoneNumber(phoneNumber);
             user.updatePhoneNumber(phoneNumber);
+
             return;
         }
 

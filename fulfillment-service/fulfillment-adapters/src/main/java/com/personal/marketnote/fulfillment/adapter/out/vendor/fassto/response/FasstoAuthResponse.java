@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record FasstoAuthResponse(
-        FasstoAuthHeaderResponse header,
+        FasstoResponseHeader header,
         FasstoAuthDataResponse data,
         Object errorInfo
 ) {

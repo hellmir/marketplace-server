@@ -4,7 +4,7 @@ public interface DisconnectFasstoAuthUseCase {
     /**
      * @param accessToken Fassto access token
      * @Date 2026-01-25
-     * @Author Codex
+     * @Author 성효빈
      * @Description Disconnect Fassto access token.
      */
     void disconnectAccessToken(String accessToken);

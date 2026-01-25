@@ -17,7 +17,7 @@ import java.lang.annotation.*;
 @Operation(
         summary = "(관리자) 회원 목록 조회",
         description = """
-                작성일자: 2026-01-24
+                작성일자: 2025-12-29
                 
                 작성자: 성효빈
                 
@@ -50,7 +50,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
                 | code | string | 응답 코드 | "SUC01" / "UNAUTHORIZED" / / "FORBIDDEN" / "NOT_FOUND" |
-                | timestamp | string(datetime) | 응답 일시 | "2026-01-24T12:12:30.013" |
+                | timestamp | string(datetime) | 응답 일시 | "2025-12-29T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
                 | message | string | 처리 결과 | "회원 목록 조회 성공" |
                 
@@ -81,8 +81,8 @@ import java.lang.annotation.*;
                 | phoneNumber | string | 전화번호 | "010-1234-5678" |
                 | referenceCode | string | 참조 코드 | "1234567890" |
                 | roleId | string | 역할 ID | "ROLE_BUYER" |
-                | signedUpAt | string(datetime) | 가입 일시 | "2026-01-24T10:19:52.558748" |
-                | lastLoggedInAt | string(datetime) | 마지막 로그인 일시 | "2026-01-24T10:19:52.558748" |
+                | signedUpAt | string(datetime) | 가입 일시 | "2025-12-29T10:19:52.558748" |
+                | lastLoggedInAt | string(datetime) | 마지막 로그인 일시 | "2025-12-29T10:19:52.558748" |
                 | status | string | 상태 | "ACTIVE" / "INACTIVE" / "DELETED" |
                 | isWithdrawn | boolean | 탈퇴 여부 | true / false |
                 | orderNum | number | 정렬 순서 | 1 |
@@ -157,7 +157,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-24T17:12:17.565718",
+                                          "timestamp": "2025-12-29T17:12:17.565718",
                                           "content": {
                                             "pageSize": 3,
                                             "pageNumber": 2,
@@ -228,7 +228,7 @@ import java.lang.annotation.*;
                                                 "referenceCode": "H8M7G6",
                                                 "roleId": "ROLE_BUYER",
                                                 "signedUpAt": "2025-12-28T15:59:59.132803",
-                                                "lastLoggedInAt": "2026-01-24T15:22:45.433588",
+                                                "lastLoggedInAt": "2025-12-29T15:22:45.433588",
                                                 "status": "ACTIVE",
                                                 "isWithdrawn": false,
                                                 "orderNum": 2
@@ -248,7 +248,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 401,
                                           "code": "UNAUTHORIZED",
-                                          "timestamp": "2026-01-24T10:19:52.558748",
+                                          "timestamp": "2025-12-29T10:19:52.558748",
                                           "content": null,
                                           "message": "Invalid token"
                                         }
@@ -263,7 +263,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 403,
                                           "code": "FORBIDDEN",
-                                          "timestamp": "2026-01-24T10:19:52.558748",
+                                          "timestamp": "2025-12-29T10:19:52.558748",
                                           "content": null,
                                           "message": "Access Denied"
                                         }

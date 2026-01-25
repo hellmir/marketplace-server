@@ -31,7 +31,7 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 
 @RequiredArgsConstructor
 @UseCase
-@Transactional(isolation = READ_COMMITTED, timeout = 180)
+@Transactional(isolation = READ_COMMITTED)
 public class SignUpService implements SignUpUseCase {
     private final GetUserUseCase getUserUseCase;
     private final SaveUserPort saveUserPort;
