@@ -405,7 +405,7 @@ public class UserController {
      * @param googleAccessToken Google 액세스 토큰
      * @return 회원 탈퇴 응답 {@link WithdrawResponse}
      * @Author 성효빈
-     * @Date 2026-01-24
+     * @Date 2025-12-29
      * @Description 회원 탈퇴를 수행합니다.
      */
     @DeleteMapping

@@ -19,7 +19,7 @@ import java.lang.annotation.*;
 @Operation(
         summary = "(관리자) 회원 정보 수정",
         description = """
-                작성일자: 2026-01-24
+                작성일자: 2025-12-29
                 
                 작성자: 성효빈
                 
@@ -63,7 +63,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 404: 리소스 조회 실패 / 409: 충돌 / 500: 그 외 |
                 | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "NOT_FOUND" / "ERR01" / "ERR02" / "ERR03" / "ERR04" / "ERR05" / "ERR06" |
-                | timestamp | string(datetime) | 응답 일시 | "2026-01-24T10:19:52.558748" |
+                | timestamp | string(datetime) | 응답 일시 | "2025-12-29T10:19:52.558748" |
                 | content | object | 응답 본문 | { ... } |
                 | message | string | 처리 결과 | "회원 정보 수정 성공" |
                 """,
@@ -97,7 +97,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-24T10:19:52.558748",
+                                          "timestamp": "2025-12-29T10:19:52.558748",
                                           "content": null,
                                           "message": "회원 정보 수정 성공"
                                         }
@@ -112,7 +112,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 400,
                                           "code": "BAD_REQUEST",
-                                          "timestamp": "2026-01-24T10:19:52.558748",
+                                          "timestamp": "2025-12-29T10:19:52.558748",
                                           "content": null,
                                           "message": "업데이트할 대상과 값을 전송해야 합니다."
                                         }
@@ -127,7 +127,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 401,
                                           "code": "UNAUTHORIZED",
-                                          "timestamp": "2026-01-24T10:19:52.558748",
+                                          "timestamp": "2025-12-29T10:19:52.558748",
                                           "content": null,
                                           "message": "Invalid token"
                                         }
@@ -142,7 +142,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 403,
                                           "code": "FORBIDDEN",
-                                          "timestamp": "2026-01-24T10:19:52.558748",
+                                          "timestamp": "2025-12-29T10:19:52.558748",
                                           "content": null,
                                           "message": "Access Denied"
                                         }
@@ -157,7 +157,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 404,
                                           "code": "NOT_FOUND",
-                                          "timestamp": "2026-01-24T10:19:52.558748",
+                                          "timestamp": "2025-12-29T10:19:52.558748",
                                           "content": null,
                                           "message": "존재하지 않는 회원입니다. 회원 ID: 1"
                                         }
@@ -172,7 +172,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 409,
                                           "code": "ERR01",
-                                          "timestamp": "2026-01-24T10:19:52.558748",
+                                          "timestamp": "2025-12-29T10:19:52.558748",
                                           "content": null,
                                           "message": "업데이트할 대상의 값과 입력한 값이 동일합니다. 전송한 값: abc"
                                         }

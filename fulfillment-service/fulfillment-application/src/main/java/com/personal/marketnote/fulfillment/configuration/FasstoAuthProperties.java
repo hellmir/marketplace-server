@@ -15,4 +15,5 @@ public class FasstoAuthProperties {
     private String apiKey;
     private String connectPath = "/api/v1/auth/connect";
     private String disconnectPath = "/api/v1/auth/disconnect";
+    private String shopPath = "/api/v1/marketnote/{customerCode}";
 }

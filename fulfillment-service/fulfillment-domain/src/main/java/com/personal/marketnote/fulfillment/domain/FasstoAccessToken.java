@@ -1,4 +1,4 @@
-package com.personal.marketnote.fulfillment.domain.vendor;
+package com.personal.marketnote.fulfillment.domain;
 
 import com.personal.marketnote.common.domain.exception.illegalargument.invalidvalue.ParsingLocalDateTimeException;
 import com.personal.marketnote.common.utility.FormatValidator;

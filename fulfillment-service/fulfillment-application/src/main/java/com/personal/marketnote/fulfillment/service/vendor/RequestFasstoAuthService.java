@@ -1,7 +1,7 @@
 package com.personal.marketnote.fulfillment.service.vendor;
 
 import com.personal.marketnote.common.application.UseCase;
-import com.personal.marketnote.fulfillment.domain.vendor.FasstoAccessToken;
+import com.personal.marketnote.fulfillment.domain.FasstoAccessToken;
 import com.personal.marketnote.fulfillment.port.in.usecase.vendor.RequestFasstoAuthUseCase;
 import com.personal.marketnote.fulfillment.port.out.vendor.RequestFasstoAuthPort;
 import lombok.RequiredArgsConstructor;

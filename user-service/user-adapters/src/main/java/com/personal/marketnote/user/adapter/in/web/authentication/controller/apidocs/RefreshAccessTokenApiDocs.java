@@ -19,7 +19,7 @@ import java.lang.annotation.*;
 @Operation(
         summary = "Refresh Token으로 새로운 Access Token 발급",
         description = """
-                작성일자: 2026-01-22
+                작성일자: 2025-12-26
                 
                 작성자: 성효빈
                 
@@ -69,7 +69,7 @@ import java.lang.annotation.*;
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 201,
-                                          "timestamp": "2026-01-22T09:53:02.089234",
+                                          "timestamp": "2025-12-26T09:53:02.089234",
                                           "code": "SUC01",
                                           "content": {
                                             "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJ0b2tlblR5cGUiOiJBQ0NFU1NfVE9LRU4iLCJpYXQiOjE3NjE1MzI0MTEsImV4cCI6MTc2MTUzNDIxMSwic3ViIjoibnVsbCIsInJvbGVJZHMiOlsiUk9MRV9CVVlFUiJdLCJhdXRoVmVuZG9yIjoiTkFUSVZFIn0.ZzIV6LtD8jd5VQKdKcWschPDkyzOTSbIdhUE4ezvwk4"
@@ -87,7 +87,7 @@ import java.lang.annotation.*;
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 400,
-                                          "timestamp": "2026-01-22T09:53:02.089234",
+                                          "timestamp": "2025-12-26T09:53:02.089234",
                                           "code": "BAD_REQUEST",
                                           "content": null,
                                           "message": "지원하지 않는 리프레시 토큰입니다."

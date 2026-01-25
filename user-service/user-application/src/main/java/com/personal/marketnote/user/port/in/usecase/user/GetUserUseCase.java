@@ -53,7 +53,7 @@ public interface GetUserUseCase {
     /**
      * @param id 회원 ID
      * @return 회원 도메인 {@link User}
-     * @Date 2026-01-24
+     * @Date 2025-12-29
      * @Author 성효빈
      * @Description 활성화/비활성화/비노출 회원을 조회합니다.
      */
@@ -72,7 +72,7 @@ public interface GetUserUseCase {
      * @param authVendor 인증 제공자
      * @param oidcId     외부 인증 ID
      * @return 회원 도메인 {@link User}
-     * @Date 2026-01-25
+     * @Date 2025-12-30
      * @Author 성효빈
      * @Description 활성화/비활성화/비노출 회원을 조회합니다.
      */
@@ -99,7 +99,7 @@ public interface GetUserUseCase {
     /**
      * @param id 회원 ID
      * @return 회원 정보 조회 결과 {@link GetUserInfoResult}
-     * @Date 2026-01-24
+     * @Date 2025-12-29
      * @Author 성효빈
      * @Description 활성화/비활성화/비노출 회원 정보를 조회합니다.
      */
@@ -113,7 +113,7 @@ public interface GetUserUseCase {
      * @param searchTarget  검색 대상
      * @param searchKeyword 검색 키워드
      * @return 회원 목록 조회 결과 {@link List< GetUserResult >}
-     * @Date 2026-01-24
+     * @Date 2025-12-29
      * @Author 성효빈
      * @Description 활성화/비활성화/비노출 회원 목록을 조회합니다.
      */

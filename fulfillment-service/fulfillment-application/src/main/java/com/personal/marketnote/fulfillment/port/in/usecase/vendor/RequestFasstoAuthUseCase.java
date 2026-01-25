@@ -1,6 +1,6 @@
 package com.personal.marketnote.fulfillment.port.in.usecase.vendor;
 
-import com.personal.marketnote.fulfillment.domain.vendor.FasstoAccessToken;
+import com.personal.marketnote.fulfillment.domain.FasstoAccessToken;
 
 public interface RequestFasstoAuthUseCase {
     /**
