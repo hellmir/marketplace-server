@@ -14,4 +14,5 @@ public class FasstoAuthProperties {
     private String apiCd;
     private String apiKey;
     private String connectPath = "/api/v1/auth/connect";
+    private String disconnectPath = "/api/v1/auth/disconnect";
 }
