@@ -7,7 +7,7 @@ public interface UpdateFasstoWarehouseUseCase {
     /**
      * @param command 출고처 수정 커맨드
      * @return 출고처 수정 결과 {@link UpdateFasstoWarehouseResult}
-     * @Date 2026-01-25
+     * @Date 2026-01-26
      * @Author 성효빈
      * @Description 파스토 출고처를 수정합니다.
      */
