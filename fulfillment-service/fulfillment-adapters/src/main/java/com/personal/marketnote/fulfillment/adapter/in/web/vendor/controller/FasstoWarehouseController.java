@@ -23,7 +23,7 @@ import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFA
 import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 
 @RestController
-@RequestMapping("/api/v1/vendors/fassto/marketnotes")
+@RequestMapping("/api/v1/vendors/fassto/warehouses")
 @Tag(name = "파스토 출고처 API", description = "파스토 출고처 관련 API")
 @RequiredArgsConstructor
 public class FasstoWarehouseController {

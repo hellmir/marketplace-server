@@ -32,6 +32,7 @@ public class FulfillmentSwaggerConfig {
 
     private static final List<String> TAGS_ORDER = List.of(
             "파스토 인증 API",
+            "파스토 출고처 API",
             "서버 정보 API"
     );
 
