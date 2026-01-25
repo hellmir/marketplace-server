@@ -1,18 +1,18 @@
 package com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.DisconnectFasstoAuthApiDocs;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.RequestFasstoAuthApiDocs;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.FasstoAuthTokenResponse;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.FasstoAccessTokenResult;
+import com.personal.marketnote.fulfillment.port.in.usecase.vendor.DisconnectFasstoAuthUseCase;
 import com.personal.marketnote.fulfillment.port.in.usecase.vendor.RequestFasstoAuthUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
 import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
@@ -23,13 +23,14 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 @RequiredArgsConstructor
 public class FasstoAuthController {
     private final RequestFasstoAuthUseCase requestFasstoAuthUseCase;
+    private final DisconnectFasstoAuthUseCase disconnectFasstoAuthUseCase;
 
     /**
-     * (관리자) 파스토 엑세스 토큰 요청
+     * (관리자) 파스토 인증 요청
      *
      * @Author 성효빈
      * @Date 2026-01-24
-     * @Description 파스토 엑세스 토큰 발급을 요청합니다.
+     * @Description 파스토 인증을 요청합니다.
      */
     @PostMapping
     @PreAuthorize(ADMIN_POINTCUT)
@@ -42,7 +43,34 @@ public class FasstoAuthController {
                         FasstoAuthTokenResponse.from(result),
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
-                        "파스토 엑세스 토큰 발급 성공"
+                        "파스토 인증 요청 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * (관리자) 파스토 인증 해제 요청
+     *
+     * @param accessToken 파스토 액세스 토큰
+     * @Author 성효빈
+     * @Date 2026-01-25
+     * @Description 파스토 인증 해제를 요청합니다.
+     */
+    @GetMapping("/disconnect")
+    @PreAuthorize(ADMIN_POINTCUT)
+    @DisconnectFasstoAuthApiDocs
+    public ResponseEntity<BaseResponse<Void>> disconnectAccessToken(
+            @RequestHeader("accessToken") String accessToken
+    ) {
+        disconnectFasstoAuthUseCase.disconnectAccessToken(accessToken);
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        null,
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "파스토 인증 해제 성공"
                 ),
                 HttpStatus.OK
         );

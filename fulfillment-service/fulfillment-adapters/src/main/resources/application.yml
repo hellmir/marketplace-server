@@ -48,7 +48,9 @@ server:
 vendor:
   fassto:
     auth:
-      base-url: ${FASSTO_BASE_URL:abc}
+      base-url: ${FASSTO_BASE_URL:https://stg-fmsapi.fassto.ai}
+      connect-path: ${FASSTO_AUTH_CONNECT_PATH:/api/v1/auth/connect}
+      disconnect-path: ${FASSTO_AUTH_DISCONNECT_PATH:/api/v1/auth/disconnect}
       api-cd: ${FASSTO_API_CD:change-me}
       api-key: ${FASSTO_API_KEY:change-me}
 

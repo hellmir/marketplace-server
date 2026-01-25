@@ -10,7 +10,9 @@ import com.personal.marketnote.fulfillment.domain.vendor.FasstoAccessToken;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationTargetType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorName;
+import com.personal.marketnote.fulfillment.exception.FasstoAuthDisconnectFailedException;
 import com.personal.marketnote.fulfillment.exception.FasstoAuthRequestFailedException;
+import com.personal.marketnote.fulfillment.port.out.vendor.DisconnectFasstoAuthPort;
 import com.personal.marketnote.fulfillment.port.out.vendor.RequestFasstoAuthPort;
 import com.personal.marketnote.fulfillment.utility.VendorCommunicationFailureHandler;
 import com.personal.marketnote.fulfillment.utility.VendorCommunicationPayloadGenerator;
@@ -32,9 +34,10 @@ import static com.personal.marketnote.common.utility.ApiConstant.*;
 @VendorAdapter
 @RequiredArgsConstructor
 @Slf4j
-public class FasstoAuthClient implements RequestFasstoAuthPort {
+public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFasstoAuthPort {
     private static final String API_CD_PARAM = "apiCd";
     private static final String API_KEY_PARAM = "apiKey";
+    private static final String ACCESS_TOKEN_HEADER = "accessToken";
 
     private final RestTemplate restTemplate;
     private final FasstoAuthProperties properties;
@@ -146,12 +149,178 @@ public class FasstoAuthClient implements RequestFasstoAuthPort {
         throw new FasstoAuthRequestFailedException(new IOException(error));
     }
 
+    @Override
+    public void disconnectAccessToken(String accessToken) {
+        if (FormatValidator.hasNoValue(accessToken)) {
+            throw new IllegalArgumentException("Fassto access token is required.");
+        }
+
+        URI uri = buildDisconnectUri();
+        HttpHeaders headers = buildHeaders();
+        headers.add(ACCESS_TOKEN_HEADER, accessToken);
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        Exception error = new Exception();
+        long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
+        FulfillmentVendorCommunicationTargetType targetType = FulfillmentVendorCommunicationTargetType.AUTHENTICATION;
+        FulfillmentVendorName vendorName = FulfillmentVendorName.FASSTO;
+
+        for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            int attempt = i + 1;
+            JsonNode requestPayloadJson = buildDisconnectRequestPayloadJson(accessToken, attempt);
+            String requestPayload = requestPayloadJson.toString();
+
+            try {
+                ResponseEntity<String> response = restTemplate.exchange(
+                        uri,
+                        HttpMethod.GET,
+                        request,
+                        String.class
+                );
+
+                JsonNode responsePayloadJson = buildDisconnectResponsePayloadJson(response, attempt);
+                String responsePayload = responsePayloadJson.toString();
+
+                boolean isSuccess = FormatValidator.hasValue(response) && response.getStatusCode().value() == 200;
+                String exception = null;
+                if (!isSuccess) {
+                    exception = response != null
+                            ? "HTTP_" + response.getStatusCode().value()
+                            : "NO_RESPONSE";
+                }
+
+                if (isSuccess) {
+                    try {
+                        vendorCommunicationRecorder.record(
+                                targetType,
+                                FulfillmentVendorCommunicationType.REQUEST,
+                                null,
+                                vendorName,
+                                requestPayload,
+                                requestPayloadJson
+                        );
+                    } catch (Exception recordingException) {
+                        log.warn(
+                                "Failed to record Fassto disconnect: attempt={}, message={}",
+                                attempt,
+                                recordingException.getMessage(),
+                                recordingException
+                        );
+                    }
+
+                    try {
+                        vendorCommunicationRecorder.record(
+                                targetType,
+                                FulfillmentVendorCommunicationType.RESPONSE,
+                                null,
+                                vendorName,
+                                responsePayload,
+                                responsePayloadJson
+                        );
+                    } catch (Exception recordingException) {
+                        log.warn(
+                                "Failed to record Fassto disconnect: attempt={}, message={}",
+                                attempt,
+                                recordingException.getMessage(),
+                                recordingException
+                        );
+                    }
+                    return;
+                }
+
+                try {
+                    vendorCommunicationRecorder.record(
+                            targetType,
+                            FulfillmentVendorCommunicationType.REQUEST,
+                            null,
+                            vendorName,
+                            requestPayload,
+                            requestPayloadJson,
+                            exception
+                    );
+                } catch (Exception recordingException) {
+                    log.warn(
+                            "Failed to record Fassto disconnect: attempt={}, message={}",
+                            attempt,
+                            recordingException.getMessage(),
+                            recordingException
+                    );
+                }
+                try {
+                    vendorCommunicationRecorder.record(
+                            targetType,
+                            FulfillmentVendorCommunicationType.RESPONSE,
+                            null,
+                            vendorName,
+                            responsePayload,
+                            responsePayloadJson,
+                            exception
+                    );
+                } catch (Exception recordingException) {
+                    log.warn(
+                            "Failed to record Fassto disconnect: attempt={}, message={}",
+                            attempt,
+                            recordingException.getMessage(),
+                            recordingException
+                    );
+                }
+
+                log.warn("Fassto disconnect returned non-200 status: attempt={}, status={}",
+                        attempt,
+                        response != null ? response.getStatusCode() : null
+                );
+            } catch (Exception e) {
+                Map<String, Object> errorPayload = new LinkedHashMap<>();
+                errorPayload.put("error", e.getClass().getSimpleName());
+                errorPayload.put("message", e.getMessage());
+                errorPayload.put("attempt", attempt);
+
+                try {
+                    vendorCommunicationFailureHandler.handleFailure(
+                            targetType,
+                            vendorName,
+                            requestPayload,
+                            requestPayloadJson,
+                            errorPayload,
+                            e
+                    );
+                } catch (Exception recordingException) {
+                    log.error(
+                            "Failed to handle Fassto disconnect failure: attempt={}, message={}",
+                            attempt,
+                            recordingException.getMessage(),
+                            recordingException
+                    );
+                }
+
+                log.warn("Failed to disconnect Fassto auth: attempt={}, message={}", attempt, e.getMessage(), e);
+                if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
+                    error = e;
+                }
+            }
+
+            sleep(sleepMillis);
+            sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
+        }
+
+        log.error("Failed to disconnect Fassto auth: {} with error: {}", uri, error.getMessage(), error);
+        throw new FasstoAuthDisconnectFailedException(new IOException(error));
+    }
+
     private URI buildAuthUri() {
-        validateProperties();
+        validateAuthProperties();
         return UriComponentsBuilder.fromUriString(properties.getBaseUrl())
                 .path(properties.getConnectPath())
                 .queryParam(API_CD_PARAM, properties.getApiCd())
                 .queryParam(API_KEY_PARAM, properties.getApiKey())
+                .build(true)
+                .toUri();
+    }
+
+    private URI buildDisconnectUri() {
+        validateDisconnectProperties();
+        return UriComponentsBuilder.fromUriString(properties.getBaseUrl())
+                .path(properties.getDisconnectPath())
                 .build(true)
                 .toUri();
     }
@@ -162,7 +331,7 @@ public class FasstoAuthClient implements RequestFasstoAuthPort {
         return headers;
     }
 
-    private void validateProperties() {
+    private void validateAuthProperties() {
         if (FormatValidator.hasNoValue(properties.getBaseUrl())) {
             throw new IllegalStateException("Fassto base URL is required.");
         }
@@ -174,6 +343,15 @@ public class FasstoAuthClient implements RequestFasstoAuthPort {
         }
         if (FormatValidator.hasNoValue(properties.getConnectPath())) {
             throw new IllegalStateException("Fassto auth connect path is required.");
+        }
+    }
+
+    private void validateDisconnectProperties() {
+        if (FormatValidator.hasNoValue(properties.getBaseUrl())) {
+            throw new IllegalStateException("Fassto base URL is required.");
+        }
+        if (FormatValidator.hasNoValue(properties.getDisconnectPath())) {
+            throw new IllegalStateException("Fassto auth disconnect path is required.");
         }
     }
 
@@ -252,6 +430,38 @@ public class FasstoAuthClient implements RequestFasstoAuthPort {
 
         payload.put("attempt", attempt);
         return vendorCommunicationPayloadGenerator.buildPayloadJson(payload);
+    }
+
+    private JsonNode buildDisconnectRequestPayloadJson(String accessToken, int attempt) {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("method", HttpMethod.GET.name());
+        payload.put("url", properties.getBaseUrl() + properties.getDisconnectPath());
+        payload.put(ACCESS_TOKEN_HEADER, maskValue(accessToken));
+        payload.put("attempt", attempt);
+        return vendorCommunicationPayloadGenerator.buildPayloadJson(payload);
+    }
+
+    private JsonNode buildDisconnectResponsePayloadJson(ResponseEntity<String> response, int attempt) {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        if (FormatValidator.hasValue(response)) {
+            payload.put("status", response.getStatusCode().value());
+            payload.put("headers", toSingleValueMap(response.getHeaders()));
+
+            String body = response.getBody();
+            if (FormatValidator.hasValue(body)) {
+                payload.put("body", body);
+            }
+        }
+        payload.put("attempt", attempt);
+        return vendorCommunicationPayloadGenerator.buildPayloadJson(payload);
+    }
+
+    private Map<String, String> toSingleValueMap(HttpHeaders headers) {
+        if (FormatValidator.hasNoValue(headers)) {
+            return Map.of();
+        }
+
+        return headers.toSingleValueMap();
     }
 
     private String maskValue(String value) {

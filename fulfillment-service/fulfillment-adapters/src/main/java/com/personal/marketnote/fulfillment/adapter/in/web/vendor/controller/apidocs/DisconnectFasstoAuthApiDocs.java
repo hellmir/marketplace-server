@@ -1,6 +1,8 @@
 package com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,9 +14,9 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "(관리자) 파스토 인증 요청",
+        summary = "(관리자) 파스토 인증 해제 요청",
         description = """
-                작성일자: 2026-01-24
+                작성일자: 2026-01-25
                 
                 작성자: 성효빈
                 
@@ -22,12 +24,13 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                파스토 엑세스 토큰 발급을 요청합니다.
+                파스토 액세스 토큰 만료를 요청합니다.
                 
                 ## Request
                 
-                | **키** | **타입** | **설명** | **필수 여부** | **예시** |
-                | --- | --- | --- | --- | --- |
+                | **키** | **위치** | **타입** | **설명** | **필수 여부** | **예시** |
+                | --- | --- | --- | --- | --- | --- |
+                | accessToken | header | string | 파스토 액세스 토큰 | Y | 5a2af269e54f11f0be620ab49498ff55 |
                 
                 ---
                 
@@ -37,46 +40,32 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 500: 그 외 |
                 | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "INTERNAL_SERVER_ERROR" |
-                | timestamp | string(datetime) | 응답 일시 | "2026-01-24T12:12:30.013" |
-                | content | object | 응답 본문 | { ... } |
-                | message | string | 처리 결과 | "파스토 인증 요청 성공" |
-                
-                ---
-                
-                ### Response > content
-                
-                | **키** | **타입** | **설명** | **예시** |
-                | --- | --- | --- | --- |
-                | tokenInfo | object | 토큰 정보 | { ... } |
-                
-                ---
-                
-                ### Response > content > tokenInfo
-                
-                | **키** | **타입** | **설명** | **예시** |
-                | --- | --- | --- | --- |
-                | accessToken | string | 파스토 액세스 토큰 | "ede4785770ab4949816247d1f0beff55" |
-                | expiresAt | string(datetime) | 만료 일시 | "2026-01-25T14:40:32" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-01-25T12:12:30.013" |
+                | content | object | 응답 본문 | null |
+                | message | string | 처리 결과 | "파스토 인증 해제 성공" |
                 
                 """,
         security = {@SecurityRequirement(name = "bearer")},
+        parameters = {
+                @Parameter(
+                        name = "accessToken",
+                        description = "파스토 액세스 토큰",
+                        in = ParameterIn.HEADER,
+                        required = true
+                )
+        },
         responses = {
                 @ApiResponse(
                         responseCode = "200",
-                        description = "파스토 인증 요청 성공",
+                        description = "파스토 인증 해제 성공",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-24T14:40:32.868332",
-                                          "content": {
-                                            "tokenInfo": {
-                                              "accessToken": "ede4785770ab4949816247d1f0beff55",
-                                              "expiresAt": "2026-01-25T14:40:32"
-                                            }
-                                          },
-                                          "message": "파스토 인증 요청 성공"
+                                          "timestamp": "2026-01-25T12:12:30.013",
+                                          "content": null,
+                                          "message": "파스토 인증 해제 성공"
                                         }
                                         """)
                         )
@@ -89,7 +78,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 401,
                                           "code": "UNAUTHORIZED",
-                                          "timestamp": "2026-01-24T12:12:30.013",
+                                          "timestamp": "2026-01-25T12:12:30.013",
                                           "content": null,
                                           "message": "Invalid token"
                                         }
@@ -104,7 +93,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 403,
                                           "code": "FORBIDDEN",
-                                          "timestamp": "2026-01-24T12:12:30.013",
+                                          "timestamp": "2026-01-25T12:12:30.013",
                                           "content": null,
                                           "message": "Access Denied"
                                         }
@@ -112,5 +101,5 @@ import java.lang.annotation.*;
                         )
                 )
         })
-public @interface RequestFasstoAuthApiDocs {
+public @interface DisconnectFasstoAuthApiDocs {
 }
