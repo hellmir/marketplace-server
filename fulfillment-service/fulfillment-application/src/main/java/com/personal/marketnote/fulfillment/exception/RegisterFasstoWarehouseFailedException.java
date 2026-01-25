@@ -11,4 +11,15 @@ public class RegisterFasstoWarehouseFailedException extends ExternalOperationFai
     public RegisterFasstoWarehouseFailedException(IOException cause) {
         super(REGISTER_FASSTO_WAREHOUSE_FAILED_EXCEPTION_MESSAGE, cause);
     }
+
+    public RegisterFasstoWarehouseFailedException(String vendorMessage, IOException cause) {
+        super(resolveMessage(vendorMessage), cause);
+    }
+
+    private static String resolveMessage(String vendorMessage) {
+        if (vendorMessage == null || vendorMessage.isBlank()) {
+            return REGISTER_FASSTO_WAREHOUSE_FAILED_EXCEPTION_MESSAGE;
+        }
+        return vendorMessage;
+    }
 }

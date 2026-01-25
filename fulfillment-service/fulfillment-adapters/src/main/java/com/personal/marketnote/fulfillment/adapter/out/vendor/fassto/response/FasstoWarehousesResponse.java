@@ -8,8 +8,8 @@ import java.util.List;
 public record FasstoWarehousesResponse(
         FasstoResponseHeader header,
         List<FasstoWarehousesItemResponse> data,
-        Object errorInfo
-) {
+        FasstoErrorInfo errorInfo
+) implements FasstoApiResponse {
     public boolean isSuccess() {
         return header != null && header.isSuccess() && data != null;
     }
