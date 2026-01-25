@@ -59,12 +59,12 @@ import java.lang.annotation.*;
                 
                 ---
                 
-                ### Response > content > warehouses[]
+                ### Response > content > warehouses
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | shopCd | string | 출고처 코드 | "94388001" |
-                | shopNm | string | 출고처명 | "마켓노트 테스트샵1" |
+                | shopNm | string | 출고처명 | "테스트 창고1" |
                 | cstShopCd | string | 고객사 출고처 코드 | "" |
                 | cstCd | string | 고객사 코드 | "94388" |
                 | cstNm | string | 고객사명 | "마켓노트 주식회사 테스트" |
@@ -72,18 +72,18 @@ import java.lang.annotation.*;
                 | dealStrDt | string | 거래 시작일자 | "" |
                 | dealEndDt | string | 거래 종료일자 | "" |
                 | zipNo | string | 우편번호 | "12345" |
-                | addr1 | string | 주소1 | "부산광역시 강서구 유통단지1로97번길 11 (대저2동, 서부산철강단지) 132동" |
-                | addr2 | string | 주소2 | "부산광역시 강서구 유통단지1로97번길 11 (대저2동, 서부산철강단지) 133동" |
+                | addr1 | string | 주소1 |"서울특별시 양천구 목동동로 123 132동 101호" |
+                | addr2 | string | 주소2 | "서울특별시 양천구 목동동로 123 132동 102호" |
                 | ceoNm | string | 대표자명 | "홍길동" |
                 | busNo | string | 사업자번호 | "1234567" |
-                | telNo | string | 전화번호 | "01049126169" |
+                | telNo | string | 전화번호 | "01012345678" |
                 | unloadWay | string | 하차방식(01: 지게차, 02: 수작업) | "02" |
                 | checkWay | string | 검수방식(01: 전수검수, 02: 샘플검수) | "02" |
                 | standYn | string | 대기여부 | "N" |
                 | formType | string | 거래명세서 양식(STDF001: 택배기본, STDF002: 차량기본) | "STDF001" |
                 | empNm | string | 담당자명 | "서영락" |
                 | empPosit | string | 담당자직위 | "대리" |
-                | empTelNo | string | 담당자전화번호 | "01049126169" |
+                | empTelNo | string | 담당자전화번호 | "01012345678" |
                 | useYn | string | 사용여부 | "Y" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
@@ -114,7 +114,7 @@ import java.lang.annotation.*;
                                           "code": "SUC01",
                                           "timestamp": "2026-01-25T13:51:33.69167",
                                           "content": {
-                                            "dataCount": 6,
+                                            "dataCount": 5,
                                             "warehouses": [
                                               {
                                                 "shopCd": "94388002",
