@@ -3,7 +3,10 @@ package com.personal.marketnote.user.service.user;
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
 import com.personal.marketnote.common.exception.UserNotFoundException;
 import com.personal.marketnote.user.domain.authentication.Role;
-import com.personal.marketnote.user.domain.user.*;
+import com.personal.marketnote.user.domain.user.User;
+import com.personal.marketnote.user.domain.user.UserOauth2Vendor;
+import com.personal.marketnote.user.domain.user.UserSearchTarget;
+import com.personal.marketnote.user.domain.user.UserSortProperty;
 import com.personal.marketnote.user.port.in.result.AccountResult;
 import com.personal.marketnote.user.port.in.result.GetUserInfoResult;
 import com.personal.marketnote.user.port.in.result.GetUserResult;
@@ -58,7 +61,7 @@ class GetUserUseCaseTest {
         boolean withdrawalYn = false;
         Long orderNum = 7L;
 
-        User user = buildUser(
+        User user = UserTestObjectFactory.createUser(
                 id,
                 nickname,
                 email,
@@ -137,7 +140,7 @@ class GetUserUseCaseTest {
         boolean withdrawalYn = true;
         Long orderNum = 3L;
 
-        User user = buildUser(
+        User user = UserTestObjectFactory.createUser(
                 id,
                 nickname,
                 email,
@@ -200,7 +203,7 @@ class GetUserUseCaseTest {
     void getUser_success_returnsUser() {
         // given
         Long id = 10L;
-        User user = buildDefaultUser(id, EntityStatus.ACTIVE, false, List.of());
+        User user = UserTestObjectFactory.createDefaultUser(id, EntityStatus.ACTIVE, false, List.of());
 
         when(findUserPort.findById(id)).thenReturn(Optional.of(user));
 
@@ -218,7 +221,7 @@ class GetUserUseCaseTest {
     void getAllStatusUser_byId_success_returnsUser() {
         // given
         Long id = 13L;
-        User user = buildDefaultUser(id, EntityStatus.INACTIVE, true, List.of());
+        User user = UserTestObjectFactory.createDefaultUser(id, EntityStatus.INACTIVE, true, List.of());
 
         when(findUserPort.findAllStatusUserById(id)).thenReturn(Optional.of(user));
 
@@ -252,7 +255,7 @@ class GetUserUseCaseTest {
     void getAllStatusUser_byEmail_success_returnsUser() {
         // given
         String email = "allstatus@test.com";
-        User user = buildDefaultUser(14L, EntityStatus.UNEXPOSED, false, List.of());
+        User user = UserTestObjectFactory.createDefaultUser(14L, EntityStatus.UNEXPOSED, false, List.of());
 
         when(findUserPort.findAllStatusUserByEmail(email)).thenReturn(Optional.of(user));
 
@@ -287,7 +290,7 @@ class GetUserUseCaseTest {
         // given
         AuthVendor authVendor = AuthVendor.APPLE;
         String oidcId = "oidc-apple";
-        User user = buildDefaultUser(15L, EntityStatus.ACTIVE, false, List.of());
+        User user = UserTestObjectFactory.createDefaultUser(15L, EntityStatus.ACTIVE, false, List.of());
 
         when(findUserPort.findByAuthVendorAndOidcId(authVendor, oidcId)).thenReturn(Optional.of(user));
 
@@ -339,7 +342,7 @@ class GetUserUseCaseTest {
         // given
         AuthVendor authVendor = AuthVendor.KAKAO;
         String oidcId = "oidc-123";
-        User user = buildDefaultUser(11L, EntityStatus.ACTIVE, false, List.of());
+        User user = UserTestObjectFactory.createDefaultUser(11L, EntityStatus.ACTIVE, false, List.of());
 
         when(findUserPort.findByAuthVendorAndOidcId(authVendor, oidcId)).thenReturn(Optional.of(user));
 
@@ -374,7 +377,7 @@ class GetUserUseCaseTest {
     void getUser_byReferenceCode_success_returnsUser() {
         // given
         String referenceCode = "ref-123";
-        User user = buildDefaultUser(12L, EntityStatus.ACTIVE, false, List.of());
+        User user = UserTestObjectFactory.createDefaultUser(12L, EntityStatus.ACTIVE, false, List.of());
 
         when(findUserPort.findByReferenceCode(referenceCode)).thenReturn(Optional.of(user));
 
@@ -480,7 +483,7 @@ class GetUserUseCaseTest {
         UserSearchTarget searchTarget = UserSearchTarget.EMAIL;
         String searchKeyword = "test";
 
-        User user1 = buildUser(
+        User user1 = UserTestObjectFactory.createUser(
                 30L,
                 "nick1",
                 "user1@test.com",
@@ -495,7 +498,7 @@ class GetUserUseCaseTest {
                 false,
                 1L
         );
-        User user2 = buildUser(
+        User user2 = UserTestObjectFactory.createUser(
                 31L,
                 "nick2",
                 "user2@test.com",
@@ -638,7 +641,7 @@ class GetUserUseCaseTest {
     void getUserInfo_inactiveUser_mapsStatusAndWithdrawn() {
         // given
         Long id = 2L;
-        User user = buildDefaultUser(id, EntityStatus.INACTIVE, true, List.of());
+        User user = UserTestObjectFactory.createDefaultUser(id, EntityStatus.INACTIVE, true, List.of());
 
         when(findUserPort.findById(id)).thenReturn(Optional.of(user));
 
@@ -662,7 +665,7 @@ class GetUserUseCaseTest {
         List<UserOauth2Vendor> userOauth2Vendors = List.of(
                 UserOauth2Vendor.of(AuthVendor.APPLE, "apple-oidc")
         );
-        User user = buildDefaultUser(id, EntityStatus.UNEXPOSED, false, userOauth2Vendors);
+        User user = UserTestObjectFactory.createDefaultUser(id, EntityStatus.UNEXPOSED, false, userOauth2Vendors);
 
         when(findUserPort.findById(id)).thenReturn(Optional.of(user));
 
@@ -680,62 +683,4 @@ class GetUserUseCaseTest {
         verifyNoMoreInteractions(findUserPort);
     }
 
-    private User buildDefaultUser(
-            Long id,
-            EntityStatus status,
-            boolean withdrawalYn,
-            List<UserOauth2Vendor> userOauth2Vendors
-    ) {
-        return buildUser(
-                id,
-                "tester",
-                "user@test.com",
-                "홍길동",
-                "010-1111-2222",
-                "ref-123",
-                Role.getBuyer(),
-                userOauth2Vendors,
-                LocalDateTime.of(2024, 1, 1, 10, 0),
-                LocalDateTime.of(2024, 1, 2, 11, 0),
-                status,
-                withdrawalYn,
-                5L
-        );
-    }
-
-    private User buildUser(
-            Long id,
-            String nickname,
-            String email,
-            String fullName,
-            String phoneNumber,
-            String referenceCode,
-            Role role,
-            List<UserOauth2Vendor> userOauth2Vendors,
-            LocalDateTime signedUpAt,
-            LocalDateTime lastLoggedInAt,
-            EntityStatus status,
-            boolean withdrawalYn,
-            Long orderNum
-    ) {
-        UserSnapshotState state = UserSnapshotState.builder()
-                .id(id)
-                .userKey(UUID.fromString("00000000-0000-0000-0000-000000000001"))
-                .nickname(nickname)
-                .email(email)
-                .fullName(fullName)
-                .phoneNumber(phoneNumber)
-                .referenceCode(referenceCode)
-                .role(role)
-                .userOauth2Vendors(userOauth2Vendors)
-                .userTerms(List.of())
-                .signedUpAt(signedUpAt)
-                .lastLoggedInAt(lastLoggedInAt)
-                .status(status)
-                .withdrawalYn(withdrawalYn)
-                .orderNum(orderNum)
-                .build();
-
-        return User.from(state);
-    }
 }
