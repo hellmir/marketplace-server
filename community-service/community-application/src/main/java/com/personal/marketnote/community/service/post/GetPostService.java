@@ -6,6 +6,7 @@ import com.personal.marketnote.common.utility.AuthorityValidator;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.domain.post.*;
 import com.personal.marketnote.community.exception.PostNotFoundException;
+import com.personal.marketnote.community.port.in.command.post.GetPostQuery;
 import com.personal.marketnote.community.port.in.command.post.GetPostsQuery;
 import com.personal.marketnote.community.port.in.result.post.GetPostsResult;
 import com.personal.marketnote.community.port.in.result.post.PostItemResult;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
@@ -65,6 +67,53 @@ public class GetPostService implements GetPostUseCase {
         }
 
         return generatePage(query, posts, totalElements);
+    }
+
+    @Override
+    public PostItemResult getPost(GetPostQuery query) {
+        Post post = getPost(query.id());
+        validateQueryMatchesPost(query, post);
+        Map<Long, List<GetFileResult>> postImagesByPostId = findPostImages(List.of(post));
+        List<GetFileResult> images = postImagesByPostId.get(post.getId());
+
+        if (FormatValidator.hasNoValue(post.getTargetId())) {
+            return PostItemResult.from(post, images);
+        }
+
+        ProductInfoResult productInfoResult = null;
+        if (query.board().isProductInquery()
+                && PostTargetType.PRICE_POLICY.equals(post.getTargetType())
+                && FormatValidator.hasValue(post.getTargetId())) {
+            productInfoResult = findProductByPricePolicyPort.findByPricePolicyIds(List.of(post.getTargetId()))
+                    .get(post.getTargetId());
+        }
+
+        PostItemResult postItemResult = PostItemResult.from(
+                post,
+                PostProductInfoResult.from(productInfoResult),
+                images
+        );
+
+        if (FormatValidator.hasValue(query.targetType())) {
+            Long sellerId = FormatValidator.hasValue(productInfoResult)
+                    ? productInfoResult.sellerId()
+                    : null;
+            if (!adminOrSeller(query.principal(), query.userId(), sellerId)) {
+                postItemResult.maskPrivatePost(query.userId());
+            }
+        }
+
+        if (!postItemResult.isMasked() && post.hasReplies()) {
+            postItemResult.addReplies(post, postImagesByPostId);
+        }
+
+        return postItemResult;
+    }
+
+    private void validateQueryMatchesPost(GetPostQuery query, Post post) {
+        if (!Objects.equals(query.board(), post.getBoard())) {
+            throw new IllegalArgumentException("요청한 게시판과 실제 게시판이 일치하지 않습니다.");
+        }
     }
 
     private Posts getBoardPosts(GetPostsQuery query, Pageable pageable, PostSortProperty sortProperty) {
