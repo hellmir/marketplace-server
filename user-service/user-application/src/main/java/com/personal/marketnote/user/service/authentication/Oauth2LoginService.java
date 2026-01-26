@@ -6,7 +6,7 @@ import com.personal.marketnote.common.domain.exception.token.UnsupportedCodeExce
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.user.domain.user.User;
 import com.personal.marketnote.user.port.in.result.LoginResult;
-import com.personal.marketnote.user.port.in.usecase.authentication.LoginUseCase;
+import com.personal.marketnote.user.port.in.usecase.authentication.Oauth2LoginUseCase;
 import com.personal.marketnote.user.port.out.user.FindUserPort;
 import com.personal.marketnote.user.security.token.dto.GrantedTokenInfo;
 import com.personal.marketnote.user.security.token.dto.OAuth2UserInfo;
@@ -22,7 +22,7 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 @UseCase
 @RequiredArgsConstructor
 @Transactional(isolation = READ_COMMITTED, timeout = 180)
-public class LoginService implements LoginUseCase {
+public class Oauth2LoginService implements Oauth2LoginUseCase {
     private final TokenSupport tokenSupport;
     private final FindUserPort findUserPort;
 

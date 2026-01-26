@@ -4,7 +4,7 @@ import com.personal.marketnote.common.domain.exception.token.UnsupportedCodeExce
 import com.personal.marketnote.user.port.in.result.LoginResult;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
 
-public interface LoginUseCase {
+public interface Oauth2LoginUseCase {
     /**
      * @param code        인증 코드
      * @param redirectUri 리다이렉트 URI

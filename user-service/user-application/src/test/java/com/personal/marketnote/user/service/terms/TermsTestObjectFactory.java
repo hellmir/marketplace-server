@@ -1,15 +1,11 @@
 package com.personal.marketnote.user.service.terms;
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
-import com.personal.marketnote.user.domain.user.Terms;
-import com.personal.marketnote.user.domain.user.TermsSnapshotState;
+import com.personal.marketnote.user.domain.user.*;
 
 import java.time.LocalDateTime;
 
-final class TermsTestObjectFactory {
-    private TermsTestObjectFactory() {
-    }
-
+class TermsTestObjectFactory {
     static Terms createTerms(
             Long id,
             String content,
@@ -25,6 +21,22 @@ final class TermsTestObjectFactory {
                 .createdAt(createdAt)
                 .modifiedAt(modifiedAt)
                 .status(status)
+                .build());
+    }
+
+    static UserTerms createUserTerms(
+            User user,
+            Terms terms,
+            boolean agreementYn,
+            LocalDateTime createdAt,
+            LocalDateTime modifiedAt
+    ) {
+        return UserTerms.from(UserTermsSnapshotState.builder()
+                .user(user)
+                .terms(terms)
+                .agreementYn(agreementYn)
+                .createdAt(createdAt)
+                .modifiedAt(modifiedAt)
                 .build());
     }
 }
