@@ -7,16 +7,10 @@ import com.personal.marketnote.community.adapter.in.web.review.controller.apidoc
 import com.personal.marketnote.community.adapter.in.web.review.mapper.ReviewRequestToCommandMapper;
 import com.personal.marketnote.community.adapter.in.web.review.request.RegisterReviewRequest;
 import com.personal.marketnote.community.adapter.in.web.review.request.UpdateReviewRequest;
-import com.personal.marketnote.community.adapter.in.web.review.response.GetProductReviewAggregateResponse;
-import com.personal.marketnote.community.adapter.in.web.review.response.GetReviewsCountResponse;
-import com.personal.marketnote.community.adapter.in.web.review.response.GetReviewsResponse;
-import com.personal.marketnote.community.adapter.in.web.review.response.RegisterReviewResponse;
+import com.personal.marketnote.community.adapter.in.web.review.response.*;
 import com.personal.marketnote.community.domain.review.ReviewSortProperty;
 import com.personal.marketnote.community.exception.ProductReviewAggregateNotFoundException;
-import com.personal.marketnote.community.port.in.result.review.GetReviewCountResult;
-import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
-import com.personal.marketnote.community.port.in.result.review.ProductReviewAggregateResult;
-import com.personal.marketnote.community.port.in.result.review.RegisterReviewResult;
+import com.personal.marketnote.community.port.in.result.review.*;
 import com.personal.marketnote.community.port.in.usecase.review.DeleteReviewUseCase;
 import com.personal.marketnote.community.port.in.usecase.review.GetReviewUseCase;
 import com.personal.marketnote.community.port.in.usecase.review.RegisterReviewUseCase;
@@ -162,6 +156,32 @@ public class ReviewController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "나의 리뷰 목록 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 리뷰 상세 정보 조회
+     *
+     * @return 리뷰 상세 정보 조회 응답 {@link ReviewItemResponse}
+     * @Author 성효빈
+     * @Date 2026-01-27
+     * @Description 리뷰 상세 정보를 조회합니다.
+     */
+    @GetMapping("/reviews/{id}")
+    @GetReviewApiDocs
+    public ResponseEntity<BaseResponse<ReviewItemResponse>> getReview(
+            @PathVariable("id") Long id
+    ) {
+        ReviewItemResult result = ReviewItemResult.from(getReviewUseCase.getReview(id));
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        ReviewItemResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "리뷰 상세 정보 조회 성공"
                 ),
                 HttpStatus.OK
         );
