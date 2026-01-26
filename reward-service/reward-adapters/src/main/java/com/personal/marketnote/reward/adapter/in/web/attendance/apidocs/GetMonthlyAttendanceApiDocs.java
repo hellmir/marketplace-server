@@ -55,7 +55,7 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
-                | attendanceDates | array(string(date)) | 출석일자 목록 | ["2026-01-04", "2026-01-05"] |
+                | attendanceDates | array(string(date)) | 출석일자 목록 | ["2026-01-26", "2026-01-27"] |
                 | totalAttendanceDays | number | 월별 총 출석일 | 3 |
                 | totalRewardQuantity | number | 누적 보상 개수 | 2000 |
                 """,

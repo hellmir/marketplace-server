@@ -5,6 +5,7 @@ import com.personal.marketnote.common.domain.exception.token.AuthenticationFaile
 import com.personal.marketnote.common.utility.ElementExtractor;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.common.utility.Role;
+import com.personal.marketnote.community.adapter.in.web.post.controller.apidocs.GetPostApiDocs;
 import com.personal.marketnote.community.adapter.in.web.post.controller.apidocs.GetPostsApiDocs;
 import com.personal.marketnote.community.adapter.in.web.post.controller.apidocs.RegisterPostApiDocs;
 import com.personal.marketnote.community.adapter.in.web.post.controller.apidocs.UpdatePostApiDocs;
@@ -12,10 +13,13 @@ import com.personal.marketnote.community.adapter.in.web.post.mapper.PostRequestT
 import com.personal.marketnote.community.adapter.in.web.post.request.RegisterPostRequest;
 import com.personal.marketnote.community.adapter.in.web.post.request.UpdatePostRequest;
 import com.personal.marketnote.community.adapter.in.web.post.response.GetPostsResponse;
+import com.personal.marketnote.community.adapter.in.web.post.response.PostItemResponse;
 import com.personal.marketnote.community.adapter.in.web.post.response.RegisterPostResponse;
 import com.personal.marketnote.community.domain.post.*;
+import com.personal.marketnote.community.port.in.command.post.GetPostQuery;
 import com.personal.marketnote.community.port.in.command.post.GetPostsQuery;
 import com.personal.marketnote.community.port.in.result.post.GetPostsResult;
+import com.personal.marketnote.community.port.in.result.post.PostItemResult;
 import com.personal.marketnote.community.port.in.result.post.RegisterPostResult;
 import com.personal.marketnote.community.port.in.usecase.post.GetPostUseCase;
 import com.personal.marketnote.community.port.in.usecase.post.RegisterPostUseCase;
@@ -100,13 +104,19 @@ public class PostController {
     /**
      * 게시글 목록 조회
      *
-     * @param board         게시판
-     * @param category      게시글 카테고리
-     * @param targetId      게시글 대상 ID
-     * @param cursor        커서(무한 스크롤 페이지 설정)
-     * @param pageSize      페이지 크기
-     * @param sortDirection 정렬 방향
-     * @param principal     인증된 사용자 정보
+     * @param board          게시판
+     * @param category       게시글 카테고리
+     * @param targetType     게시글 대상 도메인 유형
+     * @param targetId       게시글 대상 ID
+     * @param cursor         커서(무한 스크롤 페이지 설정)
+     * @param pageSize       페이지 크기
+     * @param sortDirection  정렬 방향
+     * @param sortProperty   정렬 기준
+     * @param searchTarget   검색 대상
+     * @param searchKeyword  검색 키워드
+     * @param filterCategory 필터 카테고리
+     * @param filterValue    필터 값
+     * @param principal      인증된 사용자 정보
      * @return 게시글 목록 조회 응답 {@link GetPostsResponse}
      * @Author 성효빈
      * @Date 2025-12-06
@@ -160,6 +170,53 @@ public class PostController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "게시글 목록 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 게시글 상세 정보 조회
+     *
+     * @param board      게시판
+     * @param targetType 게시글 대상 도메인 유형
+     * @param id         게시글 ID
+     * @param principal  인증된 사용자 정보
+     * @return 게시글 상세 정보 조회 응답 {@link PostItemResponse}
+     * @Author 성효빈
+     * @Date 2026-01-27
+     * @Description 게시글 상세 정보를 조회합니다.
+     */
+    @GetMapping("/{id}")
+    @GetPostApiDocs
+    public ResponseEntity<BaseResponse<PostItemResponse>> getPost(
+            @RequestParam("board") Board board,
+            @RequestParam(value = "targetType", required = false) PostTargetType targetType,
+            @PathVariable("id") Long id,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
+    ) {
+        validateAuthentication(board, targetType, principal);
+        Long userId = null;
+        if (FormatValidator.hasValue(principal)) {
+            userId = ElementExtractor.extractUserId(principal);
+        }
+
+        PostItemResult result = getPostUseCase.getPost(
+                GetPostQuery.builder()
+                        .principal(principal)
+                        .userId(userId)
+                        .board(board)
+                        .targetType(targetType)
+                        .id(id)
+                        .build()
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        PostItemResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "게시글 정보 조회 성공"
                 ),
                 HttpStatus.OK
         );

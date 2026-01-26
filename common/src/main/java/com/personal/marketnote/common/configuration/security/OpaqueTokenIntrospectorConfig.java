@@ -60,7 +60,7 @@ public class OpaqueTokenIntrospectorConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/categories").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/boards/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/posts").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/offerwalls/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/offerwalls/adiscope/callback").permitAll()
                         .anyRequest().authenticated())
