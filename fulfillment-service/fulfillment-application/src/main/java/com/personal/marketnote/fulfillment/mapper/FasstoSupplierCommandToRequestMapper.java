@@ -1,6 +1,8 @@
 package com.personal.marketnote.fulfillment.mapper;
 
 import com.personal.marketnote.fulfillment.domain.vendor.fassto.supplier.FasstoSupplierMapper;
+import com.personal.marketnote.fulfillment.domain.vendor.fassto.supplier.FasstoSupplierQuery;
+import com.personal.marketnote.fulfillment.port.in.command.vendor.GetFasstoSuppliersCommand;
 import com.personal.marketnote.fulfillment.port.in.command.vendor.RegisterFasstoSupplierCommand;
 
 public class FasstoSupplierCommandToRequestMapper {
@@ -30,6 +32,13 @@ public class FasstoSupplierCommandToRequestMapper {
                 command.empPosit2(),
                 command.empTelNo2(),
                 command.empEmail2()
+        );
+    }
+
+    public static FasstoSupplierQuery mapToSuppliersQuery(GetFasstoSuppliersCommand command) {
+        return FasstoSupplierQuery.of(
+                command.customerCode(),
+                command.accessToken()
         );
     }
 }

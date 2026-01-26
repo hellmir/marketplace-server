@@ -1,6 +1,7 @@
 package com.personal.marketnote.fulfillment.adapter.in.web.vendor.mapper;
 
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.RegisterFasstoSupplierRequest;
+import com.personal.marketnote.fulfillment.port.in.command.vendor.GetFasstoSuppliersCommand;
 import com.personal.marketnote.fulfillment.port.in.command.vendor.RegisterFasstoSupplierCommand;
 
 public class FasstoSupplierRequestToCommandMapper {
@@ -35,5 +36,12 @@ public class FasstoSupplierRequestToCommandMapper {
                 request.getEmpTelNo2(),
                 request.getEmpEmail2()
         );
+    }
+
+    public static GetFasstoSuppliersCommand mapToSuppliersCommand(
+            String customerCode,
+            String accessToken
+    ) {
+        return GetFasstoSuppliersCommand.of(customerCode, accessToken);
     }
 }
