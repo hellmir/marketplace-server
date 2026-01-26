@@ -12,7 +12,7 @@ import com.personal.marketnote.user.adapter.in.web.authentication.response.OAuth
 import com.personal.marketnote.user.adapter.in.web.authentication.response.RefreshedAccessTokenResponse;
 import com.personal.marketnote.user.adapter.in.web.authentication.response.WebBasedTokenRefreshResponse;
 import com.personal.marketnote.user.port.in.result.LoginResult;
-import com.personal.marketnote.user.port.in.usecase.authentication.LoginUseCase;
+import com.personal.marketnote.user.port.in.usecase.authentication.Oauth2LoginUseCase;
 import com.personal.marketnote.user.security.token.dto.GrantedTokenInfo;
 import com.personal.marketnote.user.security.token.support.TokenSupport;
 import com.personal.marketnote.user.security.token.vendor.AuthVendor;
@@ -44,7 +44,7 @@ public class WebBasedAuthenticationServiceAdapter {
     private static final long REFRESH_TOKEN_COOKIE_MAX_AGE = 2592000000L;
     private static final Pattern REDIRECTION_DESTINATION_PATTERN
             = Pattern.compile("^(http|https)://[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)*(:\\d{1,5})?$");
-    private final LoginUseCase loginUseCase;
+    private final Oauth2LoginUseCase oauth2LoginUseCase;
     private final TokenSupport tokenSupport;
     private final String serverOrigin;
     private final String clientOrigin;
@@ -56,7 +56,7 @@ public class WebBasedAuthenticationServiceAdapter {
     private Long refreshTokenTtlMillis;
 
     public WebBasedAuthenticationServiceAdapter(
-            LoginUseCase loginUseCase,
+            Oauth2LoginUseCase oauth2LoginUseCase,
             TokenSupport tokenSupport,
             @Value("${server.origin}") String serverOrigin,
             @Value("${client.origin}") List<String> clientOrigins,
@@ -64,7 +64,7 @@ public class WebBasedAuthenticationServiceAdapter {
             JwtUtil jwtUtil,
             StringRedisTemplate stringRedisTemplate
     ) {
-        this.loginUseCase = loginUseCase;
+        this.oauth2LoginUseCase = oauth2LoginUseCase;
         this.tokenSupport = tokenSupport;
         this.serverOrigin = serverOrigin;
         this.clientOrigin = clientOrigins.getFirst();
@@ -78,7 +78,7 @@ public class WebBasedAuthenticationServiceAdapter {
         String redirectUri = serverOrigin + servletRequest.getRequestURI();
 
         LoginResult loginResult =
-                loginUseCase.loginByOAuth2(oAuth2LoginRequest.code(), redirectUri, AuthVendor.valueOfIgnoreCase(oAuth2LoginRequest.authVendor()));
+                oauth2LoginUseCase.loginByOAuth2(oAuth2LoginRequest.code(), redirectUri, AuthVendor.valueOfIgnoreCase(oAuth2LoginRequest.authVendor()));
 
         String redirectionDestination = getRedirectionDestination(oAuth2LoginRequest.state());
         log.debug("redirectionDestination={}", redirectionDestination);
