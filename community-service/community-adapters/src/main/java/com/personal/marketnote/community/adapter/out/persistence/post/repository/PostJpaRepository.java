@@ -3,7 +3,7 @@ package com.personal.marketnote.community.adapter.out.persistence.post.repositor
 import com.personal.marketnote.common.adapter.out.persistence.audit.EntityStatus;
 import com.personal.marketnote.community.adapter.out.persistence.post.entity.PostJpaEntity;
 import com.personal.marketnote.community.domain.post.Board;
-import com.personal.marketnote.community.domain.post.PostTargetGroupType;
+import com.personal.marketnote.community.domain.post.PostTargetType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,8 +19,8 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
               AND p.board = :board
               AND p.parentId IS NULL
               AND (:category IS NULL OR p.category = :category)
-              AND (:targetGroupType IS NULL OR p.targetGroupType = :targetGroupType)
-              AND (:targetGroupId IS NULL OR p.targetGroupId = :targetGroupId)
+              AND (:targetType IS NULL OR p.targetType = :targetType)
+              AND (:targetId IS NULL OR p.targetId = :targetId)
               AND (
                 :isPublicOnly IS NULL
                 OR (:isPublicOnly = true AND p.isPrivate = false)
@@ -47,8 +47,8 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
     List<PostJpaEntity> findByBoardAndFilters(
             @Param("board") Board board,
             @Param("category") String category,
-            @Param("targetGroupType") PostTargetGroupType targetGroupType,
-            @Param("targetGroupId") Long targetGroupId,
+            @Param("targetType") PostTargetType targetType,
+            @Param("targetId") Long targetId,
             @Param("cursor") Long cursor,
             @Param("isDesc") boolean isDesc,
             @Param("isPublicOnly") Boolean isPublicOnly,
@@ -67,8 +67,8 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
               AND p.board = :board
               AND p.parentId IS NULL
               AND (:category IS NULL OR p.category = :category)
-              AND (:targetGroupType IS NULL OR p.targetGroupType = :targetGroupType)
-              AND (:targetGroupId IS NULL OR p.targetGroupId = :targetGroupId)
+              AND (:targetType IS NULL OR p.targetType = :targetType)
+              AND (:targetId IS NULL OR p.targetId = :targetId)
               AND (
                 :isPublicOnly IS NULL
                 OR (:isPublicOnly = true AND p.isPrivate = false)
@@ -90,38 +90,10 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
     long countByBoardAndFilters(
             @Param("board") Board board,
             @Param("category") String category,
-            @Param("targetGroupType") PostTargetGroupType targetGroupType,
-            @Param("targetGroupId") Long targetGroupId,
+            @Param("targetType") PostTargetType targetType,
+            @Param("targetId") Long targetId,
             @Param("isPublicOnly") Boolean isPublicOnly,
             @Param("filterUserId") Long filterUserId,
-            @Param("searchInTitle") boolean searchInTitle,
-            @Param("searchInContent") boolean searchInContent,
-            @Param("searchKeywordPattern") String searchKeywordPattern,
-            @Param("status") EntityStatus status
-    );
-
-    @Query("""
-            SELECT COUNT(p)
-            FROM PostJpaEntity p
-            WHERE p.status = :status
-              AND p.board = :board
-              AND p.userId = :userId
-              AND p.parentId IS NULL
-              AND (
-                    :searchKeywordPattern IS NULL
-                 OR (
-                        :searchInTitle = true
-                        AND LOWER(p.title) LIKE :searchKeywordPattern
-                    )
-                 OR (
-                        :searchInContent = true
-                        AND LOWER(p.content) LIKE :searchKeywordPattern
-                    )
-              )
-            """)
-    long countByUserIdAndBoard(
-            @Param("userId") Long userId,
-            @Param("board") Board board,
             @Param("searchInTitle") boolean searchInTitle,
             @Param("searchInContent") boolean searchInContent,
             @Param("searchKeywordPattern") String searchKeywordPattern,
@@ -165,14 +137,42 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
     );
 
     @Query("""
+            SELECT COUNT(p)
+            FROM PostJpaEntity p
+            WHERE p.status = :status
+              AND p.board = :board
+              AND p.userId = :userId
+              AND p.parentId IS NULL
+              AND (
+                    :searchKeywordPattern IS NULL
+                 OR (
+                        :searchInTitle = true
+                        AND LOWER(p.title) LIKE :searchKeywordPattern
+                    )
+                 OR (
+                        :searchInContent = true
+                        AND LOWER(p.content) LIKE :searchKeywordPattern
+                    )
+              )
+            """)
+    long countByUserIdAndBoard(
+            @Param("userId") Long userId,
+            @Param("board") Board board,
+            @Param("searchInTitle") boolean searchInTitle,
+            @Param("searchInContent") boolean searchInContent,
+            @Param("searchKeywordPattern") String searchKeywordPattern,
+            @Param("status") EntityStatus status
+    );
+
+    @Query("""
             SELECT p
             FROM PostJpaEntity p
             WHERE p.status = :status
               AND p.board = :board
               AND p.parentId IS NULL
               AND (:category IS NULL OR p.category = :category)
-              AND (:targetGroupType IS NULL OR p.targetGroupType = :targetGroupType)
-              AND (:targetGroupId IS NULL OR p.targetGroupId = :targetGroupId)
+              AND (:targetType IS NULL OR p.targetType = :targetType)
+              AND (:targetId IS NULL OR p.targetId = :targetId)
               AND (
                 :isPublicOnly IS NULL
                 OR (:isPublicOnly = true AND p.isPrivate = false)
@@ -204,8 +204,8 @@ public interface PostJpaRepository extends JpaRepository<PostJpaEntity, Long> {
     List<PostJpaEntity> findByBoardAndFiltersOrderByAnswered(
             @Param("board") Board board,
             @Param("category") String category,
-            @Param("targetGroupType") PostTargetGroupType targetGroupType,
-            @Param("targetGroupId") Long targetGroupId,
+            @Param("targetType") PostTargetType targetType,
+            @Param("targetId") Long targetId,
             @Param("cursor") Long cursor,
             @Param("isDesc") boolean isDesc,
             @Param("isPublicOnly") Boolean isPublicOnly,

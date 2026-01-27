@@ -16,6 +16,7 @@ import com.personal.marketnote.product.port.in.result.product.GetProductInfoResu
 import com.personal.marketnote.product.port.in.result.product.GetProductInfoWithOptionsResult;
 import com.personal.marketnote.product.port.in.result.product.GetProductsResult;
 import com.personal.marketnote.product.port.in.result.product.ProductItemResult;
+import com.personal.marketnote.product.port.in.usecase.pricepolicy.GetPricePoliciesUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductInventoryUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
 import com.personal.marketnote.product.port.out.file.FindProductImagesPort;
@@ -44,14 +45,27 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 @RequiredArgsConstructor
 @Transactional(isolation = READ_COMMITTED, readOnly = true)
 public class GetProductService implements GetProductUseCase {
+    private final GetPricePoliciesUseCase getPricePoliciesUseCase;
+    private final GetProductInventoryUseCase getProductInventoryUseCase;
     private final FindProductPort findProductPort;
     private final FindProductOptionCategoryPort findProductOptionCategoryPort;
     private final FindPricePoliciesPort findPricePoliciesPort;
     private final FindProductImagesPort findProductImagesPort;
-    private final GetProductInventoryUseCase getProductInventoryUseCase;
 
     @Qualifier("productImageExecutor")
     private final Executor productImageExecutor;
+
+    @Override
+    public GetProductInfoWithOptionsResult getProductInfo(Long pricePolicyId) {
+        List<PricePolicy> pricePolicies = getPricePoliciesUseCase.getPricePoliciesAndOptions(List.of(pricePolicyId));
+        if (FormatValidator.hasNoValue(pricePolicies)) {
+            throw new PricePolicyNotFoundException(pricePolicyId);
+        }
+        PricePolicy targetPricePolicy = pricePolicies.getFirst();
+        targetPricePolicy.setOptionIds();
+
+        return getProductInfo(targetPricePolicy.getProductId(), targetPricePolicy.getOptionIds());
+    }
 
     @Override
     public GetProductInfoWithOptionsResult getProductInfo(Long id, List<Long> selectedOptionIds) {

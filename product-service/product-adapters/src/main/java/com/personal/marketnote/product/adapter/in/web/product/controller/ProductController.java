@@ -174,7 +174,34 @@ public class ProductController {
     }
 
     /**
-     * 상품 상세 정보 조회
+     * (비회원) 가격 정책 ID로 상품 상세 정보 조회
+     *
+     * @param pricePolicyId 가격 정책 ID
+     * @return 상품 상세 정보 조회 응답 {@link GetProductInfoResponse}
+     * @Author 성효빈
+     * @Date 2026-01-27
+     * @Description 가격 정책 ID로 상품 상세 정보를 조회합니다.
+     */
+    @GetMapping("/price-policies/{pricePolicyId}")
+    @GetProductInfoByPricePolicyIdApiDocs
+    public ResponseEntity<BaseResponse<GetProductInfoResponse>> getProductInfoByPricePolicyId(
+            @PathVariable("pricePolicyId") Long pricePolicyId
+    ) {
+        GetProductInfoWithOptionsResult getProductInfoWithOptionsResult
+                = getProductUseCase.getProductInfo(pricePolicyId);
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        GetProductInfoResponse.from(getProductInfoWithOptionsResult),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "상품 상세 정보 조회 성공"
+                )
+        );
+    }
+
+    /**
+     * (비회원) 상품 상세 정보 조회
      *
      * @param id                상품 ID
      * @param selectedOptionIds 선택된 옵션 ID 목록

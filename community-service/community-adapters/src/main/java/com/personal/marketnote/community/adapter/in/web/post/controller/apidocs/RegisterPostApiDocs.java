@@ -75,10 +75,6 @@ import java.lang.annotation.*;
                 
                         - "EVENT_COUPON": 이벤트/쿠폰
                 
-                - 대상 그룹 유형 목록
-                
-                    - "PRODUCT": 상품(상품 문의 시에만 전송)
-                
                 - 대상 유형 목록
                 
                     - "PRICE_POLICY": 상품 가격 정책(상품 문의 시에만 전송)
@@ -92,8 +88,6 @@ import java.lang.annotation.*;
                 | parentId | number | 부모 게시글 ID (답변 시 사용) | N | 1 |
                 | board | string | 대상 게시판 | Y | "NOTICE" |
                 | category | string | 게시글 카테고리 | Y | "ANNOUNCEMENT" |
-                | targetGroupType | string | 대상 유형 | N | "PRODUCT" |
-                | targetGroupId | number | 대상 ID | N | 1 |
                 | targetType | string | 대상 유형 | N | "PRICE_POLICY" |
                 | targetId | number | 대상 ID | N | 1 |
                 | productImageUrl | string | 상품 이미지 URL | N | "https://example.com/image.jpg" |
@@ -126,10 +120,9 @@ import java.lang.annotation.*;
                         schema = @Schema(implementation = RegisterPostRequest.class),
                         examples = @ExampleObject("""
                                 {
-                                  "board": "PRODUCT_INQUERY",
-                                  "category": "PRODUCT_QUESTION",
-                                  "targetGroupType": "PRODUCT",
-                                  "targetGroupId": 1,
+                                  "parentId": 1,
+                                  "board": "NOTICE",
+                                  "category": "ANNOUNCEMENT",
                                   "targetType": "PRICE_POLICY",
                                   "targetId": 1,
                                   "productImageUrl": "https://example.com/image.jpg",
