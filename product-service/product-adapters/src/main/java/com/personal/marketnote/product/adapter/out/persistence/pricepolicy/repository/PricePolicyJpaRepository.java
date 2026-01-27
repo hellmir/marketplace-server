@@ -262,4 +262,10 @@ public interface PricePolicyJpaRepository extends JpaRepository<PricePolicyJpaEn
     List<PricePolicyJpaEntity> findAllWithProductAndOptionMappingsByIdIn(
             @Param("pricePolicyIds") List<Long> pricePolicyIds
     );
+
+    @Query("""
+            DELETE FROM PricePolicyJpaEntity pp
+            WHERE pp.productJpaEntity.id = :productId
+            """)
+    void deleteByProductId(Long productId);
 }
