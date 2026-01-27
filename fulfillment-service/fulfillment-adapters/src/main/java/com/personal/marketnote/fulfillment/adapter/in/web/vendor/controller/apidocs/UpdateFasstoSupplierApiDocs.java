@@ -1,6 +1,6 @@
 package com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs;
 
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.RegisterFasstoSupplierRequest;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.UpdateFasstoSupplierRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -17,9 +17,9 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "(관리자) 파스토 공급사 등록 요청",
+        summary = "(관리자) 파스토 공급사 수정 요청",
         description = """
-                작성일자: 2026-01-26
+                작성일자: 2026-01-28
                 
                 작성자: 성효빈
                 
@@ -27,7 +27,7 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                파스토 공급사 등록을 요청합니다. 공급사 코드는 등록 시 자동 생성됩니다.
+                파스토 공급사 정보를 수정합니다.
                 
                 ---
                 
@@ -35,7 +35,7 @@ import java.lang.annotation.*;
                 
                 | **키** | **위치** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- | --- |
-                | accessToken | header | string | 파스토 액세스 토큰 | Y | 85352dc5e54811f0be620ab49498ff55 |
+                | accessToken | header | string | 파스토 액세스 토큰 | Y | 73c1195ae79411f0be620ab49498ff55 |
                 | customerCode | path | string | 파스토 고객사 코드 | Y | 94388 |
                 
                 ---
@@ -44,8 +44,9 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
-                | supNm | string | 공급사명 | Y | "테스트 공급사1" |
-                | cstSupCd | string | 고객사 공급사 코드 | N | "" |
+                | cstSupCd | string | 고객사 공급사 코드 | N | "94388001" |
+                | supCd | string | 공급사 코드(수정 시 필수) | Y | "94388001" |
+                | supNm | string | 공급사명 | Y | "테스트 공급사4" |
                 | useYn | string | 사용여부 | N | "" |
                 | dealStrDt | string | 거래시작일자 | N | "" |
                 | dealEndDt | string | 거래종료일자 | N | "" |
@@ -75,9 +76,9 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 500: 그 외 |
                 | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "INTERNAL_SERVER_ERROR" |
-                | timestamp | string(datetime) | 응답 일시 | "2026-01-26T12:12:30.013" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-01-28T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
-                | message | string | 처리 결과 | "파스토 공급사 등록 성공" |
+                | message | string | 처리 결과 | "파스토 공급사 수정 성공" |
                 
                 ---
                 
@@ -85,7 +86,7 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
-                | supplierInfo | object | 공급사 등록 결과 | { ... } |
+                | supplierInfo | object | 공급사 수정 결과 | { ... } |
                 
                 ---
                 
@@ -95,7 +96,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | msg | string | 처리 결과 | "SUCCESS" |
                 | code | string | 응답 코드 | "200" |
-                | supCd | string | 공급사 코드 | "94388001" |
+                | supCd | string | 공급사 코드 | "registration" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         parameters = {
@@ -104,7 +105,7 @@ import java.lang.annotation.*;
                         description = "파스토 액세스 토큰",
                         in = ParameterIn.HEADER,
                         required = true,
-                        schema = @Schema(type = "string", example = "85352dc5e54811f0be620ab49498ff55")
+                        schema = @Schema(type = "string", example = "73c1195ae79411f0be620ab49498ff55")
                 ),
                 @Parameter(
                         name = "customerCode",
@@ -117,11 +118,12 @@ import java.lang.annotation.*;
         requestBody = @RequestBody(
                 required = true,
                 content = @Content(
-                        schema = @Schema(implementation = RegisterFasstoSupplierRequest.class),
+                        schema = @Schema(implementation = UpdateFasstoSupplierRequest.class),
                         examples = @ExampleObject("""
                                 {
-                                  "cstSupCd": "",
-                                  "supNm": "테스트 공급사1",
+                                  "cstSupCd": "94388",
+                                  "supCd": "94388003",
+                                  "supNm": "테스트 공급사4",
                                   "useYn": "",
                                   "dealStrDt": "",
                                   "dealEndDt": "",
@@ -148,22 +150,22 @@ import java.lang.annotation.*;
         ),
         responses = {
                 @ApiResponse(
-                        responseCode = "201",
-                        description = "파스토 공급사 등록 성공",
+                        responseCode = "200",
+                        description = "파스토 공급사 수정 성공",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
-                                          "statusCode": 201,
+                                          "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-26T09:07:08.013",
+                                          "timestamp": "2026-01-28T04:53:08.013",
                                           "content": {
                                             "supplierInfo": {
                                               "msg": "SUCCESS",
                                               "code": "200",
-                                              "supCd": "94388001"
+                                              "supCd": "registration"
                                             }
                                           },
-                                          "message": "파스토 공급사 등록 성공"
+                                          "message": "파스토 공급사 수정 성공"
                                         }
                                         """)
                         )
@@ -176,7 +178,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 401,
                                           "code": "UNAUTHORIZED",
-                                          "timestamp": "2026-01-26T12:12:30.013",
+                                          "timestamp": "2026-01-28T12:12:30.013",
                                           "content": null,
                                           "message": "Invalid token"
                                         }
@@ -191,7 +193,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 403,
                                           "code": "FORBIDDEN",
-                                          "timestamp": "2026-01-26T12:12:30.013",
+                                          "timestamp": "2026-01-28T12:12:30.013",
                                           "content": null,
                                           "message": "Access Denied"
                                         }
@@ -199,5 +201,5 @@ import java.lang.annotation.*;
                         )
                 )
         })
-public @interface RegisterFasstoSupplierApiDocs {
+public @interface UpdateFasstoSupplierApiDocs {
 }

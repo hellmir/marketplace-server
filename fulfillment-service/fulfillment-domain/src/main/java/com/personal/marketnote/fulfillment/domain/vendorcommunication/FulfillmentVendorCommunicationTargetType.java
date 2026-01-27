@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum FulfillmentVendorCommunicationTargetType {
     AUTHENTICATION("인증"),
-    WAREHOUSE("출고처"),
+    SHOP("출고처"),
     SUPPLIER("공급사");
 
     private final String description;

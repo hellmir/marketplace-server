@@ -1,6 +1,6 @@
 package com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs;
 
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.RegisterFasstoSupplierRequest;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.RegisterFasstoShopRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -17,9 +17,9 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "(관리자) 파스토 공급사 등록 요청",
+        summary = "(관리자) 파스토 출고처 등록 요청",
         description = """
-                작성일자: 2026-01-26
+                작성일자: 2026-01-25
                 
                 작성자: 성효빈
                 
@@ -27,7 +27,7 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                파스토 공급사 등록을 요청합니다. 공급사 코드는 등록 시 자동 생성됩니다.
+                파스토 출고처 등록을 요청합니다.
                 
                 ---
                 
@@ -44,28 +44,24 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
-                | supNm | string | 공급사명 | Y | "테스트 공급사1" |
-                | cstSupCd | string | 고객사 공급사 코드 | N | "" |
-                | useYn | string | 사용여부 | N | "" |
-                | dealStrDt | string | 거래시작일자 | N | "" |
-                | dealEndDt | string | 거래종료일자 | N | "" |
+                | shopNm | string | 출고처명 | Y | "테스트 출고처1" |
+                | cstShopCd | string | 고객사 출고처 코드 | N | "" |
+                | dealStrDt | string | 거래 시작일자 | N | "" |
+                | dealEndDt | string | 거래 종료일자 | N | "" |
                 | zipNo | string | 우편번호 | N | "12345" |
                 | addr1 | string | 주소1 | N | "서울특별시 양천구 목동동로 123 132동 101호" |
                 | addr2 | string | 주소2 | N | "서울특별시 양천구 목동동로 123 132동 102호" |
-                | ceoNm | string | 대표자명 | N | "고길동" |
-                | busNo | string | 사업자번호 | N | "7654321" |
-                | busSp | string | 업태 | N | "" |
-                | busTp | string | 업종 | N | "" |
+                | ceoNm | string | 대표자명 | N | "홍길동" |
+                | busNo | string | 사업자번호 | N | "1234567" |
                 | telNo | string | 전화번호 | N | "01012345678" |
-                | faxNo | string | 팩스번호 | N | "0212345678" |
-                | empNm1 | string | 담당자명1 | N | "서영락" |
-                | empPosit1 | string | 담당자직위1 | N | "대리" |
-                | empTelNo1 | string | 담당자전화번호1 | N | "0212345678" |
-                | empEmail1 | string | 담당자이메일1 | N | "abc@abc.com" |
-                | empNm2 | string | 담당자명2 | N | "오상식" |
-                | empPosit2 | string | 담당자직위2 | N | "차장" |
-                | empTelNo2 | string | 담당자전화번호2 | N | "0212345678" |
-                | empEmail2 | string | 담당자이메일2 | N | "abc@abc.com" |
+                | unloadWay | string | 하차방식(01: 지게차, 02: 수작업) | N | "02" |
+                | checkWay | string | 검수방식(01: 전수검수, 02: 샘플검수) | N | "02" |
+                | standYn | string | 대기여부 | N | "N" |
+                | formType | string | 거래명세서 양식(STDF001: 택배기본, STDF002: 차량기본) | N | "STDF001" |
+                | empNm | string | 담당자명 | N | "서영락" |
+                | empPosit | string | 담당자직위 | N | "대리" |
+                | empTelNo | string | 담당자전화번호 | N | "01012345678" |
+                | useYn | string | 사용여부 | N | "Y" |
                 
                 ---
                 
@@ -75,9 +71,9 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 500: 그 외 |
                 | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "INTERNAL_SERVER_ERROR" |
-                | timestamp | string(datetime) | 응답 일시 | "2026-01-26T12:12:30.013" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-01-25T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
-                | message | string | 처리 결과 | "파스토 공급사 등록 성공" |
+                | message | string | 처리 결과 | "파스토 출고처 등록 성공" |
                 
                 ---
                 
@@ -85,17 +81,17 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
-                | supplierInfo | object | 공급사 등록 결과 | { ... } |
+                | shopInfo | object | 출고처 등록 결과 | { ... } |
                 
                 ---
                 
-                ### Response > content > supplierInfo
+                ### Response > content > shopInfo
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | msg | string | 처리 결과 | "SUCCESS" |
                 | code | string | 응답 코드 | "200" |
-                | supCd | string | 공급사 코드 | "94388001" |
+                | shopCd | string | 출고처 코드 | "94388001" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         parameters = {
@@ -117,31 +113,27 @@ import java.lang.annotation.*;
         requestBody = @RequestBody(
                 required = true,
                 content = @Content(
-                        schema = @Schema(implementation = RegisterFasstoSupplierRequest.class),
+                        schema = @Schema(implementation = RegisterFasstoShopRequest.class),
                         examples = @ExampleObject("""
                                 {
-                                  "cstSupCd": "",
-                                  "supNm": "테스트 공급사1",
-                                  "useYn": "",
+                                  "shopNm": "테스트 출고처1",
+                                  "cstShopCd": "",
                                   "dealStrDt": "",
                                   "dealEndDt": "",
                                   "zipNo": "12345",
                                   "addr1": "서울특별시 양천구 목동동로 123 132동 101호",
                                   "addr2": "서울특별시 양천구 목동동로 123 132동 102호",
-                                  "ceoNm": "고길동",
-                                  "busNo": "7654321",
-                                  "busSp": "",
-                                  "busTp": "",
+                                  "ceoNm": "홍길동",
+                                  "busNo": "1234567",
                                   "telNo": "01012345678",
-                                  "faxNo": "0212345678",
-                                  "empNm1": "서영락",
-                                  "empPosit1": "대리",
-                                  "empTelNo1": "0212345678",
-                                  "empEmail1": "abc@abc.com",
-                                  "empNm2": "오상식",
-                                  "empPosit2": "차장",
-                                  "empTelNo2": "0212345678",
-                                  "empEmail2": "abc@abc.com"
+                                  "unloadWay": "02",
+                                  "checkWay": "02",
+                                  "standYn": "N",
+                                  "formType": "STDF001",
+                                  "empNm": "서영락",
+                                  "empPosit": "대리",
+                                  "empTelNo": "01012345678",
+                                  "useYn": "Y"
                                 }
                                 """)
                 )
@@ -149,21 +141,21 @@ import java.lang.annotation.*;
         responses = {
                 @ApiResponse(
                         responseCode = "201",
-                        description = "파스토 공급사 등록 성공",
+                        description = "파스토 출고처 등록 성공",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 201,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-26T09:07:08.013",
+                                          "timestamp": "2026-01-25T09:07:08.013",
                                           "content": {
-                                            "supplierInfo": {
+                                            "shopInfo": {
                                               "msg": "SUCCESS",
                                               "code": "200",
-                                              "supCd": "94388001"
+                                              "shopCd": "94388001"
                                             }
                                           },
-                                          "message": "파스토 공급사 등록 성공"
+                                          "message": "파스토 출고처 등록 성공"
                                         }
                                         """)
                         )
@@ -176,7 +168,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 401,
                                           "code": "UNAUTHORIZED",
-                                          "timestamp": "2026-01-26T12:12:30.013",
+                                          "timestamp": "2026-01-25T12:12:30.013",
                                           "content": null,
                                           "message": "Invalid token"
                                         }
@@ -191,7 +183,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 403,
                                           "code": "FORBIDDEN",
-                                          "timestamp": "2026-01-26T12:12:30.013",
+                                          "timestamp": "2026-01-25T12:12:30.013",
                                           "content": null,
                                           "message": "Access Denied"
                                         }
@@ -199,5 +191,5 @@ import java.lang.annotation.*;
                         )
                 )
         })
-public @interface RegisterFasstoSupplierApiDocs {
+public @interface RegisterFasstoShopApiDocs {
 }
