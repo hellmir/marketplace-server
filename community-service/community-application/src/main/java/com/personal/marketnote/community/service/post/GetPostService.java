@@ -56,79 +56,21 @@ public class GetPostService implements GetPostUseCase {
 
         Posts posts = getBoardPosts(query, pageable, sortProperty);
 
-        Long totalElements = null;
-        if (FormatValidator.hasNoValue(query.cursor())) {
-            totalElements = findPostPort.count(
-                    query.userId(),
-                    query.board(),
-                    query.searchTarget(),
-                    query.searchKeyword()
-            );
-        }
-
-        return generatePage(query, posts, totalElements);
-    }
-
-    @Override
-    public PostItemResult getPost(GetPostQuery query) {
-        Post post = getPost(query.id());
-        validateQueryMatchesPost(query, post);
-        Map<Long, List<GetFileResult>> postImagesByPostId = findPostImages(List.of(post));
-        List<GetFileResult> images = postImagesByPostId.get(post.getId());
-
-        if (FormatValidator.hasNoValue(post.getTargetId())) {
-            return PostItemResult.from(post, images);
-        }
-
-        ProductInfoResult productInfoResult = null;
-        if (query.board().isProductInquery()
-                && PostTargetType.PRICE_POLICY.equals(post.getTargetType())
-                && FormatValidator.hasValue(post.getTargetId())) {
-            productInfoResult = findProductByPricePolicyPort.findByPricePolicyIds(List.of(post.getTargetId()))
-                    .get(post.getTargetId());
-        }
-
-        PostItemResult postItemResult = PostItemResult.from(
-                post,
-                PostProductInfoResult.from(productInfoResult),
-                images
-        );
-
-        if (FormatValidator.hasValue(query.targetType())) {
-            Long sellerId = FormatValidator.hasValue(productInfoResult)
-                    ? productInfoResult.sellerId()
-                    : null;
-            if (!adminOrSeller(query.principal(), query.userId(), sellerId)) {
-                postItemResult.maskPrivatePost(query.userId());
-            }
-        }
-
-        if (!postItemResult.isMasked() && post.hasReplies()) {
-            postItemResult.addReplies(post, postImagesByPostId);
-        }
-
-        return postItemResult;
-    }
-
-    private void validateQueryMatchesPost(GetPostQuery query, Post post) {
-        if (!Objects.equals(query.board(), post.getBoard())) {
-            throw new IllegalArgumentException("요청한 게시판과 실제 게시판이 일치하지 않습니다.");
-        }
+        return generatePage(query, posts);
     }
 
     private Posts getBoardPosts(GetPostsQuery query, Pageable pageable, PostSortProperty sortProperty) {
         Board board = query.board();
-        PostTargetType targetType = query.targetType();
         boolean isDesc = Sort.Direction.DESC.equals(query.sortDirection());
         Long userId = query.userId();
 
         // 비회원 전용 게시판이거나 상품 상세 정보의 문의 게시판인 경우
-        if (board.isNonMemberViewBoard() || FormatValidator.hasValue(targetType)) {
-            return findPostPort.findPosts(
+        if (query.isPublicPosts()) {
+            return findPostPort.findPublicPosts(
                     board,
                     query.category(),
-                    targetType,
-                    query.targetId(),
+                    query.targetGroupType(),
+                    query.targetGroupId(),
                     query.cursor(),
                     pageable,
                     isDesc,
@@ -154,23 +96,12 @@ public class GetPostService implements GetPostUseCase {
         );
     }
 
-    private GetPostsResult generatePage(GetPostsQuery query, Posts posts, Long totalElementsOverride) {
-        Long totalElements = totalElementsOverride;
+    private GetPostsResult generatePage(GetPostsQuery query, Posts posts) {
+        Long totalElements = null;
         PostTargetType targetType = query.targetType();
         Board board = query.board();
-
-        if (FormatValidator.hasNoValue(totalElements) && FormatValidator.hasNoValue(query.cursor())) {
-            totalElements = findPostPort.count(
-                    board,
-                    query.category(),
-                    targetType,
-                    query.targetId(),
-                    query.userId(),
-                    query.filter(),
-                    query.filterValue(),
-                    query.searchTarget(),
-                    query.searchKeyword()
-            );
+        if (FormatValidator.hasNoValue(query.cursor())) {
+            totalElements = computeTotalPageCount(query);
         }
 
         // 상품 문의 게시판인 경우 각 게시글의 주문 상품 정보 조회
@@ -238,6 +169,81 @@ public class GetPostService implements GetPostUseCase {
                 .toList();
 
         return GetPostsResult.of(hasNext, nextCursor, totalElements, postItems);
+    }
+
+    private long computeTotalPageCount(GetPostsQuery query) {
+        Long userId = query.userId();
+        Board board = query.board();
+        PostSearchTarget searchTarget = query.searchTarget();
+        String searchKeyword = query.searchKeyword();
+
+        if (query.isPublicPosts()) {
+            return findPostPort.countPublicPosts(
+                    board,
+                    query.category(),
+                    query.targetGroupType(),
+                    query.targetGroupId(),
+                    userId,
+                    query.filter(),
+                    query.filterValue(),
+                    searchTarget,
+                    searchKeyword
+            );
+        }
+
+        return findPostPort.countUserPosts(
+                userId,
+                board,
+                searchTarget,
+                searchKeyword
+        );
+    }
+
+    @Override
+    public PostItemResult getPost(GetPostQuery query) {
+        Post post = getPost(query.id());
+        validateQueryMatchesPost(query, post);
+        Map<Long, List<GetFileResult>> postImagesByPostId = findPostImages(List.of(post));
+        List<GetFileResult> images = postImagesByPostId.get(post.getId());
+
+        if (FormatValidator.hasNoValue(post.getTargetId())) {
+            return PostItemResult.from(post, images);
+        }
+
+        ProductInfoResult productInfoResult = null;
+        if (query.board().isProductInquery()
+                && PostTargetType.PRICE_POLICY.equals(post.getTargetType())
+                && FormatValidator.hasValue(post.getTargetId())) {
+            productInfoResult = findProductByPricePolicyPort.findByPricePolicyIds(List.of(post.getTargetId()))
+                    .get(post.getTargetId());
+        }
+
+        PostItemResult postItemResult = PostItemResult.from(
+                post,
+                PostProductInfoResult.from(productInfoResult),
+                images
+        );
+
+        if (FormatValidator.hasValue(query.targetType())) {
+            Long sellerId = FormatValidator.hasValue(productInfoResult)
+                    ? productInfoResult.sellerId()
+                    : null;
+            if (!adminOrSeller(query.principal(), query.userId(), sellerId)) {
+                postItemResult.maskPrivatePost(query.userId());
+            }
+        }
+
+        if (!postItemResult.isMasked() && post.hasReplies()) {
+            postItemResult.addReplies(post, postImagesByPostId);
+        }
+
+        return postItemResult;
+    }
+
+    private void validateQueryMatchesPost(GetPostQuery query, Post post) {
+        if (!Objects.equals(query.board(), post.getBoard())) {
+            throw new IllegalArgumentException("요청한 게시판과 실제 게시판이 일치하지 않습니다.");
+        }
     }
 
     private boolean adminOrSeller(OAuth2AuthenticatedPrincipal principal, Long userId, Long sellerId) {

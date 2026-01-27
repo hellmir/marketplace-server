@@ -12,6 +12,8 @@ public class PostRequestToCommandMapper {
                 .parentId(request.getParentId())
                 .board(request.getBoard())
                 .category(request.getCategory())
+                .targetGroupType(request.getTargetGroupType())
+                .targetGroupId(request.getTargetGroupId())
                 .targetType(request.getTargetType())
                 .targetId(request.getTargetId())
                 .productImageUrl(request.getProductImageUrl())

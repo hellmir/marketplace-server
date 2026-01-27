@@ -16,28 +16,28 @@ public interface FindPostPort {
     boolean existsById(Long id);
 
     /**
-     * @param board         게시판
-     * @param category      카테고리
-     * @param targetType    대상 유형
-     * @param targetId      대상 ID
-     * @param cursor        커서(무한 스크롤 페이지 설정)
-     * @param pageable      페이지네이션 정보
-     * @param isDesc        내림차순 여부
-     * @param sortProperty  정렬 속성
-     * @param userId        회원 ID
-     * @param filter        필터 카테고리
-     * @param filterValue   필터 값
-     * @param searchTarget  검색 키워드 카테고리
-     * @param searchKeyword 검색 키워드
+     * @param board           게시판
+     * @param category        카테고리
+     * @param targetGroupType 대상 그룹 유형
+     * @param targetId        대상 ID
+     * @param cursor          커서(무한 스크롤 페이지 설정)
+     * @param pageable        페이지네이션 정보
+     * @param isDesc          내림차순 여부
+     * @param sortProperty    정렬 속성
+     * @param userId          회원 ID
+     * @param filter          필터 카테고리
+     * @param filterValue     필터 값
+     * @param searchTarget    검색 키워드 카테고리
+     * @param searchKeyword   검색 키워드
      * @return 게시글 목록 {@link Posts}
      * @Date 2025-12-06
      * @Author 성효빈
      * @Description 게시글 목록을 조회합니다.
      */
-    Posts findPosts(
+    Posts findPublicPosts(
             Board board,
             String category,
-            PostTargetType targetType,
+            PostTargetGroupType targetGroupType,
             Long targetId,
             Long cursor,
             Pageable pageable,
@@ -76,25 +76,25 @@ public interface FindPostPort {
     );
 
     /**
-     * @param board         게시판
-     * @param category      카테고리
-     * @param targetType    대상 유형
-     * @param targetId      대상 ID
-     * @param userId        회원 ID
-     * @param filter        필터 카테고리
-     * @param filterValue   필터 값
-     * @param searchTarget  검색 키워드 카테고리
-     * @param searchKeyword 검색 키워드
+     * @param board           게시판
+     * @param category        카테고리
+     * @param targetGroupType 대상 그룹 유형
+     * @param targetGroupId   대상 그룹 ID
+     * @param userId          회원 ID
+     * @param filter          필터 카테고리
+     * @param filterValue     필터 값
+     * @param searchTarget    검색 키워드 카테고리
+     * @param searchKeyword   검색 키워드
      * @return 게시글 개수 {@link long}
      * @Date 2025-12-06
      * @Author 성효빈
-     * @Description 게시글 개수를 조회합니다.
+     * @Description 공개 게시판 게시글 개수를 조회합니다.
      */
-    long count(
+    long countPublicPosts(
             Board board,
             String category,
-            PostTargetType targetType,
-            Long targetId,
+            PostTargetGroupType targetGroupType,
+            Long targetGroupId,
             Long userId,
             PostFilterCategory filter,
             PostFilterValue filterValue,
@@ -110,9 +110,9 @@ public interface FindPostPort {
      * @return 게시글 개수 {@link long}
      * @Date 2025-12-06
      * @Author 성효빈
-     * @Description 게시글 개수를 조회합니다.
+     * @Description 회원 게시판 게시글 개수를 조회합니다.
      */
-    long count(Long userId, Board board, PostSearchTarget searchTarget, String searchKeyword);
+    long countUserPosts(Long userId, Board board, PostSearchTarget searchTarget, String searchKeyword);
 
     /**
      * @param id 게시글 ID
