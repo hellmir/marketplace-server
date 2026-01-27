@@ -13,6 +13,8 @@ public class PostCreateState {
     private final Long parentId;
     private final Board board;
     private final String category;
+    private final PostTargetGroupType targetGroupType;
+    private final Long targetGroupId;
     private final PostTargetType targetType;
     private final Long targetId;
     private final String productImageUrl;

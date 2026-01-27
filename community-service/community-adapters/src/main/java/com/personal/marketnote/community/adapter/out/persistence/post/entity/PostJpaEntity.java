@@ -2,10 +2,7 @@ package com.personal.marketnote.community.adapter.out.persistence.post.entity;
 
 import com.personal.marketnote.common.adapter.out.persistence.audit.BaseOrderedGeneralEntity;
 import com.personal.marketnote.common.utility.FormatValidator;
-import com.personal.marketnote.community.domain.post.Board;
-import com.personal.marketnote.community.domain.post.Post;
-import com.personal.marketnote.community.domain.post.PostCategory;
-import com.personal.marketnote.community.domain.post.PostTargetType;
+import com.personal.marketnote.community.domain.post.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -29,6 +26,13 @@ public class PostJpaEntity extends BaseOrderedGeneralEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "board", nullable = false, length = 31)
     private Board board;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "target_group_type", length = 31)
+    private PostTargetGroupType targetGroupType;
+
+    @Column(name = "target_group_id")
+    private Long targetGroupId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "target_type", length = 31)
@@ -66,6 +70,8 @@ public class PostJpaEntity extends BaseOrderedGeneralEntity {
                 .parentId(post.getParentId())
                 .board(post.getBoard())
                 .category(FormatValidator.hasValue(category) ? category.getCode() : null)
+                .targetGroupType(post.getTargetGroupType())
+                .targetGroupId(post.getTargetGroupId())
                 .targetType(post.getTargetType())
                 .targetId(post.getTargetId())
                 .productImageUrl(post.getProductImageUrl())

@@ -2,6 +2,7 @@ package com.personal.marketnote.community.adapter.in.web.post.request;
 
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.community.domain.post.Board;
+import com.personal.marketnote.community.domain.post.PostTargetGroupType;
 import com.personal.marketnote.community.domain.post.PostTargetType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
@@ -36,15 +37,32 @@ public class RegisterPostRequest {
     private String category;
 
     @Schema(
+            name = "targetGroupType",
+            description = "게시글 대상 도메인 그룹 유형",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED
+    )
+    private PostTargetGroupType targetGroupType;
+
+    @Schema(
+            name = "targetGroupId",
+            description = "게시글 대상 도메인 그룹 ID",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED
+    )
+    @Positive(message = "대상 그룹 ID는 자연수만 입력 가능합니다.")
+    @Min(value = 1, message = "대상 그룹 ID는 1 이상이어야 합니다.")
+    @Max(value = Long.MAX_VALUE, message = "대상 그룹 ID는 정수형 최대값을 초과할 수 없습니다.")
+    private Long targetGroupId;
+
+    @Schema(
             name = "targetType",
-            description = "게시글 대상 도메인 유형(PRODUCT)",
+            description = "게시글 대상 도메인 유형",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
     private PostTargetType targetType;
 
     @Schema(
             name = "targetId",
-            description = "게시글 대상 ID",
+            description = "게시글 대상 도메인 ID",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
     @Positive(message = "대상 ID는 자연수만 입력 가능합니다.")
