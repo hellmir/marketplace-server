@@ -39,11 +39,11 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort, Updat
     }
 
     @Override
-    public Posts findPosts(
+    public Posts findPublicPosts(
             Board board,
             String category,
-            PostTargetType targetType,
-            Long targetId,
+            PostTargetGroupType targetGroupType,
+            Long targetGroupId,
             Long cursor,
             Pageable pageable,
             boolean isDesc,
@@ -71,8 +71,8 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort, Updat
                     postJpaRepository.findByBoardAndFiltersOrderByAnswered(
                             board,
                             category,
-                            targetType,
-                            targetId,
+                            targetGroupType,
+                            targetGroupId,
                             cursor,
                             isDesc,
                             isPublicOnly,
@@ -90,8 +90,8 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort, Updat
                 postJpaRepository.findByBoardAndFilters(
                         board,
                         category,
-                        targetType,
-                        targetId,
+                        targetGroupType,
+                        targetGroupId,
                         cursor,
                         isDesc,
                         isPublicOnly,
@@ -137,11 +137,11 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort, Updat
     }
 
     @Override
-    public long count(
+    public long countPublicPosts(
             Board board,
             String category,
-            PostTargetType targetType,
-            Long targetId,
+            PostTargetGroupType targetGroupType,
+            Long targetGroupId,
             Long userId,
             PostFilterCategory filterCategory,
             PostFilterValue filterValue,
@@ -163,8 +163,8 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort, Updat
         return postJpaRepository.countByBoardAndFilters(
                 board,
                 category,
-                targetType,
-                targetId,
+                targetGroupType,
+                targetGroupId,
                 isPublicOnly,
                 userIdFilter,
                 searchInTitle,
@@ -175,7 +175,7 @@ public class PostPersistenceAdapter implements SavePostPort, FindPostPort, Updat
     }
 
     @Override
-    public long count(Long userId, Board board, PostSearchTarget searchTarget, String searchKeyword) {
+    public long countUserPosts(Long userId, Board board, PostSearchTarget searchTarget, String searchKeyword) {
         boolean searchInTitle = shouldSearchIn(searchTarget, PostSearchTarget.TITLE);
         boolean searchInContent = shouldSearchIn(searchTarget, PostSearchTarget.CONTENT);
         String searchKeywordPattern = buildSearchPattern(searchKeyword);

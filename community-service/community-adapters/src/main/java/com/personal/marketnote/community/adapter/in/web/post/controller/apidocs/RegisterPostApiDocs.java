@@ -126,9 +126,8 @@ import java.lang.annotation.*;
                         schema = @Schema(implementation = RegisterPostRequest.class),
                         examples = @ExampleObject("""
                                 {
-                                  "parentId": 1,
-                                  "board": "NOTICE",
-                                  "category": "ANNOUNCEMENT",
+                                  "board": "PRODUCT_INQUERY",
+                                  "category": "PRODUCT_QUESTION",
                                   "targetGroupType": "PRODUCT",
                                   "targetGroupId": 1,
                                   "targetType": "PRICE_POLICY",
