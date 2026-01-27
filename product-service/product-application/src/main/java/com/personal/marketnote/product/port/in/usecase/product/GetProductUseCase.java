@@ -20,6 +20,15 @@ public interface GetProductUseCase {
     Product getProduct(Long id);
 
     /**
+     * @param pricePolicyId 가격 정책 ID
+     * @return 상품 상세 정보 응답 {@link GetProductInfoWithOptionsResult}
+     * @Date 2026-01-27
+     * @Author 성효빈
+     * @Description 상품 상세 정보를 조회합니다.
+     */
+    GetProductInfoWithOptionsResult getProductInfo(Long pricePolicyId);
+
+    /**
      * @param id                상품 ID
      * @param selectedOptionIds 선택된 옵션 ID 목록
      * @return 상품 상세 정보 응답 {@link GetProductInfoWithOptionsResult}

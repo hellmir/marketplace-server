@@ -108,4 +108,10 @@ public class PricePolicy extends BaseDomain {
     public Long getProductId() {
         return product.getId();
     }
+
+    public void setOptionIds() {
+        optionIds = productOptions.stream()
+                .map(ProductOption::getId)
+                .toList();
+    }
 }

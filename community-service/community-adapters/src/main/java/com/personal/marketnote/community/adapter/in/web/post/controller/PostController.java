@@ -3,7 +3,6 @@ package com.personal.marketnote.community.adapter.in.web.post.controller;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.domain.exception.token.AuthenticationFailedException;
 import com.personal.marketnote.common.utility.ElementExtractor;
-import com.personal.marketnote.common.utility.FormatConverter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.common.utility.Role;
 import com.personal.marketnote.community.adapter.in.web.post.controller.apidocs.GetPostApiDocs;
@@ -128,8 +127,6 @@ public class PostController {
     public ResponseEntity<BaseResponse<GetPostsResponse>> getPosts(
             @RequestParam("board") Board board,
             @RequestParam(value = "category", required = false) String category,
-            @RequestParam(value = "targetGroupType", required = false) PostTargetGroupType targetGroupType,
-            @RequestParam(value = "targetGroupId", required = false) Long targetGroupId,
             @RequestParam(value = "targetType", required = false) PostTargetType targetType,
             @RequestParam(value = "targetId", required = false) Long targetId,
             @RequestParam(value = "cursor", required = false) Long cursor,
@@ -154,8 +151,6 @@ public class PostController {
                         .userId(userId)
                         .board(board)
                         .category(category)
-                        .targetGroupType(targetGroupType)
-                        .targetGroupId(targetGroupId)
                         .targetType(targetType)
                         .targetId(targetId)
                         .cursor(cursor)
@@ -163,7 +158,7 @@ public class PostController {
                         .sortDirection(sortDirection)
                         .sortProperty(sortProperty)
                         .searchTarget(searchTarget)
-                        .searchKeyword(FormatConverter.toLowerCase(searchKeyword))
+                        .searchKeyword(searchKeyword)
                         .filter(filterCategory)
                         .filterValue(filterValue)
                         .build()

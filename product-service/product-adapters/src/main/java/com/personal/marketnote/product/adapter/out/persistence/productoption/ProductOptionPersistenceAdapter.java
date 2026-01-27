@@ -16,7 +16,6 @@ import com.personal.marketnote.product.adapter.out.persistence.productoption.rep
 import com.personal.marketnote.product.domain.option.ProductOptionCategory;
 import com.personal.marketnote.product.domain.pricepolicy.PricePolicy;
 import com.personal.marketnote.product.domain.pricepolicy.PricePolicyCreateState;
-import com.personal.marketnote.product.exception.ProductNoPricePolicyException;
 import com.personal.marketnote.product.exception.ProductNotFoundException;
 import com.personal.marketnote.product.port.out.productoption.DeleteProductOptionCategoryPort;
 import com.personal.marketnote.product.port.out.productoption.FindProductOptionCategoryPort;
@@ -50,19 +49,48 @@ public class ProductOptionPersistenceAdapter implements SaveProductOptionsPort, 
         savedCategory.addOrderNum();
 
         // 생성된 각 옵션 및 기존 옵션과의 조합에 대해 기본 가격 정책 등록
-        // region
+        PricePolicyJpaEntity defaultPricePolicy = product.getDefaultPricePolicy();
+
+        if (FormatValidator.hasNoValue(defaultPricePolicy)) {
+            return ProductJpaEntityToDomainMapper.mapToDomain(savedCategory).orElse(null);
+        }
 
         // 상품의 모든 활성 카테고리와 옵션 가져오기
         List<ProductOptionCategoryJpaEntity> allCategories = productOptionCategoryJpaRepository
                 .findActiveWithOptionsByProductId(productId);
+
+        // 1. 새로 생성된 카테고리의 각 옵션에 대해 가격 정책 생성
         List<PricePolicyJpaEntity> newPolicies = new ArrayList<>();
         List<ProductOptionPricePolicyJpaEntity> newOptionPolicies = new ArrayList<>();
-        registerPricePoliciesToOptionCombinations(allCategories, savedCategory, newPolicies, newOptionPolicies, product);
+        savedCategory.getProductOptionJpaEntities()
+                .forEach(newOption -> {
+                    PricePolicyJpaEntity pricePolicy = createPricePolicyFromDefault(product, defaultPricePolicy);
+                    newPolicies.add(pricePolicy);
+                    newOptionPolicies.add(ProductOptionPricePolicyJpaEntity.of(newOption, pricePolicy));
+                });
 
-        // 기존 가격 정책 전체 삭제
-        pricePolicyJpaRepository.deleteByProductId(productId);
+        // 2. 모든 카테고리의 옵션 조합에 대해 가격 정책 생성
+        if (allCategories.size() > 1) {
+            List<List<ProductOptionJpaEntity>> optionGroups = allCategories.stream()
+                    .map(ProductOptionCategoryJpaEntity::getProductOptionJpaEntities)
+                    .filter(FormatValidator::hasValue)
+                    .toList();
 
-        // endregion
+            if (FormatValidator.hasValue(optionGroups) && optionGroups.size() > 1) {
+                List<List<ProductOptionJpaEntity>> productOptionCombinations = cartesianProduct(optionGroups);
+                productOptionCombinations.forEach(productOptionCombination -> {
+                    PricePolicyJpaEntity pricePolicy = createPricePolicyFromDefault(product, defaultPricePolicy);
+                    newPolicies.add(pricePolicy);
+
+                    // 조합의 모든 옵션과 가격 정책 연결
+                    productOptionCombination.forEach(
+                            option -> newOptionPolicies.add(
+                                    ProductOptionPricePolicyJpaEntity.of(option, pricePolicy)
+                            )
+                    );
+                });
+            }
+        }
 
         List<PricePolicyJpaEntity> savedPricePolicyJpaEntities = pricePolicyJpaRepository.saveAll(newPolicies);
         savedPricePolicyJpaEntities.forEach(PricePolicyJpaEntity::setIdToOrderNum);
@@ -71,59 +99,21 @@ public class ProductOptionPersistenceAdapter implements SaveProductOptionsPort, 
         return ProductJpaEntityToDomainMapper.mapToDomain(savedCategory).orElse(null);
     }
 
-    private void registerPricePoliciesToOptionCombinations(
-            List<ProductOptionCategoryJpaEntity> allCategories,
-            ProductOptionCategoryJpaEntity category,
-            List<PricePolicyJpaEntity> newPolicies,
-            List<ProductOptionPricePolicyJpaEntity> newOptionPolicies,
-            ProductJpaEntity product
+    private PricePolicyJpaEntity createPricePolicyFromDefault(
+            ProductJpaEntity product,
+            PricePolicyJpaEntity defaultPricePolicy
     ) {
-        PricePolicyJpaEntity defaultPricePolicy = product.getDefaultPricePolicy();
+        PricePolicy pricePolicy = PricePolicy.from(
+                PricePolicyCreateState.builder()
+                        .price(defaultPricePolicy.getPrice())
+                        .discountPrice(defaultPricePolicy.getDiscountPrice())
+                        .discountRate(defaultPricePolicy.getDiscountRate())
+                        .accumulatedPoint(defaultPricePolicy.getAccumulatedPoint())
+                        .accumulationRate(defaultPricePolicy.getAccumulationRate())
+                        .build()
+        );
 
-        // 상품 가격 정책이 존재하지 않는 경우 예외 발생
-        if (FormatValidator.hasNoValue(defaultPricePolicy)) {
-            throw new ProductNoPricePolicyException(product.getId());
-        }
-
-        // 옵션 카테고리가 새로 생성된 것 하나인 경우 새로 생성된 카테고리의 각 옵션에 대해 가격 정책 생성
-        // region
-
-        if (allCategories.size() == 1) {
-            category.getProductOptionJpaEntities()
-                    .forEach(newOption -> {
-                        PricePolicyJpaEntity pricePolicy = createPricePolicyFromDefault(product, product.getDefaultPricePolicy());
-                        newPolicies.add(pricePolicy);
-                        newOptionPolicies.add(ProductOptionPricePolicyJpaEntity.of(newOption, pricePolicy));
-                    });
-            return;
-        }
-
-        // endregion
-
-        // 기존에 옵션 카테고리가 있는 경우, 모든 카테고리의 각 옵션들을 조합한 결과에 대해 가격 정책 생성(예: 옵션 카테고리가 총 3개인 경우 모든 옵션 3개 조합에 대한 가격 정책 생성)
-        // region
-
-        // 옵션 카테고리별로 옵션 목록 정렬
-        List<List<ProductOptionJpaEntity>> optionGroups = allCategories.stream()
-                .map(ProductOptionCategoryJpaEntity::getProductOptionJpaEntities)
-                .toList();
-
-        // 각 옵션 조합 목록 생성
-        List<List<ProductOptionJpaEntity>> productOptionCombinations = cartesianProduct(optionGroups);
-
-        productOptionCombinations.forEach(productOptionCombination -> {
-            PricePolicyJpaEntity pricePolicy = createPricePolicyFromDefault(product, defaultPricePolicy);
-            newPolicies.add(pricePolicy);
-
-            // 옵션 조합과 가격 정책 연결
-            productOptionCombination.forEach(
-                    option -> newOptionPolicies.add(
-                            ProductOptionPricePolicyJpaEntity.of(option, pricePolicy)
-                    )
-            );
-        });
-
-        // endregion
+        return PricePolicyJpaEntity.from(product, pricePolicy);
     }
 
     private List<List<ProductOptionJpaEntity>> cartesianProduct(
@@ -154,23 +144,6 @@ public class ProductOptionPersistenceAdapter implements SaveProductOptionsPort, 
             backtrackCartesian(optionGroups, depth + 1, path, result);
             path.removeLast();
         }
-    }
-
-    private PricePolicyJpaEntity createPricePolicyFromDefault(
-            ProductJpaEntity product,
-            PricePolicyJpaEntity defaultPricePolicy
-    ) {
-        PricePolicy pricePolicy = PricePolicy.from(
-                PricePolicyCreateState.builder()
-                        .price(defaultPricePolicy.getPrice())
-                        .discountPrice(defaultPricePolicy.getDiscountPrice())
-                        .discountRate(defaultPricePolicy.getDiscountRate())
-                        .accumulatedPoint(defaultPricePolicy.getAccumulatedPoint())
-                        .accumulationRate(defaultPricePolicy.getAccumulationRate())
-                        .build()
-        );
-
-        return PricePolicyJpaEntity.from(product, pricePolicy);
     }
 
     @Override

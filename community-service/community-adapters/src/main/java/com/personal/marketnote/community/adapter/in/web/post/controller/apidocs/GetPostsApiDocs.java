@@ -36,10 +36,6 @@ import java.lang.annotation.*;
                 
                         - **"PRODUCT_INQUERY": 상품 상세 정보 페이지의 상품 문의**
                 
-                            - targetGroupType: PRODUCT
-                
-                            - targetGroupId: productId
-                
                             - targetType: PRICE_POLICY
                 
                             - targetId: pricePolicyId
@@ -47,10 +43,6 @@ import java.lang.annotation.*;
                     - **회원(인증 필요)**
                 
                         - **"PRODUCT_INQUERY": 나의 상품 문의**
-                
-                            - targetGroupType: 미전송
-                
-                            - targetGroupId: 미전송
                 
                             - targetType: 미전송
                 
@@ -74,8 +66,6 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- | --- |
                 | board | string | 게시판 | Y | "PRODUCT_INQUERY" |
                 | category | string | 카테고리 | N | "PRODUCT_QUESTION" |
-                | targetGroupType | string | 대상 그룹 유형 | N | "PRODUCT" |
-                | targetGroupId | number | 대상 ID(PRODUCT ID) | N | 10 |
                 | targetType | string | 대상 유형 | N | "PRICE_POLICY" |
                 | targetId | number | 대상 ID(PRICE_POLICY ID) | N | 10 |
                 | cursor | number | 커서(무한 스크롤) | N | 30 |
@@ -84,7 +74,7 @@ import java.lang.annotation.*;
                 | sortProperty | string | 정렬 기준 | N | "ORDER_NUM" |
                 | searchTarget | string | 검색 대상 | N | "CONTENT" |
                 | searchKeyword | string | 검색 키워드 | N | "배송" |
-                    | filterCategory | string | 필터 유형 | N | "IS_PUBLIC" |
+                | filterCategory | string | 필터 유형 | N | "IS_PUBLIC" |
                 | filterValue | string | 필터 값 | N | "TRUE" |
                 
                 ---
@@ -160,18 +150,6 @@ import java.lang.annotation.*;
                         in = ParameterIn.QUERY,
                         description = "게시글 카테고리",
                         schema = @Schema(type = "string", example = "PRODUCT_QUESTION")
-                ),
-                @Parameter(
-                        name = "targetGroupType",
-                        in = ParameterIn.QUERY,
-                        description = "대상 그룹 유형",
-                        schema = @Schema(type = "string", example = "PRODUCT")
-                ),
-                @Parameter(
-                        name = "targetGroupId",
-                        in = ParameterIn.QUERY,
-                        description = "대상 그룹 ID",
-                        schema = @Schema(type = "number", example = "10")
                 ),
                 @Parameter(
                         name = "targetType",
