@@ -5,25 +5,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.personal.marketnote.common.adapter.out.VendorAdapter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoErrorResponse;
-import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoSuppliersItemResponse;
-import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoSuppliersResponse;
-import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.RegisterFasstoSupplierResponse;
+import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoShopItemResponse;
+import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoShopsResponse;
+import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.RegisterFasstoShopResponse;
 import com.personal.marketnote.fulfillment.configuration.FasstoAuthProperties;
-import com.personal.marketnote.fulfillment.domain.vendor.fassto.supplier.FasstoSupplierMapper;
-import com.personal.marketnote.fulfillment.domain.vendor.fassto.supplier.FasstoSupplierQuery;
+import com.personal.marketnote.fulfillment.domain.vendor.fassto.shop.FasstoShopMapper;
+import com.personal.marketnote.fulfillment.domain.vendor.fassto.shop.FasstoShopQuery;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationTargetType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorName;
-import com.personal.marketnote.fulfillment.exception.GetFasstoSuppliersFailedException;
-import com.personal.marketnote.fulfillment.exception.RegisterFasstoSupplierFailedException;
-import com.personal.marketnote.fulfillment.exception.UpdateFasstoSupplierFailedException;
-import com.personal.marketnote.fulfillment.port.in.result.vendor.FasstoSupplierInfoResult;
-import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoSuppliersResult;
-import com.personal.marketnote.fulfillment.port.in.result.vendor.RegisterFasstoSupplierResult;
-import com.personal.marketnote.fulfillment.port.in.result.vendor.UpdateFasstoSupplierResult;
-import com.personal.marketnote.fulfillment.port.out.vendor.GetFasstoSuppliersPort;
-import com.personal.marketnote.fulfillment.port.out.vendor.RegisterFasstoSupplierPort;
-import com.personal.marketnote.fulfillment.port.out.vendor.UpdateFasstoSupplierPort;
+import com.personal.marketnote.fulfillment.exception.GetFasstoShopsFailedException;
+import com.personal.marketnote.fulfillment.exception.RegisterFasstoShopFailedException;
+import com.personal.marketnote.fulfillment.exception.UpdateFasstoShopFailedException;
+import com.personal.marketnote.fulfillment.port.in.result.vendor.FasstoShopInfoResult;
+import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoShopsResult;
+import com.personal.marketnote.fulfillment.port.in.result.vendor.RegisterFasstoShopResult;
+import com.personal.marketnote.fulfillment.port.in.result.vendor.UpdateFasstoShopResult;
+import com.personal.marketnote.fulfillment.port.out.vendor.GetFasstoShopsPort;
+import com.personal.marketnote.fulfillment.port.out.vendor.RegisterFasstoShopPort;
+import com.personal.marketnote.fulfillment.port.out.vendor.UpdateFasstoShopPort;
 import com.personal.marketnote.fulfillment.utility.VendorCommunicationFailureHandler;
 import com.personal.marketnote.fulfillment.utility.VendorCommunicationPayloadGenerator;
 import com.personal.marketnote.fulfillment.utility.VendorCommunicationRecorder;
@@ -45,7 +45,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.*;
 @VendorAdapter
 @RequiredArgsConstructor
 @Slf4j
-public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFasstoSuppliersPort, UpdateFasstoSupplierPort {
+public class FasstoShopClient implements RegisterFasstoShopPort, GetFasstoShopsPort, UpdateFasstoShopPort {
     private static final String ACCESS_TOKEN_HEADER = "accessToken";
     private static final String CUSTOMER_CODE_PLACEHOLDER = "{customerCode}";
 
@@ -57,29 +57,29 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
     private final VendorCommunicationFailureHandler vendorCommunicationFailureHandler;
 
     @Override
-    public RegisterFasstoSupplierResult registerSupplier(FasstoSupplierMapper request) {
-        return executeSupplierMutation(request, "REGISTER", false);
+    public RegisterFasstoShopResult registerShop(FasstoShopMapper request) {
+        return executeShopMutation(request, "REGISTER", false);
     }
 
     @Override
-    public UpdateFasstoSupplierResult updateSupplier(FasstoSupplierMapper request) {
-        RegisterFasstoSupplierResult result = executeSupplierMutation(request, "UPDATE", true);
-        return UpdateFasstoSupplierResult.of(result.msg(), result.code(), result.supCd());
+    public UpdateFasstoShopResult updateShop(FasstoShopMapper request) {
+        RegisterFasstoShopResult result = executeShopMutation(request, "UPDATE", true);
+        return UpdateFasstoShopResult.of(result.msg(), result.code(), result.shopCd());
     }
 
     @Override
-    public GetFasstoSuppliersResult getSuppliers(FasstoSupplierQuery query) {
+    public GetFasstoShopsResult getShops(FasstoShopQuery query) {
         if (FormatValidator.hasNoValue(query)) {
-            throw new IllegalArgumentException("Fassto supplier query is required.");
+            throw new IllegalArgumentException("Fassto shop query is required.");
         }
 
-        URI uri = buildSupplierUri(query.getCustomerCode());
+        URI uri = buildShopUri(query.getCustomerCode());
         HttpEntity<Void> httpEntity = new HttpEntity<>(buildHeaders(query.getAccessToken(), false));
 
         Exception error = new Exception();
         String failureMessage = null;
         long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
-        FulfillmentVendorCommunicationTargetType targetType = FulfillmentVendorCommunicationTargetType.SUPPLIER;
+        FulfillmentVendorCommunicationTargetType targetType = FulfillmentVendorCommunicationTargetType.SHOP;
         FulfillmentVendorName vendorName = FulfillmentVendorName.FASSTO;
 
         for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
@@ -116,7 +116,7 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
                     error = new Exception(vendorMessage);
                 }
 
-                log.warn("Failed to get Fassto supplier list: attempt={}, message={}", attempt, e.getMessage(), e);
+                log.warn("Failed to get Fassto shop list: attempt={}, message={}", attempt, e.getMessage(), e);
                 if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
                     error = e;
                 }
@@ -129,9 +129,9 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
             JsonNode responsePayloadJson = buildResponsePayloadJson(response, attempt);
             String responsePayload = responsePayloadJson.toString();
 
-            FasstoSuppliersResponse parsedResponse = parseSuppliersResponse(response);
-            boolean isSuccess = isSuppliersSuccess(response, parsedResponse);
-            String exception = isSuccess ? null : resolveSuppliersException(response, parsedResponse);
+            FasstoShopsResponse parsedResponse = parseShopsResponse(response);
+            boolean isSuccess = isShopsSuccess(response, parsedResponse);
+            String exception = isSuccess ? null : resolveShopsException(response, parsedResponse);
 
             recordCommunication(
                     targetType,
@@ -151,7 +151,7 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
             );
 
             if (isSuccess) {
-                return mapSuppliersResult(parsedResponse);
+                return mapShopsResult(parsedResponse);
             }
 
             String vendorMessage = resolveVendorMessage(parsedResponse, FormatValidator.hasValue(response) ? response.getBody() : null);
@@ -160,7 +160,7 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
                 error = new Exception(vendorMessage);
             }
 
-            log.warn("Fassto supplier list request failed: attempt={}, status={}, exception={}",
+            log.warn("Fassto shop list request failed: attempt={}, status={}, exception={}",
                     attempt,
                     FormatValidator.hasValue(response) ? response.getStatusCode() : null,
                     exception
@@ -170,132 +170,14 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
             sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
         }
 
-        log.error("Failed to get Fassto supplier list: {} with error: {}", uri, error.getMessage(), error);
-        throw new GetFasstoSuppliersFailedException(failureMessage, new IOException(error));
+        log.error("Failed to get Fassto shop list: {} with error: {}", uri, error.getMessage(), error);
+        throw new GetFasstoShopsFailedException(failureMessage, new IOException(error));
     }
 
-    private RegisterFasstoSupplierResult executeSupplierMutation(
-            FasstoSupplierMapper request,
-            String action,
-            boolean isUpdate
-    ) {
-        if (FormatValidator.hasNoValue(request)) {
-            throw new IllegalArgumentException("Fassto supplier request is required.");
-        }
-
-        URI uri = buildSupplierUri(request.getCustomerCode());
-        HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(request.toPayload(), buildHeaders(request.getAccessToken()));
-
-        Exception error = new Exception();
-        String failureMessage = null;
-        long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
-        FulfillmentVendorCommunicationTargetType targetType = FulfillmentVendorCommunicationTargetType.SUPPLIER;
-        FulfillmentVendorName vendorName = FulfillmentVendorName.FASSTO;
-
-        for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
-            int attempt = i + 1;
-            JsonNode requestPayloadJson = buildRequestPayloadJson(request, uri, attempt, action);
-            String requestPayload = requestPayloadJson.toString();
-
-            ResponseEntity<String> response;
-            try {
-                response = restTemplate.exchange(
-                        uri,
-                        HttpMethod.PATCH,
-                        httpEntity,
-                        String.class
-                );
-            } catch (Exception e) {
-                Map<String, Object> errorPayload = new LinkedHashMap<>();
-                errorPayload.put("error", e.getClass().getSimpleName());
-                errorPayload.put("message", e.getMessage());
-                errorPayload.put("attempt", attempt);
-
-                vendorCommunicationFailureHandler.handleFailure(
-                        targetType,
-                        vendorName,
-                        requestPayload,
-                        requestPayloadJson,
-                        errorPayload,
-                        e
-                );
-
-                String vendorMessage = resolveVendorMessageFromException(e);
-                if (FormatValidator.hasValue(vendorMessage)) {
-                    failureMessage = vendorMessage;
-                    error = new Exception(vendorMessage);
-                }
-
-                log.warn("Failed to {} Fassto supplier: attempt={}, message={}", action.toLowerCase(), attempt, e.getMessage(), e);
-                if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
-                    error = e;
-                }
-
-                sleep(sleepMillis);
-                sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
-                continue;
-            }
-
-            JsonNode responsePayloadJson = buildResponsePayloadJson(response, attempt);
-            String responsePayload = responsePayloadJson.toString();
-
-            RegisterFasstoSupplierResponse parsedResponse = parseResponseBody(response);
-            boolean isSuccess = isSuccessResponse(response, parsedResponse);
-            String exception = isSuccess ? null : resolveResponseException(response, parsedResponse);
-
-            recordCommunication(
-                    targetType,
-                    vendorName,
-                    FulfillmentVendorCommunicationType.REQUEST,
-                    requestPayload,
-                    requestPayloadJson,
-                    exception
-            );
-            recordCommunication(
-                    targetType,
-                    vendorName,
-                    FulfillmentVendorCommunicationType.RESPONSE,
-                    responsePayload,
-                    responsePayloadJson,
-                    exception
-            );
-
-            if (isSuccess) {
-                return RegisterFasstoSupplierResult.of(
-                        parsedResponse.data().msg(),
-                        parsedResponse.data().code(),
-                        parsedResponse.data().supCd()
-                );
-            }
-
-            String vendorMessage = resolveVendorMessage(parsedResponse, FormatValidator.hasValue(response) ? response.getBody() : null);
-            if (FormatValidator.hasValue(vendorMessage)) {
-                failureMessage = vendorMessage;
-                error = new Exception(vendorMessage);
-            }
-
-            log.warn("Fassto supplier {} failed: attempt={}, status={}, exception={}",
-                    action.toLowerCase(),
-                    attempt,
-                    FormatValidator.hasValue(response) ? response.getStatusCode() : null,
-                    exception
-            );
-
-            sleep(sleepMillis);
-            sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
-        }
-
-        log.error("Failed to {} Fassto supplier: {} with error: {}", action.toLowerCase(), uri, error.getMessage(), error);
-        if (isUpdate) {
-            throw new UpdateFasstoSupplierFailedException(failureMessage, new IOException(error));
-        }
-        throw new RegisterFasstoSupplierFailedException(failureMessage, new IOException(error));
-    }
-
-    private URI buildSupplierUri(String customerCode) {
-        validateSupplierProperties();
+    private URI buildShopUri(String customerCode) {
+        validateShopProperties();
         return UriComponentsBuilder.fromUriString(properties.getBaseUrl())
-                .path(properties.getSupplierPath())
+                .path(properties.getShopPath())
                 .buildAndExpand(customerCode)
                 .toUri();
     }
@@ -314,19 +196,19 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
         return headers;
     }
 
-    private void validateSupplierProperties() {
+    private void validateShopProperties() {
         if (FormatValidator.hasNoValue(properties.getBaseUrl())) {
             throw new IllegalStateException("Fassto base URL is required.");
         }
-        if (FormatValidator.hasNoValue(properties.getSupplierPath())) {
-            throw new IllegalStateException("Fassto supplier path is required.");
+        if (FormatValidator.hasNoValue(properties.getShopPath())) {
+            throw new IllegalStateException("Fassto shop path is required.");
         }
-        if (!properties.getSupplierPath().contains(CUSTOMER_CODE_PLACEHOLDER)) {
-            throw new IllegalStateException("Fassto supplier path must include {customerCode}.");
+        if (!properties.getShopPath().contains(CUSTOMER_CODE_PLACEHOLDER)) {
+            throw new IllegalStateException("Fassto shop path must include {customerCode}.");
         }
     }
 
-    private RegisterFasstoSupplierResponse parseResponseBody(ResponseEntity<String> response) {
+    private RegisterFasstoShopResponse parseResponseBody(ResponseEntity<String> response) {
         if (FormatValidator.hasNoValue(response)) {
             return null;
         }
@@ -337,14 +219,14 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
         }
 
         try {
-            return objectMapper.readValue(body, RegisterFasstoSupplierResponse.class);
+            return objectMapper.readValue(body, RegisterFasstoShopResponse.class);
         } catch (Exception e) {
-            log.warn("Failed to parse Fassto supplier response: {}", e.getMessage(), e);
+            log.warn("Failed to parse Fassto shop response: {}", e.getMessage(), e);
             return null;
         }
     }
 
-    private boolean isSuccessResponse(ResponseEntity<String> response, RegisterFasstoSupplierResponse parsedResponse) {
+    private boolean isSuccessResponse(ResponseEntity<String> response, RegisterFasstoShopResponse parsedResponse) {
         return FormatValidator.hasValue(response)
                 && response.getStatusCode().value() == 200
                 && FormatValidator.hasValue(parsedResponse)
@@ -352,7 +234,7 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
                 && FormatValidator.hasValue(parsedResponse.data());
     }
 
-    private String resolveResponseException(ResponseEntity<String> response, RegisterFasstoSupplierResponse parsedResponse) {
+    private String resolveResponseException(ResponseEntity<String> response, RegisterFasstoShopResponse parsedResponse) {
         if ((FormatValidator.hasNoValue(response))) {
             return "NO_RESPONSE";
         }
@@ -371,18 +253,8 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
         return "UNKNOWN_FAILURE";
     }
 
-    private JsonNode buildListRequestPayloadJson(FasstoSupplierQuery query, URI uri, int attempt) {
-        Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("method", HttpMethod.GET.name());
-        payload.put("url", uri.toString());
-        payload.put("customerCode", query.getCustomerCode());
-        payload.put(ACCESS_TOKEN_HEADER, maskValue(query.getAccessToken()));
-        payload.put("attempt", attempt);
-        return vendorCommunicationPayloadGenerator.buildPayloadJson(payload);
-    }
-
     private JsonNode buildRequestPayloadJson(
-            FasstoSupplierMapper request,
+            FasstoShopMapper request,
             URI uri,
             int attempt,
             String action
@@ -452,91 +324,6 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
         );
     }
 
-    private FasstoSuppliersResponse parseSuppliersResponse(ResponseEntity<String> response) {
-        if (FormatValidator.hasNoValue(response)) {
-            return null;
-        }
-
-        String body = response.getBody();
-        if (FormatValidator.hasNoValue(body)) {
-            return null;
-        }
-
-        try {
-            return objectMapper.readValue(body, FasstoSuppliersResponse.class);
-        } catch (Exception e) {
-            log.warn("Failed to parse Fassto supplier list response: {}", e.getMessage(), e);
-            return null;
-        }
-    }
-
-    private boolean isSuppliersSuccess(ResponseEntity<String> response, FasstoSuppliersResponse parsedResponse) {
-        return FormatValidator.hasValue(response)
-                && response.getStatusCode().value() == 200
-                && FormatValidator.hasValue(parsedResponse)
-                && parsedResponse.isSuccess();
-    }
-
-    private String resolveSuppliersException(
-            ResponseEntity<String> response,
-            FasstoSuppliersResponse parsedResponse
-    ) {
-        if (FormatValidator.hasNoValue(response)) {
-            return "NO_RESPONSE";
-        }
-        if (FormatValidator.notEquals(response.getStatusCode().value(), 200)) {
-            return "HTTP_" + response.getStatusCode().value();
-        }
-        if (FormatValidator.hasNoValue(parsedResponse)) {
-            return "INVALID_RESPONSE";
-        }
-        if (FormatValidator.hasNoValue(parsedResponse.header()) || !parsedResponse.header().isSuccess()) {
-            return "HEADER_FAILURE";
-        }
-        if (FormatValidator.hasNoValue(parsedResponse.data())) {
-            return "DATA_MISSING";
-        }
-        return "UNKNOWN_FAILURE";
-    }
-
-    private GetFasstoSuppliersResult mapSuppliersResult(FasstoSuppliersResponse response) {
-        List<FasstoSupplierInfoResult> suppliers = response.data().stream()
-                .map(this::mapSupplierInfo)
-                .toList();
-        Integer dataCount = FormatValidator.hasValue(response.header()) ? response.header().dataCount() : null;
-        return GetFasstoSuppliersResult.of(dataCount, suppliers);
-    }
-
-    private FasstoSupplierInfoResult mapSupplierInfo(FasstoSuppliersItemResponse item) {
-        return FasstoSupplierInfoResult.of(
-                item.supCd(),
-                item.supNm(),
-                item.cstSupCd(),
-                item.cstCd(),
-                item.cstNm(),
-                item.dealStrDt(),
-                item.dealEndDt(),
-                item.zipNo(),
-                item.addr1(),
-                item.addr2(),
-                item.ceoNm(),
-                item.busNo(),
-                item.busSp(),
-                item.busTp(),
-                item.telNo(),
-                item.faxNo(),
-                item.empNm1(),
-                item.empPosit1(),
-                item.empTelNo1(),
-                item.empEmail1(),
-                item.empNm2(),
-                item.empPosit2(),
-                item.empTelNo2(),
-                item.empEmail2(),
-                item.useYn()
-        );
-    }
-
     private String maskValue(String value) {
         if (FormatValidator.hasNoValue(value)) {
             return value;
@@ -559,7 +346,218 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
         }
     }
 
-    private String resolveVendorMessage(RegisterFasstoSupplierResponse response, String rawBody) {
+    private RegisterFasstoShopResult executeShopMutation(
+            FasstoShopMapper request,
+            String action,
+            boolean isUpdate
+    ) {
+        if (FormatValidator.hasNoValue(request)) {
+            throw new IllegalArgumentException("Fassto shop request is required.");
+        }
+
+        URI uri = buildShopUri(request.getCustomerCode());
+        HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(request.toPayload(), buildHeaders(request.getAccessToken()));
+
+        Exception error = new Exception();
+        String failureMessage = null;
+        long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
+        FulfillmentVendorCommunicationTargetType targetType = FulfillmentVendorCommunicationTargetType.SHOP;
+        FulfillmentVendorName vendorName = FulfillmentVendorName.FASSTO;
+
+        for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            int attempt = i + 1;
+            JsonNode requestPayloadJson = buildRequestPayloadJson(request, uri, attempt, action);
+            String requestPayload = requestPayloadJson.toString();
+
+            ResponseEntity<String> response;
+            try {
+                response = restTemplate.exchange(
+                        uri,
+                        HttpMethod.PATCH,
+                        httpEntity,
+                        String.class
+                );
+            } catch (Exception e) {
+                Map<String, Object> errorPayload = new LinkedHashMap<>();
+                errorPayload.put("error", e.getClass().getSimpleName());
+                errorPayload.put("message", e.getMessage());
+                errorPayload.put("attempt", attempt);
+
+                vendorCommunicationFailureHandler.handleFailure(
+                        targetType,
+                        vendorName,
+                        requestPayload,
+                        requestPayloadJson,
+                        errorPayload,
+                        e
+                );
+
+                String vendorMessage = resolveVendorMessageFromException(e);
+                if (FormatValidator.hasValue(vendorMessage)) {
+                    failureMessage = vendorMessage;
+                    error = new Exception(vendorMessage);
+                }
+
+                log.warn("Failed to {} Fassto shop: attempt={}, message={}", action.toLowerCase(), attempt, e.getMessage(), e);
+                if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
+                    error = e;
+                }
+
+                sleep(sleepMillis);
+                sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
+                continue;
+            }
+
+            JsonNode responsePayloadJson = buildResponsePayloadJson(response, attempt);
+            String responsePayload = responsePayloadJson.toString();
+
+            RegisterFasstoShopResponse parsedResponse = parseResponseBody(response);
+            boolean isSuccess = isSuccessResponse(response, parsedResponse);
+            String exception = isSuccess ? null : resolveResponseException(response, parsedResponse);
+
+            recordCommunication(
+                    targetType,
+                    vendorName,
+                    FulfillmentVendorCommunicationType.REQUEST,
+                    requestPayload,
+                    requestPayloadJson,
+                    exception
+            );
+            recordCommunication(
+                    targetType,
+                    vendorName,
+                    FulfillmentVendorCommunicationType.RESPONSE,
+                    responsePayload,
+                    responsePayloadJson,
+                    exception
+            );
+
+            if (isSuccess) {
+                return RegisterFasstoShopResult.of(
+                        parsedResponse.data().msg(),
+                        parsedResponse.data().code(),
+                        parsedResponse.data().shopCd()
+                );
+            }
+
+            String vendorMessage = resolveVendorMessage(parsedResponse, FormatValidator.hasValue(response) ? response.getBody() : null);
+            if (FormatValidator.hasValue(vendorMessage)) {
+                failureMessage = vendorMessage;
+                error = new Exception(vendorMessage);
+            }
+
+            log.warn("Fassto shop {} failed: attempt={}, status={}, exception={}",
+                    action.toLowerCase(),
+                    attempt,
+                    FormatValidator.hasValue(response) ? response.getStatusCode() : null,
+                    exception
+            );
+
+            sleep(sleepMillis);
+            sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
+        }
+
+        log.error("Failed to {} Fassto shop: {} with error: {}", action.toLowerCase(), uri, error.getMessage(), error);
+
+        if (isUpdate) {
+            throw new UpdateFasstoShopFailedException(failureMessage, new IOException(error));
+        }
+        throw new RegisterFasstoShopFailedException(failureMessage, new IOException(error));
+    }
+
+    private JsonNode buildListRequestPayloadJson(FasstoShopQuery query, URI uri, int attempt) {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("method", HttpMethod.GET.name());
+        payload.put("url", uri.toString());
+        payload.put("customerCode", query.getCustomerCode());
+        payload.put(ACCESS_TOKEN_HEADER, maskValue(query.getAccessToken()));
+        payload.put("attempt", attempt);
+        return vendorCommunicationPayloadGenerator.buildPayloadJson(payload);
+    }
+
+    private FasstoShopsResponse parseShopsResponse(ResponseEntity<String> response) {
+        if (FormatValidator.hasNoValue(response)) {
+            return null;
+        }
+
+        String body = response.getBody();
+        if (FormatValidator.hasNoValue(body)) {
+            return null;
+        }
+
+        try {
+            return objectMapper.readValue(body, FasstoShopsResponse.class);
+        } catch (Exception e) {
+            log.warn("Failed to parse Fassto shop list response: {}", e.getMessage(), e);
+            return null;
+        }
+    }
+
+    private boolean isShopsSuccess(ResponseEntity<String> response, FasstoShopsResponse parsedResponse) {
+        return FormatValidator.hasValue(response)
+                && response.getStatusCode().value() == 200
+                && FormatValidator.hasValue(parsedResponse)
+                && parsedResponse.isSuccess();
+    }
+
+    private String resolveShopsException(
+            ResponseEntity<String> response,
+            FasstoShopsResponse parsedResponse
+    ) {
+        if (FormatValidator.hasNoValue(response)) {
+            return "NO_RESPONSE";
+        }
+        if (FormatValidator.notEquals(response.getStatusCode().value(), 200)) {
+            return "HTTP_" + response.getStatusCode().value();
+        }
+        if (FormatValidator.hasNoValue(parsedResponse)) {
+            return "INVALID_RESPONSE";
+        }
+        if (FormatValidator.hasNoValue(parsedResponse.header()) || !parsedResponse.header().isSuccess()) {
+            return "HEADER_FAILURE";
+        }
+        if (FormatValidator.hasNoValue(parsedResponse.data())) {
+            return "DATA_MISSING";
+        }
+        return "UNKNOWN_FAILURE";
+    }
+
+    private GetFasstoShopsResult mapShopsResult(FasstoShopsResponse response) {
+        List<FasstoShopInfoResult> shops = response.data().stream()
+                .map(this::mapShopInfo)
+                .toList();
+        Integer dataCount = FormatValidator.hasValue(response.header()) ? response.header().dataCount() : null;
+        return GetFasstoShopsResult.of(dataCount, shops);
+    }
+
+    private FasstoShopInfoResult mapShopInfo(FasstoShopItemResponse item) {
+        return FasstoShopInfoResult.of(
+                item.shopCd(),
+                item.shopNm(),
+                item.cstShopCd(),
+                item.cstCd(),
+                item.cstNm(),
+                item.shopTp(),
+                item.dealStrDt(),
+                item.dealEndDt(),
+                item.zipNo(),
+                item.addr1(),
+                item.addr2(),
+                item.ceoNm(),
+                item.busNo(),
+                item.telNo(),
+                item.unloadWay(),
+                item.checkWay(),
+                item.standYn(),
+                item.formType(),
+                item.empNm(),
+                item.empPosit(),
+                item.empTelNo(),
+                item.useYn()
+        );
+    }
+
+    private String resolveVendorMessage(FasstoShopsResponse response, String rawBody) {
         if (FormatValidator.hasValue(response)) {
             String message = response.resolveErrorMessage();
             if (FormatValidator.hasValue(message)) {
@@ -569,7 +567,7 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
         return resolveVendorMessage(rawBody);
     }
 
-    private String resolveVendorMessage(FasstoSuppliersResponse response, String rawBody) {
+    private String resolveVendorMessage(RegisterFasstoShopResponse response, String rawBody) {
         if (FormatValidator.hasValue(response)) {
             String message = response.resolveErrorMessage();
             if (FormatValidator.hasValue(message)) {

@@ -64,7 +64,7 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | supCd | string | 공급사 코드 | "94388001" |
-                | supNm | string | 공급사명 | "테스트 상점1" |
+                | supNm | string | 공급사명 | "테스트 공급사1" |
                 | cstSupCd | string | 고객사 공급사 코드 | "" |
                 | cstCd | string | 고객사 코드 | "94388" |
                 | cstNm | string | 고객사명 | "마켓노트 주식회사 테스트" |
@@ -121,7 +121,7 @@ import java.lang.annotation.*;
                                             "suppliers": [
                                               {
                                                 "supCd": "94388001",
-                                                "supNm": "테스트 상점1",
+                                                "supNm": "테스트 공급사1",
                                                 "cstSupCd": "",
                                                 "cstCd": "94388",
                                                 "cstNm": "마켓노트 주식회사 테스트",
@@ -148,7 +148,7 @@ import java.lang.annotation.*;
                                               },
                                               {
                                                 "supCd": "94388002",
-                                                "supNm": "테스트 상점2",
+                                                "supNm": "테스트 공급사2",
                                                 "cstSupCd": "",
                                                 "cstCd": "94388",
                                                 "cstNm": "마켓노트 주식회사 테스트",
@@ -175,7 +175,7 @@ import java.lang.annotation.*;
                                               },
                                               {
                                                 "supCd": "94388003",
-                                                "supNm": "테스트 상점3",
+                                                "supNm": "테스트 공급사3",
                                                 "cstSupCd": "",
                                                 "cstCd": "94388",
                                                 "cstNm": "마켓노트 주식회사 테스트",

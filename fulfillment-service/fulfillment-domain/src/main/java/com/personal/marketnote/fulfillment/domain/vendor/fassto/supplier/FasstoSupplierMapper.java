@@ -94,6 +94,62 @@ public class FasstoSupplierMapper {
         );
     }
 
+    public static FasstoSupplierMapper update(
+            String customerCode,
+            String accessToken,
+            String supCd,
+            String supNm,
+            String cstSupCd,
+            String useYn,
+            String dealStrDt,
+            String dealEndDt,
+            String zipNo,
+            String addr1,
+            String addr2,
+            String ceoNm,
+            String busNo,
+            String busSp,
+            String busTp,
+            String telNo,
+            String faxNo,
+            String empNm1,
+            String empPosit1,
+            String empTelNo1,
+            String empEmail1,
+            String empNm2,
+            String empPosit2,
+            String empTelNo2,
+            String empEmail2
+    ) {
+        return create(
+                customerCode,
+                accessToken,
+                supCd,
+                supNm,
+                cstSupCd,
+                useYn,
+                dealStrDt,
+                dealEndDt,
+                zipNo,
+                addr1,
+                addr2,
+                ceoNm,
+                busNo,
+                busSp,
+                busTp,
+                telNo,
+                faxNo,
+                empNm1,
+                empPosit1,
+                empTelNo1,
+                empEmail1,
+                empNm2,
+                empPosit2,
+                empTelNo2,
+                empEmail2
+        );
+    }
+
     public Map<String, Object> toPayload() {
         Map<String, Object> payload = new LinkedHashMap<>();
 

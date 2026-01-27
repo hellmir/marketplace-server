@@ -26,6 +26,7 @@ import static org.mockito.Mockito.*;
 class Oauth2LoginUseCaseTest {
     @Mock
     private TokenSupport tokenSupport;
+
     @Mock
     private FindUserPort findUserPort;
 
@@ -69,7 +70,7 @@ class Oauth2LoginUseCaseTest {
 
     @Test
     @DisplayName("신규 소셜 회원이 로그인을 시도하는 경우 사용자 정보 기반으로 로그인 결과를 반환한다")
-    void loginByOAuth2_newUser_returnsLoginResult() throws Exception {
+    void loginByOAuth2_newUser_returnsLoginResult() {
         // given
         String code = "code";
         String redirectUri = "http://localhost/callback";
@@ -106,7 +107,7 @@ class Oauth2LoginUseCaseTest {
 
     @Test
     @DisplayName("신규 소셜 회원이 OAuth2 토큰 인증에 실패하는 경우 예외를 던진다")
-    void loginByOAuth2_missingUserInfo_throws() throws Exception {
+    void loginByOAuth2_missingUserInfo_throws() {
         // given
         String code = "code";
         String redirectUri = "http://localhost/callback";
@@ -134,7 +135,7 @@ class Oauth2LoginUseCaseTest {
 
     @Test
     @DisplayName("지원하지 않는 인증 코드로 소셜 로그인을 시도하면 예외를 던진다")
-    void loginByOAuth2_unsupportedCode_throws() throws Exception {
+    void loginByOAuth2_unsupportedCode_throws() {
         // given
         String code = "bad-code";
         String redirectUri = "http://localhost/callback";
