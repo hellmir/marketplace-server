@@ -82,10 +82,18 @@ public class FormatConverter {
 
     public static String toUpperCase(String value) {
         if (FormatValidator.hasNoValue(value)) {
-            return "";
+            return value;
         }
 
         return value.toUpperCase();
+    }
+
+    public static String toLowerCase(String value) {
+        if (FormatValidator.hasNoValue(value)) {
+            return value;
+        }
+
+        return value.toLowerCase();
     }
 
     public static String snakeToCamel(String name) {

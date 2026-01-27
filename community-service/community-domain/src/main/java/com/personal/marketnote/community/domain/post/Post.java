@@ -28,6 +28,8 @@ public class Post {
     private Long parentId;
     private Board board;
     private PostCategory category;
+    private PostTargetGroupType targetGroupType;
+    private Long targetGroupId;
     private PostTargetType targetType;
     private Long targetId;
     private String productImageUrl;
@@ -60,6 +62,8 @@ public class Post {
                 .parentId(state.getParentId())
                 .board(state.getBoard())
                 .category(PostCategoryResolver.resolve(state.getBoard(), state.getCategory()))
+                .targetGroupType(state.getTargetGroupType())
+                .targetGroupId(state.getTargetGroupId())
                 .targetType(state.getTargetType())
                 .targetId(state.getTargetId())
                 .productImageUrl(state.getProductImageUrl())
@@ -79,6 +83,8 @@ public class Post {
                 .parentId(state.getParentId())
                 .board(state.getBoard())
                 .category(PostCategoryResolver.resolve(state.getBoard(), state.getCategory()))
+                .targetGroupType(state.getTargetGroupType())
+                .targetGroupId(state.getTargetGroupId())
                 .targetType(state.getTargetType())
                 .targetId(state.getTargetId())
                 .productImageUrl(state.getProductImageUrl())
