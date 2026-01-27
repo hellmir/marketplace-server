@@ -10,6 +10,8 @@ public class PostCommandToStateMapper {
                 .parentId(command.parentId())
                 .board(command.board())
                 .category(command.category())
+                .targetGroupType(command.targetGroupType())
+                .targetGroupId(command.targetGroupId())
                 .targetType(command.targetType())
                 .targetId(command.targetId())
                 .productImageUrl(command.productImageUrl())
