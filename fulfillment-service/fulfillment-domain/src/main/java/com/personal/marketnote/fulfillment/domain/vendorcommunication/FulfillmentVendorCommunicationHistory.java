@@ -12,9 +12,10 @@ import java.time.LocalDateTime;
 public class FulfillmentVendorCommunicationHistory {
     private Long id;
     private FulfillmentVendorCommunicationTargetType targetType;
-    private Long targetId;
+    private String targetId;
     private FulfillmentVendorName vendorName;
     private FulfillmentVendorCommunicationType communicationType;
+    private FulfillmentVendorCommunicationSenderType sender;
     private String exception;
     private String payload;
     private JsonNode payloadJson;
@@ -26,6 +27,7 @@ public class FulfillmentVendorCommunicationHistory {
                 .targetId(state.getTargetId())
                 .vendorName(state.getVendorName())
                 .communicationType(state.getCommunicationType())
+                .sender(state.getSender())
                 .exception(state.getException())
                 .payload(state.getPayload())
                 .payloadJson(state.getPayloadJson())
@@ -39,6 +41,7 @@ public class FulfillmentVendorCommunicationHistory {
                 .targetId(state.getTargetId())
                 .vendorName(state.getVendorName())
                 .communicationType(state.getCommunicationType())
+                .sender(state.getSender())
                 .exception(state.getException())
                 .payload(state.getPayload())
                 .payloadJson(state.getPayloadJson())

@@ -1,6 +1,7 @@
 package com.personal.marketnote.fulfillment.utility;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationSenderType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationTargetType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorName;
@@ -17,7 +18,29 @@ public class VendorCommunicationRecorder {
     public void record(
             FulfillmentVendorCommunicationTargetType targetType,
             FulfillmentVendorCommunicationType communicationType,
-            Long targetId,
+            FulfillmentVendorCommunicationSenderType sender,
+            FulfillmentVendorName vendorName,
+            String payload,
+            JsonNode payloadJson
+    ) {
+        recordVendorCommunicationHistoryUseCase.record(
+                FulfillmentVendorCommunicationHistoryCommand.builder()
+                        .targetType(targetType)
+                        .targetId(null)
+                        .vendorName(vendorName)
+                        .communicationType(communicationType)
+                        .sender(sender)
+                        .payload(payload)
+                        .payloadJson(payloadJson)
+                        .build()
+        );
+    }
+
+    public void record(
+            FulfillmentVendorCommunicationTargetType targetType,
+            FulfillmentVendorCommunicationType communicationType,
+            FulfillmentVendorCommunicationSenderType sender,
+            String targetId,
             FulfillmentVendorName vendorName,
             String payload,
             JsonNode payloadJson
@@ -28,6 +51,7 @@ public class VendorCommunicationRecorder {
                         .targetId(targetId)
                         .vendorName(vendorName)
                         .communicationType(communicationType)
+                        .sender(sender)
                         .payload(payload)
                         .payloadJson(payloadJson)
                         .build()
@@ -37,6 +61,7 @@ public class VendorCommunicationRecorder {
     public void record(
             FulfillmentVendorCommunicationTargetType targetType,
             FulfillmentVendorCommunicationType communicationType,
+            FulfillmentVendorCommunicationSenderType sender,
             FulfillmentVendorName vendorName,
             String payload,
             JsonNode payloadJson,
@@ -47,6 +72,7 @@ public class VendorCommunicationRecorder {
                         .targetType(targetType)
                         .vendorName(vendorName)
                         .communicationType(communicationType)
+                        .sender(sender)
                         .exception(exception)
                         .payload(payload)
                         .payloadJson(payloadJson)
@@ -57,7 +83,8 @@ public class VendorCommunicationRecorder {
     public void record(
             FulfillmentVendorCommunicationTargetType targetType,
             FulfillmentVendorCommunicationType communicationType,
-            Long targetId,
+            FulfillmentVendorCommunicationSenderType sender,
+            String targetId,
             FulfillmentVendorName vendorName,
             String payload,
             JsonNode payloadJson,
@@ -69,6 +96,7 @@ public class VendorCommunicationRecorder {
                         .targetId(targetId)
                         .vendorName(vendorName)
                         .communicationType(communicationType)
+                        .sender(sender)
                         .exception(exception)
                         .payload(payload)
                         .payloadJson(payloadJson)

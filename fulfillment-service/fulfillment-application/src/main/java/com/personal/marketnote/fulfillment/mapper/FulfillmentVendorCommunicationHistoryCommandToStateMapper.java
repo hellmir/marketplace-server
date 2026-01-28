@@ -15,6 +15,7 @@ public class FulfillmentVendorCommunicationHistoryCommandToStateMapper {
                 .targetId(command.getTargetId())
                 .vendorName(command.getVendorName())
                 .communicationType(command.getCommunicationType())
+                .sender(command.getSender())
                 .exception(command.getException())
                 .payload(command.getPayload())
                 .payloadJson(command.getPayloadJson())

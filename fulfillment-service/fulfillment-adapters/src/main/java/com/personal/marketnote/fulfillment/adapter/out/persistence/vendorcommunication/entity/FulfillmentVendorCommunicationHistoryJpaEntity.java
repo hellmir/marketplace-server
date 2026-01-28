@@ -31,8 +31,8 @@ public class FulfillmentVendorCommunicationHistoryJpaEntity {
     @Column(name = "target_type", nullable = false, length = 31)
     private FulfillmentVendorCommunicationTargetType targetType;
 
-    @Column(name = "target_id")
-    private Long targetId;
+    @Column(name = "target_id", length = 63)
+    private String targetId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "vendor_name", nullable = false, length = 31)
@@ -41,6 +41,10 @@ public class FulfillmentVendorCommunicationHistoryJpaEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "communication_type", nullable = false, length = 15)
     private FulfillmentVendorCommunicationType communicationType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "sender", nullable = false, length = 15)
+    private FulfillmentVendorCommunicationSenderType sender;
 
     @Column(name = "exception", length = 63)
     private String exception;
@@ -65,6 +69,7 @@ public class FulfillmentVendorCommunicationHistoryJpaEntity {
                 .targetId(history.getTargetId())
                 .vendorName(history.getVendorName())
                 .communicationType(history.getCommunicationType())
+                .sender(history.getSender())
                 .exception(history.getException())
                 .payload(history.getPayload())
                 .payloadJson(history.getPayloadJson())
@@ -80,6 +85,7 @@ public class FulfillmentVendorCommunicationHistoryJpaEntity {
                         .targetId(targetId)
                         .vendorName(vendorName)
                         .communicationType(communicationType)
+                        .sender(sender)
                         .exception(exception)
                         .payload(payload)
                         .payloadJson(payloadJson)
