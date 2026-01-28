@@ -41,7 +41,7 @@
 - Hexagonal Architecture
 - Multi-Module(Adapters/application/domain)
 
-## Event Brokers
+## Event Streaming
 - Apache Kafka Cluster
 
 ## RDBMS
