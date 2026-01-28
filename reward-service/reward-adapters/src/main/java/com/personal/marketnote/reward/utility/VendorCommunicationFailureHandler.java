@@ -1,6 +1,7 @@
 package com.personal.marketnote.reward.utility;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorCommunicationSenderType;
 import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorCommunicationTargetType;
 import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorCommunicationType;
 import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorName;
@@ -30,6 +31,7 @@ public class VendorCommunicationFailureHandler {
         vendorCommunicationRecorder.record(
                 targetType,
                 RewardVendorCommunicationType.REQUEST,
+                RewardVendorCommunicationSenderType.VENDOR,
                 vendorName,
                 requestPayload,
                 requestPayloadJson,
@@ -44,6 +46,7 @@ public class VendorCommunicationFailureHandler {
         vendorCommunicationRecorder.record(
                 targetType,
                 RewardVendorCommunicationType.RESPONSE,
+                RewardVendorCommunicationSenderType.SERVER,
                 vendorName,
                 responsePayload,
                 responsePayloadJson,

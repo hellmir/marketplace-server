@@ -12,6 +12,7 @@ import com.personal.marketnote.reward.adapter.in.web.offerwall.apidocs.TnkCallba
 import com.personal.marketnote.reward.adapter.in.web.point.response.UpdateUserPointResponse;
 import com.personal.marketnote.reward.domain.offerwall.OfferwallType;
 import com.personal.marketnote.reward.domain.offerwall.UserDeviceType;
+import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorCommunicationSenderType;
 import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorCommunicationTargetType;
 import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorCommunicationType;
 import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorName;
@@ -126,10 +127,22 @@ public class OfferwallController {
             String successPayload = successPayloadJson.toString();
 
             vendorCommunicationRecorder.record(
-                    targetType, RewardVendorCommunicationType.REQUEST, id, vendorName, payloadString, payloadJson
+                    targetType,
+                    RewardVendorCommunicationType.REQUEST,
+                    RewardVendorCommunicationSenderType.VENDOR,
+                    id,
+                    vendorName,
+                    payloadString,
+                    payloadJson
             );
             vendorCommunicationRecorder.record(
-                    targetType, RewardVendorCommunicationType.RESPONSE, id, vendorName, successPayload, successPayloadJson
+                    targetType,
+                    RewardVendorCommunicationType.RESPONSE,
+                    RewardVendorCommunicationSenderType.SERVER,
+                    id,
+                    vendorName,
+                    successPayload,
+                    successPayloadJson
             );
 
             return ResponseEntity.ok(successPayload);
@@ -217,10 +230,22 @@ public class OfferwallController {
             String successPayload = successPayloadJson.toString();
 
             vendorCommunicationRecorder.record(
-                    targetType, RewardVendorCommunicationType.REQUEST, id, vendorName, payloadString, payloadJson
+                    targetType,
+                    RewardVendorCommunicationType.REQUEST,
+                    RewardVendorCommunicationSenderType.VENDOR,
+                    id,
+                    vendorName,
+                    payloadString,
+                    payloadJson
             );
             vendorCommunicationRecorder.record(
-                    targetType, RewardVendorCommunicationType.RESPONSE, id, vendorName, successPayload, successPayloadJson
+                    targetType,
+                    RewardVendorCommunicationType.RESPONSE,
+                    RewardVendorCommunicationSenderType.SERVER,
+                    id,
+                    vendorName,
+                    successPayload,
+                    successPayloadJson
             );
 
             return ResponseEntity.ok(
@@ -327,10 +352,22 @@ public class OfferwallController {
             String successPayload = successPayloadJson.toString();
 
             vendorCommunicationRecorder.record(
-                    targetType, RewardVendorCommunicationType.REQUEST, id, vendorName, payloadString, payloadJson
+                    targetType,
+                    RewardVendorCommunicationType.REQUEST,
+                    RewardVendorCommunicationSenderType.VENDOR,
+                    id,
+                    vendorName,
+                    payloadString,
+                    payloadJson
             );
             vendorCommunicationRecorder.record(
-                    targetType, RewardVendorCommunicationType.RESPONSE, id, vendorName, successPayload, successPayloadJson
+                    targetType,
+                    RewardVendorCommunicationType.RESPONSE,
+                    RewardVendorCommunicationSenderType.SERVER,
+                    id,
+                    vendorName,
+                    successPayload,
+                    successPayloadJson
             );
 
             return ResponseEntity.ok(

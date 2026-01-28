@@ -1,6 +1,7 @@
 package com.personal.marketnote.reward.utility;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorCommunicationSenderType;
 import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorCommunicationTargetType;
 import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorCommunicationType;
 import com.personal.marketnote.reward.domain.vendorcommunication.RewardVendorName;
@@ -17,6 +18,7 @@ public class VendorCommunicationRecorder {
     public void record(
             RewardVendorCommunicationTargetType targetType,
             RewardVendorCommunicationType communicationType,
+            RewardVendorCommunicationSenderType sender,
             Long targetId,
             RewardVendorName vendorName,
             String payload,
@@ -28,6 +30,7 @@ public class VendorCommunicationRecorder {
                         .targetId(targetId)
                         .vendorName(vendorName)
                         .communicationType(communicationType)
+                        .sender(sender)
                         .payload(payload)
                         .payloadJson(payloadJson)
                         .build()
@@ -37,6 +40,7 @@ public class VendorCommunicationRecorder {
     public void record(
             RewardVendorCommunicationTargetType targetType,
             RewardVendorCommunicationType communicationType,
+            RewardVendorCommunicationSenderType sender,
             RewardVendorName vendorName,
             String payload,
             JsonNode payloadJson,
@@ -47,6 +51,7 @@ public class VendorCommunicationRecorder {
                         .targetType(targetType)
                         .vendorName(vendorName)
                         .communicationType(communicationType)
+                        .sender(sender)
                         .exception(exception)
                         .payload(payload)
                         .payloadJson(payloadJson)

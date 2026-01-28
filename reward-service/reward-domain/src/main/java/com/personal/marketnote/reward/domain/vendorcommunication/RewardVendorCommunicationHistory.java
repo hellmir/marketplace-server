@@ -15,6 +15,7 @@ public class RewardVendorCommunicationHistory {
     private Long targetId;
     private RewardVendorName vendorName;
     private RewardVendorCommunicationType communicationType;
+    private RewardVendorCommunicationSenderType sender;
     private String exception;
     private String payload;
     private JsonNode payloadJson;
@@ -26,6 +27,7 @@ public class RewardVendorCommunicationHistory {
                 .targetId(state.getTargetId())
                 .vendorName(state.getVendorName())
                 .communicationType(state.getCommunicationType())
+                .sender(state.getSender())
                 .exception(state.getException())
                 .payload(state.getPayload())
                 .payloadJson(state.getPayloadJson())
@@ -39,6 +41,7 @@ public class RewardVendorCommunicationHistory {
                 .targetId(state.getTargetId())
                 .vendorName(state.getVendorName())
                 .communicationType(state.getCommunicationType())
+                .sender(state.getSender())
                 .exception(state.getException())
                 .payload(state.getPayload())
                 .payloadJson(state.getPayloadJson())

@@ -43,6 +43,10 @@ public class RewardVendorCommunicationHistoryJpaEntity {
     @Column(name = "communication_type", nullable = false, length = 15)
     private RewardVendorCommunicationType communicationType;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "sender", nullable = false, length = 15)
+    private RewardVendorCommunicationSenderType sender;
+
     @Column(name = "exception", length = 63)
     private String exception;
 
@@ -70,6 +74,7 @@ public class RewardVendorCommunicationHistoryJpaEntity {
                 .targetId(history.getTargetId())
                 .vendorName(history.getVendorName())
                 .communicationType(history.getCommunicationType())
+                .sender(history.getSender())
                 .exception(history.getException())
                 .payload(history.getPayload())
                 .payloadJson(history.getPayloadJson())
@@ -85,6 +90,7 @@ public class RewardVendorCommunicationHistoryJpaEntity {
                         .targetId(targetId)
                         .vendorName(vendorName)
                         .communicationType(communicationType)
+                        .sender(sender)
                         .exception(exception)
                         .payload(payload)
                         .payloadJson(payloadJson)
