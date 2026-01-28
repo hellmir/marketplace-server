@@ -9,6 +9,7 @@ import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.Fa
 import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoResponseHeader;
 import com.personal.marketnote.fulfillment.configuration.FasstoAuthProperties;
 import com.personal.marketnote.fulfillment.domain.FasstoAccessToken;
+import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationSenderType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationTargetType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorName;
@@ -439,11 +440,14 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
             JsonNode payloadJson,
             String exception
     ) {
+        FulfillmentVendorCommunicationSenderType sender = communicationType == FulfillmentVendorCommunicationType.REQUEST
+                ? FulfillmentVendorCommunicationSenderType.SERVER
+                : FulfillmentVendorCommunicationSenderType.VENDOR;
         if (FormatValidator.hasValue(exception)) {
             vendorCommunicationRecorder.record(
                     targetType,
                     communicationType,
-                    null,
+                    sender,
                     vendorName,
                     payload,
                     payloadJson,
@@ -455,7 +459,7 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
         vendorCommunicationRecorder.record(
                 targetType,
                 communicationType,
-                null,
+                sender,
                 vendorName,
                 payload,
                 payloadJson
