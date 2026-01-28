@@ -11,6 +11,7 @@ public class RewardVendorCommunicationHistoryCreateState {
     private final Long targetId;
     private final RewardVendorName vendorName;
     private final RewardVendorCommunicationType communicationType;
+    private final RewardVendorCommunicationSenderType sender;
     private final String exception;
     private final String payload;
     private final JsonNode payloadJson;
