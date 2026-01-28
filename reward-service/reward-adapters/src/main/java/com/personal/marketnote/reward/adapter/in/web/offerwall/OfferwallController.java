@@ -130,7 +130,7 @@ public class OfferwallController {
                     targetType,
                     RewardVendorCommunicationType.REQUEST,
                     RewardVendorCommunicationSenderType.VENDOR,
-                    id,
+                    String.valueOf(id),
                     vendorName,
                     payloadString,
                     payloadJson
@@ -139,7 +139,7 @@ public class OfferwallController {
                     targetType,
                     RewardVendorCommunicationType.RESPONSE,
                     RewardVendorCommunicationSenderType.SERVER,
-                    id,
+                    String.valueOf(id),
                     vendorName,
                     successPayload,
                     successPayloadJson
@@ -233,7 +233,7 @@ public class OfferwallController {
                     targetType,
                     RewardVendorCommunicationType.REQUEST,
                     RewardVendorCommunicationSenderType.VENDOR,
-                    id,
+                    String.valueOf(id),
                     vendorName,
                     payloadString,
                     payloadJson
@@ -242,7 +242,7 @@ public class OfferwallController {
                     targetType,
                     RewardVendorCommunicationType.RESPONSE,
                     RewardVendorCommunicationSenderType.SERVER,
-                    id,
+                    String.valueOf(id),
                     vendorName,
                     successPayload,
                     successPayloadJson
@@ -355,7 +355,7 @@ public class OfferwallController {
                     targetType,
                     RewardVendorCommunicationType.REQUEST,
                     RewardVendorCommunicationSenderType.VENDOR,
-                    id,
+                    String.valueOf(id),
                     vendorName,
                     payloadString,
                     payloadJson
@@ -364,7 +364,7 @@ public class OfferwallController {
                     targetType,
                     RewardVendorCommunicationType.RESPONSE,
                     RewardVendorCommunicationSenderType.SERVER,
-                    id,
+                    String.valueOf(id),
                     vendorName,
                     successPayload,
                     successPayloadJson

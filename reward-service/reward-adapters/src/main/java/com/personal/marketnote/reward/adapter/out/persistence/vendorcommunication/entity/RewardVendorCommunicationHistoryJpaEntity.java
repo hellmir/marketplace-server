@@ -32,8 +32,8 @@ public class RewardVendorCommunicationHistoryJpaEntity {
     @Column(name = "target_type", nullable = false, length = 31)
     private RewardVendorCommunicationTargetType targetType;
 
-    @Column(name = "target_id")
-    private Long targetId;
+    @Column(name = "target_id", length = 63)
+    private String targetId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "vendor_name", nullable = false, length = 31)

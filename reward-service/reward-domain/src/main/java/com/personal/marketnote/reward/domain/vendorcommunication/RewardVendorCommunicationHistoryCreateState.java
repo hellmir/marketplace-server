@@ -8,7 +8,7 @@ import lombok.Getter;
 @Builder
 public class RewardVendorCommunicationHistoryCreateState {
     private final RewardVendorCommunicationTargetType targetType;
-    private final Long targetId;
+    private final String targetId;
     private final RewardVendorName vendorName;
     private final RewardVendorCommunicationType communicationType;
     private final RewardVendorCommunicationSenderType sender;

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.personal.marketnote.common.adapter.out.VendorAdapter;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.common.utility.http.client.CommunicationFailureHandler;
 import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoErrorResponse;
 import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoSuppliersItemResponse;
 import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoSuppliersResponse;
@@ -167,6 +168,10 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
                     exception
             );
 
+            if (CommunicationFailureHandler.isCertainFailure(response)) {
+                break;
+            }
+
             sleep(sleepMillis);
             sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
         }
@@ -281,6 +286,10 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
                     FormatValidator.hasValue(response) ? response.getStatusCode() : null,
                     exception
             );
+
+            if (CommunicationFailureHandler.isCertainFailure(response)) {
+                break;
+            }
 
             sleep(sleepMillis);
             sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
