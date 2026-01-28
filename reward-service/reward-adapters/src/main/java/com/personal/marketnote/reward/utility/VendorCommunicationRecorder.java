@@ -19,7 +19,7 @@ public class VendorCommunicationRecorder {
             RewardVendorCommunicationTargetType targetType,
             RewardVendorCommunicationType communicationType,
             RewardVendorCommunicationSenderType sender,
-            Long targetId,
+            String targetId,
             RewardVendorName vendorName,
             String payload,
             JsonNode payloadJson

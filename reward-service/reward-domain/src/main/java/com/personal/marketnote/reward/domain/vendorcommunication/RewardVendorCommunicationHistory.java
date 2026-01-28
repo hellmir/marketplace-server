@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class RewardVendorCommunicationHistory {
     private Long id;
     private RewardVendorCommunicationTargetType targetType;
-    private Long targetId;
+    private String targetId;
     private RewardVendorName vendorName;
     private RewardVendorCommunicationType communicationType;
     private RewardVendorCommunicationSenderType sender;

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.personal.marketnote.common.adapter.out.VendorAdapter;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.common.utility.http.client.CommunicationFailureHandler;
 import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoAuthResponse;
 import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoErrorResponse;
 import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoResponseHeader;
@@ -136,6 +137,10 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
             if (FormatValidator.hasValue(vendorMessage)) {
                 failureMessage = vendorMessage;
                 error = new Exception(vendorMessage);
+            }
+
+            if (CommunicationFailureHandler.isCertainFailure(response)) {
+                break;
             }
 
             sleep(sleepMillis);
