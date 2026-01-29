@@ -107,5 +107,9 @@ public class PostItemResult {
                 .stream()
                 .map(reply -> PostItemResult.from(reply, postImages.get(reply.getId())))
                 .toList();
+
+        if (FormatValidator.hasValue(replies)) {
+            isAnswered = true;
+        }
     }
 }

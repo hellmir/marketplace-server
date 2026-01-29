@@ -201,13 +201,16 @@ public class GetPostService implements GetPostUseCase {
 
     @Override
     public PostItemResult getPost(GetPostQuery query) {
-        Post post = getPost(query.id());
+        Post post = getPostWithReplies(query.id());
         validateQueryMatchesPost(query, post);
         Map<Long, List<GetFileResult>> postImagesByPostId = findPostImages(List.of(post));
         List<GetFileResult> images = postImagesByPostId.get(post.getId());
 
         if (FormatValidator.hasNoValue(post.getTargetId())) {
-            return PostItemResult.from(post, images);
+            PostItemResult postItemResult = PostItemResult.from(post, images);
+            postItemResult.addReplies(post, postImagesByPostId);
+
+            return postItemResult;
         }
 
         ProductInfoResult productInfoResult = null;
@@ -238,6 +241,11 @@ public class GetPostService implements GetPostUseCase {
         }
 
         return postItemResult;
+    }
+
+    private Post getPostWithReplies(Long id) {
+        return findPostPort.findByIdWithReplies(id)
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     private void validateQueryMatchesPost(GetPostQuery query, Post post) {

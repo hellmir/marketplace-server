@@ -97,6 +97,30 @@ import java.lang.annotation.*;
                 | modifiedAt | string(datetime) | 수정 일시 | "2026-01-27T09:30:00.000000" |
                 | product | object | 상품 정보(상품 문의글이 아닌 경우 null) | { ... } |
                 | replies | array | 답글 목록(재귀) | [ ... ] |
+                
+                ### Response > content > replies
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | id | number | 답글 ID | 10 |
+                | userId | number | 작성자 ID | 5 |
+                | parentId | number | 부모 게시글 ID | null |
+                | board | string | 게시판 | "ONE_ON_ONE_INQUERY" |
+                | category | string | 카테고리 | "DELIVERY" |
+                | targetType | string | 대상 유형 | null |
+                | targetId | number | 대상 ID | null |
+                | productImageUrl | string | 상품 이미지 URL | "https://example.com/image.jpg" |
+                | writerName | string | 작성자명 | "홍*동" |
+                | title | string | 제목 | "게시글 제목" |
+                | content | string | 내용 | "게시글 내용" |
+                | isPrivate | boolean | 비밀글 여부 | false |
+                | isPhoto | boolean | 이미지 첨부 여부 | false |
+                | images | array | 답글 이미지 목록 | [ ... ] |
+                | isMasked | boolean | 비밀글 숨김 처리 여부 | false |
+                | isAnswered | boolean | 답변 여부 | false |
+                | createdAt | string(datetime) | 생성 일시 | "2026-01-29T15:19:58.335327" |
+                | modifiedAt | string(datetime) | 수정 일시 | "2026-01-29T15:19:58.348655" |
+                | product | object | 상품 정보(상품 문의글이 아닌 경우 null) | { ... } |
+                | replies | array | 답글 목록(재귀) | [ ... ] |
                 """,
         parameters = {
                 @Parameter(
@@ -149,7 +173,30 @@ import java.lang.annotation.*;
                                             "createdAt": "2026-01-27T09:30:00.000000",
                                             "modifiedAt": "2026-01-27T09:30:00.000000",
                                             "product": null,
-                                            "replies": []
+                                            "replies": [
+                                              {
+                                                "id": 108,
+                                                "userId": 14,
+                                                "parentId": 94,
+                                                "board": "ONE_ON_ONE_INQUERY",
+                                                "category": "DELIVERY",
+                                                "targetType": null,
+                                                "targetId": null,
+                                                "productImageUrl": "https://example.com/image.jpg",
+                                                "writerName": "홍*동",
+                                                "title": "게시글 제목",
+                                                "content": "게시글 내용",
+                                                "isPrivate": false,
+                                                "isPhoto": false,
+                                                "images": null,
+                                                "isMasked": false,
+                                                "isAnswered": false,
+                                                "createdAt": "2026-01-29T15:19:58.335327",
+                                                "modifiedAt": "2026-01-29T15:19:58.348655",
+                                                "product": null,
+                                                "replies": []
+                                              }
+                                            ]
                                           },
                                           "message": "게시글 상세 정보 조회 성공"
                                         }
