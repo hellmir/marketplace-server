@@ -5,6 +5,8 @@ import com.personal.marketnote.common.adapter.out.ServiceAdapter;
 import com.personal.marketnote.common.exception.FulfillmentServiceRequestFailedException;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.adapter.out.web.fulfillment.response.FasstoAuthTokenResponse;
+import com.personal.marketnote.product.port.out.fulfillment.RegisterFulfillmentVendorGoodsCommand;
+import com.personal.marketnote.product.port.out.fulfillment.RegisterFulfillmentVendorGoodsPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +26,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.*;
 @ServiceAdapter
 @RequiredArgsConstructor
 @Slf4j
-public class FulfillmentServiceClient {
+public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsPort {
     @Value("${fulfillment-service.base-url}")
     private String fulfillmentServiceBaseUrl;
 
@@ -95,5 +97,10 @@ public class FulfillmentServiceClient {
 
         log.error("Failed to request fassto access token with error: {}", error.getMessage(), error);
         throw new FulfillmentServiceRequestFailedException(new IOException());
+    }
+
+    @Override
+    public void registerFulfillmentVendorGoods(RegisterFulfillmentVendorGoodsCommand command) {
+
     }
 }

@@ -1,5 +1,5 @@
 package com.personal.marketnote.product.port.out.fulfillment;
 
-public interface RegisterFasstoGoodsPort {
+public interface RegisterFulfillmentVendorGoodsPort {
     void registerFulfillmentVendorGoods(RegisterFulfillmentVendorGoodsCommand command);
 }

@@ -61,6 +61,7 @@ def buildMarketnoteTaskDefinition(env) {
                 [name: "FASSTO_BASE_URL",                   value: env.FASSTO_BASE_URL],
                 [name: "FASSTO_API_CD",                     value: env.FASSTO_API_CD],
                 [name: "FASSTO_API_KEY",                    value: env.FASSTO_API_KEY],
+                [name: "FASSTO_CUSTOMER_CODE",              value: env.FASSTO_CUSTOMER_CODE],
             ],
             logConfiguration: [
                 logDriver: "awslogs",
@@ -627,6 +628,7 @@ pipeline {
                         string(credentialsId: 'MARKETNOTE_QA_FASSTO_BASE_URL',                    variable: 'FASSTO_BASE_URL'),
                         string(credentialsId: 'MARKETNOTE_QA_FASSTO_API_CD',                      variable: 'FASSTO_API_CD'),
                         string(credentialsId: 'MARKETNOTE_QA_FASSTO_API_KEY',                     variable: 'FASSTO_API_KEY'),
+                        string(credentialsId: 'MARKETNOTE_QA_FASSTO_CUSTOMER_CODE',               variable: 'FASSTO_CUSTOMER_CODE'),
                     ]) {
                         sh '''
                           LG="$CLOUDWATCH_LOG_GROUP"
