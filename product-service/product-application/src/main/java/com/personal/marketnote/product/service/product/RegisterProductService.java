@@ -10,7 +10,7 @@ import com.personal.marketnote.product.port.in.result.pricepolicy.RegisterPriceP
 import com.personal.marketnote.product.port.in.result.product.RegisterProductResult;
 import com.personal.marketnote.product.port.in.usecase.pricepolicy.RegisterPricePolicyUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterProductUseCase;
-import com.personal.marketnote.product.port.out.fulfillment.RegisterFasstoGoodsPort;
+import com.personal.marketnote.product.port.out.fulfillment.RegisterFulfillmentVendorGoodsPort;
 import com.personal.marketnote.product.port.out.inventory.RegisterInventoryPort;
 import com.personal.marketnote.product.port.out.product.SaveProductPort;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class RegisterProductService implements RegisterProductUseCase {
     private final RegisterPricePolicyUseCase registerPricePolicyUseCase;
     private final SaveProductPort saveProductPort;
     private final RegisterInventoryPort registerInventoryPort;
-    private final RegisterFasstoGoodsPort registerFasstoGoodsPort;
+    private final RegisterFulfillmentVendorGoodsPort registerFulfillmentVendorGoodsPort;
 
     @Override
     public RegisterProductResult registerProduct(RegisterProductCommand command) {
@@ -43,7 +43,7 @@ public class RegisterProductService implements RegisterProductUseCase {
         registerInventoryPort.registerInventory(registerPricePolicyResult.id());
 
         // FIXME: Kafka 이벤트 Production으로 변경
-        registerFasstoGoodsPort.registerFulfillmentVendorGoods(
+        registerFulfillmentVendorGoodsPort.registerFulfillmentVendorGoods(
                 FulfillmentVendorGoodsCommandMapper.mapToRegisterCommand(savedProduct, command.fulfillmentVendorGoods())
         );
 
