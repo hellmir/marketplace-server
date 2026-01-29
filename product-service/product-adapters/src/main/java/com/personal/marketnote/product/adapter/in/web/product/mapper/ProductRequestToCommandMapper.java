@@ -3,6 +3,7 @@ package com.personal.marketnote.product.adapter.in.web.product.mapper;
 import com.personal.marketnote.product.adapter.in.web.cart.request.GetMyOrderingProductsRequest;
 import com.personal.marketnote.product.adapter.in.web.category.request.RegisterProductCategoriesRequest;
 import com.personal.marketnote.product.adapter.in.web.option.request.UpdateProductOptionsRequest;
+import com.personal.marketnote.product.adapter.in.web.product.request.RegisterProductFulfillmentVendorGoodsRequest;
 import com.personal.marketnote.product.adapter.in.web.product.request.RegisterProductRequest;
 import com.personal.marketnote.product.adapter.in.web.product.request.UpdateProductRequest;
 import com.personal.marketnote.product.port.in.command.*;
@@ -21,6 +22,49 @@ public class ProductRequestToCommandMapper {
                 .accumulatedPoint(registerProductRequest.getAccumulatedPoint())
                 .isFindAllOptions(registerProductRequest.getIsFindAllOptions())
                 .tags(registerProductRequest.getTags())
+                .fulfillmentVendorGoods(mapToCommand(registerProductRequest.getFulfillmentVendorGoods()))
+                .build();
+    }
+
+    private static FulfillmentVendorGoodsOptionCommand mapToCommand(RegisterProductFulfillmentVendorGoodsRequest request) {
+        if (request == null) {
+            return null;
+        }
+
+        return FulfillmentVendorGoodsOptionCommand.builder()
+                .godType(request.getGodType())
+                .giftDiv(request.getGiftDiv())
+                .godOptCd1(request.getGodOptCd1())
+                .godOptCd2(request.getGodOptCd2())
+                .invGodNmUseYn(request.getInvGodNmUseYn())
+                .invGodNm(request.getInvGodNm())
+                .supCd(request.getSupCd())
+                .cateCd(request.getCateCd())
+                .seasonCd(request.getSeasonCd())
+                .genderCd(request.getGenderCd())
+                .makeYr(request.getMakeYr())
+                .godPr(request.getGodPr())
+                .inPr(request.getInPr())
+                .salPr(request.getSalPr())
+                .dealTemp(request.getDealTemp())
+                .pickFac(request.getPickFac())
+                .godBarcd(request.getGodBarcd())
+                .boxWeight(request.getBoxWeight())
+                .origin(request.getOrigin())
+                .distTermMgtYn(request.getDistTermMgtYn())
+                .useTermDay(request.getUseTermDay())
+                .outCanDay(request.getOutCanDay())
+                .inCanDay(request.getInCanDay())
+                .boxDiv(request.getBoxDiv())
+                .bufGodYn(request.getBufGodYn())
+                .loadingDirection(request.getLoadingDirection())
+                .subMate(request.getSubMate())
+                .useYn(request.getUseYn())
+                .safetyStock(request.getSafetyStock())
+                .feeYn(request.getFeeYn())
+                .saleUnitQty(request.getSaleUnitQty())
+                .cstGodImgUrl(request.getCstGodImgUrl())
+                .externalGodImgUrl(request.getExternalGodImgUrl())
                 .build();
     }
 
