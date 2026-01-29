@@ -1,6 +1,7 @@
 package com.personal.marketnote.product.adapter.in.web.product.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -77,4 +78,12 @@ public class RegisterProductRequest {
             requiredMode = Schema.RequiredMode.REQUIRED
     )
     private List<String> tags;
+
+    @Schema(
+            name = "fulfillmentVendorGoods",
+            description = "풀필먼트 서비스 벤더(현재 fassto) 상품 등록 옵션 정보",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED
+    )
+    @Valid
+    private RegisterProductFulfillmentVendorGoodsRequest fulfillmentVendorGoods;
 }

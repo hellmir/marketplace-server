@@ -2,6 +2,7 @@ package com.personal.marketnote.product.service.product;
 
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.product.domain.product.Product;
+import com.personal.marketnote.product.mapper.FulfillmentVendorGoodsCommandMapper;
 import com.personal.marketnote.product.mapper.ProductCommandToStateMapper;
 import com.personal.marketnote.product.port.in.command.RegisterPricePolicyCommand;
 import com.personal.marketnote.product.port.in.command.RegisterProductCommand;
@@ -9,6 +10,7 @@ import com.personal.marketnote.product.port.in.result.pricepolicy.RegisterPriceP
 import com.personal.marketnote.product.port.in.result.product.RegisterProductResult;
 import com.personal.marketnote.product.port.in.usecase.pricepolicy.RegisterPricePolicyUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.RegisterProductUseCase;
+import com.personal.marketnote.product.port.out.fulfillment.RegisterFasstoGoodsPort;
 import com.personal.marketnote.product.port.out.inventory.RegisterInventoryPort;
 import com.personal.marketnote.product.port.out.product.SaveProductPort;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class RegisterProductService implements RegisterProductUseCase {
     private final RegisterPricePolicyUseCase registerPricePolicyUseCase;
     private final SaveProductPort saveProductPort;
     private final RegisterInventoryPort registerInventoryPort;
+    private final RegisterFasstoGoodsPort registerFasstoGoodsPort;
 
     @Override
     public RegisterProductResult registerProduct(RegisterProductCommand command) {
@@ -38,6 +41,11 @@ public class RegisterProductService implements RegisterProductUseCase {
 
         // FIXME: Kafka 이벤트 Production으로 변경
         registerInventoryPort.registerInventory(registerPricePolicyResult.id());
+
+        // FIXME: Kafka 이벤트 Production으로 변경
+        registerFasstoGoodsPort.registerFulfillmentVendorGoods(
+                FulfillmentVendorGoodsCommandMapper.mapToRegisterCommand(savedProduct, command.fulfillmentVendorGoods())
+        );
 
         return RegisterProductResult.from(savedProduct);
     }

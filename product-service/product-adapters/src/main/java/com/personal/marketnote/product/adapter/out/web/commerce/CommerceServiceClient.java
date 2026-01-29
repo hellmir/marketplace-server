@@ -53,10 +53,10 @@ public class CommerceServiceClient implements RegisterInventoryPort, FindStockPo
         HttpEntity<RegisterInventoryRequest> httpEntity
                 = new HttpEntity<>(new RegisterInventoryRequest(pricePolicyId), headers);
 
-        sendRequest(uri, httpEntity, pricePolicyId);
+        sendRequest(uri, httpEntity);
     }
 
-    public void sendRequest(URI uri, HttpEntity<RegisterInventoryRequest> httpEntity, Long pricePolicyId) {
+    public void sendRequest(URI uri, HttpEntity<RegisterInventoryRequest> httpEntity) {
         long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
         Exception error = new Exception();
 
