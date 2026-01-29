@@ -8,13 +8,22 @@ public interface FasstoApiResponse {
     FasstoErrorInfo errorInfo();
 
     default String resolveErrorMessage() {
-        String message = null;
+        return normalizeMessage(generateMessage());
+    }
+
+    private String generateMessage() {
         if (FormatValidator.hasValue(errorInfo()) && FormatValidator.hasValue(errorInfo().errorMessage())) {
-            message = errorInfo().errorMessage();
-        } else if (FormatValidator.hasValue(header()) && !header().isSuccess()) {
-            message = header().msg();
+            return errorInfo().errorMessage();
         }
 
+        if (FormatValidator.hasValue(header()) && !header().isSuccess()) {
+            return header().msg();
+        }
+
+        return null;
+    }
+
+    static String normalizeMessage(String message) {
         if (FormatValidator.hasNoValue(message)) {
             return null;
         }
