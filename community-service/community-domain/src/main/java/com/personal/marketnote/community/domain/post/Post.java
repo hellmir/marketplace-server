@@ -40,6 +40,7 @@ public class Post {
     private boolean isPhoto;
     private boolean isAnswered;
     private EntityStatus status;
+
     @Builder.Default
     private List<Post> replies = Collections.emptyList();
 
@@ -132,5 +133,9 @@ public class Post {
 
     public boolean isEditable() {
         return board.isEditable();
+    }
+
+    public void addReplies(List<Post> replies) {
+        this.replies = replies;
     }
 }

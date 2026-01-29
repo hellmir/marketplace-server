@@ -117,6 +117,15 @@ public interface FindPostPort {
     /**
      * @param id 게시글 ID
      * @return 게시글 {@link Post}
+     * @Date 2026-01-29
+     * @Author 성효빈
+     * @Description 게시글과 하위 답글 목록을 조회합니다.
+     */
+    Optional<Post> findByIdWithReplies(Long id);
+
+    /**
+     * @param id 게시글 ID
+     * @return 게시글 {@link Post}
      * @Date 2026-01-15
      * @Author 성효빈
      * @Description 게시글을 조회합니다.
