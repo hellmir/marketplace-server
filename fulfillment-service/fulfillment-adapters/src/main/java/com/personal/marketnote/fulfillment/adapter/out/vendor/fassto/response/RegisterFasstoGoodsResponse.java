@@ -25,10 +25,11 @@ public record RegisterFasstoGoodsResponse(
 
         if (FormatValidator.hasValue(data)) {
             for (RegisterFasstoGoodsItemResponse item : data) {
-                if (item == null || item.isSuccess()) {
+                if (FormatValidator.hasNoValue(item) || item.isSuccess()) {
                     continue;
                 }
-                String itemMessage = normalizeMessage(item.msg());
+
+                String itemMessage = FasstoApiResponse.normalizeMessage(item.msg());
                 if (FormatValidator.hasValue(itemMessage)) {
                     return itemMessage;
                 }
@@ -36,23 +37,5 @@ public record RegisterFasstoGoodsResponse(
         }
 
         return null;
-    }
-
-    private static String normalizeMessage(String message) {
-        if (FormatValidator.hasNoValue(message)) {
-            return null;
-        }
-
-        String trimmed = message.trim();
-        if ("null".equalsIgnoreCase(trimmed)) {
-            return null;
-        }
-
-        String lower = trimmed.toLowerCase();
-        if (lower.startsWith("null:")) {
-            return trimmed.substring("null:".length()).trim();
-        }
-
-        return trimmed;
     }
 }
