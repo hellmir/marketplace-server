@@ -1,6 +1,6 @@
 package com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs;
 
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.RegisterFasstoGoodsRequest;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.UpdateFasstoGoodsRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -17,9 +17,9 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "(관리자) 파스토 상품 등록 요청",
+        summary = "(관리자) 파스토 상품 수정 요청",
         description = """
-                작성일자: 2026-01-29
+                작성일자: 2026-01-30
                 
                 작성자: 성효빈
                 
@@ -27,7 +27,7 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                파스토 상품 등록을 요청합니다.
+                파스토 상품 정보를 수정합니다.
                 
                 ---
                 
@@ -35,7 +35,7 @@ import java.lang.annotation.*;
                 
                 | **키** | **위치** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- | --- |
-                | accessToken | header | string | 파스토 액세스 토큰 | Y | 70f5f03eec3811f0be620ab49498ff55 |
+                | accessToken | header | string | 파스토 액세스 토큰 | Y | ed54b33ded1511f0be620ab49498ff55 |
                 | customerCode | path | string | 파스토 고객사 코드 | Y | 94388 |
                 
                 ---
@@ -45,7 +45,7 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
                 | cstGodCd | string | 고객사상품코드 | Y | "1" |
-                | godNm | string | 상품명 | Y | "테스트 상품1" |
+                | godNm | string | 상품명 | Y | "테스트 상품2" |
                 | godType | string | 상품유형(1:단일, 2:모음, 3:세트, 4:대표상품) | Y | "1" |
                 | giftDiv | string | 사은품구분(01:본품, 02:사은품, 03:부자재) | Y | "01" |
                 | godOptCd1 | string | 상품옵션코드1 | N | "" |
@@ -88,9 +88,9 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 500: 그 외 |
                 | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "INTERNAL_SERVER_ERROR" |
-                | timestamp | string(datetime) | 응답 일시 | "2026-01-29T12:12:30.013" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-01-30T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
-                | message | string | 처리 결과 | "파스토 상품 등록 성공" |
+                | message | string | 처리 결과 | "파스토 상품 수정 성공" |
                 
                 ---
                 
@@ -98,8 +98,8 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
-                | dataCount | number | 등록 건수 | 1 |
-                | goods | array | 상품 등록 결과 | [ ... ] |
+                | dataCount | number | 수정 건수 | 1 |
+                | goods | array | 상품 정보 수정 결과 | [ ... ] |
                 
                 ---
                 
@@ -107,9 +107,11 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
-                | msg | string | 처리 결과 | "SUCCESS" |
+                | fmsSlipNo | string | 운송장 번호 | null |
+                | orderNo | string | 주문 번호 | null |
+                | msg | string | 처리 결과 | "상품 정보 수정 성공" |
                 | code | string | 응답 코드 | "200" |
-                | cstGodCd | string | 고객사 상품코드 | "1" |
+                | outOfStockGoodsDetail | object | 품절 상품 상세 | null |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         parameters = {
@@ -118,7 +120,7 @@ import java.lang.annotation.*;
                         description = "파스토 액세스 토큰",
                         in = ParameterIn.HEADER,
                         required = true,
-                        schema = @Schema(type = "string", example = "70f5f03eec3811f0be620ab49498ff55")
+                        schema = @Schema(type = "string", example = "ed54b33ded1511f0be620ab49498ff55")
                 ),
                 @Parameter(
                         name = "customerCode",
@@ -131,12 +133,12 @@ import java.lang.annotation.*;
         requestBody = @RequestBody(
                 required = true,
                 content = @Content(
-                        schema = @Schema(implementation = RegisterFasstoGoodsRequest.class),
+                        schema = @Schema(implementation = UpdateFasstoGoodsRequest.class),
                         examples = @ExampleObject("""
                                 [
                                   {
                                     "cstGodCd": "1",
-                                    "godNm": "테스트 상품1",
+                                    "godNm": "테스트 상품2",
                                     "godType": "1",
                                     "giftDiv": "01",
                                     "godOptCd1": "",
@@ -177,25 +179,27 @@ import java.lang.annotation.*;
         ),
         responses = {
                 @ApiResponse(
-                        responseCode = "201",
-                        description = "파스토 상품 등록 성공",
+                        responseCode = "200",
+                        description = "파스토 상품 수정 성공",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
-                                          "statusCode": 201,
+                                          "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-29T04:53:08.013",
+                                          "timestamp": "2026-01-30T04:53:08.013",
                                           "content": {
                                             "dataCount": 1,
                                             "goods": [
                                               {
-                                                "msg": "SUCCESS",
+                                                "fmsSlipNo": null,
+                                                "orderNo": null,
+                                                "msg": "상품 정보 수정 성공",
                                                 "code": "200",
-                                                "cstGodCd": "1"
+                                                "outOfStockGoodsDetail": null
                                               }
                                             ]
                                           },
-                                          "message": "파스토 상품 등록 성공"
+                                          "message": "파스토 상품 수정 성공"
                                         }
                                         """)
                         )
@@ -208,7 +212,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 401,
                                           "code": "UNAUTHORIZED",
-                                          "timestamp": "2026-01-29T12:12:30.013",
+                                          "timestamp": "2026-01-30T12:12:30.013",
                                           "content": null,
                                           "message": "Invalid token"
                                         }
@@ -223,7 +227,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 403,
                                           "code": "FORBIDDEN",
-                                          "timestamp": "2026-01-29T12:12:30.013",
+                                          "timestamp": "2026-01-30T12:12:30.013",
                                           "content": null,
                                           "message": "Access Denied"
                                         }
@@ -231,5 +235,5 @@ import java.lang.annotation.*;
                         )
                 )
         })
-public @interface RegisterFasstoGoodsApiDocs {
+public @interface UpdateFasstoGoodsApiDocs {
 }

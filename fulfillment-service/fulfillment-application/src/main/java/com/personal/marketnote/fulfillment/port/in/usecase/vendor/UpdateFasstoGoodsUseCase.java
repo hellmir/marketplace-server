@@ -1,0 +1,15 @@
+package com.personal.marketnote.fulfillment.port.in.usecase.vendor;
+
+import com.personal.marketnote.fulfillment.port.in.command.vendor.UpdateFasstoGoodsCommand;
+import com.personal.marketnote.fulfillment.port.in.result.vendor.UpdateFasstoGoodsResult;
+
+public interface UpdateFasstoGoodsUseCase {
+    /**
+     * @param command 상품 수정 커맨드
+     * @return 상품 수정 결과 {@link UpdateFasstoGoodsResult}
+     * @Date 2026-01-30
+     * @Author 성효빈
+     * @Description 파스토 상품 정보를 수정합니다.
+     */
+    UpdateFasstoGoodsResult updateGoods(UpdateFasstoGoodsCommand command);
+}
