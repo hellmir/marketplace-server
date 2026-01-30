@@ -100,7 +100,7 @@ public class FileServiceClient implements FindProductImagesPort, DeleteProductIm
                 log.warn(e.getMessage(), e);
 
                 try {
-                    // jitter to avoid request bursts during downstream outage
+                    // 대상 서비스 장애 시 요청 트래픽 폭주를 방지하기 위해 jitter 설정
                     long jitteredSleepMillis = ThreadLocalRandom.current()
                             .nextLong(Math.max(1L, 2000L) + 1);
                     Thread.sleep(jitteredSleepMillis);
