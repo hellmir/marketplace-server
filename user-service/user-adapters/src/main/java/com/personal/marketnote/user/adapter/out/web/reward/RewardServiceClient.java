@@ -13,6 +13,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.personal.marketnote.common.utility.AccrualPointAmountConstant.REFERRED_USER_POINT_AMOUNT;
 import static com.personal.marketnote.common.utility.AccrualPointAmountConstant.REFERRER_USER_POINT_AMOUNT;
@@ -139,6 +140,7 @@ public class RewardServiceClient implements ModifyUserPointPort {
             }
 
             sleep(sleepMillis);
+            // exponential backoff 적용
             sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
         }
 
@@ -172,7 +174,10 @@ public class RewardServiceClient implements ModifyUserPointPort {
 
     private void sleep(long millis) {
         try {
-            Thread.sleep(millis);
+            // 대상 서비스 장애 시 요청 트래픽 폭주를 방지하기 위해 jitter 설정
+            long jitteredSleepMillis = ThreadLocalRandom.current()
+                    .nextLong(Math.max(1L, millis) + 1);
+            Thread.sleep(jitteredSleepMillis);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

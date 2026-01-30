@@ -24,9 +24,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.personal.marketnote.common.domain.file.OwnerType.POST;
 import static com.personal.marketnote.common.domain.file.OwnerType.REVIEW;
+import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
 import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_MAX_REQUEST_COUNT;
 
 @ServiceAdapter
@@ -110,7 +112,10 @@ public class FileServiceClient implements FindReviewImagesPort, FindPostImagesPo
                 log.warn(e.getMessage(), e);
 
                 try {
-                    Thread.sleep(1000);
+                    // jitter to avoid request bursts during downstream outage
+                    long jitteredSleepMillis = ThreadLocalRandom.current()
+                            .nextLong(Math.max(1L, INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND) + 1);
+                    Thread.sleep(jitteredSleepMillis);
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
                 }

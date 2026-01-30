@@ -12,7 +12,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.concurrent.ThreadLocalRandom;
 
+import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
 import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_MAX_REQUEST_COUNT;
 
 @ServiceAdapter
@@ -58,7 +60,10 @@ public class CommerceServiceClient implements UpdateOrderProductReviewStatusPort
                 }
 
                 try {
-                    Thread.sleep(1000);
+                    // jitter to avoid request bursts during downstream outage
+                    long jitteredSleepMillis = ThreadLocalRandom.current()
+                            .nextLong(Math.max(1L, INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND) + 1);
+                    Thread.sleep(jitteredSleepMillis);
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
                 }
