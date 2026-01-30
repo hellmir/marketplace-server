@@ -23,7 +23,9 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
+import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
 import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_MAX_REQUEST_COUNT;
 
 @ServiceAdapter
@@ -83,7 +85,10 @@ public class ProductServiceClient implements FindProductByPricePolicyPort {
                 }
 
                 try {
-                    Thread.sleep(1000);
+                    // jitter to avoid request bursts during downstream outage
+                    long jitteredSleepMillis = ThreadLocalRandom.current()
+                            .nextLong(Math.max(1L, INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND) + 1);
+                    Thread.sleep(jitteredSleepMillis);
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
                 }

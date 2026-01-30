@@ -13,7 +13,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
+import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
 import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_MAX_REQUEST_COUNT;
 
 @ServiceAdapter
@@ -53,7 +55,10 @@ public class CartServiceClient implements DeleteOrderedCartProductsPort {
                 log.warn(e.getMessage(), e);
 
                 try {
-                    Thread.sleep(1000);
+                    // 대상 서비스 장애 시 요청 트래픽 폭주를 방지하기 위해 jitter 설정
+                    long jitteredSleepMillis = ThreadLocalRandom.current()
+                            .nextLong(Math.max(1L, INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND) + 1);
+                    Thread.sleep(jitteredSleepMillis);
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
                 }

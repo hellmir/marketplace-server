@@ -20,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.personal.marketnote.common.utility.ApiConstant.*;
 
@@ -85,12 +86,16 @@ public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsP
                 }
 
                 try {
-                    Thread.sleep(sleepMillis);
+                    // jitter to avoid request bursts during downstream outage
+                    long jitteredSleepMillis = ThreadLocalRandom.current()
+                            .nextLong(Math.max(1L, sleepMillis) + 1);
+                    Thread.sleep(jitteredSleepMillis);
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
                     return null;
                 }
 
+                // exponential backoff applied
                 sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
             }
         }

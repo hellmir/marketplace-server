@@ -33,6 +33,7 @@ import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.personal.marketnote.common.utility.ApiConstant.*;
 
@@ -102,6 +103,7 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
                 }
 
                 sleep(sleepMillis);
+                // exponential backoff applied
                 sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
                 continue;
             }
@@ -144,6 +146,7 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
             }
 
             sleep(sleepMillis);
+            // exponential backoff applied
             sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
         }
 
@@ -208,6 +211,7 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
                 }
 
                 sleep(sleepMillis);
+                // exponential backoff applied
                 sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
                 continue;
             }
@@ -251,6 +255,7 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
             );
 
             sleep(sleepMillis);
+            // exponential backoff applied
             sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
         }
 
@@ -431,7 +436,10 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
 
     private void sleep(long millis) {
         try {
-            Thread.sleep(millis);
+            // jitter to avoid request bursts during downstream outage
+            long jitteredSleepMillis = ThreadLocalRandom.current()
+                    .nextLong(Math.max(1L, millis) + 1);
+            Thread.sleep(jitteredSleepMillis);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
