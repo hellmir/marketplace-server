@@ -1,11 +1,15 @@
 package com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.GetFasstoGoodsApiDocs;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.RegisterFasstoGoodsApiDocs;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.mapper.FasstoGoodsRequestToCommandMapper;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.RegisterFasstoGoodsRequest;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.GetFasstoGoodsResponse;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.RegisterFasstoGoodsResponse;
+import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoGoodsResult;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.RegisterFasstoGoodsResult;
+import com.personal.marketnote.fulfillment.port.in.usecase.vendor.GetFasstoGoodsUseCase;
 import com.personal.marketnote.fulfillment.port.in.usecase.vendor.RegisterFasstoGoodsUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -26,6 +30,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 @RequiredArgsConstructor
 public class FasstoGoodsController {
     private final RegisterFasstoGoodsUseCase registerFasstoGoodsUseCase;
+    private final GetFasstoGoodsUseCase getFasstoGoodsUseCase;
 
     /**
      * (관리자) 파스토 상품 등록 요청
@@ -57,6 +62,37 @@ public class FasstoGoodsController {
                         "파스토 상품 등록 성공"
                 ),
                 HttpStatus.CREATED
+        );
+    }
+
+    /**
+     * (관리자) 파스토 상품 목록 조회
+     *
+     * @param customerCode 파스토 고객사 코드
+     * @param accessToken  파스토 액세스 토큰
+     * @Author 성효빈
+     * @Date 2026-01-30
+     * @Description 파스토 상품 목록을 조회합니다.
+     */
+    @GetMapping("/{customerCode}")
+    @PreAuthorize(ADMIN_POINTCUT)
+    @GetFasstoGoodsApiDocs
+    public ResponseEntity<BaseResponse<GetFasstoGoodsResponse>> getGoods(
+            @PathVariable String customerCode,
+            @RequestHeader("accessToken") String accessToken
+    ) {
+        GetFasstoGoodsResult result = getFasstoGoodsUseCase.getGoods(
+                FasstoGoodsRequestToCommandMapper.mapToGoodsCommand(customerCode, accessToken)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        GetFasstoGoodsResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "파스토 상품 목록 조회 성공"
+                ),
+                HttpStatus.OK
         );
     }
 }

@@ -2,6 +2,8 @@ package com.personal.marketnote.fulfillment.mapper;
 
 import com.personal.marketnote.fulfillment.domain.vendor.fassto.goods.FasstoGoodsItemMapper;
 import com.personal.marketnote.fulfillment.domain.vendor.fassto.goods.FasstoGoodsMapper;
+import com.personal.marketnote.fulfillment.domain.vendor.fassto.goods.FasstoGoodsQuery;
+import com.personal.marketnote.fulfillment.port.in.command.vendor.GetFasstoGoodsCommand;
 import com.personal.marketnote.fulfillment.port.in.command.vendor.RegisterFasstoGoodsCommand;
 import com.personal.marketnote.fulfillment.port.in.command.vendor.RegisterFasstoGoodsItemCommand;
 
@@ -17,6 +19,13 @@ public class FasstoGoodsCommandToRequestMapper {
                 command.customerCode(),
                 command.accessToken(),
                 goods
+        );
+    }
+
+    public static FasstoGoodsQuery mapToGoodsQuery(GetFasstoGoodsCommand command) {
+        return FasstoGoodsQuery.of(
+                command.customerCode(),
+                command.accessToken()
         );
     }
 

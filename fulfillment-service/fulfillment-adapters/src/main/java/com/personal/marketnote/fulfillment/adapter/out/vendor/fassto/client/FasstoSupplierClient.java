@@ -125,7 +125,7 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
                 }
 
                 sleep(sleepMillis);
-                // exponential backoff applied
+                // exponential backoff 적용
                 sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
                 continue;
             }
@@ -175,7 +175,7 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
             }
 
             sleep(sleepMillis);
-            // exponential backoff applied
+            // exponential backoff 적용
             sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
         }
 
@@ -241,7 +241,7 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
                 }
 
                 sleep(sleepMillis);
-                // exponential backoff applied
+                // exponential backoff 적용
                 sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
                 continue;
             }
@@ -296,7 +296,7 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
             }
 
             sleep(sleepMillis);
-            // exponential backoff applied
+            // exponential backoff 적용
             sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
         }
 
@@ -571,7 +571,7 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
 
     private void sleep(long millis) {
         try {
-            // jitter to avoid request bursts during downstream outage
+            // 대상 서비스 장애 시 요청 트래픽 폭주를 방지하기 위해 jitter 설정
             long jitteredSleepMillis = ThreadLocalRandom.current()
                     .nextLong(Math.max(1L, millis) + 1);
             Thread.sleep(jitteredSleepMillis);
