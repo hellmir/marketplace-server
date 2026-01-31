@@ -131,32 +131,17 @@ public class AddFilesService implements AddFileUseCase {
     private MultipartFile resize(
             int targetWidth, int targetHeight, BufferedImage source, String newOriginalFilename
     ) throws IOException {
-        String extension = getExtension(newOriginalFilename, "png");
-        String format = normalizeFormat(extension);
-        int imageType = "jpeg".equals(format) ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
-
-        BufferedImage dst = new BufferedImage(targetWidth, targetHeight, imageType);
+        BufferedImage dst = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = dst.createGraphics();
         graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        if ("jpeg".equals(format)) {
-            graphics2D.setColor(Color.WHITE);
-            graphics2D.fillRect(0, 0, targetWidth, targetHeight);
-        }
         graphics2D.drawImage(source, 0, 0, targetWidth, targetHeight, null);
         graphics2D.dispose();
 
+        String extension = getExtension(newOriginalFilename, "png");
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        boolean written = ImageIO.write(dst, format, byteArrayOutputStream);
-        if (!written) {
-            throw new IOException("No ImageIO writer found for format: " + format);
-        }
+        ImageIO.write(dst, extension, byteArrayOutputStream);
 
-        return new InMemoryMultipartFile(
-                "file",
-                newOriginalFilename,
-                contentTypeFor(format),
-                byteArrayOutputStream.toByteArray()
-        );
+        return new InMemoryMultipartFile("file", newOriginalFilename, "image/" + extension, byteArrayOutputStream.toByteArray());
     }
 
     private String getExtension(String filename, String defaultExtension) {
@@ -186,25 +171,5 @@ public class AddFilesService implements AddFileUseCase {
         String ext = originalFilename.substring(idx + 1);
 
         return name + "_" + sizeTag + "." + ext;
-    }
-
-    private String normalizeFormat(String extension) {
-        if (FormatValidator.hasNoValue(extension)) {
-            return "png";
-        }
-
-        if ("jpg".equals(extension) || "jpeg".equals(extension)) {
-            return "jpeg";
-        }
-
-        return extension;
-    }
-
-    private String contentTypeFor(String format) {
-        if ("jpeg".equals(format)) {
-            return "image/jpeg";
-        }
-
-        return "image/" + format;
     }
 }
