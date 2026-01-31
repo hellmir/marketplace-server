@@ -132,6 +132,7 @@ import java.lang.annotation.*;
                 | unitAmount | number | 단위 금액(원) | 50000 |
                 | imageUrl | string | 상품 이미지 URL | "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png" |
                 | orderStatus | string | 주문 상태 | "PAID" |
+                | brandName | string | 브랜드명 | "브랜드명1" |
                 | productName | string | 상품명 | "공책" |
                 | selectedOptions | array | 선택 옵션 목록 | [ ... ] |
                 | isReviewed | boolean | 리뷰 작성 여부 | true |
@@ -181,6 +182,7 @@ import java.lang.annotation.*;
                                                         "unitAmount": 50000,
                                                         "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
                                                         "orderStatus": "PAID",
+                                                        "brandName": "브랜드명1",
                                                         "productName": "스프링노트12345",
                                                         "selectedOptions": [
                                                           {
@@ -199,6 +201,7 @@ import java.lang.annotation.*;
                                                         "unitAmount": 70000,
                                                         "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763533916081_image_600.png",
                                                         "orderStatus": "PAID",
+                                                        "brandName": "브랜드명2",
                                                         "productName": "스프링노트1234",
                                                         "selectedOptions": [
                                                           {
@@ -235,6 +238,7 @@ import java.lang.annotation.*;
                                                         "unitAmount": 70000,
                                                         "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763533916081_image_600.png",
                                                         "orderStatus": "PAID",
+                                                        "brandName": "브랜드명3",
                                                         "productName": "스프링노트111",
                                                         "selectedOptions": [
                                                           {
@@ -263,6 +267,7 @@ import java.lang.annotation.*;
                                                         "unitAmount": 50000,
                                                         "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
                                                         "orderStatus": "PAID",
+                                                        "brandName": "브랜드명4",
                                                         "productName": "스프링노트1234",
                                                         "selectedOptions": [
                                                           {
@@ -304,6 +309,7 @@ import java.lang.annotation.*;
                                                         "unitAmount": 50000,
                                                         "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
                                                         "orderStatus": "PAID",
+                                                        "brandName": "브랜드명5",
                                                         "productName": "스프링노트123",
                                                         "selectedOptions": [
                                                           {
@@ -327,6 +333,7 @@ import java.lang.annotation.*;
                                                         "unitAmount": 70000,
                                                         "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763533916081_image_600.png",
                                                         "orderStatus": "PAID",
+                                                        "brandName": "브랜드명6",
                                                         "productName": "스프링노트1234",
                                                         "selectedOptions": [
                                                           {
