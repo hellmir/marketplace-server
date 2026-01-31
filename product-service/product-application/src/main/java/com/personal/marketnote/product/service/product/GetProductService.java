@@ -23,6 +23,8 @@ import com.personal.marketnote.product.port.out.file.FindProductImagesPort;
 import com.personal.marketnote.product.port.out.pricepolicy.FindPricePoliciesPort;
 import com.personal.marketnote.product.port.out.product.FindProductPort;
 import com.personal.marketnote.product.port.out.productoption.FindProductOptionCategoryPort;
+import com.personal.marketnote.product.port.out.result.ProductReviewAggregateResult;
+import com.personal.marketnote.product.port.out.review.FindProductReviewAggregatesPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
@@ -51,6 +53,7 @@ public class GetProductService implements GetProductUseCase {
     private final FindProductOptionCategoryPort findProductOptionCategoryPort;
     private final FindPricePoliciesPort findPricePoliciesPort;
     private final FindProductImagesPort findProductImagesPort;
+    private final FindProductReviewAggregatesPort findProductReviewAggregatesPort;
 
     @Qualifier("productImageExecutor")
     private final Executor productImageExecutor;
@@ -194,6 +197,9 @@ public class GetProductService implements GetProductUseCase {
                 .map(this::toProductItem)
                 .toList();
 
+        Map<Long, ProductReviewAggregateResult> reviewAggregatesByProductId
+                = findReviewAggregatesByProductId(productItems);
+
         // 상품 카탈로그 이미지 병렬 조회
         Map<Long, GetFilesResult> productIdToImages = new ConcurrentHashMap<>();
         List<CompletableFuture<Void>> futures = productItems.stream()
@@ -226,7 +232,9 @@ public class GetProductService implements GetProductUseCase {
                                 .images()
                                 .getFirst()
                                 : null,
-                        inventories.get(item.getPricePolicyId())
+                        inventories.get(item.getPricePolicyId()),
+                        getAverageRating(reviewAggregatesByProductId, item.getId()),
+                        getTotalCount(reviewAggregatesByProductId, item.getId())
                 ))
                 .toList();
 
@@ -236,6 +244,60 @@ public class GetProductService implements GetProductUseCase {
         }
 
         return GetProductsResult.from(hasNext, nextCursor, totalElements, productItemsWithImage);
+    }
+
+    private Map<Long, ProductReviewAggregateResult> findReviewAggregatesByProductId(
+            List<ProductItemResult> productItems
+    ) {
+        if (FormatValidator.hasNoValue(productItems)) {
+            return Map.of();
+        }
+
+        List<Long> productIds = productItems.stream()
+                .map(ProductItemResult::getId)
+                .filter(FormatValidator::hasValue)
+                .distinct()
+                .toList();
+
+        if (FormatValidator.hasNoValue(productIds)) {
+            return Map.of();
+        }
+
+        return findProductReviewAggregatesPort.findByProductIds(productIds);
+    }
+
+    private Float getAverageRating(
+            Map<Long, ProductReviewAggregateResult> reviewAggregatesByProductId,
+            Long productId
+    ) {
+        if (FormatValidator.hasNoValue(reviewAggregatesByProductId)
+                || FormatValidator.hasNoValue(productId)) {
+            return 0f;
+        }
+
+        ProductReviewAggregateResult result = reviewAggregatesByProductId.get(productId);
+        if (result == null || result.averageRating() == null) {
+            return 0f;
+        }
+
+        return result.averageRating();
+    }
+
+    private Integer getTotalCount(
+            Map<Long, ProductReviewAggregateResult> reviewAggregatesByProductId,
+            Long productId
+    ) {
+        if (FormatValidator.hasNoValue(reviewAggregatesByProductId)
+                || FormatValidator.hasNoValue(productId)) {
+            return 0;
+        }
+
+        ProductReviewAggregateResult result = reviewAggregatesByProductId.get(productId);
+        if (result == null || result.totalCount() == null) {
+            return 0;
+        }
+
+        return result.totalCount();
     }
 
     private ProductItemResult toProductItem(PricePolicy pricePolicy) {
