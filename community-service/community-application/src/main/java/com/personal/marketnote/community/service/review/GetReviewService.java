@@ -14,8 +14,11 @@ import com.personal.marketnote.community.exception.ReviewNotFoundException;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
 import com.personal.marketnote.community.port.in.result.review.GetReviewCountResult;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
+import com.personal.marketnote.community.port.in.result.review.ReviewProductInfoResult;
 import com.personal.marketnote.community.port.in.usecase.review.GetReviewUseCase;
 import com.personal.marketnote.community.port.out.file.FindReviewImagesPort;
+import com.personal.marketnote.community.port.out.product.FindProductByPricePolicyPort;
+import com.personal.marketnote.community.port.out.result.product.ProductInfoResult;
 import com.personal.marketnote.community.port.out.review.FindReviewPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -38,6 +42,7 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRES_NE
 public class GetReviewService implements GetReviewUseCase {
     private final FindReviewPort findReviewPort;
     private final FindReviewImagesPort findReviewImagesPort;
+    private final FindProductByPricePolicyPort findProductByPricePolicyPort;
 
     @Override
     public Review getReview(Long id) {
@@ -143,7 +148,16 @@ public class GetReviewService implements GetReviewUseCase {
 
         Map<Long, List<GetFileResult>> reviewImages = findReviewImages(pagedReviews);
 
-        return GetReviewsResult.from(hasNext, nextCursor, totalElements, pagedReviews, reviewImages);
+        Map<Long, ReviewProductInfoResult> productInfoByPricePolicyId = findReviewProductInfo(pagedReviews);
+
+        return GetReviewsResult.from(
+                hasNext,
+                nextCursor,
+                totalElements,
+                pagedReviews,
+                reviewImages,
+                productInfoByPricePolicyId
+        );
     }
 
     @Override
@@ -185,5 +199,40 @@ public class GetReviewService implements GetReviewUseCase {
         }
 
         return reviewImagesByReviewId;
+    }
+
+    private Map<Long, ReviewProductInfoResult> findReviewProductInfo(List<Review> reviews) {
+        List<Long> pricePolicyIds = extractPricePolicyIds(reviews);
+        if (FormatValidator.hasNoValue(pricePolicyIds)) {
+            return Map.of();
+        }
+
+        Map<Long, ProductInfoResult> productInfoByPricePolicyId
+                = findProductByPricePolicyPort.findByPricePolicyIds(pricePolicyIds);
+        if (FormatValidator.hasNoValue(productInfoByPricePolicyId)) {
+            return Map.of();
+        }
+
+        Map<Long, ReviewProductInfoResult> results = new HashMap<>();
+        productInfoByPricePolicyId.forEach(
+                (pricePolicyId, productInfo) -> results.put(
+                        pricePolicyId,
+                        ReviewProductInfoResult.from(productInfo)
+                )
+        );
+
+        return results;
+    }
+
+    private List<Long> extractPricePolicyIds(List<Review> reviews) {
+        if (FormatValidator.hasNoValue(reviews)) {
+            return List.of();
+        }
+
+        return reviews.stream()
+                .map(Review::getPricePolicyId)
+                .filter(FormatValidator::hasValue)
+                .distinct()
+                .toList();
     }
 }

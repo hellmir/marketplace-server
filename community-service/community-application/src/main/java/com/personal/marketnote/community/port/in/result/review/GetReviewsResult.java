@@ -19,12 +19,34 @@ public record GetReviewsResult(
             List<Review> reviews,
             Map<Long, List<GetFileResult>> reviewImagesByReviewId
     ) {
+        return from(hasNext, nextCursor, totalElements, reviews, reviewImagesByReviewId, Map.of());
+    }
+
+    public static GetReviewsResult from(
+            boolean hasNext,
+            Long nextCursor,
+            Long totalElements,
+            List<Review> reviews,
+            Map<Long, List<GetFileResult>> reviewImagesByReviewId,
+            Map<Long, ReviewProductInfoResult> productInfoByPricePolicyId
+    ) {
         return new GetReviewsResult(
                 totalElements,
                 nextCursor,
                 hasNext,
                 reviews.stream()
-                        .map(review -> ReviewItemResult.from(review, reviewImagesByReviewId.get(review.getId())))
+                        .map(review -> {
+                            Long pricePolicyId = review.getPricePolicyId();
+                            ReviewProductInfoResult productInfo = pricePolicyId != null
+                                    ? productInfoByPricePolicyId.get(pricePolicyId)
+                                    : null;
+
+                            return ReviewItemResult.from(
+                                    review,
+                                    reviewImagesByReviewId.get(review.getId()),
+                                    productInfo
+                            );
+                        })
                         .toList()
         );
     }

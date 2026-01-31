@@ -94,6 +94,28 @@ import java.lang.annotation.*;
                 | createdAt | string(datetime) | 생성 일시 | "2026-01-12T16:57:59.792312" |
                 | modifiedAt | string(datetime) | 수정 일시 | "2026-01-12T16:57:59.805601" |
                 | orderNum | number | 정렬 순서 | 1 |
+                | product | object | 상품 정보 | { ... } |
+                
+                ---
+                
+                ### Response > content > reviews > items > product
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | name | string | 상품명 | "아미클로 아이레박스 멀티채널(부원)" |
+                | brandName | string | 브랜드명 | "부원" |
+                | pricePolicy | object | 가격 정책 정보 | { ... } |
+                | catalogImage | object | 상품 대표 이미지(이미지 구조 동일) | { ... } |
+                
+                ---
+                
+                ### Response > content > reviews > items > product > pricePolicy
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | id | number | 가격 정책 ID | 11 |
+                | price | number | 정가(원) | 25000 |
+                | discountPrice | number | 할인 가격(원) | 22000 |
+                | discountRate | number | 할인율 | 0.12 |
+                | accumulatedPoint | number | 적립 포인트 | 250 |
                 
                 ---
                 
@@ -183,7 +205,29 @@ import java.lang.annotation.*;
                                                   "status": "ACTIVE",
                                                   "createdAt": "2026-01-16T14:46:57.610633",
                                                   "modifiedAt": "2026-01-16T14:47:48.188918",
-                                                  "orderNum": 38
+                                                  "orderNum": 38,
+                                                  "product": {
+                                                    "name": "아이클로 아이클로 멀티채널(부원)",
+                                                    "brandName": "부원",
+                                                    "pricePolicy": {
+                                                      "id": 1121111,
+                                                      "price": 25000,
+                                                      "discountPrice": 22000,
+                                                      "discountRate": 0.12,
+                                                      "accumulatedPoint": 250
+                                                    },
+                                                    "catalogImage": {
+                                                      "id": 28,
+                                                      "sort": "PRODUCT_CATALOG_IMAGE",
+                                                      "extension": "jpg",
+                                                      "name": "스프링노트1",
+                                                      "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763521042462_grafana-icon.png",
+                                                      "resizedS3Urls": [
+                                                        "https://marketnote.s3.amazonaws.com/product/30/1763521042802_grafana-icon_300x300.png"
+                                                      ],
+                                                      "orderNum": 28
+                                                    }
+                                                  }
                                                 },
                                                 {
                                                   "id": 37,
@@ -204,7 +248,29 @@ import java.lang.annotation.*;
                                                   "status": "ACTIVE",
                                                   "createdAt": "2026-01-16T14:46:18.372192",
                                                   "modifiedAt": "2026-01-16T14:46:18.632898",
-                                                  "orderNum": 37
+                                                  "orderNum": 37,
+                                                  "product": {
+                                                    "name": "아이클로 아이클로 멀티채널(부원)",
+                                                    "brandName": "부원",
+                                                    "pricePolicy": {
+                                                      "id": 11211,
+                                                      "price": 25000,
+                                                      "discountPrice": 22000,
+                                                      "discountRate": 0.12,
+                                                      "accumulatedPoint": 250
+                                                    },
+                                                    "catalogImage": {
+                                                      "id": 28,
+                                                      "sort": "PRODUCT_CATALOG_IMAGE",
+                                                      "extension": "jpg",
+                                                      "name": "스프링노트1",
+                                                      "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763521042462_grafana-icon.png",
+                                                      "resizedS3Urls": [
+                                                        "https://marketnote.s3.amazonaws.com/product/30/1763521042802_grafana-icon_300x300.png"
+                                                      ],
+                                                      "orderNum": 28
+                                                    }
+                                                  }
                                                 },
                                                 {
                                                   "id": 35,
@@ -244,7 +310,29 @@ import java.lang.annotation.*;
                                                   "status": "ACTIVE",
                                                   "createdAt": "2026-01-16T14:38:03.084745",
                                                   "modifiedAt": "2026-01-16T14:38:03.410822",
-                                                  "orderNum": 35
+                                                  "orderNum": 35,
+                                                  "product": {
+                                                    "name": "아이클로 아이클로 멀티채널(부원)",
+                                                    "brandName": "부원",
+                                                    "pricePolicy": {
+                                                      "id": 11222111,
+                                                      "price": 25000,
+                                                      "discountPrice": 22000,
+                                                      "discountRate": 0.12,
+                                                      "accumulatedPoint": 250
+                                                    },
+                                                    "catalogImage": {
+                                                      "id": 28,
+                                                      "sort": "PRODUCT_CATALOG_IMAGE",
+                                                      "extension": "jpg",
+                                                      "name": "스프링노트1",
+                                                      "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763521042462_grafana-icon.png",
+                                                      "resizedS3Urls": [
+                                                        "https://marketnote.s3.amazonaws.com/product/30/1763521042802_grafana-icon_300x300.png"
+                                                      ],
+                                                      "orderNum": 28
+                                                    }
+                                                  }
                                                 },
                                                 {
                                                   "id": 34,
@@ -265,7 +353,29 @@ import java.lang.annotation.*;
                                                   "status": "ACTIVE",
                                                   "createdAt": "2026-01-16T14:07:32.571571",
                                                   "modifiedAt": "2026-01-16T14:07:47.737044",
-                                                  "orderNum": 34
+                                                  "orderNum": 34,
+                                                  "product": {
+                                                    "name": "아이클로 아이클로 멀티채널(부원)",
+                                                    "brandName": "부원",
+                                                    "pricePolicy": {
+                                                      "id": 11222,
+                                                      "price": 25000,
+                                                      "discountPrice": 22000,
+                                                      "discountRate": 0.12,
+                                                      "accumulatedPoint": 250
+                                                    },
+                                                    "catalogImage": {
+                                                      "id": 28,
+                                                      "sort": "PRODUCT_CATALOG_IMAGE",
+                                                      "extension": "jpg",
+                                                      "name": "스프링노트1",
+                                                      "s3Url": "https://marketnote.s3.amazonaws.com/product/30/1763521042462_grafana-icon.png",
+                                                      "resizedS3Urls": [
+                                                        "https://marketnote.s3.amazonaws.com/product/30/1763521042802_grafana-icon_300x300.png"
+                                                      ],
+                                                      "orderNum": 28
+                                                    }
+                                                  }
                                                 }
                                               ]
                                             }
