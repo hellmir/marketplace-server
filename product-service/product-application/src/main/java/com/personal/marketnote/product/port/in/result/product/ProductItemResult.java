@@ -26,6 +26,8 @@ public class ProductItemResult {
     private GetFileResult catalogImage;
     private List<ProductOptionItemResult> selectedOptions;
     private Integer stock;
+    private Float averageRating;
+    private Integer totalCount;
     private String status;
     private Long orderNum;
 
@@ -95,6 +97,33 @@ public class ProductItemResult {
                 .catalogImage(catalogImage)
                 .selectedOptions(productItemResult.getSelectedOptions())
                 .stock(stock)
+                .averageRating(productItemResult.getAverageRating())
+                .totalCount(productItemResult.getTotalCount())
+                .status(productItemResult.getStatus())
+                .orderNum(productItemResult.getOrderNum())
+                .build();
+    }
+
+    public static ProductItemResult from(
+            ProductItemResult productItemResult,
+            GetFileResult catalogImage,
+            Integer stock,
+            Float averageRating,
+            Integer totalCount
+    ) {
+        return ProductItemResult.builder()
+                .id(productItemResult.getId())
+                .sellerId(productItemResult.getSellerId())
+                .name(productItemResult.getName())
+                .brandName(productItemResult.getBrandName())
+                .pricePolicy(productItemResult.getPricePolicy())
+                .sales(productItemResult.getSales())
+                .productTags(productItemResult.getProductTags())
+                .catalogImage(catalogImage)
+                .selectedOptions(productItemResult.getSelectedOptions())
+                .stock(stock)
+                .averageRating(averageRating)
+                .totalCount(totalCount)
                 .status(productItemResult.getStatus())
                 .orderNum(productItemResult.getOrderNum())
                 .build();
