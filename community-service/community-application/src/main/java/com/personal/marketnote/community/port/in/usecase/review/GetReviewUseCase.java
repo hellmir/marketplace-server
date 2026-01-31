@@ -4,9 +4,12 @@ import com.personal.marketnote.community.domain.review.ProductReviewAggregate;
 import com.personal.marketnote.community.domain.review.Review;
 import com.personal.marketnote.community.domain.review.ReviewSortProperty;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
+import com.personal.marketnote.community.port.in.result.review.GetProductReviewAggregatesResult;
 import com.personal.marketnote.community.port.in.result.review.GetReviewCountResult;
 import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
 import org.springframework.data.domain.Sort;
+
+import java.util.List;
 
 public interface GetReviewUseCase {
     /**
@@ -66,6 +69,15 @@ public interface GetReviewUseCase {
      * @Description 상품 리뷰 집계 정보를 조회합니다.
      */
     ProductReviewAggregate getProductReviewAggregate(Long productId);
+
+    /**
+     * @param productIds 상품 ID 목록
+     * @return 상품 리뷰 집계 목록 {@link GetProductReviewAggregatesResult}
+     * @Date 2026-01-31
+     * @Author 성효빈
+     * @Description 상품 리뷰 평점 평균 및 총 리뷰 개수 목록을 조회합니다.
+     */
+    GetProductReviewAggregatesResult getProductReviewAggregates(List<Long> productIds);
 
     /**
      * @param id         리뷰 ID
