@@ -7,6 +7,7 @@ import com.personal.marketnote.community.domain.review.Reviews;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface FindReviewPort {
@@ -81,6 +82,15 @@ public interface FindReviewPort {
      * @Description 상품 리뷰 집계 정보를 조회합니다.
      */
     Optional<ProductReviewAggregate> findProductReviewAggregateByProductId(Long productId);
+
+    /**
+     * @param productIds 상품 ID 목록
+     * @return 상품 리뷰 집계 목록 {@link Map<Long, ProductReviewAggregate>}
+     * @Date 2026-01-31
+     * @Author 성효빈
+     * @Description 상품 리뷰 집계 목록을 조회합니다.
+     */
+    Map<Long, ProductReviewAggregate> findProductReviewAggregatesByProductIds(List<Long> productIds);
 
     /**
      * @param reviewerId   리뷰 작성자 ID

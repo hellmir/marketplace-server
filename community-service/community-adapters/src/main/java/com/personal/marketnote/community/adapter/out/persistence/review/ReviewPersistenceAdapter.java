@@ -22,7 +22,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @com.personal.marketnote.common.adapter.out.PersistenceAdapter
 @RequiredArgsConstructor
@@ -122,6 +124,22 @@ public class ReviewPersistenceAdapter implements SaveReviewPort, FindReviewPort,
         return ProductReviewAggregateJpaEntityToDomainMapper.mapToDomain(
                 productReviewAggregateJpaRepository.findByProductId(productId).orElse(null)
         );
+    }
+
+    @Override
+    public Map<Long, ProductReviewAggregate> findProductReviewAggregatesByProductIds(List<Long> productIds) {
+        if (FormatValidator.hasNoValue(productIds)) {
+            return Map.of();
+        }
+
+        return productReviewAggregateJpaRepository.findByProductIdIn(productIds).stream()
+                .map(entity -> ProductReviewAggregateJpaEntityToDomainMapper.mapToDomain(entity).orElse(null))
+                .filter(FormatValidator::hasValue)
+                .collect(Collectors.toMap(
+                        ProductReviewAggregate::getProductId,
+                        aggregate -> aggregate,
+                        (existing, replacement) -> existing
+                ));
     }
 
     @Override

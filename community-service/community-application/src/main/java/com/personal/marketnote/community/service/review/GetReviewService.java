@@ -12,9 +12,7 @@ import com.personal.marketnote.community.exception.ProductReviewAggregateNotFoun
 import com.personal.marketnote.community.exception.ReviewAlreadyExistsException;
 import com.personal.marketnote.community.exception.ReviewNotFoundException;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
-import com.personal.marketnote.community.port.in.result.review.GetReviewCountResult;
-import com.personal.marketnote.community.port.in.result.review.GetReviewsResult;
-import com.personal.marketnote.community.port.in.result.review.ReviewProductInfoResult;
+import com.personal.marketnote.community.port.in.result.review.*;
 import com.personal.marketnote.community.port.in.usecase.review.GetReviewUseCase;
 import com.personal.marketnote.community.port.out.file.FindReviewImagesPort;
 import com.personal.marketnote.community.port.out.product.FindProductByPricePolicyPort;
@@ -115,6 +113,32 @@ public class GetReviewService implements GetReviewUseCase {
     public ProductReviewAggregate getProductReviewAggregate(Long productId) {
         return findReviewPort.findProductReviewAggregateByProductId(productId)
                 .orElseThrow(() -> new ProductReviewAggregateNotFoundException(productId));
+    }
+
+    @Override
+    public GetProductReviewAggregatesResult getProductReviewAggregates(List<Long> productIds) {
+        if (FormatValidator.hasNoValue(productIds)) {
+            return GetProductReviewAggregatesResult.empty();
+        }
+
+        List<Long> validProductIds = productIds.stream()
+                .filter(productId -> FormatValidator.hasValue(productId))
+                .distinct()
+                .toList();
+
+        Map<Long, ProductReviewAggregate> aggregatesByProductId = FormatValidator.hasValue(validProductIds)
+                ? findReviewPort.findProductReviewAggregatesByProductIds(validProductIds)
+                : Map.of();
+
+        List<ProductReviewAggregateSummaryResult> reviewAggregates = productIds.stream()
+                .filter(productId -> FormatValidator.hasValue(productId))
+                .map(productId -> ProductReviewAggregateSummaryResult.from(
+                        productId,
+                        aggregatesByProductId.get(productId)
+                ))
+                .toList();
+
+        return GetProductReviewAggregatesResult.from(reviewAggregates);
     }
 
     @Override

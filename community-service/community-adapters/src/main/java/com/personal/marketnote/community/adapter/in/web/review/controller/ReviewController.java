@@ -21,11 +21,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
+import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 import static org.apache.commons.lang3.BooleanUtils.FALSE;
 
 @RestController
@@ -315,5 +319,33 @@ public class ReviewController {
                     HttpStatus.OK
             );
         }
+    }
+
+    /**
+     * 상품 리뷰 집계 목록 조회
+     *
+     * @param productIds 상품 ID 목록
+     * @return 상품 리뷰 집계 목록 조회 응답 {@link GetProductReviewAggregatesResponse}
+     * @Author 성효빈
+     * @Date 2026-01-31
+     * @Description 상품 리뷰 평점 평균 및 총 리뷰 개수 목록을 조회합니다.
+     */
+    @GetMapping("products/review-aggregates")
+    @PreAuthorize(ADMIN_POINTCUT)
+    @GetProductReviewAggregatesApiDocs
+    public ResponseEntity<BaseResponse<GetProductReviewAggregatesResponse>> getProductReviewAggregates(
+            @RequestParam("productIds") List<Long> productIds
+    ) {
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        GetProductReviewAggregatesResponse.from(
+                                getReviewUseCase.getProductReviewAggregates(productIds)
+                        ),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "상품 리뷰 집계 목록 조회 성공"
+                ),
+                HttpStatus.OK
+        );
     }
 }
