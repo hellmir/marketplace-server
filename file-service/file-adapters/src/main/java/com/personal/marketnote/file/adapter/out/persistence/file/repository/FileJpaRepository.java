@@ -3,13 +3,52 @@ package com.personal.marketnote.file.adapter.out.persistence.file.repository;
 import com.personal.marketnote.common.domain.file.OwnerType;
 import com.personal.marketnote.file.adapter.out.persistence.file.entity.FileJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface FileJpaRepository extends JpaRepository<FileJpaEntity, Long> {
-    List<FileJpaEntity> findAllByOwnerTypeAndOwnerIdOrderByIdAsc(OwnerType ownerType, Long ownerId);
+    @Query("""
+            SELECT f
+            FROM FileJpaEntity f
+            WHERE f.ownerType = :ownerType
+              AND f.ownerId = :ownerId
+              AND f.status = 'ACTIVE'
+            ORDER BY f.id ASC
+            """)
+    List<FileJpaEntity> findAllByOwnerTypeAndOwnerIdOrderByIdAsc(
+            @Param("ownerType") OwnerType ownerType,
+            @Param("ownerId") Long ownerId
+    );
 
-    List<FileJpaEntity> findTop1ByOwnerTypeAndOwnerIdAndSortOrderByOrderNumDesc(OwnerType ownerType, Long ownerId, String sort);
+    @Query("""
+            SELECT f
+            FROM FileJpaEntity f
+            WHERE f.ownerType = :ownerType
+              AND f.ownerId = :ownerId
+              AND f.sort = :sort
+              AND f.status = 'ACTIVE'
+            ORDER BY f.orderNum DESC
+            """)
+    List<FileJpaEntity> findTop1ByOwnerTypeAndOwnerIdAndSortOrderByOrderNumDesc(
+            @Param("ownerType") OwnerType ownerType,
+            @Param("ownerId") Long ownerId,
+            @Param("sort") String sort
+    );
 
-    List<FileJpaEntity> findTop5ByOwnerTypeAndOwnerIdAndSortOrderByOrderNumDesc(OwnerType ownerType, Long ownerId, String sort);
+    @Query("""
+            SELECT f
+            FROM FileJpaEntity f
+            WHERE f.ownerType = :ownerType
+              AND f.ownerId = :ownerId
+              AND f.sort = :sort
+              AND f.status = 'ACTIVE'
+            ORDER BY f.orderNum DESC
+            """)
+    List<FileJpaEntity> findTop5ByOwnerTypeAndOwnerIdAndSortOrderByOrderNumDesc(
+            @Param("ownerType") OwnerType ownerType,
+            @Param("ownerId") Long ownerId,
+            @Param("sort") String sort
+    );
 }
