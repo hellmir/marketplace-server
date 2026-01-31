@@ -8,6 +8,7 @@ public record RegisterReviewCommand(
         Long orderId,
         Long productId,
         Long pricePolicyId,
+        String productImageUrl,
         String selectedOptions,
         Integer quantity,
         String reviewerName,

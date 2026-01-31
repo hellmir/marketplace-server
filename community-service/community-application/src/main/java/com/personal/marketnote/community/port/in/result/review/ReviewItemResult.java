@@ -15,6 +15,7 @@ public record ReviewItemResult(
         Long orderId,
         Long productId,
         Long pricePolicyId,
+        String productImageUrl,
         String selectedOptions,
         Integer quantity,
         String reviewerName,
@@ -50,6 +51,7 @@ public record ReviewItemResult(
                 .orderId(review.getOrderId())
                 .productId(review.getProductId())
                 .pricePolicyId(review.getPricePolicyId())
+                .productImageUrl(review.getProductImageUrl())
                 .selectedOptions(review.getSelectedOptions())
                 .quantity(review.getQuantity())
                 .reviewerName(review.getReviewerName())

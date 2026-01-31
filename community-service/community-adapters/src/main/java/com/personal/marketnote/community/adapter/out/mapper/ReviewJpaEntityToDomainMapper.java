@@ -21,6 +21,7 @@ public class ReviewJpaEntityToDomainMapper {
                                 .orderId(entity.getOrderId())
                                 .productId(entity.getProductId())
                                 .pricePolicyId(entity.getPricePolicyId())
+                                .productImageUrl(entity.getProductImageUrl())
                                 .selectedOptions(entity.getSelectedOptions())
                                 .quantity(entity.getQuantity())
                                 .reviewerName(entity.getReviewerName())

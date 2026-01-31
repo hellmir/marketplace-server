@@ -40,6 +40,13 @@ public class RegisterReviewRequest {
     private Long pricePolicyId;
 
     @Schema(
+            name = "productImageUrl",
+            description = "상품 이미지 URL",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED
+    )
+    private String productImageUrl;
+
+    @Schema(
             name = "selectedOptions",
             description = "선택된 옵션 목록",
             requiredMode = Schema.RequiredMode.REQUIRED

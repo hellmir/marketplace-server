@@ -12,6 +12,7 @@ public class ReviewCommandToStateMapper {
                 .orderId(command.orderId())
                 .productId(command.productId())
                 .pricePolicyId(command.pricePolicyId())
+                .productImageUrl(command.productImageUrl())
                 .selectedOptions(command.selectedOptions())
                 .quantity(command.quantity())
                 .reviewerName(command.reviewerName())

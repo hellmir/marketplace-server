@@ -26,6 +26,7 @@ public class Review {
     private Long orderId;
     private Long productId;
     private Long pricePolicyId;
+    private String productImageUrl;
     private String selectedOptions;
     private Integer quantity;
     private String reviewerName;
@@ -56,6 +57,7 @@ public class Review {
                 .orderId(state.getOrderId())
                 .productId(state.getProductId())
                 .pricePolicyId(state.getPricePolicyId())
+                .productImageUrl(state.getProductImageUrl())
                 .selectedOptions(state.getSelectedOptions())
                 .quantity(state.getQuantity())
                 .reviewerName(ValueMasker.mask(state.getReviewerName()))
@@ -79,6 +81,7 @@ public class Review {
                 .orderId(state.getOrderId())
                 .productId(state.getProductId())
                 .pricePolicyId(state.getPricePolicyId())
+                .productImageUrl(state.getProductImageUrl())
                 .selectedOptions(state.getSelectedOptions())
                 .quantity(state.getQuantity())
                 .reviewerName(state.getReviewerName())
