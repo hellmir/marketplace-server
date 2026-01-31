@@ -5,10 +5,8 @@ import com.personal.marketnote.commerce.domain.order.OrderProduct;
 import com.personal.marketnote.commerce.exception.OrderNotFoundException;
 import com.personal.marketnote.commerce.exception.OrderProductNotFoundException;
 import com.personal.marketnote.commerce.port.in.command.order.GetBuyerOrderHistoryQuery;
-import com.personal.marketnote.commerce.port.in.result.order.BuyerOrdersAndProductsResult;
-import com.personal.marketnote.commerce.port.in.result.order.GetBuyerOrdersResult;
-import com.personal.marketnote.commerce.port.in.result.order.GetOrderCountResult;
-import com.personal.marketnote.commerce.port.in.result.order.GetOrderResult;
+import com.personal.marketnote.commerce.port.in.command.order.GetBuyerOrderProductsQuery;
+import com.personal.marketnote.commerce.port.in.result.order.*;
 import com.personal.marketnote.commerce.port.in.usecase.order.GetOrderUseCase;
 import com.personal.marketnote.commerce.port.out.order.FindOrderPort;
 import com.personal.marketnote.commerce.port.out.order.FindOrderProductPort;
@@ -23,6 +21,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import static java.time.LocalDate.now;
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
@@ -79,6 +78,33 @@ public class GetOrderService implements GetOrderUseCase {
     }
 
     @Override
+    public GetBuyerOrderProductsResult getBuyerOrderProducts(GetBuyerOrderProductsQuery query) {
+        List<Order> orders = findOrderPort.findByBuyerId(query.buyerId(), null, null, List.of());
+
+        if (FormatValidator.hasNoValue(orders)) {
+            return GetBuyerOrderProductsResult.of(List.of());
+        }
+
+        Predicate<OrderProduct> reviewFilter = orderProduct
+                -> query.matchesReviewStatus(orderProduct.getIsReviewed());
+        Map<Long, ProductInfoResult> orderedProductsByPricePolicyId
+                = findOrderedProductsByPricePolicyId(orders, reviewFilter);
+
+        List<GetBuyerOrderProductResult> orderProducts = orders.stream()
+                .flatMap(order -> order.getOrderProducts().stream()
+                        .filter(reviewFilter)
+                        .map(orderProduct -> GetBuyerOrderProductResult.from(
+                                order,
+                                orderProduct,
+                                orderedProductsByPricePolicyId.get(orderProduct.getPricePolicyId())
+                        ))
+                )
+                .toList();
+
+        return GetBuyerOrderProductsResult.of(orderProducts);
+    }
+
+    @Override
     public OrderProduct getOrderProduct(Long orderId, Long pricePolicyId) {
         return findOrderProductPort.findByOrderIdAndPricePolicyId(orderId, pricePolicyId)
                 .orElseThrow(() -> new OrderProductNotFoundException(orderId, pricePolicyId));
@@ -114,8 +140,16 @@ public class GetOrderService implements GetOrderUseCase {
     }
 
     private Map<Long, ProductInfoResult> findOrderedProductsByPricePolicyId(List<Order> orders) {
+        return findOrderedProductsByPricePolicyId(orders, orderProduct -> true);
+    }
+
+    private Map<Long, ProductInfoResult> findOrderedProductsByPricePolicyId(
+            List<Order> orders,
+            Predicate<OrderProduct> orderProductFilter
+    ) {
         List<Long> pricePolicyIds = orders.stream()
                 .flatMap(order -> order.getOrderProducts().stream())
+                .filter(orderProductFilter)
                 .map(OrderProduct::getPricePolicyId)
                 .filter(FormatValidator::hasValue)
                 .distinct()
