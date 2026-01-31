@@ -12,6 +12,7 @@ public class ReviewRequestToCommandMapper {
                 .orderId(request.getOrderId())
                 .productId(request.getProductId())
                 .pricePolicyId(request.getPricePolicyId())
+                .productImageUrl(request.getProductImageUrl())
                 .selectedOptions(request.getSelectedOptions())
                 .quantity(request.getQuantity())
                 .reviewerName(request.getReviewerName())

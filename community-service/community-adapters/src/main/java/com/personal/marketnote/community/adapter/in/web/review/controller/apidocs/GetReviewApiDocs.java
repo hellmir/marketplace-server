@@ -57,6 +57,7 @@ import java.lang.annotation.*;
                 | writerName | string | 작성자명 | "홍길동" |
                 | content | string | 내용 | "배송 언제 오나요?" |
                 | rating | number | 리뷰 평점 | 4.5 |
+                | productImageUrl | string | 상품 이미지 URL | "https://example.com/image.jpg" |
                 | isPhoto | boolean | 이미지 첨부 여부 | true |
                 | images | array | 리뷰 이미지 목록 | [ ... ] |
                 | createdAt | string(datetime) | 생성 일시 | "2026-01-27T09:30:00.000000" |
@@ -87,6 +88,7 @@ import java.lang.annotation.*;
                                             "writerName": "홍길동",
                                             "content": "배송 언제 오나요?",
                                             "rating": 4.5,
+                                            "productImageUrl": "https://example.com/image.jpg",
                                             "isPhoto": false,
                                             "images": [
                                               {

@@ -80,6 +80,7 @@ import java.lang.annotation.*;
                 | orderId | number | 주문 ID | 1 |
                 | productId | number | 상품 ID | 1 |
                 | pricePolicyId | number | 가격 정책 ID | 11 |
+                | productImageUrl | string | 상품 이미지 URL | "https://example.com/image.jpg" |
                 | selectedOptions | string | 선택된 옵션 목록 | "30개입, 5박스" |
                 | quantity | number | 주문 수량 | 2 |
                 | reviewerName | string | 리뷰 작성자 이름 | "홍*동" |
@@ -192,6 +193,7 @@ import java.lang.annotation.*;
                                                   "orderId": 1,
                                                   "productId": 22,
                                                   "pricePolicyId": 1121111,
+                                                  "productImageUrl": "https://example.com/image.jpg",
                                                   "selectedOptions": "30개입, 5박스",
                                                   "quantity": 2,
                                                   "reviewerName": "홍*동",
@@ -235,6 +237,7 @@ import java.lang.annotation.*;
                                                   "orderId": 1,
                                                   "productId": 22,
                                                   "pricePolicyId": 11211,
+                                                  "productImageUrl": "https://example.com/image.jpg",
                                                   "selectedOptions": "30개입, 5박스",
                                                   "quantity": 2,
                                                   "reviewerName": "홍*동",
@@ -278,6 +281,7 @@ import java.lang.annotation.*;
                                                   "orderId": 1,
                                                   "productId": 55,
                                                   "pricePolicyId": 11222111,
+                                                  "productImageUrl": "https://example.com/image.jpg",
                                                   "selectedOptions": "30개입, 5박스",
                                                   "quantity": 2,
                                                   "reviewerName": "홍*동",
@@ -340,6 +344,7 @@ import java.lang.annotation.*;
                                                   "orderId": 1,
                                                   "productId": 55,
                                                   "pricePolicyId": 11222,
+                                                  "productImageUrl": "https://example.com/image.jpg",
                                                   "selectedOptions": "30개입, 5박스",
                                                   "quantity": 2,
                                                   "reviewerName": "홍*동",

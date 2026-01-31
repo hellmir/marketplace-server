@@ -33,6 +33,9 @@ public class ReviewJpaEntity extends BaseOrderedGeneralEntity {
     @Column(name = "price_policy_id", nullable = false)
     private Long pricePolicyId;
 
+    @Column(name = "product_image_url", length = 2047)
+    private String productImageUrl;
+
     @Column(name = "selected_options", length = 127)
     private String selectedOptions;
 
@@ -45,7 +48,7 @@ public class ReviewJpaEntity extends BaseOrderedGeneralEntity {
     @Column(name = "rating", nullable = false)
     private Float rating;
 
-    @Column(name = "content", nullable = false, length = 8192)
+    @Column(name = "content", nullable = false, length = 8191)
     private String content;
 
     @Column(name = "photo_yn", nullable = false)
@@ -70,6 +73,7 @@ public class ReviewJpaEntity extends BaseOrderedGeneralEntity {
                 .orderId(review.getOrderId())
                 .productId(review.getProductId())
                 .pricePolicyId(review.getPricePolicyId())
+                .productImageUrl(review.getProductImageUrl())
                 .selectedOptions(review.getSelectedOptions())
                 .quantity(review.getQuantity())
                 .reviewerName(review.getReviewerName())

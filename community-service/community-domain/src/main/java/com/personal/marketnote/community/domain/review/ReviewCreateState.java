@@ -13,6 +13,7 @@ public class ReviewCreateState {
     private final Long orderId;
     private final Long productId;
     private final Long pricePolicyId;
+    private final String productImageUrl;
     private final String selectedOptions;
     private final Integer quantity;
     private final String reviewerName;
