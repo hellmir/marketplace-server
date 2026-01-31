@@ -28,13 +28,22 @@ public record ReviewItemResult(
         String status,
         LocalDateTime createdAt,
         LocalDateTime modifiedAt,
-        Long orderNum
+        Long orderNum,
+        ReviewProductInfoResult product
 ) {
     public static ReviewItemResult from(Review review) {
-        return from(review, null);
+        return from(review, null, null);
     }
 
     public static ReviewItemResult from(Review review, List<GetFileResult> images) {
+        return from(review, images, null);
+    }
+
+    public static ReviewItemResult from(
+            Review review,
+            List<GetFileResult> images,
+            ReviewProductInfoResult product
+    ) {
         return ReviewItemResult.builder()
                 .id(review.getId())
                 .reviewerId(review.getReviewerId())
@@ -55,6 +64,7 @@ public record ReviewItemResult(
                 .createdAt(review.getCreatedAt())
                 .modifiedAt(review.getModifiedAt())
                 .orderNum(review.getOrderNum())
+                .product(product)
                 .build();
     }
 }

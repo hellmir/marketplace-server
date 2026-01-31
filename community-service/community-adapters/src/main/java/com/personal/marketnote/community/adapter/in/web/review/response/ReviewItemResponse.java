@@ -28,7 +28,8 @@ public record ReviewItemResponse(
         String status,
         LocalDateTime createdAt,
         LocalDateTime modifiedAt,
-        Long orderNum
+        Long orderNum,
+        ReviewProductInfoResponse product
 ) {
     public static ReviewItemResponse from(ReviewItemResult result) {
         return ReviewItemResponse.builder()
@@ -51,6 +52,7 @@ public record ReviewItemResponse(
                 .createdAt(result.createdAt())
                 .modifiedAt(result.modifiedAt())
                 .orderNum(result.orderNum())
+                .product(ReviewProductInfoResponse.from(result.product()))
                 .build();
     }
 }
