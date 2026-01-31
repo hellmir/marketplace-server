@@ -73,6 +73,7 @@ import java.lang.annotation.*;
                 | quantity | number | 주문 수량 | 2 |
                 | unitAmount | number | 단위 금액(원) | 50000 |
                 | imageUrl | string | 상품 이미지 URL | "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png" |
+                | brandName | string | 브랜드명 | "브랜드명1" |
                 | productName | string | 상품명 | "공책" |
                 | selectedOptions | array | 선택 옵션 목록 | [ ... ] |
                 | isReviewed | boolean | 리뷰 작성 여부 | false |
@@ -120,6 +121,7 @@ import java.lang.annotation.*;
                                                 "quantity": 2,
                                                 "unitAmount": 50000,
                                                 "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
+                                                "brandName": "브랜드명1",
                                                 "productName": "스프링노트12345",
                                                 "selectedOptions": [
                                                   {

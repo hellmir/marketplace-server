@@ -20,6 +20,7 @@ public record GetOrderProductResult(
         Long unitAmount,
         String imageUrl,
         OrderStatus orderStatus,
+        String brandName,
         String productName,
         List<ProductOptionInfoResult> selectedOptions,
         Boolean isReviewed
@@ -40,6 +41,11 @@ public record GetOrderProductResult(
                 .unitAmount(orderProduct.getUnitAmount())
                 .imageUrl(orderProduct.getImageUrl())
                 .orderStatus(resolvedStatus)
+                .brandName(
+                        orderedProductExists
+                                ? productInfo.brandName()
+                                : null
+                )
                 .productName(
                         orderedProductExists
                                 ? productInfo.name()

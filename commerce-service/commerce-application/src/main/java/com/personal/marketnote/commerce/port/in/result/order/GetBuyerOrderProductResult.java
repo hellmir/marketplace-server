@@ -24,6 +24,7 @@ public record GetBuyerOrderProductResult(
         Integer quantity,
         Long unitAmount,
         String imageUrl,
+        String brandName,
         String productName,
         List<ProductOptionInfoResult> selectedOptions,
         Boolean isReviewed
@@ -53,6 +54,7 @@ public record GetBuyerOrderProductResult(
                 .quantity(orderProductResult.quantity())
                 .unitAmount(orderProductResult.unitAmount())
                 .imageUrl(orderProductResult.imageUrl())
+                .brandName(orderProductResult.brandName())
                 .productName(orderProductResult.productName())
                 .selectedOptions(orderProductResult.selectedOptions())
                 .isReviewed(orderProductResult.isReviewed())
