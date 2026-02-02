@@ -5,18 +5,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.personal.marketnote.common.adapter.out.VendorAdapter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.common.utility.http.client.CommunicationFailureHandler;
-import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoErrorResponse;
-import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.RegisterFasstoWarehousingItemResponse;
-import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.RegisterFasstoWarehousingResponse;
+import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.*;
 import com.personal.marketnote.fulfillment.configuration.FasstoAuthProperties;
 import com.personal.marketnote.fulfillment.domain.vendor.fassto.warehousing.FasstoWarehousingMapper;
+import com.personal.marketnote.fulfillment.domain.vendor.fassto.warehousing.FasstoWarehousingQuery;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationSenderType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationTargetType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorName;
+import com.personal.marketnote.fulfillment.exception.GetFasstoWarehousingFailedException;
 import com.personal.marketnote.fulfillment.exception.RegisterFasstoWarehousingFailedException;
+import com.personal.marketnote.fulfillment.port.in.result.vendor.FasstoWarehousingInfoResult;
+import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoWarehousingResult;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.RegisterFasstoWarehousingItemResult;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.RegisterFasstoWarehousingResult;
+import com.personal.marketnote.fulfillment.port.out.vendor.GetFasstoWarehousingPort;
 import com.personal.marketnote.fulfillment.port.out.vendor.RegisterFasstoWarehousingPort;
 import com.personal.marketnote.fulfillment.utility.VendorCommunicationFailureHandler;
 import com.personal.marketnote.fulfillment.utility.VendorCommunicationPayloadGenerator;
@@ -40,7 +43,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.*;
 @VendorAdapter
 @RequiredArgsConstructor
 @Slf4j
-public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort {
+public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, GetFasstoWarehousingPort {
     private static final String ACCESS_TOKEN_HEADER = "accessToken";
     private static final String CUSTOMER_CODE_PLACEHOLDER = "{customerCode}";
 
@@ -169,6 +172,122 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort {
         throw new RegisterFasstoWarehousingFailedException(failureMessage, new IOException(error));
     }
 
+    @Override
+    public GetFasstoWarehousingResult getWarehousing(FasstoWarehousingQuery query) {
+        if (FormatValidator.hasNoValue(query)) {
+            throw new IllegalArgumentException("Fassto warehousing query is required.");
+        }
+
+        URI uri = buildWarehousingListUri(query.getCustomerCode(), query.getStartDate(), query.getEndDate());
+        HttpEntity<Void> httpEntity = new HttpEntity<>(buildHeaders(query.getAccessToken(), false));
+
+        Exception error = new Exception();
+        String failureMessage = null;
+        long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
+        FulfillmentVendorCommunicationTargetType targetType = FulfillmentVendorCommunicationTargetType.WAREHOUSING;
+        FulfillmentVendorName vendorName = FulfillmentVendorName.FASSTO;
+
+        for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            int attempt = i + 1;
+            JsonNode requestPayloadJson = buildListRequestPayloadJson(query, uri, attempt);
+            String requestPayload = requestPayloadJson.toString();
+
+            ResponseEntity<String> response;
+            try {
+                response = restTemplate.exchange(
+                        uri,
+                        HttpMethod.GET,
+                        httpEntity,
+                        String.class
+                );
+            } catch (Exception e) {
+                Map<String, Object> errorPayload = new LinkedHashMap<>();
+                errorPayload.put("error", e.getClass().getSimpleName());
+                errorPayload.put("message", e.getMessage());
+                errorPayload.put("attempt", attempt);
+
+                vendorCommunicationFailureHandler.handleFailure(
+                        targetType,
+                        vendorName,
+                        requestPayload,
+                        requestPayloadJson,
+                        errorPayload,
+                        e
+                );
+
+                String vendorMessage = resolveVendorMessageFromException(e);
+                if (FormatValidator.hasValue(vendorMessage)) {
+                    failureMessage = vendorMessage;
+                    error = new Exception(vendorMessage);
+                }
+
+                log.warn("Failed to get Fassto warehousing list: attempt={}, message={}", attempt, e.getMessage(), e);
+                if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
+                    error = e;
+                }
+
+                sleep(sleepMillis);
+
+                // exponential backoff applied
+                sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
+
+                continue;
+            }
+
+            JsonNode responsePayloadJson = buildResponsePayloadJson(response, attempt);
+            String responsePayload = responsePayloadJson.toString();
+
+            FasstoWarehousingListResponse parsedResponse = parseWarehousingListResponse(response);
+            boolean isSuccess = isWarehousingListSuccess(response, parsedResponse);
+            String exception = isSuccess ? null : resolveWarehousingListException(response, parsedResponse);
+
+            recordCommunication(
+                    targetType,
+                    vendorName,
+                    FulfillmentVendorCommunicationType.REQUEST,
+                    requestPayload,
+                    requestPayloadJson,
+                    exception
+            );
+            recordCommunication(
+                    targetType,
+                    vendorName,
+                    FulfillmentVendorCommunicationType.RESPONSE,
+                    responsePayload,
+                    responsePayloadJson,
+                    exception
+            );
+
+            if (isSuccess) {
+                return mapWarehousingListResult(parsedResponse);
+            }
+
+            String vendorMessage = resolveVendorMessage(parsedResponse, FormatValidator.hasValue(response) ? response.getBody() : null);
+            if (FormatValidator.hasValue(vendorMessage)) {
+                failureMessage = vendorMessage;
+                error = new Exception(vendorMessage);
+            }
+
+            log.warn("Fassto warehousing list request failed: attempt={}, status={}, exception={}",
+                    attempt,
+                    FormatValidator.hasValue(response) ? response.getStatusCode() : null,
+                    exception
+            );
+
+            if (CommunicationFailureHandler.isCertainFailure(response)) {
+                break;
+            }
+
+            sleep(sleepMillis);
+
+            // exponential backoff applied
+            sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
+        }
+
+        log.error("Failed to get Fassto warehousing list: {} with error: {}", uri, error.getMessage(), error);
+        throw new GetFasstoWarehousingFailedException(failureMessage, new IOException(error));
+    }
+
     private URI buildWarehousingUri(String customerCode) {
         validateWarehousingProperties();
         return UriComponentsBuilder.fromUriString(properties.getBaseUrl())
@@ -177,10 +296,24 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort {
                 .toUri();
     }
 
+    private URI buildWarehousingListUri(String customerCode, String startDate, String endDate) {
+        validateWarehousingListProperties();
+        return UriComponentsBuilder.fromUriString(properties.getBaseUrl())
+                .path(properties.getWarehousingListPath())
+                .buildAndExpand(customerCode, startDate, endDate)
+                .toUri();
+    }
+
     private HttpHeaders buildHeaders(String accessToken) {
+        return buildHeaders(accessToken, true);
+    }
+
+    private HttpHeaders buildHeaders(String accessToken, boolean includeContentType) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        if (includeContentType) {
+            headers.setContentType(MediaType.APPLICATION_JSON);
+        }
         headers.add(ACCESS_TOKEN_HEADER, accessToken);
         return headers;
     }
@@ -194,6 +327,24 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort {
         }
         if (!properties.getWarehousingPath().contains(CUSTOMER_CODE_PLACEHOLDER)) {
             throw new IllegalStateException("Fassto warehousing path must include {customerCode}.");
+        }
+    }
+
+    private void validateWarehousingListProperties() {
+        if (FormatValidator.hasNoValue(properties.getBaseUrl())) {
+            throw new IllegalStateException("Fassto base URL is required.");
+        }
+        if (FormatValidator.hasNoValue(properties.getWarehousingListPath())) {
+            throw new IllegalStateException("Fassto warehousing list path is required.");
+        }
+        if (!properties.getWarehousingListPath().contains(CUSTOMER_CODE_PLACEHOLDER)) {
+            throw new IllegalStateException("Fassto warehousing list path must include {customerCode}.");
+        }
+        if (!properties.getWarehousingListPath().contains("{startDate}")) {
+            throw new IllegalStateException("Fassto warehousing list path must include {startDate}.");
+        }
+        if (!properties.getWarehousingListPath().contains("{endDate}")) {
+            throw new IllegalStateException("Fassto warehousing list path must include {endDate}.");
         }
     }
 
@@ -215,12 +366,37 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort {
         }
     }
 
+    private FasstoWarehousingListResponse parseWarehousingListResponse(ResponseEntity<String> response) {
+        if (FormatValidator.hasNoValue(response)) {
+            return null;
+        }
+
+        String body = response.getBody();
+        if (FormatValidator.hasNoValue(body)) {
+            return null;
+        }
+
+        try {
+            return objectMapper.readValue(body, FasstoWarehousingListResponse.class);
+        } catch (Exception e) {
+            log.warn("Failed to parse Fassto warehousing list response: {}", e.getMessage(), e);
+            return null;
+        }
+    }
+
     private boolean isSuccessResponse(ResponseEntity<String> response, RegisterFasstoWarehousingResponse parsedResponse) {
         return FormatValidator.hasValue(response)
                 && response.getStatusCode().value() == 200
                 && FormatValidator.hasValue(parsedResponse)
                 && parsedResponse.isSuccess()
                 && FormatValidator.hasValue(parsedResponse.data());
+    }
+
+    private boolean isWarehousingListSuccess(ResponseEntity<String> response, FasstoWarehousingListResponse parsedResponse) {
+        return FormatValidator.hasValue(response)
+                && response.getStatusCode().value() == 200
+                && FormatValidator.hasValue(parsedResponse)
+                && parsedResponse.isSuccess();
     }
 
     private String resolveResponseException(ResponseEntity<String> response, RegisterFasstoWarehousingResponse parsedResponse) {
@@ -240,6 +416,40 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort {
             return "DATA_MISSING";
         }
         return "UNKNOWN_FAILURE";
+    }
+
+    private String resolveWarehousingListException(
+            ResponseEntity<String> response,
+            FasstoWarehousingListResponse parsedResponse
+    ) {
+        if (FormatValidator.hasNoValue(response)) {
+            return "NO_RESPONSE";
+        }
+        if (response.getStatusCode().value() != 200) {
+            return "HTTP_" + response.getStatusCode().value();
+        }
+        if (FormatValidator.hasNoValue(parsedResponse)) {
+            return "INVALID_RESPONSE";
+        }
+        if (FormatValidator.hasNoValue(parsedResponse.header()) || !parsedResponse.header().isSuccess()) {
+            return "HEADER_FAILURE";
+        }
+        if (FormatValidator.hasNoValue(parsedResponse.data())) {
+            return "DATA_MISSING";
+        }
+        return "UNKNOWN_FAILURE";
+    }
+
+    private JsonNode buildListRequestPayloadJson(FasstoWarehousingQuery query, URI uri, int attempt) {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("method", HttpMethod.GET.name());
+        payload.put("url", uri.toString());
+        payload.put("customerCode", query.getCustomerCode());
+        payload.put("startDate", query.getStartDate());
+        payload.put("endDate", query.getEndDate());
+        payload.put(ACCESS_TOKEN_HEADER, maskValue(query.getAccessToken()));
+        payload.put("attempt", attempt);
+        return vendorCommunicationPayloadGenerator.buildPayloadJson(payload);
     }
 
     private JsonNode buildRequestPayloadJson(
@@ -325,12 +535,52 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort {
         return RegisterFasstoWarehousingResult.of(dataCount, warehousing);
     }
 
+    private GetFasstoWarehousingResult mapWarehousingListResult(FasstoWarehousingListResponse response) {
+        List<FasstoWarehousingInfoResult> warehousing = response.data().stream()
+                .map(this::mapWarehousingInfo)
+                .toList();
+        Integer dataCount = FormatValidator.hasValue(response.header()) ? response.header().dataCount() : null;
+        return GetFasstoWarehousingResult.of(dataCount, warehousing);
+    }
+
     private RegisterFasstoWarehousingItemResult mapWarehousingItem(RegisterFasstoWarehousingItemResponse item) {
         return RegisterFasstoWarehousingItemResult.of(
                 item.msg(),
                 item.code(),
                 item.slipNo(),
                 item.ordNo()
+        );
+    }
+
+    private FasstoWarehousingInfoResult mapWarehousingInfo(FasstoWarehousingItemResponse item) {
+        List<Object> goodsSerialNo = FormatValidator.hasValue(item.goodsSerialNo())
+                ? item.goodsSerialNo()
+                : List.of();
+
+        return FasstoWarehousingInfoResult.of(
+                item.ordDt(),
+                item.whCd(),
+                item.whNm(),
+                item.slipNo(),
+                item.ordNo(),
+                item.cstCd(),
+                item.cstNm(),
+                item.supCd(),
+                item.cstSupCd(),
+                item.supNm(),
+                item.sku(),
+                item.ordQty(),
+                item.inQty(),
+                item.tarQty(),
+                item.inWay(),
+                item.inWayNm(),
+                item.parcelComp(),
+                item.parcelInvoiceNo(),
+                item.wrkStat(),
+                item.wrkStatNm(),
+                item.emgrYn(),
+                item.remark(),
+                goodsSerialNo
         );
     }
 
@@ -360,6 +610,16 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort {
     }
 
     private String resolveVendorMessage(RegisterFasstoWarehousingResponse response, String rawBody) {
+        if (FormatValidator.hasValue(response)) {
+            String message = response.resolveErrorMessage();
+            if (FormatValidator.hasValue(message)) {
+                return message;
+            }
+        }
+        return resolveVendorMessage(rawBody);
+    }
+
+    private String resolveVendorMessage(FasstoWarehousingListResponse response, String rawBody) {
         if (FormatValidator.hasValue(response)) {
             String message = response.resolveErrorMessage();
             if (FormatValidator.hasValue(message)) {

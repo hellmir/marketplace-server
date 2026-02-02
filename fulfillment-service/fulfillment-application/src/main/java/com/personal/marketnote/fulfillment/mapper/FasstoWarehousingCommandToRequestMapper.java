@@ -3,6 +3,8 @@ package com.personal.marketnote.fulfillment.mapper;
 import com.personal.marketnote.fulfillment.domain.vendor.fassto.warehousing.FasstoWarehousingGoodsMapper;
 import com.personal.marketnote.fulfillment.domain.vendor.fassto.warehousing.FasstoWarehousingItemMapper;
 import com.personal.marketnote.fulfillment.domain.vendor.fassto.warehousing.FasstoWarehousingMapper;
+import com.personal.marketnote.fulfillment.domain.vendor.fassto.warehousing.FasstoWarehousingQuery;
+import com.personal.marketnote.fulfillment.port.in.command.vendor.GetFasstoWarehousingCommand;
 import com.personal.marketnote.fulfillment.port.in.command.vendor.RegisterFasstoWarehousingCommand;
 import com.personal.marketnote.fulfillment.port.in.command.vendor.RegisterFasstoWarehousingGoodsCommand;
 import com.personal.marketnote.fulfillment.port.in.command.vendor.RegisterFasstoWarehousingItemCommand;
@@ -19,6 +21,15 @@ public class FasstoWarehousingCommandToRequestMapper {
                 command.customerCode(),
                 command.accessToken(),
                 requests
+        );
+    }
+
+    public static FasstoWarehousingQuery mapToQuery(GetFasstoWarehousingCommand command) {
+        return FasstoWarehousingQuery.of(
+                command.customerCode(),
+                command.accessToken(),
+                command.startDate(),
+                command.endDate()
         );
     }
 

@@ -1,0 +1,81 @@
+package com.personal.marketnote.fulfillment.port.in.result.vendor;
+
+import java.util.List;
+
+public record FasstoWarehousingInfoResult(
+        String ordDt,
+        String whCd,
+        String whNm,
+        String slipNo,
+        String ordNo,
+        String cstCd,
+        String cstNm,
+        String supCd,
+        String cstSupCd,
+        String supNm,
+        Integer sku,
+        Integer ordQty,
+        Integer inQty,
+        Integer tarQty,
+        String inWay,
+        String inWayNm,
+        String parcelComp,
+        String parcelInvoiceNo,
+        String wrkStat,
+        String wrkStatNm,
+        String emgrYn,
+        String remark,
+        List<Object> goodsSerialNo
+) {
+    public static FasstoWarehousingInfoResult of(
+            String ordDt,
+            String whCd,
+            String whNm,
+            String slipNo,
+            String ordNo,
+            String cstCd,
+            String cstNm,
+            String supCd,
+            String cstSupCd,
+            String supNm,
+            Integer sku,
+            Integer ordQty,
+            Integer inQty,
+            Integer tarQty,
+            String inWay,
+            String inWayNm,
+            String parcelComp,
+            String parcelInvoiceNo,
+            String wrkStat,
+            String wrkStatNm,
+            String emgrYn,
+            String remark,
+            List<Object> goodsSerialNo
+    ) {
+        return new FasstoWarehousingInfoResult(
+                ordDt,
+                whCd,
+                whNm,
+                slipNo,
+                ordNo,
+                cstCd,
+                cstNm,
+                supCd,
+                cstSupCd,
+                supNm,
+                sku,
+                ordQty,
+                inQty,
+                tarQty,
+                inWay,
+                inWayNm,
+                parcelComp,
+                parcelInvoiceNo,
+                wrkStat,
+                wrkStatNm,
+                emgrYn,
+                remark,
+                goodsSerialNo
+        );
+    }
+}
