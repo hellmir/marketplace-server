@@ -1,0 +1,8 @@
+package com.personal.marketnote.fulfillment.port.in.usecase.servicecommunication;
+
+import com.personal.marketnote.fulfillment.domain.servicecommunication.FulfillmentServiceCommunicationHistory;
+import com.personal.marketnote.fulfillment.port.in.command.servicecommunication.FulfillmentServiceCommunicationHistoryCommand;
+
+public interface RecordFulfillmentServiceCommunicationHistoryUseCase {
+    FulfillmentServiceCommunicationHistory record(FulfillmentServiceCommunicationHistoryCommand command);
+}
