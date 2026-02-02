@@ -14,7 +14,6 @@ import java.util.List;
 @Builder(access = AccessLevel.PRIVATE)
 public record GetOrderProductResult(
         Long sellerId,
-        Long productId,
         Long pricePolicyId,
         Long sharerId,
         Integer quantity,
@@ -36,11 +35,6 @@ public record GetOrderProductResult(
 
         return GetOrderProductResult.builder()
                 .sellerId(orderProduct.getSellerId())
-                .productId(
-                        orderedProductExists
-                                ? productInfo.id()
-                                : null
-                )
                 .pricePolicyId(orderProduct.getPricePolicyId())
                 .sharerId(orderProduct.getSharerId())
                 .quantity(orderProduct.getQuantity())

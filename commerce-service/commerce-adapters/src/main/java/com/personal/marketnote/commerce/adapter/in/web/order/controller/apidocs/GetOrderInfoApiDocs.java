@@ -122,7 +122,6 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | sellerId | number | 판매자 회원 ID | 1 |
-                | productId | number | 상품 ID | 1 |
                 | pricePolicyId | number | 가격 정책 ID | 1 |
                 | sharerId | number | 링크 공유 회원 ID | 1 |
                 | quantity | number | 주문 수량 | 2 |
@@ -178,7 +177,6 @@ import java.lang.annotation.*;
                                               "orderPrducts": [
                                                 {
                                                   "sellerId": 12,
-                                                  "productId": 1,
                                                   "pricePolicyId": 180,
                                                   "sharerId": 1,
                                                   "quantity": 10,
@@ -203,7 +201,6 @@ import java.lang.annotation.*;
                                                 },
                                                 {
                                                   "sellerId": 11,
-                                                  "productId": 2,
                                                   "pricePolicyId": 166,
                                                   "sharerId": null,
                                                   "quantity": 2,
