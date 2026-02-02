@@ -54,6 +54,7 @@ vendor:
       shop-path: ${FASSTO_MARKETNOTE_PATH:/api/v1/marketnote/{customerCode}}
       supplier-path: ${FASSTO_SUPPLIER_PATH:/api/v1/supplier/{customerCode}}
       goods-path: ${FASSTO_GOODS_PATH:/api/v1/goods/{customerCode}}
+      goods-element-path: ${FASSTO_GOODS_ELEMENT_PATH:/api/v1/goods/element/{customerCode}}
       api-cd: ${FASSTO_API_CD:change-me}
       api-key: ${FASSTO_API_KEY:change-me}
 

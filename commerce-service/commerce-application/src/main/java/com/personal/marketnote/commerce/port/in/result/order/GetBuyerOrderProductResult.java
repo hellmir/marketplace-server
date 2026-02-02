@@ -19,6 +19,7 @@ public record GetBuyerOrderProductResult(
         LocalDate orderDate,
         OrderStatus orderStatus,
         Long sellerId,
+        Long productId,
         Long pricePolicyId,
         Long sharerId,
         Integer quantity,
@@ -49,6 +50,7 @@ public record GetBuyerOrderProductResult(
                 .orderDate(resolvedOrderDate)
                 .orderStatus(orderProductResult.orderStatus())
                 .sellerId(orderProductResult.sellerId())
+                .productId(orderProductResult.productId())
                 .pricePolicyId(orderProductResult.pricePolicyId())
                 .sharerId(orderProductResult.sharerId())
                 .quantity(orderProductResult.quantity())

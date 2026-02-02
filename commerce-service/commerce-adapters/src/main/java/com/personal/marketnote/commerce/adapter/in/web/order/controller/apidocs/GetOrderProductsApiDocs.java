@@ -68,6 +68,7 @@ import java.lang.annotation.*;
                 | orderDate | string(date) | 주문 생성일(일 단위) | "2026-01-31" |
                 | orderStatus | string | 주문 상태 | "DELIVERED" |
                 | sellerId | number | 판매자 회원 ID | 1 |
+                | productId | number | 상품 ID | 1 |
                 | pricePolicyId | number | 가격 정책 ID | 1 |
                 | sharerId | number | 링크 공유 회원 ID | 1 |
                 | quantity | number | 주문 수량 | 2 |
@@ -116,13 +117,14 @@ import java.lang.annotation.*;
                                                 "orderDate": "2026-01-31",
                                                 "orderStatus": "DELIVERED",
                                                 "sellerId": 12,
+                                                "productId": 1,
                                                 "pricePolicyId": 166,
                                                 "sharerId": 1,
                                                 "quantity": 2,
                                                 "unitAmount": 50000,
                                                 "imageUrl": "https://marketnote.s3.amazonaws.com/product/30/1763534195922_image_600.png",
                                                 "brandName": "브랜드명1",
-                                                "productName": "스프링노트12345",
+                                                "productName": "공책",
                                                 "selectedOptions": [
                                                   {
                                                     "id": 55,

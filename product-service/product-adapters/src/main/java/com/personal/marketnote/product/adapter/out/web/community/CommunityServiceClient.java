@@ -24,8 +24,7 @@ import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
-import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_MAX_REQUEST_COUNT;
+import static com.personal.marketnote.common.utility.ApiConstant.*;
 
 @ServiceAdapter
 @RequiredArgsConstructor
@@ -59,6 +58,9 @@ public class CommunityServiceClient implements FindProductReviewAggregatesPort {
     }
 
     public Map<Long, ProductReviewAggregateResult> sendRequest(URI uri, HttpEntity<Void> httpEntity) {
+        long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
+        Exception error = new Exception();
+
         for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
             try {
                 BaseResponse<GetProductReviewAggregatesResponse> response =
@@ -98,12 +100,16 @@ public class CommunityServiceClient implements FindProductReviewAggregatesPort {
                 try {
                     // 대상 서비스 장애 시 요청 트래픽 폭주를 방지하기 위해 jitter 설정
                     long jitteredSleepMillis = ThreadLocalRandom.current()
-                            .nextLong(Math.max(1L, INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND) + 1);
+                            .nextLong(Math.max(1L, sleepMillis) + 1);
                     Thread.sleep(jitteredSleepMillis);
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
                     return Map.of();
                 }
+
+                // exponential backoff 적용
+                log.error("Failed to get product review aggregates: {} with error: {}", uri, error.getMessage(), error);
+                sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
             }
         }
 

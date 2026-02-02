@@ -5,6 +5,7 @@ import com.personal.marketnote.commerce.port.out.product.result.ProductOptionInf
 import java.util.List;
 
 public record ProductInfoResult(
+        Long id,
         String name,
         String brandName,
         List<ProductOptionInfoResult> selectedOptions
