@@ -1,0 +1,98 @@
+package com.personal.marketnote.fulfillment.domain.vendor.fassto.warehousing;
+
+import com.personal.marketnote.common.utility.FormatValidator;
+import lombok.*;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PRIVATE)
+public class FasstoWarehousingItemMapper {
+    private String ordDt;
+    private String ordNo;
+    private String inWay;
+    private String slipNo;
+    private String parcelComp;
+    private String parcelInvoiceNo;
+    private String remark;
+    private String cstSupCd;
+    private String distTermDt;
+    private String makeDt;
+    private String preArv;
+    private List<FasstoWarehousingGoodsMapper> godCds;
+
+    public static FasstoWarehousingItemMapper of(
+            String ordDt,
+            String ordNo,
+            String inWay,
+            String slipNo,
+            String parcelComp,
+            String parcelInvoiceNo,
+            String remark,
+            String cstSupCd,
+            String distTermDt,
+            String makeDt,
+            String preArv,
+            List<FasstoWarehousingGoodsMapper> godCds
+    ) {
+        FasstoWarehousingItemMapper mapper = FasstoWarehousingItemMapper.builder()
+                .ordDt(ordDt)
+                .ordNo(ordNo)
+                .inWay(inWay)
+                .slipNo(slipNo)
+                .parcelComp(parcelComp)
+                .parcelInvoiceNo(parcelInvoiceNo)
+                .remark(remark)
+                .cstSupCd(cstSupCd)
+                .distTermDt(distTermDt)
+                .makeDt(makeDt)
+                .preArv(preArv)
+                .godCds(godCds)
+                .build();
+        mapper.validate();
+        return mapper;
+    }
+
+    public Map<String, Object> toPayload() {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        putIfNotNull(payload, "ordDt", ordDt);
+        putIfNotNull(payload, "ordNo", ordNo);
+        putIfNotNull(payload, "inWay", inWay);
+        putIfNotNull(payload, "slipNo", slipNo);
+        putIfNotNull(payload, "parcelComp", parcelComp);
+        putIfNotNull(payload, "parcelInvoiceNo", parcelInvoiceNo);
+        putIfNotNull(payload, "remark", remark);
+        putIfNotNull(payload, "cstSupCd", cstSupCd);
+        putIfNotNull(payload, "distTermDt", distTermDt);
+        putIfNotNull(payload, "makeDt", makeDt);
+        putIfNotNull(payload, "preArv", preArv);
+        if (godCds != null) {
+            payload.put("godCds", godCds.stream()
+                    .map(FasstoWarehousingGoodsMapper::toPayload)
+                    .toList());
+        }
+        return payload;
+    }
+
+    private void validate() {
+        if (FormatValidator.hasNoValue(ordDt)) {
+            throw new IllegalArgumentException("ordDt is required for warehousing request.");
+        }
+        if (FormatValidator.hasNoValue(inWay)) {
+            throw new IllegalArgumentException("inWay is required for warehousing request.");
+        }
+        if (FormatValidator.hasNoValue(godCds)) {
+            throw new IllegalArgumentException("godCds is required for warehousing request.");
+        }
+    }
+
+    private void putIfNotNull(Map<String, Object> payload, String key, String value) {
+        if (value != null) {
+            payload.put(key, value);
+        }
+    }
+}
