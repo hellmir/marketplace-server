@@ -1,11 +1,15 @@
 package com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.GetFasstoWarehousingApiDocs;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.RegisterFasstoWarehousingApiDocs;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.mapper.FasstoWarehousingRequestToCommandMapper;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.RegisterFasstoWarehousingRequest;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.GetFasstoWarehousingResponse;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.RegisterFasstoWarehousingResponse;
+import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoWarehousingResult;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.RegisterFasstoWarehousingResult;
+import com.personal.marketnote.fulfillment.port.in.usecase.vendor.GetFasstoWarehousingUseCase;
 import com.personal.marketnote.fulfillment.port.in.usecase.vendor.RegisterFasstoWarehousingUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -26,6 +30,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 @RequiredArgsConstructor
 public class FasstoWarehousingController {
     private final RegisterFasstoWarehousingUseCase registerFasstoWarehousingUseCase;
+    private final GetFasstoWarehousingUseCase getFasstoWarehousingUseCase;
 
     /**
      * (관리자) 파스토 상품 입고 요청
@@ -57,6 +62,41 @@ public class FasstoWarehousingController {
                         "파스토 상품 입고 요청 성공"
                 ),
                 HttpStatus.CREATED
+        );
+    }
+
+    /**
+     * (관리자) 파스토 상품 입고 목록 조회
+     *
+     * @param customerCode 파스토 고객사 코드
+     * @param accessToken  파스토 액세스 토큰
+     * @param startDate    조회 시작일(YYYYMMDD)
+     * @param endDate      조회 종료일(YYYYMMDD)
+     * @Author 성효빈
+     * @Date 2026-02-03
+     * @Description 파스토 상품 입고 목록을 조회합니다.
+     */
+    @GetMapping("/{customerCode}/{startDate}/{endDate}")
+    @PreAuthorize(ADMIN_POINTCUT)
+    @GetFasstoWarehousingApiDocs
+    public ResponseEntity<BaseResponse<GetFasstoWarehousingResponse>> getWarehousing(
+            @PathVariable String customerCode,
+            @PathVariable String startDate,
+            @PathVariable String endDate,
+            @RequestHeader("accessToken") String accessToken
+    ) {
+        GetFasstoWarehousingResult result = getFasstoWarehousingUseCase.getWarehousing(
+                FasstoWarehousingRequestToCommandMapper.mapToWarehousingQuery(customerCode, accessToken, startDate, endDate)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        GetFasstoWarehousingResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "파스토 입고 목록 조회 성공"
+                ),
+                HttpStatus.OK
         );
     }
 }
