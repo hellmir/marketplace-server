@@ -1,9 +1,15 @@
 package com.personal.marketnote.commerce.adapter.out.web.product;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.personal.marketnote.commerce.adapter.out.web.product.response.OrderedProductsResponse;
 import com.personal.marketnote.commerce.adapter.out.web.product.response.ProductsInfoResponse;
+import com.personal.marketnote.commerce.domain.servicecommunication.CommerceServiceCommunicationSenderType;
+import com.personal.marketnote.commerce.domain.servicecommunication.CommerceServiceCommunicationTargetType;
+import com.personal.marketnote.commerce.domain.servicecommunication.CommerceServiceCommunicationType;
 import com.personal.marketnote.commerce.port.out.product.FindProductByPricePolicyPort;
 import com.personal.marketnote.commerce.port.out.result.product.ProductInfoResult;
+import com.personal.marketnote.commerce.utility.ServiceCommunicationPayloadGenerator;
+import com.personal.marketnote.commerce.utility.ServiceCommunicationRecorder;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.adapter.in.response.CursorResponse;
 import com.personal.marketnote.common.adapter.out.ServiceAdapter;
@@ -32,6 +38,13 @@ import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_MA
 @RequiredArgsConstructor
 @Slf4j
 public class ProductServiceClient implements FindProductByPricePolicyPort {
+    private static final CommerceServiceCommunicationTargetType TARGET_TYPE =
+            CommerceServiceCommunicationTargetType.PRODUCT_INFO;
+    private static final CommerceServiceCommunicationSenderType REQUEST_SENDER =
+            CommerceServiceCommunicationSenderType.COMMERCE;
+    private static final CommerceServiceCommunicationSenderType RESPONSE_SENDER =
+            CommerceServiceCommunicationSenderType.PRODUCT;
+
     @Value("${product-service.base-url:http://localhost:8081}")
     private String productServiceBaseUrl;
 
@@ -39,6 +52,8 @@ public class ProductServiceClient implements FindProductByPricePolicyPort {
     private String adminAccessToken;
 
     private final RestTemplate restTemplate;
+    private final ServiceCommunicationRecorder serviceCommunicationRecorder;
+    private final ServiceCommunicationPayloadGenerator serviceCommunicationPayloadGenerator;
 
     @Override
     public Map<Long, ProductInfoResult> findByPricePolicyIds(List<Long> pricePolicyIds) {
@@ -64,6 +79,7 @@ public class ProductServiceClient implements FindProductByPricePolicyPort {
         Exception error = new Exception();
 
         for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            int attempt = i + 1;
             try {
                 ResponseEntity<BaseResponse<OrderedProductsResponse>> response = restTemplate.exchange(
                         uri,
@@ -79,6 +95,37 @@ public class ProductServiceClient implements FindProductByPricePolicyPort {
 
                 return productInfoResultsByPricePolicyId;
             } catch (Exception e) {
+                String exception = e.getClass().getSimpleName();
+                JsonNode requestPayloadJson = serviceCommunicationPayloadGenerator.buildRequestPayloadJson(
+                        HttpMethod.GET,
+                        uri,
+                        null,
+                        attempt
+                );
+                String requestPayload = requestPayloadJson.toString();
+                JsonNode responsePayloadJson = serviceCommunicationPayloadGenerator.buildErrorPayloadJson(
+                        exception,
+                        e.getMessage(),
+                        attempt
+                );
+                String responsePayload = responsePayloadJson.toString();
+                recordCommunication(
+                        TARGET_TYPE,
+                        null,
+                        CommerceServiceCommunicationType.REQUEST,
+                        requestPayload,
+                        requestPayloadJson,
+                        exception
+                );
+                recordCommunication(
+                        TARGET_TYPE,
+                        null,
+                        CommerceServiceCommunicationType.RESPONSE,
+                        responsePayload,
+                        responsePayloadJson,
+                        exception
+                );
+
                 log.warn(e.getMessage(), e);
                 if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
                     error = e;
@@ -141,5 +188,30 @@ public class ProductServiceClient implements FindProductByPricePolicyPort {
                     )
             );
         }
+    }
+
+    private void recordCommunication(
+            CommerceServiceCommunicationTargetType targetType,
+            String targetId,
+            CommerceServiceCommunicationType communicationType,
+            String payload,
+            JsonNode payloadJson,
+            String exception
+    ) {
+        if (FormatValidator.hasNoValue(exception)) {
+            return;
+        }
+
+        CommerceServiceCommunicationSenderType sender =
+                communicationType == CommerceServiceCommunicationType.REQUEST ? REQUEST_SENDER : RESPONSE_SENDER;
+        serviceCommunicationRecorder.record(
+                targetType,
+                communicationType,
+                sender,
+                targetId,
+                payload,
+                payloadJson,
+                exception
+        );
     }
 }

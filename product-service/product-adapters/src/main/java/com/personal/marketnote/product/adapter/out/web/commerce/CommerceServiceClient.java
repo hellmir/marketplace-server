@@ -1,14 +1,20 @@
 package com.personal.marketnote.product.adapter.out.web.commerce;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.adapter.in.request.RegisterInventoryRequest;
 import com.personal.marketnote.common.adapter.out.ServiceAdapter;
 import com.personal.marketnote.common.exception.CommerceServiceRequestFailedException;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.adapter.out.response.GetInventoriesResponse;
+import com.personal.marketnote.product.domain.servicecommunication.ProductServiceCommunicationSenderType;
+import com.personal.marketnote.product.domain.servicecommunication.ProductServiceCommunicationTargetType;
+import com.personal.marketnote.product.domain.servicecommunication.ProductServiceCommunicationType;
 import com.personal.marketnote.product.port.out.inventory.FindStockPort;
 import com.personal.marketnote.product.port.out.inventory.RegisterInventoryPort;
 import com.personal.marketnote.product.port.out.result.GetInventoryResult;
+import com.personal.marketnote.product.utility.ServiceCommunicationPayloadGenerator;
+import com.personal.marketnote.product.utility.ServiceCommunicationRecorder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +22,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -33,6 +40,13 @@ import static com.personal.marketnote.common.utility.ApiConstant.*;
 @RequiredArgsConstructor
 @Slf4j
 public class CommerceServiceClient implements RegisterInventoryPort, FindStockPort {
+    private static final ProductServiceCommunicationTargetType TARGET_TYPE =
+            ProductServiceCommunicationTargetType.INVENTORY;
+    private static final ProductServiceCommunicationSenderType REQUEST_SENDER =
+            ProductServiceCommunicationSenderType.PRODUCT;
+    private static final ProductServiceCommunicationSenderType RESPONSE_SENDER =
+            ProductServiceCommunicationSenderType.COMMERCE;
+
     @Value("${commerce-service.base-url}")
     private String commerceServiceBaseUrl;
 
@@ -40,6 +54,8 @@ public class CommerceServiceClient implements RegisterInventoryPort, FindStockPo
     private String adminAccessToken;
 
     private final RestTemplate restTemplate;
+    private final ServiceCommunicationRecorder serviceCommunicationRecorder;
+    private final ServiceCommunicationPayloadGenerator serviceCommunicationPayloadGenerator;
 
     @Override
     public void registerInventory(Long pricePolicyId) {
@@ -54,18 +70,50 @@ public class CommerceServiceClient implements RegisterInventoryPort, FindStockPo
         HttpEntity<RegisterInventoryRequest> httpEntity
                 = new HttpEntity<>(new RegisterInventoryRequest(pricePolicyId), headers);
 
-        sendRequest(uri, httpEntity);
+        sendRequest(uri, httpEntity, pricePolicyId);
     }
 
-    public void sendRequest(URI uri, HttpEntity<RegisterInventoryRequest> httpEntity) {
+    public void sendRequest(URI uri, HttpEntity<RegisterInventoryRequest> httpEntity, Long pricePolicyId) {
         long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
         Exception error = new Exception();
+        String targetId = pricePolicyId != null ? String.valueOf(pricePolicyId) : null;
 
         for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            int attempt = i + 1;
             try {
                 restTemplate.postForEntity(uri, httpEntity, Void.class);
                 return;
             } catch (Exception e) {
+                String exception = e.getClass().getSimpleName();
+                JsonNode requestPayloadJson = serviceCommunicationPayloadGenerator.buildRequestPayloadJson(
+                        HttpMethod.POST,
+                        uri,
+                        httpEntity.getBody(),
+                        attempt
+                );
+                String requestPayload = requestPayloadJson.toString();
+                JsonNode responsePayloadJson = serviceCommunicationPayloadGenerator.buildErrorPayloadJson(
+                        exception,
+                        e.getMessage(),
+                        attempt
+                );
+                String responsePayload = responsePayloadJson.toString();
+                recordCommunication(
+                        TARGET_TYPE,
+                        targetId,
+                        ProductServiceCommunicationType.REQUEST,
+                        requestPayload,
+                        requestPayloadJson,
+                        exception
+                );
+                recordCommunication(
+                        TARGET_TYPE,
+                        targetId,
+                        ProductServiceCommunicationType.RESPONSE,
+                        responsePayload,
+                        responsePayloadJson,
+                        exception
+                );
                 log.warn(e.getMessage(), e);
                 if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
                     error = e;
@@ -116,15 +164,17 @@ public class CommerceServiceClient implements RegisterInventoryPort, FindStockPo
         Exception error = new Exception();
 
         for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            int attempt = i + 1;
             try {
-                BaseResponse<GetInventoriesResponse> response =
+                ResponseEntity<BaseResponse<GetInventoriesResponse>> responseEntity =
                         restTemplate.exchange(
                                 uri,
                                 HttpMethod.GET,
                                 new HttpEntity<>(headers),
                                 new ParameterizedTypeReference<BaseResponse<GetInventoriesResponse>>() {
                                 }
-                        ).getBody();
+                        );
+                BaseResponse<GetInventoriesResponse> response = responseEntity.getBody();
 
                 if (FormatValidator.hasNoValue(response)) {
                     throw new CommerceServiceRequestFailedException(new IOException());
@@ -135,6 +185,36 @@ public class CommerceServiceClient implements RegisterInventoryPort, FindStockPo
                         ? getInventoriesResponse
                         : new GetInventoriesResponse(new HashSet<>());
             } catch (Exception e) {
+                String exception = e.getClass().getSimpleName();
+                JsonNode requestPayloadJson = serviceCommunicationPayloadGenerator.buildRequestPayloadJson(
+                        HttpMethod.GET,
+                        uri,
+                        null,
+                        attempt
+                );
+                String requestPayload = requestPayloadJson.toString();
+                JsonNode responsePayloadJson = serviceCommunicationPayloadGenerator.buildErrorPayloadJson(
+                        exception,
+                        e.getMessage(),
+                        attempt
+                );
+                String responsePayload = responsePayloadJson.toString();
+                recordCommunication(
+                        TARGET_TYPE,
+                        null,
+                        ProductServiceCommunicationType.REQUEST,
+                        requestPayload,
+                        requestPayloadJson,
+                        exception
+                );
+                recordCommunication(
+                        TARGET_TYPE,
+                        null,
+                        ProductServiceCommunicationType.RESPONSE,
+                        responsePayload,
+                        responsePayloadJson,
+                        exception
+                );
                 log.warn(e.getMessage(), e);
 
                 try {
@@ -150,5 +230,30 @@ public class CommerceServiceClient implements RegisterInventoryPort, FindStockPo
 
         log.error("Failed to get inventories: {} with error: {}", uri, error.getMessage(), error);
         throw new CommerceServiceRequestFailedException(new IOException());
+    }
+
+    private void recordCommunication(
+            ProductServiceCommunicationTargetType targetType,
+            String targetId,
+            ProductServiceCommunicationType communicationType,
+            String payload,
+            JsonNode payloadJson,
+            String exception
+    ) {
+        if (FormatValidator.hasNoValue(exception)) {
+            return;
+        }
+
+        ProductServiceCommunicationSenderType sender =
+                communicationType == ProductServiceCommunicationType.REQUEST ? REQUEST_SENDER : RESPONSE_SENDER;
+        serviceCommunicationRecorder.record(
+                targetType,
+                communicationType,
+                sender,
+                targetId,
+                payload,
+                payloadJson,
+                exception
+        );
     }
 }

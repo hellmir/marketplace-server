@@ -1,9 +1,15 @@
 package com.personal.marketnote.user.adapter.out.web.reward;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.personal.marketnote.common.adapter.out.ServiceAdapter;
 import com.personal.marketnote.common.exception.RewardServiceRequestFailedException;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.user.domain.servicecommunication.UserServiceCommunicationSenderType;
+import com.personal.marketnote.user.domain.servicecommunication.UserServiceCommunicationTargetType;
+import com.personal.marketnote.user.domain.servicecommunication.UserServiceCommunicationType;
 import com.personal.marketnote.user.port.out.reward.ModifyUserPointPort;
+import com.personal.marketnote.user.utility.ServiceCommunicationPayloadGenerator;
+import com.personal.marketnote.user.utility.ServiceCommunicationRecorder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +29,13 @@ import static com.personal.marketnote.common.utility.ApiConstant.*;
 @RequiredArgsConstructor
 @Slf4j
 public class RewardServiceClient implements ModifyUserPointPort {
+    private static final UserServiceCommunicationTargetType TARGET_TYPE =
+            UserServiceCommunicationTargetType.USER_POINT;
+    private static final UserServiceCommunicationSenderType REQUEST_SENDER =
+            UserServiceCommunicationSenderType.USER;
+    private static final UserServiceCommunicationSenderType RESPONSE_SENDER =
+            UserServiceCommunicationSenderType.REWARD;
+
     @Value("${reward-service.base-url}")
     private String rewardServiceBaseUrl;
 
@@ -30,6 +43,8 @@ public class RewardServiceClient implements ModifyUserPointPort {
     private String adminAccessToken;
 
     private final RestTemplate restTemplate;
+    private final ServiceCommunicationRecorder serviceCommunicationRecorder;
+    private final ServiceCommunicationPayloadGenerator serviceCommunicationPayloadGenerator;
 
     @Override
     public void registerUserPoint(Long userId, String userKey) {
@@ -42,6 +57,7 @@ public class RewardServiceClient implements ModifyUserPointPort {
         HttpEntity<Void> httpEntity = new HttpEntity<>(headers);
 
         for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            int attempt = i + 1;
             try {
                 ResponseEntity<Void> response = restTemplate.exchange(uri, HttpMethod.POST, httpEntity, Void.class);
 
@@ -54,11 +70,68 @@ public class RewardServiceClient implements ModifyUserPointPort {
                     statusCode = response.getStatusCode();
                 }
 
+                String exception = statusCode != null ? statusCode.toString() : "EmptyResponse";
+                JsonNode requestPayloadJson = serviceCommunicationPayloadGenerator.buildRequestPayloadJson(
+                        HttpMethod.POST,
+                        uri,
+                        null,
+                        attempt
+                );
+                String requestPayload = requestPayloadJson.toString();
+                JsonNode responsePayloadJson =
+                        serviceCommunicationPayloadGenerator.buildResponsePayloadJson(response, attempt);
+                String responsePayload = responsePayloadJson.toString();
+                recordCommunication(
+                        TARGET_TYPE,
+                        String.valueOf(userId),
+                        UserServiceCommunicationType.REQUEST,
+                        requestPayload,
+                        requestPayloadJson,
+                        exception
+                );
+                recordCommunication(
+                        TARGET_TYPE,
+                        String.valueOf(userId),
+                        UserServiceCommunicationType.RESPONSE,
+                        responsePayload,
+                        responsePayloadJson,
+                        exception
+                );
                 log.warn(
                         "Reward service responded with non-2xx status for userId={}, status={}",
                         userId, statusCode
                 );
             } catch (Exception e) {
+                String exception = e.getClass().getSimpleName();
+                JsonNode requestPayloadJson = serviceCommunicationPayloadGenerator.buildRequestPayloadJson(
+                        HttpMethod.POST,
+                        uri,
+                        null,
+                        attempt
+                );
+                String requestPayload = requestPayloadJson.toString();
+                JsonNode responsePayloadJson = serviceCommunicationPayloadGenerator.buildErrorPayloadJson(
+                        exception,
+                        e.getMessage(),
+                        attempt
+                );
+                String responsePayload = responsePayloadJson.toString();
+                recordCommunication(
+                        TARGET_TYPE,
+                        String.valueOf(userId),
+                        UserServiceCommunicationType.REQUEST,
+                        requestPayload,
+                        requestPayloadJson,
+                        exception
+                );
+                recordCommunication(
+                        TARGET_TYPE,
+                        String.valueOf(userId),
+                        UserServiceCommunicationType.RESPONSE,
+                        responsePayload,
+                        responsePayloadJson,
+                        exception
+                );
                 log.warn(
                         "Failed to register user point on reward-service: userId={}, attempt={}, message={}",
                         userId, i + 1, e.getMessage(), e
@@ -106,6 +179,36 @@ public class RewardServiceClient implements ModifyUserPointPort {
         try {
             restTemplate.exchange(uri, HttpMethod.POST, new HttpEntity<>(headers), Void.class);
         } catch (Exception e) {
+            String exception = e.getClass().getSimpleName();
+            JsonNode requestPayloadJson = serviceCommunicationPayloadGenerator.buildRequestPayloadJson(
+                    HttpMethod.POST,
+                    uri,
+                    null,
+                    1
+            );
+            String requestPayload = requestPayloadJson.toString();
+            JsonNode responsePayloadJson = serviceCommunicationPayloadGenerator.buildErrorPayloadJson(
+                    exception,
+                    e.getMessage(),
+                    1
+            );
+            String responsePayload = responsePayloadJson.toString();
+            recordCommunication(
+                    TARGET_TYPE,
+                    String.valueOf(userId),
+                    UserServiceCommunicationType.REQUEST,
+                    requestPayload,
+                    requestPayloadJson,
+                    exception
+            );
+            recordCommunication(
+                    TARGET_TYPE,
+                    String.valueOf(userId),
+                    UserServiceCommunicationType.RESPONSE,
+                    responsePayload,
+                    responsePayloadJson,
+                    exception
+            );
             log.info("User point registration skipped: userId={}, message={}", userId, e.getMessage());
         }
     }
@@ -119,17 +222,77 @@ public class RewardServiceClient implements ModifyUserPointPort {
         long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
         Exception error = new Exception();
         for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            int attempt = i + 1;
             try {
                 ResponseEntity<Void> response = restTemplate.exchange(uri, HttpMethod.PATCH, httpEntity, Void.class);
                 if (FormatValidator.hasValue(response) && response.getStatusCode().is2xxSuccessful()) {
                     return;
                 }
 
+                String exception = FormatValidator.hasValue(response)
+                        ? response.getStatusCode().toString()
+                        : "EmptyResponse";
+                JsonNode requestPayloadJson = serviceCommunicationPayloadGenerator.buildRequestPayloadJson(
+                        HttpMethod.PATCH,
+                        uri,
+                        httpEntity.getBody(),
+                        attempt
+                );
+                String requestPayload = requestPayloadJson.toString();
+                JsonNode responsePayloadJson =
+                        serviceCommunicationPayloadGenerator.buildResponsePayloadJson(response, attempt);
+                String responsePayload = responsePayloadJson.toString();
+                recordCommunication(
+                        TARGET_TYPE,
+                        String.valueOf(userId),
+                        UserServiceCommunicationType.REQUEST,
+                        requestPayload,
+                        requestPayloadJson,
+                        exception
+                );
+                recordCommunication(
+                        TARGET_TYPE,
+                        String.valueOf(userId),
+                        UserServiceCommunicationType.RESPONSE,
+                        responsePayload,
+                        responsePayloadJson,
+                        exception
+                );
                 log.warn(
                         "Reward service responded with non-2xx status for userId={}, amount={}, status={}",
                         userId, amount, response.getStatusCode()
                 );
             } catch (Exception e) {
+                String exception = e.getClass().getSimpleName();
+                JsonNode requestPayloadJson = serviceCommunicationPayloadGenerator.buildRequestPayloadJson(
+                        HttpMethod.PATCH,
+                        uri,
+                        httpEntity.getBody(),
+                        attempt
+                );
+                String requestPayload = requestPayloadJson.toString();
+                JsonNode responsePayloadJson = serviceCommunicationPayloadGenerator.buildErrorPayloadJson(
+                        exception,
+                        e.getMessage(),
+                        attempt
+                );
+                String responsePayload = responsePayloadJson.toString();
+                recordCommunication(
+                        TARGET_TYPE,
+                        String.valueOf(userId),
+                        UserServiceCommunicationType.REQUEST,
+                        requestPayload,
+                        requestPayloadJson,
+                        exception
+                );
+                recordCommunication(
+                        TARGET_TYPE,
+                        String.valueOf(userId),
+                        UserServiceCommunicationType.RESPONSE,
+                        responsePayload,
+                        responsePayloadJson,
+                        exception
+                );
                 log.warn(
                         "Failed to accrue user point on reward-service: userId={}, amount={}, attempt={}, message={}",
                         userId, amount, i + 1, e.getMessage(), e
@@ -202,5 +365,30 @@ public class RewardServiceClient implements ModifyUserPointPort {
                     reason
             );
         }
+    }
+
+    private void recordCommunication(
+            UserServiceCommunicationTargetType targetType,
+            String targetId,
+            UserServiceCommunicationType communicationType,
+            String payload,
+            JsonNode payloadJson,
+            String exception
+    ) {
+        if (FormatValidator.hasNoValue(exception)) {
+            return;
+        }
+
+        UserServiceCommunicationSenderType sender =
+                communicationType == UserServiceCommunicationType.REQUEST ? REQUEST_SENDER : RESPONSE_SENDER;
+        serviceCommunicationRecorder.record(
+                targetType,
+                communicationType,
+                sender,
+                targetId,
+                payload,
+                payloadJson,
+                exception
+        );
     }
 }

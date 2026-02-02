@@ -2,14 +2,20 @@ package com.personal.marketnote.community.adapter.out.web.file;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.personal.marketnote.common.adapter.out.ServiceAdapter;
 import com.personal.marketnote.common.application.file.port.in.result.GetFileResult;
 import com.personal.marketnote.common.application.file.port.in.result.GetFilesResult;
 import com.personal.marketnote.common.domain.file.FileSort;
 import com.personal.marketnote.common.domain.file.OwnerType;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.community.domain.servicecommunication.CommunityServiceCommunicationSenderType;
+import com.personal.marketnote.community.domain.servicecommunication.CommunityServiceCommunicationTargetType;
+import com.personal.marketnote.community.domain.servicecommunication.CommunityServiceCommunicationType;
 import com.personal.marketnote.community.port.out.file.FindPostImagesPort;
 import com.personal.marketnote.community.port.out.file.FindReviewImagesPort;
+import com.personal.marketnote.community.utility.ServiceCommunicationPayloadGenerator;
+import com.personal.marketnote.community.utility.ServiceCommunicationRecorder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +41,11 @@ import static com.personal.marketnote.common.utility.ApiConstant.INTER_SERVER_MA
 @RequiredArgsConstructor
 @Slf4j
 public class FileServiceClient implements FindReviewImagesPort, FindPostImagesPort {
+    private static final CommunityServiceCommunicationSenderType REQUEST_SENDER =
+            CommunityServiceCommunicationSenderType.COMMUNITY;
+    private static final CommunityServiceCommunicationSenderType RESPONSE_SENDER =
+            CommunityServiceCommunicationSenderType.FILE;
+
     @Value("${file-service.base-url:http://localhost:9000}")
     private String fileServiceBaseUrl;
 
@@ -42,6 +53,8 @@ public class FileServiceClient implements FindReviewImagesPort, FindPostImagesPo
     private String adminAccessToken;
 
     private final RestTemplate restTemplate;
+    private final ServiceCommunicationRecorder serviceCommunicationRecorder;
+    private final ServiceCommunicationPayloadGenerator serviceCommunicationPayloadGenerator;
 
     @Override
     public Optional<GetFilesResult> findImagesByReviewIdAndSort(Long reviewId, FileSort sort) {
@@ -73,7 +86,9 @@ public class FileServiceClient implements FindReviewImagesPort, FindPostImagesPo
     private Optional<GetFilesResult> sendRequest(
             URI uri, HttpEntity<Void> httpEntity, Long ownerId, FileSort sort, OwnerType ownerType
     ) {
+        CommunityServiceCommunicationTargetType targetType = resolveTargetType(ownerType);
         for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            int attempt = i + 1;
             try {
                 ResponseEntity<BaseResponse<FilesContent>> response =
                         restTemplate.exchange(
@@ -109,6 +124,36 @@ public class FileServiceClient implements FindReviewImagesPort, FindPostImagesPo
 
                 return Optional.of(new GetFilesResult(getFileResults));
             } catch (Exception e) {
+                String exception = e.getClass().getSimpleName();
+                JsonNode requestPayloadJson = serviceCommunicationPayloadGenerator.buildRequestPayloadJson(
+                        HttpMethod.GET,
+                        uri,
+                        null,
+                        attempt
+                );
+                String requestPayload = requestPayloadJson.toString();
+                JsonNode responsePayloadJson = serviceCommunicationPayloadGenerator.buildErrorPayloadJson(
+                        exception,
+                        e.getMessage(),
+                        attempt
+                );
+                String responsePayload = responsePayloadJson.toString();
+                recordCommunication(
+                        targetType,
+                        String.valueOf(ownerId),
+                        CommunityServiceCommunicationType.REQUEST,
+                        requestPayload,
+                        requestPayloadJson,
+                        exception
+                );
+                recordCommunication(
+                        targetType,
+                        String.valueOf(ownerId),
+                        CommunityServiceCommunicationType.RESPONSE,
+                        responsePayload,
+                        responsePayloadJson,
+                        exception
+                );
                 log.warn(e.getMessage(), e);
 
                 try {
@@ -124,6 +169,38 @@ public class FileServiceClient implements FindReviewImagesPort, FindPostImagesPo
 
         log.error("Failed to find images by owner type: {} id: {} and sort: {}", ownerType, ownerId, sort);
         return Optional.empty();
+    }
+
+    private CommunityServiceCommunicationTargetType resolveTargetType(OwnerType ownerType) {
+        if (ownerType == REVIEW) {
+            return CommunityServiceCommunicationTargetType.REVIEW_IMAGE;
+        }
+        return CommunityServiceCommunicationTargetType.POST_IMAGE;
+    }
+
+    private void recordCommunication(
+            CommunityServiceCommunicationTargetType targetType,
+            String targetId,
+            CommunityServiceCommunicationType communicationType,
+            String payload,
+            JsonNode payloadJson,
+            String exception
+    ) {
+        if (FormatValidator.hasNoValue(exception)) {
+            return;
+        }
+
+        CommunityServiceCommunicationSenderType sender =
+                communicationType == CommunityServiceCommunicationType.REQUEST ? REQUEST_SENDER : RESPONSE_SENDER;
+        serviceCommunicationRecorder.record(
+                targetType,
+                communicationType,
+                sender,
+                targetId,
+                payload,
+                payloadJson,
+                exception
+        );
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

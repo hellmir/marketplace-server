@@ -1,5 +1,6 @@
 package com.personal.marketnote.product.adapter.out.web.fulfillment;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.adapter.out.ServiceAdapter;
 import com.personal.marketnote.common.exception.FulfillmentServiceRequestFailedException;
@@ -7,8 +8,13 @@ import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.adapter.out.web.fulfillment.request.RegisterFasstoGoodsItemRequest;
 import com.personal.marketnote.product.adapter.out.web.fulfillment.response.FasstoAuthTokenResponse;
 import com.personal.marketnote.product.adapter.out.web.fulfillment.response.RegisterFasstoGoodsResponse;
+import com.personal.marketnote.product.domain.servicecommunication.ProductServiceCommunicationSenderType;
+import com.personal.marketnote.product.domain.servicecommunication.ProductServiceCommunicationTargetType;
+import com.personal.marketnote.product.domain.servicecommunication.ProductServiceCommunicationType;
 import com.personal.marketnote.product.port.out.fulfillment.RegisterFulfillmentVendorGoodsCommand;
 import com.personal.marketnote.product.port.out.fulfillment.RegisterFulfillmentVendorGoodsPort;
+import com.personal.marketnote.product.utility.ServiceCommunicationPayloadGenerator;
+import com.personal.marketnote.product.utility.ServiceCommunicationRecorder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +37,11 @@ import static com.personal.marketnote.common.utility.ApiConstant.*;
 @RequiredArgsConstructor
 @Slf4j
 public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsPort {
+    private static final ProductServiceCommunicationSenderType REQUEST_SENDER =
+            ProductServiceCommunicationSenderType.PRODUCT;
+    private static final ProductServiceCommunicationSenderType RESPONSE_SENDER =
+            ProductServiceCommunicationSenderType.FULFILLMENT;
+
     @Value("${fulfillment-service.base-url}")
     private String fulfillmentServiceBaseUrl;
 
@@ -41,6 +52,8 @@ public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsP
     private String adminAccessToken;
 
     private final RestTemplate restTemplate;
+    private final ServiceCommunicationRecorder serviceCommunicationRecorder;
+    private final ServiceCommunicationPayloadGenerator serviceCommunicationPayloadGenerator;
 
     @Override
     public void registerFulfillmentVendorGoods(RegisterFulfillmentVendorGoodsCommand command) {
@@ -80,6 +93,7 @@ public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsP
         Exception error = new Exception();
 
         for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            int attempt = i + 1;
             try {
                 ResponseEntity<BaseResponse<FasstoAuthTokenResponse>> responseEntity =
                         restTemplate.exchange(
@@ -106,6 +120,36 @@ public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsP
 
                 return accessToken;
             } catch (Exception e) {
+                String exception = e.getClass().getSimpleName();
+                JsonNode requestPayloadJson = serviceCommunicationPayloadGenerator.buildRequestPayloadJson(
+                        HttpMethod.POST,
+                        uri,
+                        null,
+                        attempt
+                );
+                String requestPayload = requestPayloadJson.toString();
+                JsonNode responsePayloadJson = serviceCommunicationPayloadGenerator.buildErrorPayloadJson(
+                        exception,
+                        e.getMessage(),
+                        attempt
+                );
+                String responsePayload = responsePayloadJson.toString();
+                recordCommunication(
+                        ProductServiceCommunicationTargetType.FULFILLMENT_AUTH,
+                        fulfillmentVendorCustomerCode,
+                        ProductServiceCommunicationType.REQUEST,
+                        requestPayload,
+                        requestPayloadJson,
+                        exception
+                );
+                recordCommunication(
+                        ProductServiceCommunicationTargetType.FULFILLMENT_AUTH,
+                        fulfillmentVendorCustomerCode,
+                        ProductServiceCommunicationType.RESPONSE,
+                        responsePayload,
+                        responsePayloadJson,
+                        exception
+                );
                 log.warn(e.getMessage(), e);
                 if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
                     error = e;
@@ -138,7 +182,9 @@ public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsP
         long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
         Exception error = new Exception();
 
+        List<RegisterFasstoGoodsItemRequest> requestBody = httpEntity.getBody();
         for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            int attempt = i + 1;
             try {
                 ResponseEntity<BaseResponse<RegisterFasstoGoodsResponse>> responseEntity =
                         restTemplate.exchange(
@@ -165,6 +211,36 @@ public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsP
 
                 return;
             } catch (Exception e) {
+                String exception = e.getClass().getSimpleName();
+                JsonNode requestPayloadJson = serviceCommunicationPayloadGenerator.buildRequestPayloadJson(
+                        HttpMethod.POST,
+                        uri,
+                        requestBody,
+                        attempt
+                );
+                String requestPayload = requestPayloadJson.toString();
+                JsonNode responsePayloadJson = serviceCommunicationPayloadGenerator.buildErrorPayloadJson(
+                        exception,
+                        e.getMessage(),
+                        attempt
+                );
+                String responsePayload = responsePayloadJson.toString();
+                recordCommunication(
+                        ProductServiceCommunicationTargetType.FULFILLMENT_GOODS,
+                        command.cstGodCd(),
+                        ProductServiceCommunicationType.REQUEST,
+                        requestPayload,
+                        requestPayloadJson,
+                        exception
+                );
+                recordCommunication(
+                        ProductServiceCommunicationTargetType.FULFILLMENT_GOODS,
+                        command.cstGodCd(),
+                        ProductServiceCommunicationType.RESPONSE,
+                        responsePayload,
+                        responsePayloadJson,
+                        exception
+                );
                 log.warn(e.getMessage(), e);
                 if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
                     error = e;
@@ -187,5 +263,30 @@ public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsP
 
         log.error("Failed to register fassto goods: {} with error: {}", command.cstGodCd(), error.getMessage(), error);
         throw new FulfillmentServiceRequestFailedException(new IOException());
+    }
+
+    private void recordCommunication(
+            ProductServiceCommunicationTargetType targetType,
+            String targetId,
+            ProductServiceCommunicationType communicationType,
+            String payload,
+            JsonNode payloadJson,
+            String exception
+    ) {
+        if (FormatValidator.hasNoValue(exception)) {
+            return;
+        }
+
+        ProductServiceCommunicationSenderType sender =
+                communicationType == ProductServiceCommunicationType.REQUEST ? REQUEST_SENDER : RESPONSE_SENDER;
+        serviceCommunicationRecorder.record(
+                targetType,
+                communicationType,
+                sender,
+                targetId,
+                payload,
+                payloadJson,
+                exception
+        );
     }
 }
