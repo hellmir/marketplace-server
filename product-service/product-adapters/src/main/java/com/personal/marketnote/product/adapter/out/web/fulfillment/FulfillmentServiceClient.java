@@ -6,15 +6,13 @@ import com.personal.marketnote.common.adapter.out.ServiceAdapter;
 import com.personal.marketnote.common.exception.FulfillmentServiceRequestFailedException;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.adapter.out.web.fulfillment.request.RegisterFasstoGoodsItemRequest;
+import com.personal.marketnote.product.adapter.out.web.fulfillment.request.UpdateFasstoGoodsItemRequest;
 import com.personal.marketnote.product.adapter.out.web.fulfillment.response.*;
 import com.personal.marketnote.product.domain.servicecommunication.ProductServiceCommunicationSenderType;
 import com.personal.marketnote.product.domain.servicecommunication.ProductServiceCommunicationTargetType;
 import com.personal.marketnote.product.domain.servicecommunication.ProductServiceCommunicationType;
 import com.personal.marketnote.product.port.in.result.fulfillment.*;
-import com.personal.marketnote.product.port.out.fulfillment.GetFulfillmentVendorGoodsElementsPort;
-import com.personal.marketnote.product.port.out.fulfillment.GetFulfillmentVendorGoodsPort;
-import com.personal.marketnote.product.port.out.fulfillment.RegisterFulfillmentVendorGoodsCommand;
-import com.personal.marketnote.product.port.out.fulfillment.RegisterFulfillmentVendorGoodsPort;
+import com.personal.marketnote.product.port.out.fulfillment.*;
 import com.personal.marketnote.product.utility.ServiceCommunicationPayloadGenerator;
 import com.personal.marketnote.product.utility.ServiceCommunicationRecorder;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +37,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.*;
 @RequiredArgsConstructor
 @Slf4j
 public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsPort, GetFulfillmentVendorGoodsPort,
-        GetFulfillmentVendorGoodsElementsPort {
+        GetFulfillmentVendorGoodsElementsPort, UpdateFulfillmentVendorGoodsPort {
     private static final ProductServiceCommunicationSenderType REQUEST_SENDER =
             ProductServiceCommunicationSenderType.PRODUCT;
     private static final ProductServiceCommunicationSenderType RESPONSE_SENDER =
@@ -82,6 +80,29 @@ public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsP
     }
 
     @Override
+    public void updateFulfillmentVendorGoods(UpdateFulfillmentVendorGoodsCommand command) {
+        String fulfillmentVendorAccessToken = requestFulfillmentVendorAccessToken();
+        if (FormatValidator.hasNoValue(fulfillmentVendorCustomerCode) || FormatValidator.hasNoValue(fulfillmentVendorAccessToken)) {
+            throw new FulfillmentServiceRequestFailedException(new IOException());
+        }
+
+        URI uri = UriComponentsBuilder
+                .fromUriString(fulfillmentServiceBaseUrl)
+                .path("/api/v1/vendors/fassto/goods/{customerCode}")
+                .buildAndExpand(fulfillmentVendorCustomerCode)
+                .toUri();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(adminAccessToken);
+        headers.add("accessToken", fulfillmentVendorAccessToken);
+
+        List<UpdateFasstoGoodsItemRequest> payload = List.of(UpdateFasstoGoodsItemRequest.from(command));
+        HttpEntity<List<UpdateFasstoGoodsItemRequest>> httpEntity = new HttpEntity<>(payload, headers);
+
+        sendUpdateRequest(uri, httpEntity, command);
+    }
+
+    @Override
     public GetFulfillmentVendorGoodsResult getFulfillmentVendorGoods() {
         String fulfillmentVendorAccessToken = requestFulfillmentVendorAccessToken();
         if (FormatValidator.hasNoValue(fulfillmentVendorCustomerCode) || FormatValidator.hasNoValue(fulfillmentVendorAccessToken)) {
@@ -100,7 +121,7 @@ public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsP
         HttpEntity<Void> httpEntity = new HttpEntity<>(headers);
 
         GetFulfillmentVendorGoodsResult result = requestGoodsList(uri, httpEntity);
-        if (result == null) {
+        if (FormatValidator.hasNoValue(result)) {
             throw new FulfillmentServiceRequestFailedException(new IOException());
         }
         return result;
@@ -125,7 +146,7 @@ public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsP
         HttpEntity<Void> httpEntity = new HttpEntity<>(headers);
 
         GetFulfillmentVendorGoodsElementsResult result = requestGoodsElements(uri, httpEntity);
-        if (result == null) {
+        if (FormatValidator.hasNoValue(result)) {
             throw new FulfillmentServiceRequestFailedException(new IOException());
         }
         return result;
@@ -162,7 +183,9 @@ public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsP
                 }
 
                 BaseResponse<FasstoAuthTokenResponse> response = responseEntity.getBody();
-                if (response == null || response.getContent() == null || response.getContent().tokenInfo() == null) {
+                if (FormatValidator.hasNoValue(response)
+                        || FormatValidator.hasNoValue(response.getContent())
+                        || FormatValidator.hasNoValue(response.getContent().tokenInfo())) {
                     throw new FulfillmentServiceRequestFailedException(new IOException());
                 }
 
@@ -318,6 +341,97 @@ public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsP
         throw new FulfillmentServiceRequestFailedException(new IOException());
     }
 
+    private void sendUpdateRequest(
+            URI uri,
+            HttpEntity<List<UpdateFasstoGoodsItemRequest>> httpEntity,
+            UpdateFulfillmentVendorGoodsCommand command
+    ) {
+        long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
+        Exception error = new Exception();
+
+        List<UpdateFasstoGoodsItemRequest> requestBody = httpEntity.getBody();
+        for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            int attempt = i + 1;
+            try {
+                ResponseEntity<BaseResponse<UpdateFasstoGoodsResponse>> responseEntity =
+                        restTemplate.exchange(
+                                uri,
+                                HttpMethod.PUT,
+                                httpEntity,
+                                new ParameterizedTypeReference<BaseResponse<UpdateFasstoGoodsResponse>>() {
+                                }
+                        );
+
+                if (!responseEntity.getStatusCode().is2xxSuccessful()) {
+                    throw new FulfillmentServiceRequestFailedException(new IOException());
+                }
+
+                BaseResponse<UpdateFasstoGoodsResponse> response = responseEntity.getBody();
+                if (FormatValidator.hasNoValue(response) || FormatValidator.hasNoValue(response.getContent())) {
+                    throw new FulfillmentServiceRequestFailedException(new IOException());
+                }
+
+                UpdateFasstoGoodsResponse content = response.getContent();
+                if (!content.isSuccess()) {
+                    throw new FulfillmentServiceRequestFailedException(new IOException());
+                }
+
+                return;
+            } catch (Exception e) {
+                String exception = e.getClass().getSimpleName();
+                JsonNode requestPayloadJson = serviceCommunicationPayloadGenerator.buildRequestPayloadJson(
+                        HttpMethod.PUT,
+                        uri,
+                        requestBody,
+                        attempt
+                );
+                String requestPayload = requestPayloadJson.toString();
+                JsonNode responsePayloadJson = serviceCommunicationPayloadGenerator.buildErrorPayloadJson(
+                        exception,
+                        e.getMessage(),
+                        attempt
+                );
+                String responsePayload = responsePayloadJson.toString();
+                recordCommunication(
+                        ProductServiceCommunicationTargetType.FULFILLMENT_GOODS,
+                        command.cstGodCd(),
+                        ProductServiceCommunicationType.REQUEST,
+                        requestPayload,
+                        requestPayloadJson,
+                        exception
+                );
+                recordCommunication(
+                        ProductServiceCommunicationTargetType.FULFILLMENT_GOODS,
+                        command.cstGodCd(),
+                        ProductServiceCommunicationType.RESPONSE,
+                        responsePayload,
+                        responsePayloadJson,
+                        exception
+                );
+                log.warn(e.getMessage(), e);
+                if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
+                    error = e;
+                }
+
+                try {
+                    // 대상 서비스 장애 시 요청 트래픽 폭주를 방지하기 위해 jitter 설정
+                    long jitteredSleepMillis = ThreadLocalRandom.current()
+                            .nextLong(Math.max(1L, sleepMillis) + 1);
+                    Thread.sleep(jitteredSleepMillis);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+
+                // exponential backoff 적용
+                sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
+            }
+        }
+
+        log.error("Failed to update fassto goods: {} with error: {}", command.cstGodCd(), error.getMessage(), error);
+        throw new FulfillmentServiceRequestFailedException(new IOException());
+    }
+
     private GetFulfillmentVendorGoodsResult requestGoodsList(
             URI uri,
             HttpEntity<Void> httpEntity
@@ -342,7 +456,7 @@ public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsP
                 }
 
                 BaseResponse<GetFasstoGoodsResponse> response = responseEntity.getBody();
-                if (response == null || response.getContent() == null) {
+                if (FormatValidator.hasNoValue(response) || FormatValidator.hasNoValue(response.getContent())) {
                     throw new FulfillmentServiceRequestFailedException(new IOException());
                 }
 
@@ -431,7 +545,7 @@ public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsP
                 }
 
                 BaseResponse<GetFasstoGoodsElementsResponse> response = responseEntity.getBody();
-                if (response == null || response.getContent() == null) {
+                if (FormatValidator.hasNoValue(response) || FormatValidator.hasNoValue(response.getContent())) {
                     throw new FulfillmentServiceRequestFailedException(new IOException());
                 }
 

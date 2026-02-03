@@ -11,6 +11,7 @@ public record UpdateProductCommand(
         String brandName,
         String detail,
         Boolean isFindAllOptions,
-        List<String> tags
+        List<String> tags,
+        FulfillmentVendorGoodsOptionCommand fulfillmentVendorGoods
 ) {
 }

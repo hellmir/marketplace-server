@@ -17,7 +17,7 @@ import java.lang.annotation.*;
 @Operation(
         summary = "(판매자/관리자) 상품 정보 수정",
         description = """
-                작성일자: 2026-01-01
+                작성일자: 2026-02-03
                 
                 작성자: 성효빈
                 
@@ -28,6 +28,8 @@ import java.lang.annotation.*;
                 - 상품 정보를 수정합니다.
                 
                 - 판매자 또는 관리자만 가능합니다.
+                
+                - 파스토 상품 정보 수정 파라미터가 전달되면 파스토 상품 정보도 함께 수정합니다.
                 
                 ---
                 
@@ -40,6 +42,7 @@ import java.lang.annotation.*;
                 | detail | string | 상품 설명 | Y | "스프링노트1 설명" |
                 | isFindAllOptions | boolean | 상품 목록 조회 시 옵션마다 개별 상품으로 조회 여부 | Y | true |
                 | tags | array<string> | 상품 태그 목록(없는 경우 빈 배열) | Y | ["루테인", "아스타잔틴"] |
+                | fulfillmentVendorGoods | object | 파스토 상품 수정 파라미터(요청 시 godType/giftDiv 필수) | N | { ... } |
                 ---
                 
                 ## Response
@@ -63,7 +66,15 @@ import java.lang.annotation.*;
                                   "brandName": "노트왕",
                                   "detail": "스프링노트1 설명",
                                   "isFindAllOptions": true,
-                                  "tags": ["루테인", "아스타잔틴"]
+                                  "tags": ["루테인", "아스타잔틴"],
+                                  "fulfillmentVendorGoods": {
+                                    "godType": "1",
+                                    "giftDiv": "01",
+                                    "supCd": "94388001",
+                                    "cateCd": "A001",
+                                    "seasonCd": "0",
+                                    "genderCd": "A"
+                                  }
                                 }
                                 """)
                 )
@@ -117,5 +128,3 @@ import java.lang.annotation.*;
         })
 public @interface UpdateProductApiDocs {
 }
-
-

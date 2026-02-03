@@ -5,14 +5,14 @@ import com.personal.marketnote.product.port.in.result.fulfillment.FulfillmentVen
 
 public record GetAdminProductDetailResult(
         GetProductInfoWithOptionsResult product,
-        FulfillmentVendorGoodsInfoResult fasstoGoodsInfo,
+        FulfillmentVendorGoodsInfoResult fasstoGoods,
         FulfillmentVendorGoodsElementInfoResult fasstoGoodsElement
 ) {
     public static GetAdminProductDetailResult of(
             GetProductInfoWithOptionsResult product,
-            FulfillmentVendorGoodsInfoResult fasstoGoodsInfo,
+            FulfillmentVendorGoodsInfoResult fasstoGoods,
             FulfillmentVendorGoodsElementInfoResult fasstoGoodsElement
     ) {
-        return new GetAdminProductDetailResult(product, fasstoGoodsInfo, fasstoGoodsElement);
+        return new GetAdminProductDetailResult(product, fasstoGoods, fasstoGoodsElement);
     }
 }

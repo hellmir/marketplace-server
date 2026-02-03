@@ -22,7 +22,7 @@ public class GetAdminProductDetailResponse {
     private List<GetFileResult> representativeImages;
     private List<GetFileResult> contentImages;
     private List<GetProductPricePolicyWithOptionsResult> pricePolicies;
-    private FasstoGoodsItemResponse fasstoGoodsInfo;
+    private FasstoGoodsItemResponse fasstoGoods;
     private FasstoGoodsElementResponse fasstoGoodsElement;
 
     public static GetAdminProductDetailResponse from(GetAdminProductDetailResult result) {
@@ -34,9 +34,9 @@ public class GetAdminProductDetailResponse {
                 .representativeImages(productResponse.getRepresentativeImages())
                 .contentImages(productResponse.getContentImages())
                 .pricePolicies(productResponse.getPricePolicies())
-                .fasstoGoodsInfo(
-                        FormatValidator.hasValue(result.fasstoGoodsInfo())
-                                ? FasstoGoodsItemResponse.from(result.fasstoGoodsInfo())
+                .fasstoGoods(
+                        FormatValidator.hasValue(result.fasstoGoods())
+                                ? FasstoGoodsItemResponse.from(result.fasstoGoods())
                                 : null
                 )
                 .fasstoGoodsElement(
