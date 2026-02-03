@@ -6,13 +6,13 @@ public record GetAdminProductsResult(
         Long totalElements,
         Long nextCursor,
         boolean hasNext,
-        List<AdminProductItemResult> products
+        List<ProductItemResult> products
 ) {
     public static GetAdminProductsResult of(
             Long totalElements,
             Long nextCursor,
             boolean hasNext,
-            List<AdminProductItemResult> products
+            List<ProductItemResult> products
     ) {
         return new GetAdminProductsResult(totalElements, nextCursor, hasNext, products);
     }

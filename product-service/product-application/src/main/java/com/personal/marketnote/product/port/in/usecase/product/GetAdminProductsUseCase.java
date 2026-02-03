@@ -20,7 +20,7 @@ public interface GetAdminProductsUseCase {
      * @return 관리자 상품 목록 조회 결과 {@link GetAdminProductsResult}
      * @Date 2026-02-03
      * @Author 성효빈
-     * @Description 관리자 상품 목록을 조회합니다. 파스토 상품 정보를 상품 항목에 함께 반환합니다.
+     * @Description 관리자 상품 목록을 조회합니다.
      */
     GetAdminProductsResult getAdminProducts(
             Long categoryId,
