@@ -116,7 +116,7 @@ public class FasstoGoodsClient implements RegisterFasstoGoodsPort, GetFasstoGood
                 }
 
                 sleep(sleepMillis);
-                // exponential backoff applied
+                // exponential backoff 적용
                 sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
                 continue;
             }
@@ -128,18 +128,20 @@ public class FasstoGoodsClient implements RegisterFasstoGoodsPort, GetFasstoGood
             boolean isSuccess = isGoodsListSuccess(response, parsedResponse);
             String exception = isSuccess ? null : resolveGoodsListException(response, parsedResponse);
 
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.REQUEST,
+                    FulfillmentVendorCommunicationSenderType.SERVER,
+                    vendorName,
                     requestPayload,
                     requestPayloadJson,
                     exception
             );
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.RESPONSE,
+                    FulfillmentVendorCommunicationSenderType.VENDOR,
+                    vendorName,
                     responsePayload,
                     responsePayloadJson,
                     exception
@@ -166,7 +168,8 @@ public class FasstoGoodsClient implements RegisterFasstoGoodsPort, GetFasstoGood
             }
 
             sleep(sleepMillis);
-            // exponential backoff applied
+
+            // exponential backoff 적용
             sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
         }
 
@@ -229,8 +232,10 @@ public class FasstoGoodsClient implements RegisterFasstoGoodsPort, GetFasstoGood
                 }
 
                 sleep(sleepMillis);
-                // exponential backoff applied
+
+                // exponential backoff 적용
                 sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
+
                 continue;
             }
 
@@ -241,18 +246,20 @@ public class FasstoGoodsClient implements RegisterFasstoGoodsPort, GetFasstoGood
             boolean isSuccess = isGoodsElementsSuccess(response, parsedResponse);
             String exception = isSuccess ? null : resolveGoodsElementsException(response, parsedResponse);
 
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.REQUEST,
+                    FulfillmentVendorCommunicationSenderType.SERVER,
+                    vendorName,
                     requestPayload,
                     requestPayloadJson,
                     exception
             );
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.RESPONSE,
+                    FulfillmentVendorCommunicationSenderType.VENDOR,
+                    vendorName,
                     responsePayload,
                     responsePayloadJson,
                     exception
@@ -279,7 +286,7 @@ public class FasstoGoodsClient implements RegisterFasstoGoodsPort, GetFasstoGood
             }
 
             sleep(sleepMillis);
-            // exponential backoff applied
+            // exponential backoff 적용
             sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
         }
 
@@ -367,20 +374,22 @@ public class FasstoGoodsClient implements RegisterFasstoGoodsPort, GetFasstoGood
                     : resolveResponseException(response, parsedResponse);
             String productId = request.getProductId();
 
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
+                    FulfillmentVendorCommunicationType.REQUEST,
+                    FulfillmentVendorCommunicationSenderType.SERVER,
                     productId,
                     vendorName,
-                    FulfillmentVendorCommunicationType.REQUEST,
                     requestPayload,
                     requestPayloadJson,
                     exception
             );
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
+                    FulfillmentVendorCommunicationType.RESPONSE,
+                    FulfillmentVendorCommunicationSenderType.VENDOR,
                     productId,
                     vendorName,
-                    FulfillmentVendorCommunicationType.RESPONSE,
                     responsePayload,
                     responsePayloadJson,
                     exception
@@ -476,7 +485,7 @@ public class FasstoGoodsClient implements RegisterFasstoGoodsPort, GetFasstoGood
                 }
 
                 sleep(sleepMillis);
-                // exponential backoff applied
+                // exponential backoff 적용
                 sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
                 continue;
             }
@@ -491,20 +500,22 @@ public class FasstoGoodsClient implements RegisterFasstoGoodsPort, GetFasstoGood
                     : resolveUpdateException(response, parsedResponse);
             String productId = request.getProductId();
 
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
+                    FulfillmentVendorCommunicationType.REQUEST,
+                    FulfillmentVendorCommunicationSenderType.SERVER,
                     productId,
                     vendorName,
-                    FulfillmentVendorCommunicationType.REQUEST,
                     requestPayload,
                     requestPayloadJson,
                     exception
             );
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
+                    FulfillmentVendorCommunicationType.RESPONSE,
+                    FulfillmentVendorCommunicationSenderType.VENDOR,
                     productId,
                     vendorName,
-                    FulfillmentVendorCommunicationType.RESPONSE,
                     responsePayload,
                     responsePayloadJson,
                     exception
@@ -532,7 +543,7 @@ public class FasstoGoodsClient implements RegisterFasstoGoodsPort, GetFasstoGood
             }
 
             sleep(sleepMillis);
-            // exponential backoff applied
+            // exponential backoff 적용
             sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
         }
 
@@ -837,79 +848,6 @@ public class FasstoGoodsClient implements RegisterFasstoGoodsPort, GetFasstoGood
         }
 
         return headers.toSingleValueMap();
-    }
-
-    private void recordCommunication(
-            FulfillmentVendorCommunicationTargetType targetType,
-            FulfillmentVendorName vendorName,
-            FulfillmentVendorCommunicationType communicationType,
-            String payload,
-            JsonNode payloadJson,
-            String exception
-    ) {
-        FulfillmentVendorCommunicationSenderType sender = communicationType == FulfillmentVendorCommunicationType.REQUEST
-                ? FulfillmentVendorCommunicationSenderType.SERVER
-                : FulfillmentVendorCommunicationSenderType.VENDOR;
-
-        if (FormatValidator.hasValue(exception)) {
-            vendorCommunicationRecorder.record(
-                    targetType,
-                    communicationType,
-                    sender,
-                    vendorName,
-                    payload,
-                    payloadJson,
-                    exception
-            );
-            return;
-        }
-
-        vendorCommunicationRecorder.record(
-                targetType,
-                communicationType,
-                sender,
-                vendorName,
-                payload,
-                payloadJson
-        );
-    }
-
-    private void recordCommunication(
-            FulfillmentVendorCommunicationTargetType targetType,
-            String targetId,
-            FulfillmentVendorName vendorName,
-            FulfillmentVendorCommunicationType communicationType,
-            String payload,
-            JsonNode payloadJson,
-            String exception
-    ) {
-        FulfillmentVendorCommunicationSenderType sender = communicationType == FulfillmentVendorCommunicationType.REQUEST
-                ? FulfillmentVendorCommunicationSenderType.SERVER
-                : FulfillmentVendorCommunicationSenderType.VENDOR;
-
-        if (FormatValidator.hasValue(exception)) {
-            vendorCommunicationRecorder.record(
-                    targetType,
-                    communicationType,
-                    sender,
-                    targetId,
-                    vendorName,
-                    payload,
-                    payloadJson,
-                    exception
-            );
-            return;
-        }
-
-        vendorCommunicationRecorder.record(
-                targetType,
-                communicationType,
-                sender,
-                targetId,
-                vendorName,
-                payload,
-                payloadJson
-        );
     }
 
     private RegisterFasstoGoodsResult mapGoodsResult(RegisterFasstoGoodsResponse response) {

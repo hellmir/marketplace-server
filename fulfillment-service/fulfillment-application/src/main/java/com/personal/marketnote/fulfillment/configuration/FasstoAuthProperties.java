@@ -21,4 +21,5 @@ public class FasstoAuthProperties {
     private String goodsElementPath = "/api/v1/goods/element/{customerCode}";
     private String warehousingPath = "/api/v1/warehousing/{customerCode}";
     private String warehousingListPath = "/api/v1/warehousing/{customerCode}/{startDate}/{endDate}";
+    private String stockListPath = "/api/v1/stock/list/{customerCode}";
 }

@@ -57,6 +57,7 @@ vendor:
       goods-element-path: ${FASSTO_GOODS_ELEMENT_PATH:/api/v1/goods/element/{customerCode}}
       warehousing-path: ${FASSTO_WAREHOUSING_PATH:/api/v1/warehousing/{customerCode}}
       warehousing-list-path: ${FASSTO_WAREHOUSING_LIST_PATH:/api/v1/warehousing/{customerCode}/{startDate}/{endDate}}
+      stock-list-path: ${FASSTO_STOCK_LIST_PATH:/api/v1/stock/list/{customerCode}}
       api-cd: ${FASSTO_API_CD:change-me}
       api-key: ${FASSTO_API_KEY:change-me}
 
