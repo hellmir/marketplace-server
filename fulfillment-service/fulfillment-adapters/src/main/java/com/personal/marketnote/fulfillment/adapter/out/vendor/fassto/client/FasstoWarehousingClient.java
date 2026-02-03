@@ -112,7 +112,7 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
                 }
 
                 sleep(sleepMillis);
-                // exponential backoff applied
+                // exponential backoff 적용
                 sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
                 continue;
             }
@@ -126,18 +126,20 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
                     ? null
                     : resolveResponseException(response, parsedResponse);
 
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.REQUEST,
+                    FulfillmentVendorCommunicationSenderType.SERVER,
+                    vendorName,
                     requestPayload,
                     requestPayloadJson,
                     exception
             );
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.RESPONSE,
+                    FulfillmentVendorCommunicationSenderType.VENDOR,
+                    vendorName,
                     responsePayload,
                     responsePayloadJson,
                     exception
@@ -164,7 +166,7 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
             }
 
             sleep(sleepMillis);
-            // exponential backoff applied
+            // exponential backoff 적용
             sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
         }
 
@@ -241,18 +243,20 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
             boolean isSuccess = isWarehousingListSuccess(response, parsedResponse);
             String exception = isSuccess ? null : resolveWarehousingListException(response, parsedResponse);
 
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.REQUEST,
+                    FulfillmentVendorCommunicationSenderType.SERVER,
+                    vendorName,
                     requestPayload,
                     requestPayloadJson,
                     exception
             );
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.RESPONSE,
+                    FulfillmentVendorCommunicationSenderType.VENDOR,
+                    vendorName,
                     responsePayload,
                     responsePayloadJson,
                     exception
@@ -492,41 +496,6 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
         return headers.toSingleValueMap();
     }
 
-    private void recordCommunication(
-            FulfillmentVendorCommunicationTargetType targetType,
-            FulfillmentVendorName vendorName,
-            FulfillmentVendorCommunicationType communicationType,
-            String payload,
-            JsonNode payloadJson,
-            String exception
-    ) {
-        FulfillmentVendorCommunicationSenderType sender = communicationType == FulfillmentVendorCommunicationType.REQUEST
-                ? FulfillmentVendorCommunicationSenderType.SERVER
-                : FulfillmentVendorCommunicationSenderType.VENDOR;
-
-        if (FormatValidator.hasValue(exception)) {
-            vendorCommunicationRecorder.record(
-                    targetType,
-                    communicationType,
-                    sender,
-                    vendorName,
-                    payload,
-                    payloadJson,
-                    exception
-            );
-            return;
-        }
-
-        vendorCommunicationRecorder.record(
-                targetType,
-                communicationType,
-                sender,
-                vendorName,
-                payload,
-                payloadJson
-        );
-    }
-
     private RegisterFasstoWarehousingResult mapWarehousingResult(RegisterFasstoWarehousingResponse response) {
         List<RegisterFasstoWarehousingItemResult> warehousing = response.data().stream()
                 .map(this::mapWarehousingItem)
@@ -561,17 +530,16 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
                 item.ordDt(),
                 item.whCd(),
                 item.whNm(),
-                item.slipNo(),
                 item.ordNo(),
+                item.slipNo(),
                 item.cstCd(),
                 item.cstNm(),
                 item.supCd(),
                 item.cstSupCd(),
-                item.supNm(),
                 item.sku(),
+                item.supNm(),
                 item.ordQty(),
                 item.inQty(),
-                item.tarQty(),
                 item.inWay(),
                 item.inWayNm(),
                 item.parcelComp(),
@@ -649,6 +617,7 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
         }
 
         String body = responseException.getResponseBodyAsString();
+
         return resolveVendorMessage(body);
     }
 }

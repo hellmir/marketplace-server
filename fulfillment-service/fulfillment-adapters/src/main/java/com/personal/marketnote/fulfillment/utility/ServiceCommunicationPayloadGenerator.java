@@ -16,6 +16,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ServiceCommunicationPayloadGenerator {
     private final ObjectMapper objectMapper;
+    private final VendorCommunicationRecorder vendorCommunicationRecorder;
 
     public JsonNode buildPayloadJson(Object payload) {
         if (payload == null) {

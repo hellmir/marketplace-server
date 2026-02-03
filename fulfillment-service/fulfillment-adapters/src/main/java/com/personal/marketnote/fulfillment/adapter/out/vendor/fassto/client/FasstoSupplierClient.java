@@ -137,18 +137,20 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
             boolean isSuccess = isSuppliersSuccess(response, parsedResponse);
             String exception = isSuccess ? null : resolveSuppliersException(response, parsedResponse);
 
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.REQUEST,
+                    FulfillmentVendorCommunicationSenderType.SERVER,
+                    vendorName,
                     requestPayload,
                     requestPayloadJson,
                     exception
             );
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.RESPONSE,
+                    FulfillmentVendorCommunicationSenderType.VENDOR,
+                    vendorName,
                     responsePayload,
                     responsePayloadJson,
                     exception
@@ -253,18 +255,20 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
             boolean isSuccess = isSuccessResponse(response, parsedResponse);
             String exception = isSuccess ? null : resolveResponseException(response, parsedResponse);
 
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.REQUEST,
+                    FulfillmentVendorCommunicationSenderType.SERVER,
+                    vendorName,
                     requestPayload,
                     requestPayloadJson,
                     exception
             );
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.RESPONSE,
+                    FulfillmentVendorCommunicationSenderType.VENDOR,
+                    vendorName,
                     responsePayload,
                     responsePayloadJson,
                     exception
@@ -434,40 +438,6 @@ public class FasstoSupplierClient implements RegisterFasstoSupplierPort, GetFass
         }
 
         return headers.toSingleValueMap();
-    }
-
-    private void recordCommunication(
-            FulfillmentVendorCommunicationTargetType targetType,
-            FulfillmentVendorName vendorName,
-            FulfillmentVendorCommunicationType communicationType,
-            String payload,
-            JsonNode payloadJson,
-            String exception
-    ) {
-        FulfillmentVendorCommunicationSenderType sender = communicationType == FulfillmentVendorCommunicationType.REQUEST
-                ? FulfillmentVendorCommunicationSenderType.SERVER
-                : FulfillmentVendorCommunicationSenderType.VENDOR;
-        if (FormatValidator.hasValue(exception)) {
-            vendorCommunicationRecorder.record(
-                    targetType,
-                    communicationType,
-                    sender,
-                    vendorName,
-                    payload,
-                    payloadJson,
-                    exception
-            );
-            return;
-        }
-
-        vendorCommunicationRecorder.record(
-                targetType,
-                communicationType,
-                sender,
-                vendorName,
-                payload,
-                payloadJson
-        );
     }
 
     private FasstoSuppliersResponse parseSuppliersResponse(ResponseEntity<String> response) {

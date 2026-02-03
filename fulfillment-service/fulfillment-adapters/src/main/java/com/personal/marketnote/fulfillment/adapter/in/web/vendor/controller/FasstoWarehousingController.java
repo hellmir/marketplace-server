@@ -66,15 +66,15 @@ public class FasstoWarehousingController {
     }
 
     /**
-     * (관리자) 파스토 상품 입고 목록 조회
+     * (관리자) 파스토 입고 목록 조회
      *
      * @param customerCode 파스토 고객사 코드
      * @param accessToken  파스토 액세스 토큰
      * @param startDate    조회 시작일(YYYYMMDD)
      * @param endDate      조회 종료일(YYYYMMDD)
      * @Author 성효빈
-     * @Date 2026-02-03
-     * @Description 파스토 상품 입고 목록을 조회합니다.
+     * @Date 2026-01-31
+     * @Description 파스토 입고 목록을 조회합니다.
      */
     @GetMapping("/{customerCode}/{startDate}/{endDate}")
     @PreAuthorize(ADMIN_POINTCUT)

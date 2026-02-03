@@ -137,18 +137,20 @@ public class FasstoShopClient implements RegisterFasstoShopPort, GetFasstoShopsP
             boolean isSuccess = isShopsSuccess(response, parsedResponse);
             String exception = isSuccess ? null : resolveShopsException(response, parsedResponse);
 
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.REQUEST,
+                    FulfillmentVendorCommunicationSenderType.SERVER,
+                    vendorName,
                     requestPayload,
                     requestPayloadJson,
                     exception
             );
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.RESPONSE,
+                    FulfillmentVendorCommunicationSenderType.VENDOR,
+                    vendorName,
                     responsePayload,
                     responsePayloadJson,
                     exception
@@ -302,40 +304,6 @@ public class FasstoShopClient implements RegisterFasstoShopPort, GetFasstoShopsP
         return headers.toSingleValueMap();
     }
 
-    private void recordCommunication(
-            FulfillmentVendorCommunicationTargetType targetType,
-            FulfillmentVendorName vendorName,
-            FulfillmentVendorCommunicationType communicationType,
-            String payload,
-            JsonNode payloadJson,
-            String exception
-    ) {
-        FulfillmentVendorCommunicationSenderType sender = communicationType == FulfillmentVendorCommunicationType.REQUEST
-                ? FulfillmentVendorCommunicationSenderType.SERVER
-                : FulfillmentVendorCommunicationSenderType.VENDOR;
-        if (FormatValidator.hasValue(exception)) {
-            vendorCommunicationRecorder.record(
-                    targetType,
-                    communicationType,
-                    sender,
-                    vendorName,
-                    payload,
-                    payloadJson,
-                    exception
-            );
-            return;
-        }
-
-        vendorCommunicationRecorder.record(
-                targetType,
-                communicationType,
-                sender,
-                vendorName,
-                payload,
-                payloadJson
-        );
-    }
-
     private String maskValue(String value) {
         if (FormatValidator.hasNoValue(value)) {
             return value;
@@ -431,18 +399,20 @@ public class FasstoShopClient implements RegisterFasstoShopPort, GetFasstoShopsP
             boolean isSuccess = isSuccessResponse(response, parsedResponse);
             String exception = isSuccess ? null : resolveResponseException(response, parsedResponse);
 
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.REQUEST,
+                    FulfillmentVendorCommunicationSenderType.SERVER,
+                    vendorName,
                     requestPayload,
                     requestPayloadJson,
                     exception
             );
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.RESPONSE,
+                    FulfillmentVendorCommunicationSenderType.VENDOR,
+                    vendorName,
                     responsePayload,
                     responsePayloadJson,
                     exception

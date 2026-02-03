@@ -112,18 +112,20 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
             String responsePayload = responsePayloadJson.toString();
             String exception = resolveAuthException(response);
 
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.REQUEST,
+                    FulfillmentVendorCommunicationSenderType.SERVER,
+                    vendorName,
                     requestPayload,
                     requestPayloadJson,
                     exception
             );
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.RESPONSE,
+                    FulfillmentVendorCommunicationSenderType.VENDOR,
+                    vendorName,
                     responsePayload,
                     responsePayloadJson,
                     exception
@@ -222,18 +224,20 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
             boolean isSuccess = response.getStatusCode().value() == 200;
             String exception = isSuccess ? null : "HTTP_" + response.getStatusCode().value();
 
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.REQUEST,
+                    FulfillmentVendorCommunicationSenderType.SERVER,
+                    vendorName,
                     requestPayload,
                     requestPayloadJson,
                     exception
             );
-            recordCommunication(
+            vendorCommunicationRecorder.record(
                     targetType,
-                    vendorName,
                     FulfillmentVendorCommunicationType.RESPONSE,
+                    FulfillmentVendorCommunicationSenderType.VENDOR,
+                    vendorName,
                     responsePayload,
                     responsePayloadJson,
                     exception
@@ -443,40 +447,6 @@ public class FasstoAuthClient implements RequestFasstoAuthPort, DisconnectFassto
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-    }
-
-    private void recordCommunication(
-            FulfillmentVendorCommunicationTargetType targetType,
-            FulfillmentVendorName vendorName,
-            FulfillmentVendorCommunicationType communicationType,
-            String payload,
-            JsonNode payloadJson,
-            String exception
-    ) {
-        FulfillmentVendorCommunicationSenderType sender = communicationType == FulfillmentVendorCommunicationType.REQUEST
-                ? FulfillmentVendorCommunicationSenderType.SERVER
-                : FulfillmentVendorCommunicationSenderType.VENDOR;
-        if (FormatValidator.hasValue(exception)) {
-            vendorCommunicationRecorder.record(
-                    targetType,
-                    communicationType,
-                    sender,
-                    vendorName,
-                    payload,
-                    payloadJson,
-                    exception
-            );
-            return;
-        }
-
-        vendorCommunicationRecorder.record(
-                targetType,
-                communicationType,
-                sender,
-                vendorName,
-                payload,
-                payloadJson
-        );
     }
 
     private String resolveAuthException(ResponseEntity<FasstoAuthResponse> response) {
