@@ -91,7 +91,7 @@ import java.lang.annotation.*;
                         content = @Content(
                                 examples = @ExampleObject(
                                         name = "redirect",
-                                        value = "Location: http://localhost:3000/redirection?type=oauth2&is-success=true&access-token=eyJ...&is-guest=true&auth-vendor=google&userJpaEntity-name=홍길동\nSet-Cookie: refresh_token=eyJ...; Path=/; Domain=localhost; Max-Age=2592000000; Secure; HttpOnly; SameSite=None"
+                                        value = "Location: ${CLIENT_ORIGIN}/redirection?type=oauth2&is-success=true&access-token=eyJ...&is-guest=true&auth-vendor=google&userJpaEntity-name=홍길동\nSet-Cookie: refresh_token=eyJ...; Path=/; Domain=localhost; Max-Age=2592000000; Secure; HttpOnly; SameSite=None"
                                 )
                         )
                 ),
