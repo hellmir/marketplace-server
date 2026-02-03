@@ -29,8 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.personal.marketnote.common.domain.exception.ExceptionCode.DEFAULT_SUCCESS_CODE;
-import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER_POINTCUT;
-import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_OR_SELLER_PRINCIPAL_POINTCUT;
+import static com.personal.marketnote.common.utility.ApiConstant.*;
 import static com.personal.marketnote.common.utility.NumberConstant.MINUS_ONE;
 
 @RestController
@@ -44,6 +43,7 @@ public class ProductController {
     private final GetProductSortPropertiesUseCase getProductSortPropertiesUseCase;
     private final GetProductSearchTargetsUseCase getProductSearchTargetsUseCase;
     private final GetProductUseCase getProductUseCase;
+    private final GetAdminProductsUseCase getAdminProductsUseCase;
     private final UpdateProductUseCase updateProductUseCase;
     private final DeleteProductUseCase deleteProductUseCase;
     private final DeleteProductImageUseCase deleteProductImageUseCase;
@@ -169,6 +169,56 @@ public class ProductController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "상품 목록 조회 성공"
+                )
+        );
+    }
+
+    /**
+     * (관리자) 상품 목록 조회(파스토 연동)
+     *
+     * @param categoryId     카테고리 ID
+     * @param pricePolicyIds 가격 정책 ID 목록
+     * @param cursor         커서(무한 스크롤 페이지 설정)
+     * @param pageSize       페이지 크기
+     * @param sortDirection  정렬 방향
+     * @param sortProperty   정렬 속성
+     * @param searchTarget   검색 대상
+     * @param searchKeyword  검색 키워드
+     * @return 관리자 상품 목록 조회 응답 {@link GetAdminProductsResponse}
+     * @Author 성효빈
+     * @Date 2026-02-03
+     * @Description 관리자 상품 목록을 조회합니다. 파스토 상품 정보를 상품 항목에 함께 반환합니다.
+     */
+    @GetMapping("/admin")
+    @PreAuthorize(ADMIN_POINTCUT)
+    @GetAdminProductsApiDocs
+    public ResponseEntity<BaseResponse<GetAdminProductsResponse>> getAdminProducts(
+            @RequestParam(value = "categoryId", required = false) Long categoryId,
+            @RequestParam(value = "pricePolicyIds", required = false) List<Long> pricePolicyIds,
+            @RequestParam(value = "cursor", required = false, defaultValue = MINUS_ONE) Long cursor,
+            @RequestParam(value = "pageSize", required = false, defaultValue = GET_PRODUCTS_DEFAULT_PAGE_SIZE) int pageSize,
+            @RequestParam(required = false, defaultValue = "DESC") Sort.Direction sortDirection,
+            @RequestParam(required = false, defaultValue = "ORDER_NUM") ProductSortProperty sortProperty,
+            @RequestParam(required = false, defaultValue = "NAME") ProductSearchTarget searchTarget,
+            @RequestParam(required = false) String searchKeyword
+    ) {
+        GetAdminProductsResult result = getAdminProductsUseCase.getAdminProducts(
+                categoryId,
+                pricePolicyIds,
+                cursor,
+                pageSize,
+                sortDirection,
+                sortProperty,
+                searchTarget,
+                searchKeyword
+        );
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        GetAdminProductsResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "관리자 상품 목록 조회 성공"
                 )
         );
     }
