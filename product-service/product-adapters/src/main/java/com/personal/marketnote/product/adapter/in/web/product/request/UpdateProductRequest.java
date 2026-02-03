@@ -1,6 +1,7 @@
 package com.personal.marketnote.product.adapter.in.web.product.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
@@ -45,4 +46,12 @@ public class UpdateProductRequest {
             requiredMode = Schema.RequiredMode.REQUIRED
     )
     private List<String> tags;
+
+    @Schema(
+            name = "fulfillmentVendorGoods",
+            description = "파스토 상품 수정 파라미터",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED
+    )
+    @Valid
+    private UpdateProductFulfillmentVendorGoodsRequest fulfillmentVendorGoods;
 }

@@ -1,11 +1,14 @@
 package com.personal.marketnote.product.service.product;
 
 import com.personal.marketnote.common.application.UseCase;
+import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.product.domain.product.Product;
 import com.personal.marketnote.product.exception.NotProductOwnerException;
+import com.personal.marketnote.product.mapper.FulfillmentVendorGoodsCommandMapper;
 import com.personal.marketnote.product.port.in.command.UpdateProductCommand;
 import com.personal.marketnote.product.port.in.usecase.product.GetProductUseCase;
 import com.personal.marketnote.product.port.in.usecase.product.UpdateProductUseCase;
+import com.personal.marketnote.product.port.out.fulfillment.UpdateFulfillmentVendorGoodsPort;
 import com.personal.marketnote.product.port.out.product.FindProductPort;
 import com.personal.marketnote.product.port.out.product.UpdateProductPort;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,7 @@ public class UpdateProductService implements UpdateProductUseCase {
     private final GetProductUseCase getProductUseCase;
     private final FindProductPort findProductPort;
     private final UpdateProductPort updateProductPort;
+    private final UpdateFulfillmentVendorGoodsPort updateFulfillmentVendorGoodsPort;
 
     @Override
     public void update(Long userId, boolean isAdmin, UpdateProductCommand command) {
@@ -35,5 +39,11 @@ public class UpdateProductService implements UpdateProductUseCase {
         );
 
         updateProductPort.update(product);
+
+        if (FormatValidator.hasValue(command.fulfillmentVendorGoods())) {
+            updateFulfillmentVendorGoodsPort.updateFulfillmentVendorGoods(
+                    FulfillmentVendorGoodsCommandMapper.mapToUpdateCommand(product, command.fulfillmentVendorGoods())
+            );
+        }
     }
 }

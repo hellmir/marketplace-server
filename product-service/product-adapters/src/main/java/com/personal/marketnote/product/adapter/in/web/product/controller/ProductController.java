@@ -326,7 +326,7 @@ public class ProductController {
      * @param request 상품 정보 수정 요청
      * @Author 성효빈
      * @Date 2026-01-01
-     * @Description 상품 정보를 수정합니다.
+     * @Description 상품 정보를 수정합니다. 연동된 파스토 상품 정보도 함께 수정합니다.
      */
     @PutMapping("/{id}")
     @PreAuthorize(ADMIN_OR_SELLER_POINTCUT)
