@@ -15,7 +15,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "(관리자) 파스토 입고 목록 조회",
+        summary = "(관리자) 파스토 상품 입고 목록 조회",
         description = """
                 작성일자: 2026-01-31
                 
@@ -25,7 +25,7 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                파스토 입고 목록을 조회합니다.
+                파스토 상품 입고 목록을 조회합니다.
                 
                 ---
                 
@@ -48,7 +48,7 @@ import java.lang.annotation.*;
                 | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "INTERNAL_SERVER_ERROR" |
                 | timestamp | string(datetime) | 응답 일시 | "2026-01-31T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
-                | message | string | 처리 결과 | "파스토 입고 목록 조회 성공" |
+                | message | string | 처리 결과 | "파스토 상품 입고 목록 조회 성공" |
                 
                 ---
                 
@@ -57,7 +57,7 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | dataCount | number | 조회 건수 | 1 |
-                | warehousing | array | 입고 목록 | [ ... ] |
+                | warehousing | array | 상품 입고 목록 | [ ... ] |
                 
                 ---
                 
@@ -122,7 +122,7 @@ import java.lang.annotation.*;
         responses = {
                 @ApiResponse(
                         responseCode = "200",
-                        description = "파스토 입고 목록 조회 성공",
+                        description = "파스토 상품 입고 목록 조회 성공",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
@@ -158,7 +158,7 @@ import java.lang.annotation.*;
                                               }
                                             ]
                                           },
-                                          "message": "파스토 입고 목록 조회 성공"
+                                          "message": "파스토 상품 입고 목록 조회 성공"
                                         }
                                         """)
                         )

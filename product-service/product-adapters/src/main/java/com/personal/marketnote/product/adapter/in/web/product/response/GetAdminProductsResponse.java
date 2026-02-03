@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
 public class GetAdminProductsResponse {
-    private CursorResponse<AdminProductItemResponse> products;
+    private CursorResponse<ProductItemResponse> products;
 
     public static GetAdminProductsResponse from(GetAdminProductsResult result) {
         return new GetAdminProductsResponse(
@@ -22,7 +22,7 @@ public class GetAdminProductsResponse {
                         result.hasNext(),
                         result.nextCursor(),
                         result.products().stream()
-                                .map(AdminProductItemResponse::from)
+                                .map(ProductItemResponse::from)
                                 .collect(Collectors.toList())
                 )
         );

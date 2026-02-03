@@ -44,6 +44,7 @@ public class ProductController {
     private final GetProductSearchTargetsUseCase getProductSearchTargetsUseCase;
     private final GetProductUseCase getProductUseCase;
     private final GetAdminProductsUseCase getAdminProductsUseCase;
+    private final GetAdminProductDetailUseCase getAdminProductDetailUseCase;
     private final UpdateProductUseCase updateProductUseCase;
     private final DeleteProductUseCase deleteProductUseCase;
     private final DeleteProductImageUseCase deleteProductImageUseCase;
@@ -174,7 +175,7 @@ public class ProductController {
     }
 
     /**
-     * (관리자) 상품 목록 조회(파스토 연동)
+     * (관리자) 상품 목록 조회
      *
      * @param categoryId     카테고리 ID
      * @param pricePolicyIds 가격 정책 ID 목록
@@ -187,7 +188,7 @@ public class ProductController {
      * @return 관리자 상품 목록 조회 응답 {@link GetAdminProductsResponse}
      * @Author 성효빈
      * @Date 2026-02-03
-     * @Description 관리자 상품 목록을 조회합니다. 파스토 상품 정보를 상품 항목에 함께 반환합니다.
+     * @Description 관리자 상품 목록을 조회합니다.
      */
     @GetMapping("/admin")
     @PreAuthorize(ADMIN_POINTCUT)
@@ -219,6 +220,42 @@ public class ProductController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "관리자 상품 목록 조회 성공"
+                )
+        );
+    }
+
+    /**
+     * (관리자) 상품 상세 정보 조회(파스토 연동)
+     *
+     * @param id                상품 ID
+     * @param selectedOptionIds 선택된 옵션 ID 목록
+     * @return 관리자 상품 상세 정보 조회 응답 {@link GetAdminProductDetailResponse}
+     * @Author 성효빈
+     * @Date 2026-02-03
+     * @Description 관리자 상품 상세 정보를 조회합니다. 파스토 상품/모음상품 정보를 함께 반환합니다.
+     */
+    @GetMapping("/admin/{id}")
+    @PreAuthorize(ADMIN_POINTCUT)
+    @GetAdminProductDetailApiDocs
+    public ResponseEntity<BaseResponse<GetAdminProductDetailResponse>> getAdminProductDetail(
+            @PathVariable("id") Long id,
+            @RequestParam(value = "selectedOptionIds", required = false) List<Long> selectedOptionIds
+    ) {
+        if (FormatValidator.hasNoValue(selectedOptionIds)) {
+            selectedOptionIds = List.of();
+        }
+
+        GetAdminProductDetailResult result = getAdminProductDetailUseCase.getAdminProductDetail(
+                id,
+                selectedOptionIds
+        );
+
+        return ResponseEntity.ok(
+                BaseResponse.of(
+                        GetAdminProductDetailResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "관리자 상품 상세 정보 조회 성공"
                 )
         );
     }
