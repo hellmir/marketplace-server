@@ -1,10 +1,7 @@
 package com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.GetFasstoGoodsApiDocs;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.GetFasstoGoodsElementsApiDocs;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.RegisterFasstoGoodsApiDocs;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.UpdateFasstoGoodsApiDocs;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.*;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.mapper.FasstoGoodsRequestToCommandMapper;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.RegisterFasstoGoodsRequest;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.UpdateFasstoGoodsRequest;
@@ -16,10 +13,7 @@ import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoGoodsE
 import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoGoodsResult;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.RegisterFasstoGoodsResult;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.UpdateFasstoGoodsResult;
-import com.personal.marketnote.fulfillment.port.in.usecase.vendor.GetFasstoGoodsElementsUseCase;
-import com.personal.marketnote.fulfillment.port.in.usecase.vendor.GetFasstoGoodsUseCase;
-import com.personal.marketnote.fulfillment.port.in.usecase.vendor.RegisterFasstoGoodsUseCase;
-import com.personal.marketnote.fulfillment.port.in.usecase.vendor.UpdateFasstoGoodsUseCase;
+import com.personal.marketnote.fulfillment.port.in.usecase.vendor.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +34,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 public class FasstoGoodsController {
     private final RegisterFasstoGoodsUseCase registerFasstoGoodsUseCase;
     private final GetFasstoGoodsUseCase getFasstoGoodsUseCase;
+    private final GetFasstoGoodsDetailUseCase getFasstoGoodsDetailUseCase;
     private final UpdateFasstoGoodsUseCase updateFasstoGoodsUseCase;
     private final GetFasstoGoodsElementsUseCase getFasstoGoodsElementsUseCase;
 
@@ -102,6 +97,39 @@ public class FasstoGoodsController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "파스토 상품 목록 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * (관리자) 파스토 단일 상품 조회
+     *
+     * @param customerCode 파스토 고객사 코드
+     * @param accessToken  파스토 액세스 토큰
+     * @param godNm        조회 대상 상품 식별자(고객사상품코드)
+     * @Author 성효빈
+     * @Date 2026-02-05
+     * @Description 파스토 단일 상품을 조회합니다.
+     */
+    @GetMapping("/detail/{customerCode}")
+    @PreAuthorize(ADMIN_POINTCUT)
+    @GetFasstoGoodsDetailApiDocs
+    public ResponseEntity<BaseResponse<GetFasstoGoodsResponse>> getGoodsDetail(
+            @PathVariable String customerCode,
+            @RequestHeader("accessToken") String accessToken,
+            @RequestParam("godNm") String godNm
+    ) {
+        GetFasstoGoodsResult result = getFasstoGoodsDetailUseCase.getGoodsDetail(
+                FasstoGoodsRequestToCommandMapper.mapToGoodsDetailCommand(customerCode, accessToken, godNm)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        GetFasstoGoodsResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "파스토 단일 상품 조회 성공"
                 ),
                 HttpStatus.OK
         );
