@@ -9,14 +9,17 @@ import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.Fa
 import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoStockItemResponse;
 import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoStockListResponse;
 import com.personal.marketnote.fulfillment.configuration.FasstoAuthProperties;
+import com.personal.marketnote.fulfillment.domain.vendor.fassto.stock.FasstoStockDetailQuery;
 import com.personal.marketnote.fulfillment.domain.vendor.fassto.stock.FasstoStockQuery;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationSenderType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationTargetType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorName;
+import com.personal.marketnote.fulfillment.exception.GetFasstoStockDetailFailedException;
 import com.personal.marketnote.fulfillment.exception.GetFasstoStocksFailedException;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.FasstoStockInfoResult;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoStocksResult;
+import com.personal.marketnote.fulfillment.port.out.vendor.GetFasstoStockDetailPort;
 import com.personal.marketnote.fulfillment.port.out.vendor.GetFasstoStocksPort;
 import com.personal.marketnote.fulfillment.utility.VendorCommunicationFailureHandler;
 import com.personal.marketnote.fulfillment.utility.VendorCommunicationPayloadGenerator;
@@ -40,7 +43,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.*;
 @VendorAdapter
 @RequiredArgsConstructor
 @Slf4j
-public class FasstoStockClient implements GetFasstoStocksPort {
+public class FasstoStockClient implements GetFasstoStocksPort, GetFasstoStockDetailPort {
     private static final String ACCESS_TOKEN_HEADER = "accessToken";
     private static final String CUSTOMER_CODE_PLACEHOLDER = "{customerCode}";
 
@@ -58,17 +61,53 @@ public class FasstoStockClient implements GetFasstoStocksPort {
         }
 
         URI uri = buildStockListUri(query.getCustomerCode(), query.getOutOfStockYn());
-        HttpEntity<Void> httpEntity = new HttpEntity<>(buildHeaders(query.getAccessToken(), false));
+        return executeStockList(
+                uri,
+                query.getCustomerCode(),
+                query.getAccessToken(),
+                query.getOutOfStockYn(),
+                null,
+                false
+        );
+    }
+
+    @Override
+    public GetFasstoStocksResult getStockDetail(FasstoStockDetailQuery query) {
+        if (FormatValidator.hasNoValue(query)) {
+            throw new IllegalArgumentException("Fassto stock detail query is required.");
+        }
+
+        URI uri = buildStockDetailUri(query.getCustomerCode(), query.getCstGodCd(), query.getOutOfStockYn());
+        return executeStockList(
+                uri,
+                query.getCustomerCode(),
+                query.getAccessToken(),
+                query.getOutOfStockYn(),
+                query.getCstGodCd(),
+                true
+        );
+    }
+
+    private GetFasstoStocksResult executeStockList(
+            URI uri,
+            String customerCode,
+            String accessToken,
+            String outOfStockYn,
+            String cstGodCd,
+            boolean isDetail
+    ) {
+        HttpEntity<Void> httpEntity = new HttpEntity<>(buildHeaders(accessToken, false));
 
         Exception error = new Exception();
         String failureMessage = null;
         long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
         FulfillmentVendorCommunicationTargetType targetType = FulfillmentVendorCommunicationTargetType.STOCK;
         FulfillmentVendorName vendorName = FulfillmentVendorName.FASSTO;
+        String requestLabel = isDetail ? "detail" : "list";
 
         for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
             int attempt = i + 1;
-            JsonNode requestPayloadJson = buildListRequestPayloadJson(query, uri, attempt);
+            JsonNode requestPayloadJson = buildListRequestPayloadJson(customerCode, accessToken, outOfStockYn, cstGodCd, uri, attempt);
             String requestPayload = requestPayloadJson.toString();
 
             ResponseEntity<String> response;
@@ -100,7 +139,7 @@ public class FasstoStockClient implements GetFasstoStocksPort {
                     error = new Exception(vendorMessage);
                 }
 
-                log.warn("Failed to get Fassto stock list: attempt={}, message={}", attempt, e.getMessage(), e);
+                log.warn("Failed to get Fassto stock {}: attempt={}, message={}", requestLabel, attempt, e.getMessage(), e);
                 if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
                     error = e;
                 }
@@ -149,7 +188,8 @@ public class FasstoStockClient implements GetFasstoStocksPort {
                 error = new Exception(vendorMessage);
             }
 
-            log.warn("Fassto stock list request failed: attempt={}, status={}, exception={}",
+            log.warn("Fassto stock {} request failed: attempt={}, status={}, exception={}",
+                    requestLabel,
                     attempt,
                     FormatValidator.hasValue(response) ? response.getStatusCode() : null,
                     exception
@@ -162,11 +202,13 @@ public class FasstoStockClient implements GetFasstoStocksPort {
             sleep(sleepMillis);
 
             // exponential backoff 적용
-
             sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
         }
 
-        log.error("Failed to get Fassto stock list: {} with error: {}", uri, error.getMessage(), error);
+        log.error("Failed to get Fassto stock {}: {} with error: {}", requestLabel, uri, error.getMessage(), error);
+        if (isDetail) {
+            throw new GetFasstoStockDetailFailedException(failureMessage, new IOException(error));
+        }
         throw new GetFasstoStocksFailedException(failureMessage, new IOException(error));
     }
 
@@ -174,6 +216,19 @@ public class FasstoStockClient implements GetFasstoStocksPort {
         validateStockListProperties();
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(properties.getBaseUrl())
                 .path(properties.getStockListPath());
+        if (FormatValidator.hasValue(outOfStockYn)) {
+            builder.queryParam("outOfStockYn", outOfStockYn);
+        }
+        return builder
+                .buildAndExpand(customerCode)
+                .toUri();
+    }
+
+    private URI buildStockDetailUri(String customerCode, String cstGodCd, String outOfStockYn) {
+        validateStockListProperties();
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(properties.getBaseUrl())
+                .path(properties.getStockListPath())
+                .queryParam("cstGodCd", cstGodCd);
         if (FormatValidator.hasValue(outOfStockYn)) {
             builder.queryParam("outOfStockYn", outOfStockYn);
         }
@@ -252,14 +307,35 @@ public class FasstoStockClient implements GetFasstoStocksPort {
     }
 
     private JsonNode buildListRequestPayloadJson(FasstoStockQuery query, URI uri, int attempt) {
+        return buildListRequestPayloadJson(
+                query.getCustomerCode(),
+                query.getAccessToken(),
+                query.getOutOfStockYn(),
+                null,
+                uri,
+                attempt
+        );
+    }
+
+    private JsonNode buildListRequestPayloadJson(
+            String customerCode,
+            String accessToken,
+            String outOfStockYn,
+            String cstGodCd,
+            URI uri,
+            int attempt
+    ) {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("method", HttpMethod.GET.name());
         payload.put("url", uri.toString());
-        payload.put("customerCode", query.getCustomerCode());
-        if (FormatValidator.hasValue(query.getOutOfStockYn())) {
-            payload.put("outOfStockYn", query.getOutOfStockYn());
+        payload.put("customerCode", customerCode);
+        if (FormatValidator.hasValue(cstGodCd)) {
+            payload.put("cstGodCd", cstGodCd);
         }
-        payload.put(ACCESS_TOKEN_HEADER, maskValue(query.getAccessToken()));
+        if (FormatValidator.hasValue(outOfStockYn)) {
+            payload.put("outOfStockYn", outOfStockYn);
+        }
+        payload.put(ACCESS_TOKEN_HEADER, maskValue(accessToken));
         payload.put("attempt", attempt);
         return vendorCommunicationPayloadGenerator.buildPayloadJson(payload);
     }
