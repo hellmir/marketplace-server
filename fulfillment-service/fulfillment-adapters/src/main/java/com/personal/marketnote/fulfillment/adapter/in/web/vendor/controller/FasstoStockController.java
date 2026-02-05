@@ -30,7 +30,7 @@ public class FasstoStockController {
      * @param accessToken  파스토 액세스 토큰
      * @param outOfStockYn 품절 상품 조회 여부(Y/N)
      * @Author 성효빈
-     * @Date 2026-01-31
+     * @Date 2026-02-03
      * @Description 파스토 재고 목록을 조회합니다.
      */
     @GetMapping("/{customerCode}")

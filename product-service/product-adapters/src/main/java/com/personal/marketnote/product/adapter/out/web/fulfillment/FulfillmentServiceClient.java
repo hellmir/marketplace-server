@@ -36,8 +36,11 @@ import static com.personal.marketnote.common.utility.ApiConstant.*;
 @ServiceAdapter
 @RequiredArgsConstructor
 @Slf4j
-public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsPort, GetFulfillmentVendorGoodsPort,
-        GetFulfillmentVendorGoodsElementsPort, UpdateFulfillmentVendorGoodsPort {
+public class FulfillmentServiceClient implements
+        RegisterFulfillmentVendorGoodsPort,
+        GetFulfillmentVendorGoodsPort,
+        GetFulfillmentVendorGoodsElementsPort,
+        UpdateFulfillmentVendorGoodsPort {
     private static final ProductServiceCommunicationSenderType REQUEST_SENDER =
             ProductServiceCommunicationSenderType.PRODUCT;
     private static final ProductServiceCommunicationSenderType RESPONSE_SENDER =
@@ -80,29 +83,6 @@ public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsP
     }
 
     @Override
-    public void updateFulfillmentVendorGoods(UpdateFulfillmentVendorGoodsCommand command) {
-        String fulfillmentVendorAccessToken = requestFulfillmentVendorAccessToken();
-        if (FormatValidator.hasNoValue(fulfillmentVendorCustomerCode) || FormatValidator.hasNoValue(fulfillmentVendorAccessToken)) {
-            throw new FulfillmentServiceRequestFailedException(new IOException());
-        }
-
-        URI uri = UriComponentsBuilder
-                .fromUriString(fulfillmentServiceBaseUrl)
-                .path("/api/v1/vendors/fassto/goods/{customerCode}")
-                .buildAndExpand(fulfillmentVendorCustomerCode)
-                .toUri();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(adminAccessToken);
-        headers.add("accessToken", fulfillmentVendorAccessToken);
-
-        List<UpdateFasstoGoodsItemRequest> payload = List.of(UpdateFasstoGoodsItemRequest.from(command));
-        HttpEntity<List<UpdateFasstoGoodsItemRequest>> httpEntity = new HttpEntity<>(payload, headers);
-
-        sendUpdateRequest(uri, httpEntity, command);
-    }
-
-    @Override
     public GetFulfillmentVendorGoodsResult getFulfillmentVendorGoods() {
         String fulfillmentVendorAccessToken = requestFulfillmentVendorAccessToken();
         if (FormatValidator.hasNoValue(fulfillmentVendorCustomerCode) || FormatValidator.hasNoValue(fulfillmentVendorAccessToken)) {
@@ -124,6 +104,7 @@ public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsP
         if (FormatValidator.hasNoValue(result)) {
             throw new FulfillmentServiceRequestFailedException(new IOException());
         }
+
         return result;
     }
 
@@ -149,7 +130,31 @@ public class FulfillmentServiceClient implements RegisterFulfillmentVendorGoodsP
         if (FormatValidator.hasNoValue(result)) {
             throw new FulfillmentServiceRequestFailedException(new IOException());
         }
+
         return result;
+    }
+
+    @Override
+    public void updateFulfillmentVendorGoods(UpdateFulfillmentVendorGoodsCommand command) {
+        String fulfillmentVendorAccessToken = requestFulfillmentVendorAccessToken();
+        if (FormatValidator.hasNoValue(fulfillmentVendorCustomerCode) || FormatValidator.hasNoValue(fulfillmentVendorAccessToken)) {
+            throw new FulfillmentServiceRequestFailedException(new IOException());
+        }
+
+        URI uri = UriComponentsBuilder
+                .fromUriString(fulfillmentServiceBaseUrl)
+                .path("/api/v1/vendors/fassto/goods/{customerCode}")
+                .buildAndExpand(fulfillmentVendorCustomerCode)
+                .toUri();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(adminAccessToken);
+        headers.add("accessToken", fulfillmentVendorAccessToken);
+
+        List<UpdateFasstoGoodsItemRequest> payload = List.of(UpdateFasstoGoodsItemRequest.from(command));
+        HttpEntity<List<UpdateFasstoGoodsItemRequest>> httpEntity = new HttpEntity<>(payload, headers);
+
+        sendUpdateRequest(uri, httpEntity, command);
     }
 
     private String requestFulfillmentVendorAccessToken() {

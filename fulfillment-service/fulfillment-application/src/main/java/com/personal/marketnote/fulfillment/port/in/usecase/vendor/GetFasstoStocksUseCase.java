@@ -7,7 +7,7 @@ public interface GetFasstoStocksUseCase {
     /**
      * @param command 재고 목록 조회 커맨드
      * @return 재고 목록 조회 결과 {@link GetFasstoStocksResult}
-     * @Date 2026-01-31
+     * @Date 2026-02-03
      * @Author 성효빈
      * @Description 파스토 재고 목록을 조회합니다.
      */

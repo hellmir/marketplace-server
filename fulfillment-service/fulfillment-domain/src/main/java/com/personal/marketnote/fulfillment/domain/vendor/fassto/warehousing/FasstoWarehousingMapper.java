@@ -20,13 +20,15 @@ public class FasstoWarehousingMapper {
             String accessToken,
             List<FasstoWarehousingItemMapper> warehousingRequests
     ) {
-        FasstoWarehousingMapper mapper = FasstoWarehousingMapper.builder()
-                .customerCode(customerCode)
-                .accessToken(accessToken)
-                .warehousingRequests(warehousingRequests)
-                .build();
-        mapper.validate();
-        return mapper;
+        return create(customerCode, accessToken, warehousingRequests);
+    }
+
+    public static FasstoWarehousingMapper update(
+            String customerCode,
+            String accessToken,
+            List<FasstoWarehousingItemMapper> warehousingRequests
+    ) {
+        return create(customerCode, accessToken, warehousingRequests);
     }
 
     public List<Map<String, Object>> toPayload() {
@@ -45,5 +47,19 @@ public class FasstoWarehousingMapper {
         if (FormatValidator.hasNoValue(warehousingRequests)) {
             throw new IllegalArgumentException("warehousingRequests is required.");
         }
+    }
+
+    private static FasstoWarehousingMapper create(
+            String customerCode,
+            String accessToken,
+            List<FasstoWarehousingItemMapper> warehousingRequests
+    ) {
+        FasstoWarehousingMapper mapper = FasstoWarehousingMapper.builder()
+                .customerCode(customerCode)
+                .accessToken(accessToken)
+                .warehousingRequests(warehousingRequests)
+                .build();
+        mapper.validate();
+        return mapper;
     }
 }

@@ -17,7 +17,7 @@ import java.lang.annotation.*;
 @Operation(
         summary = "(관리자) 파스토 재고 목록 조회",
         description = """
-                작성일자: 2026-01-31
+                작성일자: 2026-02-03
                 
                 작성자: 성효빈
                 
@@ -45,7 +45,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 500: 그 외 |
                 | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "INTERNAL_SERVER_ERROR" |
-                | timestamp | string(datetime) | 응답 일시 | "2026-01-31T12:12:30.013" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-02-03T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
                 | message | string | 처리 결과 | "파스토 재고 목록 조회 성공" |
                 
@@ -78,7 +78,7 @@ import java.lang.annotation.*;
                 | supNm | string | 공급사명 | "미지정 공급사" |
                 | giftDiv | string | 사은품구분(01:본품, 02:사은품, 03:부자재) | "01" |
                 | goodsSerialNo | array | 상품 일련번호 목록 | [] |
-                | slipNo | string | 입고지시번호 | "TESTIO251226000001" |
+                | slipNo | string | 입고지시번호 | "TESTIO260113000001" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         parameters = {
@@ -113,7 +113,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-01-31T12:12:30.013",
+                                          "timestamp": "2026-02-03T12:12:30.013",
                                           "content": {
                                             "dataCount": 1,
                                             "stocks": [
@@ -132,7 +132,7 @@ import java.lang.annotation.*;
                                                 "supNm": "미지정 공급사",
                                                 "giftDiv": "01",
                                                 "goodsSerialNo": [],
-                                                "slipNo": "TESTIO251226000001"
+                                                "slipNo": "TESTIO260113000001"
                                               }
                                             ]
                                           },
@@ -149,7 +149,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 401,
                                           "code": "UNAUTHORIZED",
-                                          "timestamp": "2026-01-31T12:12:30.013",
+                                          "timestamp": "2026-02-03T12:12:30.013",
                                           "content": null,
                                           "message": "Invalid token"
                                         }
@@ -164,7 +164,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 403,
                                           "code": "FORBIDDEN",
-                                          "timestamp": "2026-01-31T12:12:30.013",
+                                          "timestamp": "2026-02-03T12:12:30.013",
                                           "content": null,
                                           "message": "Access Denied"
                                         }
