@@ -1,33 +1,33 @@
 package com.personal.marketnote.file.adapter.in.client.file.mapper;
 
 import com.personal.marketnote.common.utility.FormatValidator;
-import com.personal.marketnote.file.adapter.in.client.file.request.AddFilesRequest;
-import com.personal.marketnote.file.port.in.command.AddFileCommand;
-import com.personal.marketnote.file.port.in.command.AddFilesCommand;
+import com.personal.marketnote.file.adapter.in.client.file.request.UpdateFilesRequest;
+import com.personal.marketnote.file.port.in.command.UpdateFileCommand;
+import com.personal.marketnote.file.port.in.command.UpdateFilesCommand;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FileRequestToCommandMapper {
-    public static AddFilesCommand mapToCommand(AddFilesRequest addFilesRequest) {
-        List<MultipartFile> files = addFilesRequest.getFile();
-        List<String> sorts = addFilesRequest.getSort();
-        List<String> extensions = addFilesRequest.getExtension();
-        List<String> names = addFilesRequest.getName();
+    public static UpdateFilesCommand mapToCommand(UpdateFilesRequest updateFilesRequest) {
+        List<MultipartFile> files = updateFilesRequest.getFile();
+        List<String> sorts = updateFilesRequest.getSort();
+        List<String> extensions = updateFilesRequest.getExtension();
+        List<String> names = updateFilesRequest.getName();
 
         if (FormatValidator.hasNoValue(files)) {
-            return AddFilesCommand.builder()
+            return UpdateFilesCommand.builder()
                     .fileInfo(new ArrayList<>(0))
-                    .ownerType(addFilesRequest.getOwnerType())
-                    .ownerId(addFilesRequest.getOwnerId())
+                    .ownerType(updateFilesRequest.getOwnerType())
+                    .ownerId(updateFilesRequest.getOwnerId())
                     .build();
         }
 
         int fileSize = files.size();
-        List<AddFileCommand> fileInfo = new ArrayList<>(fileSize);
+        List<UpdateFileCommand> fileInfo = new ArrayList<>(fileSize);
         for (int i = 0; i < fileSize; i++) {
-            fileInfo.add(AddFileCommand.builder()
+            fileInfo.add(UpdateFileCommand.builder()
                     .file(files.get(i))
                     .sort(getOrNull(sorts, i))
                     .extension(getOrNull(extensions, i))
@@ -35,10 +35,10 @@ public class FileRequestToCommandMapper {
                     .build());
         }
 
-        return AddFilesCommand.builder()
+        return UpdateFilesCommand.builder()
                 .fileInfo(fileInfo)
-                .ownerType(addFilesRequest.getOwnerType())
-                .ownerId(addFilesRequest.getOwnerId())
+                .ownerType(updateFilesRequest.getOwnerType())
+                .ownerId(updateFilesRequest.getOwnerId())
                 .build();
     }
 

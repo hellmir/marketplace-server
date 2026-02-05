@@ -13,6 +13,7 @@ public interface ResizedFileJpaRepository extends JpaRepository<ResizedFileJpaEn
             FROM ResizedFileJpaEntity r
             WHERE r.file.id IN :fileIds
               AND r.status = 'ACTIVE'
+            ORDER BY r.id DESC
             """)
     List<ResizedFileJpaEntity> findAllByFile_IdIn(@Param("fileIds") List<Long> fileIds);
 }

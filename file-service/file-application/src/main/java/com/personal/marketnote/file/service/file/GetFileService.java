@@ -35,14 +35,10 @@ public class GetFileService implements GetFileUseCase {
 
     @Override
     public GetFilesResult getFiles(String ownerType, Long ownerId, String sort) {
-        OwnerType type = OwnerType.from(ownerType);
-        List<FileDomain> files = FormatValidator.hasValue(sort)
-                ? findFilePort.findByOwnerAndSort(type, ownerId, FileSort.from(sort))
-                : findFilePort.findByOwner(type, ownerId);
+        List<FileDomain> files = getFiles(OwnerType.from(ownerType), ownerId, sort);
+        List<ResizedFile> resizedFiles = getResizedFiles(files);
 
-        List<Long> fileIds = files.stream().map(FileDomain::getId).toList();
-        List<ResizedFile> resized = findResizedFilesPort.findByFileIds(fileIds);
-        Map<Long, List<String>> fileIdToUrls = resized.stream()
+        Map<Long, List<String>> fileIdToUrls = resizedFiles.stream()
                 .collect(Collectors.groupingBy(ResizedFile::getFileId,
                         Collectors.mapping(ResizedFile::getS3Url, Collectors.toList())));
 
@@ -50,7 +46,24 @@ public class GetFileService implements GetFileUseCase {
                 .map(
                         file -> GetFilesResult.FileItem.from(file, fileIdToUrls)
                 ).toList();
+
         return new GetFilesResult(items);
+    }
+
+    @Override
+    public List<FileDomain> getFiles(OwnerType ownerType, Long ownerId, String sort) {
+        return FormatValidator.hasValue(sort)
+                ? findFilePort.findByOwnerAndSort(ownerType, ownerId, FileSort.from(sort))
+                : findFilePort.findByOwner(ownerType, ownerId);
+    }
+
+    @Override
+    public List<ResizedFile> getResizedFiles(List<FileDomain> files) {
+        return findResizedFilesPort.findByFileIds(
+                files.stream()
+                        .map(FileDomain::getId)
+                        .toList()
+        );
     }
 }
 

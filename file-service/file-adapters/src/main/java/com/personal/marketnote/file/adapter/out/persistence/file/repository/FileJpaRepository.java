@@ -51,4 +51,13 @@ public interface FileJpaRepository extends JpaRepository<FileJpaEntity, Long> {
             @Param("ownerId") Long ownerId,
             @Param("sort") String sort
     );
+
+    @Query("""
+            SELECT f
+            FROM FileJpaEntity f
+            WHERE f.id IN :fileIds
+              AND f.status = 'ACTIVE'
+            ORDER BY f.orderNum DESC
+            """)
+    List<FileJpaEntity> findByIds(List<Long> fileIds);
 }
