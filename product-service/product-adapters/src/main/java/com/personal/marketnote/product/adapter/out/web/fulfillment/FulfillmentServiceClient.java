@@ -83,15 +83,18 @@ public class FulfillmentServiceClient implements
     }
 
     @Override
-    public GetFulfillmentVendorGoodsResult getFulfillmentVendorGoods() {
+    public GetFulfillmentVendorGoodsResult getFulfillmentVendorGoods(String godNm) {
         String fulfillmentVendorAccessToken = requestFulfillmentVendorAccessToken();
-        if (FormatValidator.hasNoValue(fulfillmentVendorCustomerCode) || FormatValidator.hasNoValue(fulfillmentVendorAccessToken)) {
+        if (FormatValidator.hasNoValue(fulfillmentVendorCustomerCode)
+                || FormatValidator.hasNoValue(fulfillmentVendorAccessToken)
+                || FormatValidator.hasNoValue(godNm)) {
             throw new FulfillmentServiceRequestFailedException(new IOException());
         }
 
         URI uri = UriComponentsBuilder
                 .fromUriString(fulfillmentServiceBaseUrl)
-                .path("/api/v1/vendors/fassto/goods/{customerCode}")
+                .path("/api/v1/vendors/fassto/goods/detail/{customerCode}")
+                .queryParam("godNm", godNm)
                 .buildAndExpand(fulfillmentVendorCustomerCode)
                 .toUri();
 
