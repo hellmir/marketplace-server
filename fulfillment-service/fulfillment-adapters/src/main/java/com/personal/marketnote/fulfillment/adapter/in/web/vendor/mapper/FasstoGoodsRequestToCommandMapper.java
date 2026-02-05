@@ -62,6 +62,14 @@ public class FasstoGoodsRequestToCommandMapper {
         return GetFasstoGoodsCommand.of(customerCode, accessToken);
     }
 
+    public static GetFasstoGoodsDetailCommand mapToGoodsDetailCommand(
+            String customerCode,
+            String accessToken,
+            String godNm
+    ) {
+        return GetFasstoGoodsDetailCommand.of(customerCode, accessToken, godNm);
+    }
+
     public static GetFasstoGoodsElementsCommand mapToGoodsElementsCommand(
             String customerCode,
             String accessToken

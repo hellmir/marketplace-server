@@ -7,6 +7,7 @@ import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.common.utility.http.client.CommunicationFailureHandler;
 import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.*;
 import com.personal.marketnote.fulfillment.configuration.FasstoAuthProperties;
+import com.personal.marketnote.fulfillment.domain.vendor.fassto.goods.FasstoGoodsDetailQuery;
 import com.personal.marketnote.fulfillment.domain.vendor.fassto.goods.FasstoGoodsElementQuery;
 import com.personal.marketnote.fulfillment.domain.vendor.fassto.goods.FasstoGoodsMapper;
 import com.personal.marketnote.fulfillment.domain.vendor.fassto.goods.FasstoGoodsQuery;
@@ -14,15 +15,9 @@ import com.personal.marketnote.fulfillment.domain.vendorcommunication.Fulfillmen
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationTargetType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorName;
-import com.personal.marketnote.fulfillment.exception.GetFasstoGoodsElementsFailedException;
-import com.personal.marketnote.fulfillment.exception.GetFasstoGoodsFailedException;
-import com.personal.marketnote.fulfillment.exception.RegisterFasstoGoodsFailedException;
-import com.personal.marketnote.fulfillment.exception.UpdateFasstoGoodsFailedException;
+import com.personal.marketnote.fulfillment.exception.*;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.*;
-import com.personal.marketnote.fulfillment.port.out.vendor.GetFasstoGoodsElementsPort;
-import com.personal.marketnote.fulfillment.port.out.vendor.GetFasstoGoodsPort;
-import com.personal.marketnote.fulfillment.port.out.vendor.RegisterFasstoGoodsPort;
-import com.personal.marketnote.fulfillment.port.out.vendor.UpdateFasstoGoodsPort;
+import com.personal.marketnote.fulfillment.port.out.vendor.*;
 import com.personal.marketnote.fulfillment.utility.VendorCommunicationFailureHandler;
 import com.personal.marketnote.fulfillment.utility.VendorCommunicationPayloadGenerator;
 import com.personal.marketnote.fulfillment.utility.VendorCommunicationRecorder;
@@ -45,7 +40,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.*;
 @VendorAdapter
 @RequiredArgsConstructor
 @Slf4j
-public class FasstoGoodsClient implements RegisterFasstoGoodsPort, GetFasstoGoodsPort, UpdateFasstoGoodsPort, GetFasstoGoodsElementsPort {
+public class FasstoGoodsClient implements RegisterFasstoGoodsPort, GetFasstoGoodsPort, GetFasstoGoodsDetailPort, UpdateFasstoGoodsPort, GetFasstoGoodsElementsPort {
     private static final String ACCESS_TOKEN_HEADER = "accessToken";
     private static final String CUSTOMER_CODE_PLACEHOLDER = "{customerCode}";
 
@@ -68,113 +63,29 @@ public class FasstoGoodsClient implements RegisterFasstoGoodsPort, GetFasstoGood
         }
 
         URI uri = buildGoodsUri(query.getCustomerCode());
-        HttpEntity<Void> httpEntity = new HttpEntity<>(buildHeaders(query.getAccessToken(), false));
+        return executeGoodsList(
+                uri,
+                query.getCustomerCode(),
+                query.getAccessToken(),
+                null,
+                false
+        );
+    }
 
-        Exception error = new Exception();
-        String failureMessage = null;
-        long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
-        FulfillmentVendorCommunicationTargetType targetType = FulfillmentVendorCommunicationTargetType.GOODS;
-        FulfillmentVendorName vendorName = FulfillmentVendorName.FASSTO;
-
-        for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
-            int attempt = i + 1;
-            JsonNode requestPayloadJson = buildListRequestPayloadJson(query, uri, attempt);
-            String requestPayload = requestPayloadJson.toString();
-
-            ResponseEntity<String> response;
-            try {
-                response = restTemplate.exchange(
-                        uri,
-                        HttpMethod.GET,
-                        httpEntity,
-                        String.class
-                );
-            } catch (Exception e) {
-                Map<String, Object> errorPayload = new LinkedHashMap<>();
-                errorPayload.put("error", e.getClass().getSimpleName());
-                errorPayload.put("message", e.getMessage());
-                errorPayload.put("attempt", attempt);
-
-                vendorCommunicationFailureHandler.handleFailure(
-                        targetType,
-                        vendorName,
-                        requestPayload,
-                        requestPayloadJson,
-                        errorPayload,
-                        e
-                );
-
-                String vendorMessage = resolveVendorMessageFromException(e);
-                if (FormatValidator.hasValue(vendorMessage)) {
-                    failureMessage = vendorMessage;
-                    error = new Exception(vendorMessage);
-                }
-
-                log.warn("Failed to get Fassto goods list: attempt={}, message={}", attempt, e.getMessage(), e);
-                if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
-                    error = e;
-                }
-
-                sleep(sleepMillis);
-                // exponential backoff 적용
-                sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
-                continue;
-            }
-
-            JsonNode responsePayloadJson = buildResponsePayloadJson(response, attempt);
-            String responsePayload = responsePayloadJson.toString();
-
-            FasstoGoodsListResponse parsedResponse = parseGoodsListResponse(response);
-            boolean isSuccess = isGoodsListSuccess(response, parsedResponse);
-            String exception = isSuccess ? null : resolveGoodsListException(response, parsedResponse);
-
-            vendorCommunicationRecorder.record(
-                    targetType,
-                    FulfillmentVendorCommunicationType.REQUEST,
-                    FulfillmentVendorCommunicationSenderType.SERVER,
-                    vendorName,
-                    requestPayload,
-                    requestPayloadJson,
-                    exception
-            );
-            vendorCommunicationRecorder.record(
-                    targetType,
-                    FulfillmentVendorCommunicationType.RESPONSE,
-                    FulfillmentVendorCommunicationSenderType.VENDOR,
-                    vendorName,
-                    responsePayload,
-                    responsePayloadJson,
-                    exception
-            );
-
-            if (isSuccess) {
-                return mapGoodsListResult(parsedResponse);
-            }
-
-            String vendorMessage = resolveVendorMessage(parsedResponse, FormatValidator.hasValue(response) ? response.getBody() : null);
-            if (FormatValidator.hasValue(vendorMessage)) {
-                failureMessage = vendorMessage;
-                error = new Exception(vendorMessage);
-            }
-
-            log.warn("Fassto goods list request failed: attempt={}, status={}, exception={}",
-                    attempt,
-                    FormatValidator.hasValue(response) ? response.getStatusCode() : null,
-                    exception
-            );
-
-            if (CommunicationFailureHandler.isCertainFailure(response)) {
-                break;
-            }
-
-            sleep(sleepMillis);
-
-            // exponential backoff 적용
-            sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
+    @Override
+    public GetFasstoGoodsResult getGoodsDetail(FasstoGoodsDetailQuery query) {
+        if (FormatValidator.hasNoValue(query)) {
+            throw new IllegalArgumentException("Fassto goods detail query is required.");
         }
 
-        log.error("Failed to get Fassto goods list: {} with error: {}", uri, error.getMessage(), error);
-        throw new GetFasstoGoodsFailedException(failureMessage, new IOException(error));
+        URI uri = buildGoodsDetailUri(query.getCustomerCode(), query.getGodNm());
+        return executeGoodsList(
+                uri,
+                query.getCustomerCode(),
+                query.getAccessToken(),
+                query.getGodNm(),
+                true
+        );
     }
 
     @Override
@@ -292,6 +203,127 @@ public class FasstoGoodsClient implements RegisterFasstoGoodsPort, GetFasstoGood
 
         log.error("Failed to get Fassto goods elements: {} with error: {}", uri, error.getMessage(), error);
         throw new GetFasstoGoodsElementsFailedException(failureMessage, new IOException(error));
+    }
+
+    private GetFasstoGoodsResult executeGoodsList(
+            URI uri,
+            String customerCode,
+            String accessToken,
+            String godNm,
+            boolean isDetail
+    ) {
+        HttpEntity<Void> httpEntity = new HttpEntity<>(buildHeaders(accessToken, false));
+
+        Exception error = new Exception();
+        String failureMessage = null;
+        long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
+        FulfillmentVendorCommunicationTargetType targetType = FulfillmentVendorCommunicationTargetType.GOODS;
+        FulfillmentVendorName vendorName = FulfillmentVendorName.FASSTO;
+        String requestLabel = isDetail ? "detail" : "list";
+
+        for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            int attempt = i + 1;
+            JsonNode requestPayloadJson = buildListRequestPayloadJson(customerCode, accessToken, godNm, uri, attempt);
+            String requestPayload = requestPayloadJson.toString();
+
+            ResponseEntity<String> response;
+            try {
+                response = restTemplate.exchange(
+                        uri,
+                        HttpMethod.GET,
+                        httpEntity,
+                        String.class
+                );
+            } catch (Exception e) {
+                Map<String, Object> errorPayload = new LinkedHashMap<>();
+                errorPayload.put("error", e.getClass().getSimpleName());
+                errorPayload.put("message", e.getMessage());
+                errorPayload.put("attempt", attempt);
+
+                vendorCommunicationFailureHandler.handleFailure(
+                        targetType,
+                        vendorName,
+                        requestPayload,
+                        requestPayloadJson,
+                        errorPayload,
+                        e
+                );
+
+                String vendorMessage = resolveVendorMessageFromException(e);
+                if (FormatValidator.hasValue(vendorMessage)) {
+                    failureMessage = vendorMessage;
+                    error = new Exception(vendorMessage);
+                }
+
+                log.warn("Failed to get Fassto goods {}: attempt={}, message={}", requestLabel, attempt, e.getMessage(), e);
+                if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
+                    error = e;
+                }
+
+                sleep(sleepMillis);
+                // exponential backoff 적용
+                sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
+                continue;
+            }
+
+            JsonNode responsePayloadJson = buildResponsePayloadJson(response, attempt);
+            String responsePayload = responsePayloadJson.toString();
+
+            FasstoGoodsListResponse parsedResponse = parseGoodsListResponse(response);
+            boolean isSuccess = isGoodsListSuccess(response, parsedResponse);
+            String exception = isSuccess ? null : resolveGoodsListException(response, parsedResponse);
+
+            vendorCommunicationRecorder.record(
+                    targetType,
+                    FulfillmentVendorCommunicationType.REQUEST,
+                    FulfillmentVendorCommunicationSenderType.SERVER,
+                    vendorName,
+                    requestPayload,
+                    requestPayloadJson,
+                    exception
+            );
+            vendorCommunicationRecorder.record(
+                    targetType,
+                    FulfillmentVendorCommunicationType.RESPONSE,
+                    FulfillmentVendorCommunicationSenderType.VENDOR,
+                    vendorName,
+                    responsePayload,
+                    responsePayloadJson,
+                    exception
+            );
+
+            if (isSuccess) {
+                return mapGoodsListResult(parsedResponse);
+            }
+
+            String vendorMessage = resolveVendorMessage(parsedResponse, FormatValidator.hasValue(response) ? response.getBody() : null);
+            if (FormatValidator.hasValue(vendorMessage)) {
+                failureMessage = vendorMessage;
+                error = new Exception(vendorMessage);
+            }
+
+            log.warn("Fassto goods {} request failed: attempt={}, status={}, exception={}",
+                    requestLabel,
+                    attempt,
+                    FormatValidator.hasValue(response) ? response.getStatusCode() : null,
+                    exception
+            );
+
+            if (CommunicationFailureHandler.isCertainFailure(response)) {
+                break;
+            }
+
+            sleep(sleepMillis);
+
+            // exponential backoff 적용
+            sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
+        }
+
+        log.error("Failed to get Fassto goods {}: {} with error: {}", requestLabel, uri, error.getMessage(), error);
+        if (isDetail) {
+            throw new GetFasstoGoodsDetailFailedException(failureMessage, new IOException(error));
+        }
+        throw new GetFasstoGoodsFailedException(failureMessage, new IOException(error));
     }
 
     @Override
@@ -559,6 +591,15 @@ public class FasstoGoodsClient implements RegisterFasstoGoodsPort, GetFasstoGood
                 .toUri();
     }
 
+    private URI buildGoodsDetailUri(String customerCode, String godNm) {
+        validateGoodsProperties();
+        return UriComponentsBuilder.fromUriString(properties.getBaseUrl())
+                .path(properties.getGoodsPath())
+                .queryParam("godNm", godNm)
+                .buildAndExpand(customerCode)
+                .toUri();
+    }
+
     private URI buildGoodsElementUri(String customerCode) {
         validateGoodsElementProperties();
         return UriComponentsBuilder.fromUriString(properties.getBaseUrl())
@@ -790,11 +831,30 @@ public class FasstoGoodsClient implements RegisterFasstoGoodsPort, GetFasstoGood
     }
 
     private JsonNode buildListRequestPayloadJson(FasstoGoodsQuery query, URI uri, int attempt) {
+        return buildListRequestPayloadJson(
+                query.getCustomerCode(),
+                query.getAccessToken(),
+                null,
+                uri,
+                attempt
+        );
+    }
+
+    private JsonNode buildListRequestPayloadJson(
+            String customerCode,
+            String accessToken,
+            String godNm,
+            URI uri,
+            int attempt
+    ) {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("method", HttpMethod.GET.name());
         payload.put("url", uri.toString());
-        payload.put("customerCode", query.getCustomerCode());
-        payload.put(ACCESS_TOKEN_HEADER, maskValue(query.getAccessToken()));
+        payload.put("customerCode", customerCode);
+        if (FormatValidator.hasValue(godNm)) {
+            payload.put("godNm", godNm);
+        }
+        payload.put(ACCESS_TOKEN_HEADER, maskValue(accessToken));
         payload.put("attempt", attempt);
         return vendorCommunicationPayloadGenerator.buildPayloadJson(payload);
     }
