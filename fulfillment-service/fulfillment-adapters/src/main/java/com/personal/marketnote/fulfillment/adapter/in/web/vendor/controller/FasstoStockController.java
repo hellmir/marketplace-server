@@ -1,10 +1,12 @@
 package com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.GetFasstoStockDetailApiDocs;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.GetFasstoStocksApiDocs;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.mapper.FasstoStockRequestToCommandMapper;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.GetFasstoStocksResponse;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoStocksResult;
+import com.personal.marketnote.fulfillment.port.in.usecase.vendor.GetFasstoStockDetailUseCase;
 import com.personal.marketnote.fulfillment.port.in.usecase.vendor.GetFasstoStocksUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 @RequiredArgsConstructor
 public class FasstoStockController {
     private final GetFasstoStocksUseCase getFasstoStocksUseCase;
+    private final GetFasstoStockDetailUseCase getFasstoStockDetailUseCase;
 
     /**
      * (관리자) 파스토 재고 목록 조회
@@ -30,7 +33,7 @@ public class FasstoStockController {
      * @param accessToken  파스토 액세스 토큰
      * @param outOfStockYn 품절 상품 조회 여부(Y/N)
      * @Author 성효빈
-     * @Date 2026-02-03
+     * @Date 2026-02-05
      * @Description 파스토 재고 목록을 조회합니다.
      */
     @GetMapping("/{customerCode}")
@@ -51,6 +54,41 @@ public class FasstoStockController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "파스토 재고 목록 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * (관리자) 파스토 단일 상품 재고 정보 조회
+     *
+     * @param customerCode 파스토 고객사 코드
+     * @param accessToken  파스토 액세스 토큰
+     * @param cstGodCd     고객사상품코드
+     * @param outOfStockYn 품절 상품 조회 여부(Y/N)
+     * @Author 성효빈
+     * @Date 2026-02-03
+     * @Description 파스토 단일 상품 재고를 조회합니다.
+     */
+    @GetMapping("/detail/{customerCode}")
+    @PreAuthorize(ADMIN_POINTCUT)
+    @GetFasstoStockDetailApiDocs
+    public ResponseEntity<BaseResponse<GetFasstoStocksResponse>> getStockDetail(
+            @PathVariable String customerCode,
+            @RequestHeader("accessToken") String accessToken,
+            @RequestParam("cstGodCd") String cstGodCd,
+            @RequestParam(required = false) String outOfStockYn
+    ) {
+        GetFasstoStocksResult result = getFasstoStockDetailUseCase.getStockDetail(
+                FasstoStockRequestToCommandMapper.mapToStockDetailCommand(customerCode, accessToken, cstGodCd, outOfStockYn)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        GetFasstoStocksResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "파스토 단일 상품 재고 정보 조회 성공"
                 ),
                 HttpStatus.OK
         );

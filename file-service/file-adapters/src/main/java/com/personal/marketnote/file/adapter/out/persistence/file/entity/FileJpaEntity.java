@@ -34,7 +34,7 @@ public class FileJpaEntity extends BaseGeneralEntity {
     @Column(name = "extension", nullable = false, length = 31)
     private String extension;
 
-    @Column(name = "name", nullable = false, length = 255)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "s3_url", nullable = false, length = 511)
