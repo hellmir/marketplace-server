@@ -6,12 +6,16 @@ import com.personal.marketnote.common.domain.file.OwnerType;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.file.adapter.out.mapper.FileJpaEntityToDomainMapper;
 import com.personal.marketnote.file.adapter.out.persistence.file.entity.FileJpaEntity;
+import com.personal.marketnote.file.adapter.out.persistence.file.entity.ResizedFileJpaEntity;
 import com.personal.marketnote.file.adapter.out.persistence.file.repository.FileJpaRepository;
+import com.personal.marketnote.file.adapter.out.persistence.file.repository.ResizedFileJpaRepository;
 import com.personal.marketnote.file.domain.file.FileDomain;
+import com.personal.marketnote.file.domain.file.ResizedFile;
 import com.personal.marketnote.file.exception.FileNotFoundException;
 import com.personal.marketnote.file.port.out.file.FindFilePort;
 import com.personal.marketnote.file.port.out.file.SaveFilesPort;
 import com.personal.marketnote.file.port.out.file.UpdateFilePort;
+import com.personal.marketnote.file.port.out.file.UpdateFilesPort;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -20,21 +24,22 @@ import java.util.Optional;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class FilePersistenceAdapter implements SaveFilesPort, FindFilePort, UpdateFilePort {
+public class FilePersistenceAdapter implements SaveFilesPort, FindFilePort, UpdateFilesPort, UpdateFilePort {
     private final FileJpaRepository fileJpaRepository;
+    private final ResizedFileJpaRepository resizedFileJpaRepository;
 
     @Override
-    public List<FileDomain> saveAll(List<FileDomain> fileDomains, List<String> s3Urls) {
-        if (FormatValidator.hasNoValue(fileDomains)) {
+    public List<FileDomain> saveAll(List<FileDomain> files, List<String> s3Urls) {
+        if (FormatValidator.hasNoValue(files)) {
             return List.of();
         }
-        if (FormatValidator.hasNoValue(s3Urls) || s3Urls.size() != fileDomains.size()) {
+        if (FormatValidator.hasNoValue(s3Urls) || s3Urls.size() != files.size()) {
             throw new IllegalArgumentException("s3Urls size must match fileDomains size");
         }
 
-        List<FileJpaEntity> toSave = new ArrayList<>(fileDomains.size());
-        for (int i = 0; i < fileDomains.size(); i++) {
-            toSave.add(FileJpaEntity.from(fileDomains.get(i), s3Urls.get(i)));
+        List<FileJpaEntity> toSave = new ArrayList<>(files.size());
+        for (int i = 0; i < files.size(); i++) {
+            toSave.add(FileJpaEntity.from(files.get(i), s3Urls.get(i)));
         }
 
         List<FileJpaEntity> savedList = fileJpaRepository.saveAll(toSave);
@@ -84,10 +89,38 @@ public class FilePersistenceAdapter implements SaveFilesPort, FindFilePort, Upda
 
     @Override
     public void update(FileDomain file) {
-        long id = file.getId();
+        Long id = file.getId();
         FileJpaEntity entity = fileJpaRepository.findById(id)
                 .orElseThrow(() -> new FileNotFoundException(id));
         entity.updateFrom(file);
+    }
+
+    @Override
+    public void update(List<FileDomain> files, List<ResizedFile> resizedFiles) {
+        List<Long> fileIds = files.stream()
+                .map(FileDomain::getId)
+                .toList();
+
+        updateFiles(files, fileIds);
+        updateResizedFiles(resizedFiles, fileIds);
+    }
+
+    private void updateFiles(List<FileDomain> files, List<Long> fileIds) {
+        List<FileJpaEntity> entities = fileJpaRepository.findByIds(fileIds);
+
+        for (int i = 0; i < files.size(); i++) {
+            FileJpaEntity entity = entities.get(i);
+            entity.updateFrom(files.get(i));
+        }
+    }
+
+    private void updateResizedFiles(List<ResizedFile> resizedFiles, List<Long> fileIds) {
+        List<ResizedFileJpaEntity> entities = resizedFileJpaRepository.findAllByFile_IdIn(fileIds);
+
+        for (int i = 0; i < resizedFiles.size(); i++) {
+            ResizedFileJpaEntity entity = entities.get(i);
+            entity.updateFrom(resizedFiles.get(i));
+        }
     }
 }
 

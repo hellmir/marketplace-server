@@ -4,20 +4,20 @@ import com.personal.marketnote.common.domain.file.FileSort;
 import com.personal.marketnote.common.domain.file.OwnerType;
 import com.personal.marketnote.file.domain.file.FileDomain;
 import com.personal.marketnote.file.domain.file.FileDomainCreateState;
-import com.personal.marketnote.file.port.in.command.AddFilesCommand;
+import com.personal.marketnote.file.port.in.command.UpdateFilesCommand;
 
 import java.util.List;
 
 public class FileCommandToDomainMapper {
-    public static List<FileDomain> mapToDomain(AddFilesCommand addFilesCommand) {
-        OwnerType ownerType = OwnerType.from(addFilesCommand.ownerType());
+    public static List<FileDomain> mapToDomain(UpdateFilesCommand updateFilesCommand) {
+        OwnerType ownerType = OwnerType.from(updateFilesCommand.ownerType());
 
-        return addFilesCommand.fileInfo()
+        return updateFilesCommand.fileInfo()
                 .stream()
                 .map(fileInfo -> FileDomain.from(
                         FileDomainCreateState.builder()
                                 .ownerType(ownerType)
-                                .ownerId(addFilesCommand.ownerId())
+                                .ownerId(updateFilesCommand.ownerId())
                                 .sort(FileSort.from(fileInfo.sort()))
                                 .extension(fileInfo.extension())
                                 .name(fileInfo.name())

@@ -54,6 +54,18 @@ public class ResizedFile {
                 .status(status)
                 .build();
     }
+
+    public boolean isActive() {
+        return status.isActive();
+    }
+
+    public boolean isInactive() {
+        return status.isInactive();
+    }
+
+    public void delete() {
+        status = EntityStatus.INACTIVE;
+    }
 }
 
 

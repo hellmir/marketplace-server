@@ -1,15 +1,15 @@
 package com.personal.marketnote.file.adapter.in.client.file.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
-import com.personal.marketnote.file.adapter.in.client.file.controller.apidocs.AddFilesApiDocs;
 import com.personal.marketnote.file.adapter.in.client.file.controller.apidocs.DeleteFileApiDocs;
 import com.personal.marketnote.file.adapter.in.client.file.controller.apidocs.GetFilesApiDocs;
+import com.personal.marketnote.file.adapter.in.client.file.controller.apidocs.UpdateFilesApiDocs;
 import com.personal.marketnote.file.adapter.in.client.file.mapper.FileRequestToCommandMapper;
-import com.personal.marketnote.file.adapter.in.client.file.request.AddFilesRequest;
+import com.personal.marketnote.file.adapter.in.client.file.request.UpdateFilesRequest;
 import com.personal.marketnote.file.port.in.result.GetFilesResult;
-import com.personal.marketnote.file.port.in.usecase.file.AddFileUseCase;
 import com.personal.marketnote.file.port.in.usecase.file.DeleteFileUseCase;
 import com.personal.marketnote.file.port.in.usecase.file.GetFileUseCase;
+import com.personal.marketnote.file.port.in.usecase.file.UpdateFileUseCase;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -28,24 +28,24 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 @Tag(name = "파일 API", description = "파일 관련 API")
 @RequiredArgsConstructor
 public class FileController {
-    private final AddFileUseCase addFileUseCase;
+    private final UpdateFileUseCase updateFileUseCase;
     private final GetFileUseCase getFileUseCase;
     private final DeleteFileUseCase deleteFileUseCase;
 
     /**
-     * 파일 추가
+     * 파일 목록 업데이트
      *
-     * @param addFilesRequest 파일 추가 요청
+     * @param updateFilesRequest 파일 목록 업데이트 요청
      * @Author 성효빈
      * @Date 2026-01-03
-     * @Description 파일을 추가합니다.
+     * @Description 요청 리소스의 파일 목록을 업데이트합니다. 기존 파일 목록은 비활성화됩니다.
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @AddFilesApiDocs
-    public ResponseEntity<BaseResponse<Void>> addFiles(
-            @Parameter(hidden = true) @ModelAttribute AddFilesRequest addFilesRequest
+    @UpdateFilesApiDocs
+    public ResponseEntity<BaseResponse<Void>> updateFiles(
+            @Parameter(hidden = true) @ModelAttribute UpdateFilesRequest updateFilesRequest
     ) {
-        addFileUseCase.addFiles(FileRequestToCommandMapper.mapToCommand(addFilesRequest));
+        updateFileUseCase.updateFiles(FileRequestToCommandMapper.mapToCommand(updateFilesRequest));
 
         return new ResponseEntity<>(
                 BaseResponse.of(
