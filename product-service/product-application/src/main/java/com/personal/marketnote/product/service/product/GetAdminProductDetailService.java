@@ -37,7 +37,9 @@ public class GetAdminProductDetailService implements GetAdminProductDetailUseCas
 
         GetProductInfoWithOptionsResult productInfo = getProductUseCase.getProductInfo(id, options);
 
-        GetFulfillmentVendorGoodsResult goodsResult = getFulfillmentVendorGoodsPort.getFulfillmentVendorGoods();
+        GetFulfillmentVendorGoodsResult goodsResult = getFulfillmentVendorGoodsPort.getFulfillmentVendorGoods(
+                String.valueOf(id)
+        );
         GetFulfillmentVendorGoodsElementsResult elementsResult
                 = getFulfillmentVendorGoodsElementsPort.getFulfillmentVendorGoodsElements();
 
