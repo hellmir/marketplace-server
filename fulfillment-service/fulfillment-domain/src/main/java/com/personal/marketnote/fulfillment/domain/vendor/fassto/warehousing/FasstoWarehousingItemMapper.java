@@ -57,6 +57,38 @@ public class FasstoWarehousingItemMapper {
         return mapper;
     }
 
+    public static FasstoWarehousingItemMapper update(
+            String ordDt,
+            String ordNo,
+            String inWay,
+            String slipNo,
+            String parcelComp,
+            String parcelInvoiceNo,
+            String remark,
+            String cstSupCd,
+            String distTermDt,
+            String makeDt,
+            String preArv,
+            List<FasstoWarehousingGoodsMapper> godCds
+    ) {
+        FasstoWarehousingItemMapper mapper = FasstoWarehousingItemMapper.builder()
+                .ordDt(ordDt)
+                .ordNo(ordNo)
+                .inWay(inWay)
+                .slipNo(slipNo)
+                .parcelComp(parcelComp)
+                .parcelInvoiceNo(parcelInvoiceNo)
+                .remark(remark)
+                .cstSupCd(cstSupCd)
+                .distTermDt(distTermDt)
+                .makeDt(makeDt)
+                .preArv(preArv)
+                .godCds(godCds)
+                .build();
+        mapper.validateForUpdate();
+        return mapper;
+    }
+
     public Map<String, Object> toPayload() {
         Map<String, Object> payload = new LinkedHashMap<>();
         putIfNotNull(payload, "ordDt", ordDt);
@@ -87,6 +119,13 @@ public class FasstoWarehousingItemMapper {
         }
         if (FormatValidator.hasNoValue(godCds)) {
             throw new IllegalArgumentException("godCds is required for warehousing request.");
+        }
+    }
+
+    private void validateForUpdate() {
+        validate();
+        if (FormatValidator.hasNoValue(slipNo)) {
+            throw new IllegalArgumentException("slipNo is required for warehousing update.");
         }
     }
 

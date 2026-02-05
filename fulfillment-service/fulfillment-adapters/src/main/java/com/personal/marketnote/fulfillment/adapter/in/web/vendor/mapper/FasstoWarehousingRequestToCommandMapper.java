@@ -2,10 +2,9 @@ package com.personal.marketnote.fulfillment.adapter.in.web.vendor.mapper;
 
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.RegisterFasstoWarehousingGoodsRequest;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.RegisterFasstoWarehousingRequest;
-import com.personal.marketnote.fulfillment.port.in.command.vendor.GetFasstoWarehousingCommand;
-import com.personal.marketnote.fulfillment.port.in.command.vendor.RegisterFasstoWarehousingCommand;
-import com.personal.marketnote.fulfillment.port.in.command.vendor.RegisterFasstoWarehousingGoodsCommand;
-import com.personal.marketnote.fulfillment.port.in.command.vendor.RegisterFasstoWarehousingItemCommand;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.UpdateFasstoWarehousingGoodsRequest;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.UpdateFasstoWarehousingRequest;
+import com.personal.marketnote.fulfillment.port.in.command.vendor.*;
 
 import java.util.List;
 
@@ -31,6 +30,18 @@ public class FasstoWarehousingRequestToCommandMapper {
         return GetFasstoWarehousingCommand.of(customerCode, accessToken, startDate, endDate);
     }
 
+    public static UpdateFasstoWarehousingCommand mapToUpdateCommand(
+            String customerCode,
+            String accessToken,
+            List<UpdateFasstoWarehousingRequest> request
+    ) {
+        List<UpdateFasstoWarehousingItemCommand> warehousingRequests = request.stream()
+                .map(FasstoWarehousingRequestToCommandMapper::mapUpdateItem)
+                .toList();
+
+        return UpdateFasstoWarehousingCommand.of(customerCode, accessToken, warehousingRequests);
+    }
+
     private static RegisterFasstoWarehousingItemCommand mapItem(RegisterFasstoWarehousingRequest item) {
         List<RegisterFasstoWarehousingGoodsCommand> goods = item.getGodCds().stream()
                 .map(FasstoWarehousingRequestToCommandMapper::mapGoods)
@@ -52,8 +63,37 @@ public class FasstoWarehousingRequestToCommandMapper {
         );
     }
 
+    private static UpdateFasstoWarehousingItemCommand mapUpdateItem(UpdateFasstoWarehousingRequest item) {
+        List<UpdateFasstoWarehousingGoodsCommand> goods = item.getGodCds().stream()
+                .map(FasstoWarehousingRequestToCommandMapper::mapUpdateGoods)
+                .toList();
+
+        return UpdateFasstoWarehousingItemCommand.of(
+                item.getOrdDt(),
+                item.getOrdNo(),
+                item.getInWay(),
+                item.getSlipNo(),
+                item.getParcelComp(),
+                item.getParcelInvoiceNo(),
+                item.getRemark(),
+                item.getCstSupCd(),
+                item.getDistTermDt(),
+                item.getMakeDt(),
+                item.getPreArv(),
+                goods
+        );
+    }
+
     private static RegisterFasstoWarehousingGoodsCommand mapGoods(RegisterFasstoWarehousingGoodsRequest item) {
         return RegisterFasstoWarehousingGoodsCommand.of(
+                item.getCstGodCd(),
+                item.getDistTermDt(),
+                item.getOrdQty()
+        );
+    }
+
+    private static UpdateFasstoWarehousingGoodsCommand mapUpdateGoods(UpdateFasstoWarehousingGoodsRequest item) {
+        return UpdateFasstoWarehousingGoodsCommand.of(
                 item.getCstGodCd(),
                 item.getDistTermDt(),
                 item.getOrdQty()

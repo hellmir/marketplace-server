@@ -1,11 +1,13 @@
 package com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs;
 
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.UpdateFasstoWarehousingRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
@@ -15,9 +17,9 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "(관리자) 파스토 상품 입고 목록 조회",
+        summary = "(관리자) 파스토 상품 입고 수정 요청",
         description = """
-                작성일자: 2026-02-03
+                작성일자: 2026-02-05
                 
                 작성자: 성효빈
                 
@@ -25,7 +27,7 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                파스토 상품 입고 목록을 조회합니다.
+                파스토 상품 입고 요청을 수정합니다.
                 
                 ---
                 
@@ -35,8 +37,35 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- | --- | --- |
                 | accessToken | header | string | 파스토 액세스 토큰 | Y | 3169eb15ef7a11f0be620ab49498ff55 |
                 | customerCode | path | string | 파스토 고객사 코드 | Y | 94388 |
-                | startDate | path | string | 조회 시작일(YYYYMMDD) | Y | 20260113 |
-                | endDate | path | string | 조회 종료일(YYYYMMDD) | Y | 20260113 |
+                
+                ---
+                
+                ## Request Body (Array)
+                
+                | **키** | **타입** | **설명** | **필수 여부** | **예시** |
+                | --- | --- | --- | --- | --- |
+                | ordDt | string | 입고 요청일 | Y | "2026-02-05" |
+                | ordNo | string | 주문번호 | N | "" |
+                | inWay | string | 입고방법(01:택배,02:차량) | Y | "01" |
+                | slipNo | string | 입고 요청번호(수정시 필수) | Y | "IN2601140001" |
+                | parcelComp | string | 택배사명 | N | "" |
+                | parcelInvoiceNo | string | 송장번호 | N | "" |
+                | remark | string | 입고시 참고사항 | N | "" |
+                | cstSupCd | string | 고객사공급사코드 | N | "" |
+                | distTermDt | string | 유통기한지정일 (YYYY-MM-DD) | N | "" |
+                | makeDt | string | 제조일자 (YYYY-MM-DD) | N | "" |
+                | preArv | string | 사전도착여부 | N | "" |
+                | godCds | array | 입고 상품 코드 목록 | Y | [ ... ] |
+                
+                ---
+                
+                ### Request Body > godCds
+                
+                | **키** | **타입** | **설명** | **필수 여부** | **예시** |
+                | --- | --- | --- | --- | --- |
+                | cstGodCd | string | 고객사상품번호 | Y | "1" |
+                | distTermDt | string | 유통기한 | N | "" |
+                | ordQty | number | 주문수량(본품일경우) | Y | 1 |
                 
                 ---
                 
@@ -46,9 +75,9 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 500: 그 외 |
                 | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "INTERNAL_SERVER_ERROR" |
-                | timestamp | string(datetime) | 응답 일시 | "2026-02-03T12:12:30.013" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-02-05T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
-                | message | string | 처리 결과 | "파스토 상품 입고 목록 조회 성공" |
+                | message | string | 처리 결과 | "파스토 상품 입고 수정 성공" |
                 
                 ---
                 
@@ -56,8 +85,8 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
-                | dataCount | number | 조회 건수 | 1 |
-                | warehousing | array | 상품 입고 목록 | [ ... ] |
+                | dataCount | number | 수정 건수 | 1 |
+                | warehousing | array | 입고 수정 결과 | [ ... ] |
                 
                 ---
                 
@@ -65,28 +94,10 @@ import java.lang.annotation.*;
                 
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
-                | ordDt | string | 입고일자 | "20260113" |
-                | whCd | string | 창고코드 | "TEST" |
-                | whNm | string | 창고명 | "테스트" |
-                | ordNo | string | 주문번호 | "" |
-                | slipNo | string | 전표번호(입고요청번호) | "TESTIO260113000003" |
-                | cstCd | string | 고객사코드 | "94388" |
-                | cstNm | string | 고객사명 | "마켓노트 주식회사 테스트" |
-                | supCd | string | FSS공급사코드 | "99999999" |
-                | cstSupCd | string | 고객사공급사코드 | null |
-                | sku | number | sku(상품 종류수) | 1 |
-                | supNm | string | 공급사명 | "미지정 공급사" |
-                | ordQty | number | 입고 요청 수량 | 1 |
-                | inQty | number | 입고 완료 수량 | 0 |
-                | inWay | string | 입고방식(01:택배,02:차량) | "01" |
-                | inWayNm | string | 입고방식명 | "택배" |
-                | parcelComp | string | 택배사명 | "" |
-                | parcelInvoiceNo | string | 입고시 송장번호 | "" |
-                | wrkStat | string | 작업상태코드(1 : 입고요청 or 센터도착, 2 : 검수중, 3 : 검수완료, 4 : 입고완료, 5 : 입고취소) | "1" |
-                | wrkStatNm | string | 작업상태명 | "입고요청" |
-                | emgrYn | string | 긴급입고여부 | null |
-                | remark | string | 입고요청내용 | "" |
-                | goodsSerialNo | array | 상품 일련번호 목록 | [] |
+                | msg | string | 처리 결과 | "입고 수정 성공" |
+                | code | string | 응답 코드 | "200" |
+                | slipNo | string | 입고 요청번호 | "IN2601140001" |
+                | ordNo | string | 주문번호 | "ORD-20260114-01" |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         parameters = {
@@ -103,62 +114,60 @@ import java.lang.annotation.*;
                         in = ParameterIn.PATH,
                         required = true,
                         schema = @Schema(type = "string", example = "94388")
-                ),
-                @Parameter(
-                        name = "startDate",
-                        description = "조회 시작일(YYYYMMDD)",
-                        in = ParameterIn.PATH,
-                        required = true,
-                        schema = @Schema(type = "string", example = "20260113")
-                ),
-                @Parameter(
-                        name = "endDate",
-                        description = "조회 종료일(YYYYMMDD)",
-                        in = ParameterIn.PATH,
-                        required = true,
-                        schema = @Schema(type = "string", example = "20260113")
                 )
         },
+        requestBody = @RequestBody(
+                required = true,
+                content = @Content(
+                        schema = @Schema(implementation = UpdateFasstoWarehousingRequest.class),
+                        examples = @ExampleObject("""
+                                [
+                                  {
+                                    "ordDt": "2026-02-05",
+                                    "ordNo": "",
+                                    "inWay": "01",
+                                    "slipNo": "IN2601140001",
+                                    "parcelComp": "",
+                                    "parcelInvoiceNo": "",
+                                    "remark": "",
+                                    "cstSupCd": "",
+                                    "distTermDt": "",
+                                    "makeDt": "",
+                                    "preArv": "",
+                                    "godCds": [
+                                      {
+                                        "cstGodCd": "1",
+                                        "distTermDt": "",
+                                        "ordQty": 1
+                                      }
+                                    ]
+                                  }
+                                ]
+                                """)
+                )
+        ),
         responses = {
                 @ApiResponse(
                         responseCode = "200",
-                        description = "파스토 상품 입고 목록 조회 성공",
+                        description = "파스토 상품 입고 수정 성공",
                         content = @Content(
                                 examples = @ExampleObject("""
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-02-03T12:12:30.013",
+                                          "timestamp": "2026-02-05T16:19:04.950116",
                                           "content": {
                                             "dataCount": 1,
                                             "warehousing": [
                                               {
-                                                "ordDt": "20260113",
-                                                "whCd": "TEST",
-                                                "whNm": "테스트",
-                                                "ordNo": "",
-                                                "slipNo": "TESTIO260113000003",
-                                                "cstCd": "94388",
-                                                "cstNm": "마켓노트 주식회사 테스트",
-                                                "supCd": "99999999",
-                                                "cstSupCd": null,
-                                                "sku": 1,
-                                                "supNm": "미지정 공급사",
-                                                "ordQty": 1,
-                                                "inQty": 0,
-                                                "inWay": "01",
-                                                "inWayNm": "택배",
-                                                "parcelComp": "",
-                                                "parcelInvoiceNo": "",
-                                                "wrkStat": "1",
-                                                "wrkStatNm": "입고요청",
-                                                "emgrYn": null,
-                                                "remark": "",
-                                                "goodsSerialNo": []
+                                                "msg": "입고 수정 성공",
+                                                "code": "200",
+                                                "slipNo": "IN2601140001",
+                                                "ordNo": "ORD-20260114-01"
                                               }
                                             ]
                                           },
-                                          "message": "파스토 상품 입고 목록 조회 성공"
+                                          "message": "파스토 상품 입고 수정 성공"
                                         }
                                         """)
                         )
@@ -171,7 +180,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 401,
                                           "code": "UNAUTHORIZED",
-                                          "timestamp": "2026-02-03T12:12:30.013",
+                                          "timestamp": "2026-02-05T12:12:30.013",
                                           "content": null,
                                           "message": "Invalid token"
                                         }
@@ -186,7 +195,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 403,
                                           "code": "FORBIDDEN",
-                                          "timestamp": "2026-02-03T12:12:30.013",
+                                          "timestamp": "2026-02-05T12:12:30.013",
                                           "content": null,
                                           "message": "Access Denied"
                                         }
@@ -194,5 +203,5 @@ import java.lang.annotation.*;
                         )
                 )
         })
-public @interface GetFasstoWarehousingApiDocs {
+public @interface UpdateFasstoWarehousingApiDocs {
 }

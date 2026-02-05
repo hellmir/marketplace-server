@@ -15,12 +15,11 @@ import com.personal.marketnote.fulfillment.domain.vendorcommunication.Fulfillmen
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorName;
 import com.personal.marketnote.fulfillment.exception.GetFasstoWarehousingFailedException;
 import com.personal.marketnote.fulfillment.exception.RegisterFasstoWarehousingFailedException;
-import com.personal.marketnote.fulfillment.port.in.result.vendor.FasstoWarehousingInfoResult;
-import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoWarehousingResult;
-import com.personal.marketnote.fulfillment.port.in.result.vendor.RegisterFasstoWarehousingItemResult;
-import com.personal.marketnote.fulfillment.port.in.result.vendor.RegisterFasstoWarehousingResult;
+import com.personal.marketnote.fulfillment.exception.UpdateFasstoWarehousingFailedException;
+import com.personal.marketnote.fulfillment.port.in.result.vendor.*;
 import com.personal.marketnote.fulfillment.port.out.vendor.GetFasstoWarehousingPort;
 import com.personal.marketnote.fulfillment.port.out.vendor.RegisterFasstoWarehousingPort;
+import com.personal.marketnote.fulfillment.port.out.vendor.UpdateFasstoWarehousingPort;
 import com.personal.marketnote.fulfillment.utility.VendorCommunicationFailureHandler;
 import com.personal.marketnote.fulfillment.utility.VendorCommunicationPayloadGenerator;
 import com.personal.marketnote.fulfillment.utility.VendorCommunicationRecorder;
@@ -43,7 +42,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.*;
 @VendorAdapter
 @RequiredArgsConstructor
 @Slf4j
-public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, GetFasstoWarehousingPort {
+public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, GetFasstoWarehousingPort, UpdateFasstoWarehousingPort {
     private static final String ACCESS_TOKEN_HEADER = "accessToken";
     private static final String CUSTOMER_CODE_PLACEHOLDER = "{customerCode}";
 
@@ -56,122 +55,24 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
 
     @Override
     public RegisterFasstoWarehousingResult registerWarehousing(FasstoWarehousingMapper request) {
-        if (FormatValidator.hasNoValue(request)) {
-            throw new IllegalArgumentException("Fassto warehousing request is required.");
-        }
-
-        URI uri = buildWarehousingUri(request.getCustomerCode());
-        HttpEntity<List<Map<String, Object>>> httpEntity = new HttpEntity<>(
-                request.toPayload(),
-                buildHeaders(request.getAccessToken())
+        RegisterFasstoWarehousingResponse response = executeWarehousingMutation(
+                request,
+                "REGISTER",
+                HttpMethod.POST,
+                false
         );
+        return mapWarehousingResult(response);
+    }
 
-        Exception error = new Exception();
-        String failureMessage = null;
-        long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
-        FulfillmentVendorCommunicationTargetType targetType = FulfillmentVendorCommunicationTargetType.WAREHOUSING;
-        FulfillmentVendorName vendorName = FulfillmentVendorName.FASSTO;
-
-        for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
-            int attempt = i + 1;
-            JsonNode requestPayloadJson = buildRequestPayloadJson(request, uri, attempt, "REGISTER");
-            String requestPayload = requestPayloadJson.toString();
-
-            ResponseEntity<String> response;
-            try {
-                response = restTemplate.exchange(
-                        uri,
-                        HttpMethod.POST,
-                        httpEntity,
-                        String.class
-                );
-            } catch (Exception e) {
-                Map<String, Object> errorPayload = new LinkedHashMap<>();
-                errorPayload.put("error", e.getClass().getSimpleName());
-                errorPayload.put("message", e.getMessage());
-                errorPayload.put("attempt", attempt);
-
-                vendorCommunicationFailureHandler.handleFailure(
-                        targetType,
-                        vendorName,
-                        requestPayload,
-                        requestPayloadJson,
-                        errorPayload,
-                        e
-                );
-
-                String vendorMessage = resolveVendorMessageFromException(e);
-                if (FormatValidator.hasValue(vendorMessage)) {
-                    failureMessage = vendorMessage;
-                    error = new Exception(vendorMessage);
-                }
-
-                log.warn("Failed to register Fassto warehousing request: attempt={}, message={}", attempt, e.getMessage(), e);
-                if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
-                    error = e;
-                }
-
-                sleep(sleepMillis);
-                // exponential backoff 적용
-                sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
-                continue;
-            }
-
-            JsonNode responsePayloadJson = buildResponsePayloadJson(response, attempt);
-            String responsePayload = responsePayloadJson.toString();
-
-            RegisterFasstoWarehousingResponse parsedResponse = parseResponseBody(response);
-            boolean isSuccess = isSuccessResponse(response, parsedResponse);
-            String exception = isSuccess
-                    ? null
-                    : resolveResponseException(response, parsedResponse);
-
-            vendorCommunicationRecorder.record(
-                    targetType,
-                    FulfillmentVendorCommunicationType.REQUEST,
-                    FulfillmentVendorCommunicationSenderType.SERVER,
-                    vendorName,
-                    requestPayload,
-                    requestPayloadJson,
-                    exception
-            );
-            vendorCommunicationRecorder.record(
-                    targetType,
-                    FulfillmentVendorCommunicationType.RESPONSE,
-                    FulfillmentVendorCommunicationSenderType.VENDOR,
-                    vendorName,
-                    responsePayload,
-                    responsePayloadJson,
-                    exception
-            );
-
-            if (isSuccess) {
-                return mapWarehousingResult(parsedResponse);
-            }
-
-            String vendorMessage = resolveVendorMessage(parsedResponse, FormatValidator.hasValue(response) ? response.getBody() : null);
-            if (FormatValidator.hasValue(vendorMessage)) {
-                failureMessage = vendorMessage;
-                error = new Exception(vendorMessage);
-            }
-
-            log.warn("Fassto warehousing request failed: attempt={}, status={}, exception={}",
-                    attempt,
-                    FormatValidator.hasValue(response) ? response.getStatusCode() : null,
-                    exception
-            );
-
-            if (CommunicationFailureHandler.isCertainFailure(response)) {
-                break;
-            }
-
-            sleep(sleepMillis);
-            // exponential backoff 적용
-            sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
-        }
-
-        log.error("Failed to register Fassto warehousing request: {} with error: {}", uri, error.getMessage(), error);
-        throw new RegisterFasstoWarehousingFailedException(failureMessage, new IOException(error));
+    @Override
+    public UpdateFasstoWarehousingResult updateWarehousing(FasstoWarehousingMapper request) {
+        RegisterFasstoWarehousingResponse response = executeWarehousingMutation(
+                request,
+                "UPDATE",
+                HttpMethod.PATCH,
+                true
+        );
+        return mapUpdateWarehousingResult(response);
     }
 
     @Override
@@ -290,6 +191,145 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
 
         log.error("Failed to get Fassto warehousing list: {} with error: {}", uri, error.getMessage(), error);
         throw new GetFasstoWarehousingFailedException(failureMessage, new IOException(error));
+    }
+
+    private RegisterFasstoWarehousingResponse executeWarehousingMutation(
+            FasstoWarehousingMapper request,
+            String action,
+            HttpMethod method,
+            boolean isUpdate
+    ) {
+        if (FormatValidator.hasNoValue(request)) {
+            throw new IllegalArgumentException("Fassto warehousing request is required.");
+        }
+
+        URI uri = buildWarehousingUri(request.getCustomerCode());
+        HttpEntity<List<Map<String, Object>>> httpEntity = new HttpEntity<>(
+                request.toPayload(),
+                buildHeaders(request.getAccessToken())
+        );
+
+        Exception error = new Exception();
+        String failureMessage = null;
+        long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
+        FulfillmentVendorCommunicationTargetType targetType = FulfillmentVendorCommunicationTargetType.WAREHOUSING;
+        FulfillmentVendorName vendorName = FulfillmentVendorName.FASSTO;
+
+        for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            int attempt = i + 1;
+            JsonNode requestPayloadJson = buildRequestPayloadJson(request, uri, attempt, action, method);
+            String requestPayload = requestPayloadJson.toString();
+
+            ResponseEntity<String> response;
+            try {
+                response = restTemplate.exchange(
+                        uri,
+                        method,
+                        httpEntity,
+                        String.class
+                );
+            } catch (Exception e) {
+                Map<String, Object> errorPayload = new LinkedHashMap<>();
+                errorPayload.put("error", e.getClass().getSimpleName());
+                errorPayload.put("message", e.getMessage());
+                errorPayload.put("attempt", attempt);
+
+                vendorCommunicationFailureHandler.handleFailure(
+                        targetType,
+                        vendorName,
+                        requestPayload,
+                        requestPayloadJson,
+                        errorPayload,
+                        e
+                );
+
+                String vendorMessage = resolveVendorMessageFromException(e);
+                if (FormatValidator.hasValue(vendorMessage)) {
+                    failureMessage = vendorMessage;
+                    error = new Exception(vendorMessage);
+                }
+
+                log.warn("Failed to {} Fassto warehousing request: attempt={}, message={}",
+                        action.toLowerCase(),
+                        attempt,
+                        e.getMessage(),
+                        e
+                );
+                if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
+                    error = e;
+                }
+
+                sleep(sleepMillis);
+                // exponential backoff 적용
+                sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
+                continue;
+            }
+
+            JsonNode responsePayloadJson = buildResponsePayloadJson(response, attempt);
+            String responsePayload = responsePayloadJson.toString();
+
+            RegisterFasstoWarehousingResponse parsedResponse = parseResponseBody(response);
+            boolean isSuccess = isSuccessResponse(response, parsedResponse);
+            String exception = isSuccess
+                    ? null
+                    : resolveResponseException(response, parsedResponse);
+
+            vendorCommunicationRecorder.record(
+                    targetType,
+                    FulfillmentVendorCommunicationType.REQUEST,
+                    FulfillmentVendorCommunicationSenderType.SERVER,
+                    vendorName,
+                    requestPayload,
+                    requestPayloadJson,
+                    exception
+            );
+            vendorCommunicationRecorder.record(
+                    targetType,
+                    FulfillmentVendorCommunicationType.RESPONSE,
+                    FulfillmentVendorCommunicationSenderType.VENDOR,
+                    vendorName,
+                    responsePayload,
+                    responsePayloadJson,
+                    exception
+            );
+
+            if (isSuccess) {
+                return parsedResponse;
+            }
+
+            String vendorMessage = resolveVendorMessage(parsedResponse, FormatValidator.hasValue(response) ? response.getBody() : null);
+            if (FormatValidator.hasValue(vendorMessage)) {
+                failureMessage = vendorMessage;
+                error = new Exception(vendorMessage);
+            }
+
+            log.warn("Fassto warehousing {} failed: attempt={}, status={}, exception={}",
+                    action.toLowerCase(),
+                    attempt,
+                    FormatValidator.hasValue(response) ? response.getStatusCode() : null,
+                    exception
+            );
+
+            if (CommunicationFailureHandler.isCertainFailure(response)) {
+                break;
+            }
+
+            sleep(sleepMillis);
+            // exponential backoff 적용
+            sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
+        }
+
+        log.error("Failed to {} Fassto warehousing request: {} with error: {}",
+                action.toLowerCase(),
+                uri,
+                error.getMessage(),
+                error
+        );
+
+        if (isUpdate) {
+            throw new UpdateFasstoWarehousingFailedException(failureMessage, new IOException(error));
+        }
+        throw new RegisterFasstoWarehousingFailedException(failureMessage, new IOException(error));
     }
 
     private URI buildWarehousingUri(String customerCode) {
@@ -460,10 +500,11 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
             FasstoWarehousingMapper request,
             URI uri,
             int attempt,
-            String action
+            String action,
+            HttpMethod method
     ) {
         Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("method", HttpMethod.POST.name());
+        payload.put("method", method.name());
         payload.put("url", uri.toString());
         payload.put("customerCode", request.getCustomerCode());
         payload.put(ACCESS_TOKEN_HEADER, maskValue(request.getAccessToken()));
@@ -504,6 +545,14 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
         return RegisterFasstoWarehousingResult.of(dataCount, warehousing);
     }
 
+    private UpdateFasstoWarehousingResult mapUpdateWarehousingResult(RegisterFasstoWarehousingResponse response) {
+        List<UpdateFasstoWarehousingItemResult> warehousing = response.data().stream()
+                .map(this::mapUpdateWarehousingItem)
+                .toList();
+        Integer dataCount = FormatValidator.hasValue(response.header()) ? response.header().dataCount() : null;
+        return UpdateFasstoWarehousingResult.of(dataCount, warehousing);
+    }
+
     private GetFasstoWarehousingResult mapWarehousingListResult(FasstoWarehousingListResponse response) {
         List<FasstoWarehousingInfoResult> warehousing = response.data().stream()
                 .map(this::mapWarehousingInfo)
@@ -514,6 +563,15 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
 
     private RegisterFasstoWarehousingItemResult mapWarehousingItem(RegisterFasstoWarehousingItemResponse item) {
         return RegisterFasstoWarehousingItemResult.of(
+                item.msg(),
+                item.code(),
+                item.slipNo(),
+                item.ordNo()
+        );
+    }
+
+    private UpdateFasstoWarehousingItemResult mapUpdateWarehousingItem(RegisterFasstoWarehousingItemResponse item) {
+        return UpdateFasstoWarehousingItemResult.of(
                 item.msg(),
                 item.code(),
                 item.slipNo(),
