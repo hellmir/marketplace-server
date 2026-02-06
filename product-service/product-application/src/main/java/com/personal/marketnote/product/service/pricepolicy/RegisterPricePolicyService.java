@@ -51,7 +51,7 @@ public class RegisterPricePolicyService implements RegisterPricePolicyUseCase {
             updateOptionPricePolicyPort.assignPricePolicyToOptions(id, optionIds);
         }
 
-        registerInventoryPort.registerInventory(id);
+        registerInventoryPort.registerInventory(productId, id);
 
         return RegisterPricePolicyResult.of(id);
     }

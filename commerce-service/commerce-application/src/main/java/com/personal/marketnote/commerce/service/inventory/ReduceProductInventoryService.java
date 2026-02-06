@@ -43,8 +43,10 @@ public class ReduceProductInventoryService implements ReduceProductInventoryUseC
             ));
 
             updateInventoryPort.update(inventories);
+            Map<Long, Long> productIdsByPricePolicyId = inventories.stream()
+                    .collect(Collectors.toMap(Inventory::getPricePolicyId, Inventory::getProductId));
             saveInventoryDeductionHistoryPort.save(
-                    InventoryDeductionHistories.from(stocksByPricePolicyId, reason)
+                    InventoryDeductionHistories.from(stocksByPricePolicyId, productIdsByPricePolicyId, reason)
             );
             saveCacheStockPort.save(inventories);
         });

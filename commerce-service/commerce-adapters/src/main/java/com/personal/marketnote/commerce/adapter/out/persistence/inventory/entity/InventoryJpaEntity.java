@@ -5,6 +5,7 @@ import com.personal.marketnote.common.adapter.out.persistence.audit.BaseEntity;
 import com.personal.marketnote.common.utility.FormatValidator;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -15,8 +16,12 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicInsert
 @DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class InventoryJpaEntity extends BaseEntity {
+    @Column(name = "product_id")
+    private Long productId;
+
     @Id
     @Column(name = "price_policy_id", nullable = false)
     private Long pricePolicyId;
@@ -29,12 +34,6 @@ public class InventoryJpaEntity extends BaseEntity {
     @Column(name = "version", nullable = false, columnDefinition = "BIGINT DEFAULT 0")
     private Long version;
 
-    private InventoryJpaEntity(Long pricePolicyId, Integer stock, Long version) {
-        this.pricePolicyId = pricePolicyId;
-        this.stock = stock;
-        this.version = version;
-    }
-
     public static InventoryJpaEntity from(Inventory inventory) {
         Long version = inventory.getVersion();
         if (FormatValidator.hasNoValue(version)) {
@@ -42,6 +41,7 @@ public class InventoryJpaEntity extends BaseEntity {
         }
 
         return new InventoryJpaEntity(
+                inventory.getProductId(),
                 inventory.getPricePolicyId(),
                 inventory.getStockValue(),
                 version
@@ -49,24 +49,25 @@ public class InventoryJpaEntity extends BaseEntity {
     }
 
     public void updateFrom(Inventory inventory) {
-        if (this.version == null) {
+        if (FormatValidator.hasNoValue(version)) {
             // 초기 버전 미설정 데이터 보호
-            this.version = 0L;
+            version = 0L;
         }
-        this.stock = inventory.getStockValue();
+
+        stock = inventory.getStockValue();
     }
 
     @PostLoad
     private void initVersionAfterLoad() {
-        if (this.version == null) {
-            this.version = 0L;
+        if (FormatValidator.hasNoValue(version)) {
+            version = 0L;
         }
     }
 
     @PrePersist
     private void initVersionBeforePersist() {
-        if (this.version == null) {
-            this.version = 0L;
+        if (FormatValidator.hasNoValue(version)) {
+            version = 0L;
         }
     }
 }

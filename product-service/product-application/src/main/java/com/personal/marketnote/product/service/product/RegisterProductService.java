@@ -35,12 +35,13 @@ public class RegisterProductService implements RegisterProductUseCase {
                 Product.from(ProductCommandToStateMapper.mapToState(command))
         );
 
+        Long productId = savedProduct.getId();
         RegisterPricePolicyResult registerPricePolicyResult = registerPricePolicyUseCase.registerPricePolicy(
-                sellerId, false, RegisterPricePolicyCommand.from(savedProduct.getId(), command)
+                sellerId, false, RegisterPricePolicyCommand.from(productId, command)
         );
 
         // FIXME: Kafka 이벤트 Production으로 변경
-        registerInventoryPort.registerInventory(registerPricePolicyResult.id());
+        registerInventoryPort.registerInventory(productId, registerPricePolicyResult.id());
 
         // FIXME: Kafka 이벤트 Production으로 변경
         registerFulfillmentVendorGoodsPort.registerFulfillmentVendorGoods(

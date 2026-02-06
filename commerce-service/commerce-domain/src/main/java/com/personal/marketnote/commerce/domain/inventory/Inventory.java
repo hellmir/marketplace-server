@@ -10,12 +10,14 @@ import static org.hibernate.type.descriptor.java.IntegerJavaType.ZERO;
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
 public class Inventory {
+    private Long productId;
     private Long pricePolicyId;
     private Stock stock;
     private Long version;
 
-    public static Inventory of(Long pricePolicyId) {
+    public static Inventory of(Long productId, Long pricePolicyId) {
         return Inventory.builder()
+                .productId(productId)
                 .pricePolicyId(pricePolicyId)
                 .stock(Stock.of(
                         ZERO.toString()
@@ -24,8 +26,9 @@ public class Inventory {
                 .build();
     }
 
-    public static Inventory of(Long pricePolicyId, Integer stock) {
+    public static Inventory of(Long productId, Long pricePolicyId, Integer stock) {
         return Inventory.builder()
+                .productId(productId)
                 .pricePolicyId(pricePolicyId)
                 .stock(Stock.of(
                         String.valueOf(stock)
@@ -34,8 +37,9 @@ public class Inventory {
                 .build();
     }
 
-    public static Inventory of(Long pricePolicyId, Integer stock, Long version) {
+    public static Inventory of(Long productId, Long pricePolicyId, Integer stock, Long version) {
         return Inventory.builder()
+                .productId(productId)
                 .pricePolicyId(pricePolicyId)
                 .stock(Stock.of(
                         String.valueOf(stock)
@@ -56,6 +60,6 @@ public class Inventory {
     }
 
     public boolean isMe(Long pricePolicyId) {
-        return FormatValidator.equals(this.pricePolicyId, pricePolicyId);
+        return FormatValidator.equals(pricePolicyId, pricePolicyId);
     }
 }

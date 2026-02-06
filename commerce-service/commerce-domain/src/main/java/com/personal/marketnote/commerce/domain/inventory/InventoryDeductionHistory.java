@@ -8,12 +8,14 @@ import lombok.*;
 @Getter
 public class InventoryDeductionHistory {
     private Long id;
+    private Long productId;
     private Long pricePolicyId;
     private Stock stock;
     private String reason;
 
     public static InventoryDeductionHistory from(InventoryDeductionHistoryCreateState state) {
         return InventoryDeductionHistory.builder()
+                .productId(state.getProductId())
                 .pricePolicyId(state.getPricePolicyId())
                 .stock(Stock.of(
                         String.valueOf(state.getStock())
@@ -25,6 +27,7 @@ public class InventoryDeductionHistory {
     public static InventoryDeductionHistory from(InventoryDeductionHistorySnapshotState state) {
         return InventoryDeductionHistory.builder()
                 .id(state.getId())
+                .productId(state.getProductId())
                 .pricePolicyId(state.getPricePolicyId())
                 .stock(Stock.of(
                         String.valueOf(state.getStock())
@@ -37,4 +40,3 @@ public class InventoryDeductionHistory {
         return stock.getValue();
     }
 }
-

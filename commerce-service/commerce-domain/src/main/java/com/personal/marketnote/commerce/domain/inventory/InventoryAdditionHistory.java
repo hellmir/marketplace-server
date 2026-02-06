@@ -11,6 +11,7 @@ import lombok.*;
 @Getter
 public class InventoryAdditionHistory {
     private Long id;
+    private Long productId;
     private Long pricePolicyId;
     private Stock stock;
     private String reason;
@@ -19,6 +20,7 @@ public class InventoryAdditionHistory {
 
     public static InventoryAdditionHistory from(InventoryAdditionHistoryCreateState state) {
         return InventoryAdditionHistory.builder()
+                .productId(state.getProductId())
                 .pricePolicyId(state.getPricePolicyId())
                 .stock(Stock.of(
                         String.valueOf(state.getStock())
@@ -32,6 +34,7 @@ public class InventoryAdditionHistory {
     public static InventoryAdditionHistory from(InventoryAdditionHistorySnapshotState state) {
         return InventoryAdditionHistory.builder()
                 .id(state.getId())
+                .productId(state.getProductId())
                 .pricePolicyId(state.getPricePolicyId())
                 .stock(Stock.of(
                         String.valueOf(state.getStock())
@@ -42,4 +45,3 @@ public class InventoryAdditionHistory {
                 .build();
     }
 }
-

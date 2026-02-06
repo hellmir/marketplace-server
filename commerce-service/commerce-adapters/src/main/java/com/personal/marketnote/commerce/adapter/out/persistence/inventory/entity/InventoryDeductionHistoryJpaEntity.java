@@ -23,6 +23,9 @@ public class InventoryDeductionHistoryJpaEntity extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(name = "product_id")
+    private Long productId;
+
     @Column(name = "price_policy_id", nullable = false)
     private Long pricePolicyId;
 
@@ -33,10 +36,12 @@ public class InventoryDeductionHistoryJpaEntity extends BaseEntity {
     private String reason;
 
     private InventoryDeductionHistoryJpaEntity(
+            Long productId,
             Long pricePolicyId,
             Integer stock,
             String reason
     ) {
+        this.productId = productId;
         this.pricePolicyId = pricePolicyId;
         this.stock = stock;
         this.reason = reason;
@@ -44,10 +49,10 @@ public class InventoryDeductionHistoryJpaEntity extends BaseEntity {
 
     public static InventoryDeductionHistoryJpaEntity from(InventoryDeductionHistory inventoryDeductionHistory) {
         return new InventoryDeductionHistoryJpaEntity(
+                inventoryDeductionHistory.getProductId(),
                 inventoryDeductionHistory.getPricePolicyId(),
                 inventoryDeductionHistory.getStockValue(),
                 inventoryDeductionHistory.getReason()
         );
     }
 }
-

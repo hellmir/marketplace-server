@@ -25,7 +25,7 @@ public class RegisterInventoryService implements RegisterInventoryUseCase {
 
     @Override
     public void registerInventory(RegisterInventoryCommand command) {
-        Inventory inventory = Inventory.of(command.pricePolicyId());
+        Inventory inventory = Inventory.of(command.productId(), command.pricePolicyId());
         saveInventoryPort.save(inventory);
 
         saveCacheStockPort.save(command.pricePolicyId(), ZERO);
@@ -34,7 +34,7 @@ public class RegisterInventoryService implements RegisterInventoryUseCase {
     @Override
     public Set<Inventory> registerInventories(Set<RegisterInventoryCommand> commands) {
         Set<Inventory> inventories = commands.stream()
-                .map(command -> Inventory.of(command.pricePolicyId()))
+                .map(command -> Inventory.of(command.productId(), command.pricePolicyId()))
                 .collect(Collectors.toSet());
 
         saveInventoryPort.save(inventories);

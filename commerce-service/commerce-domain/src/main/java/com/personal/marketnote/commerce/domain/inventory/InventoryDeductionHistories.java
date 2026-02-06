@@ -14,12 +14,17 @@ import java.util.Map;
 public class InventoryDeductionHistories {
     private List<InventoryDeductionHistory> inventoryDeductionHistories;
 
-    public static InventoryDeductionHistories from(Map<Long, Integer> stocksByPricePolicyId, String reason) {
+    public static InventoryDeductionHistories from(
+            Map<Long, Integer> stocksByPricePolicyId,
+            Map<Long, Long> productIdsByPricePolicyId,
+            String reason
+    ) {
         return new InventoryDeductionHistories(
                 stocksByPricePolicyId.entrySet()
                         .stream()
                         .map(entry -> InventoryDeductionHistory.from(
                                 InventoryDeductionHistoryCreateState.builder()
+                                        .productId(productIdsByPricePolicyId.get(entry.getKey()))
                                         .pricePolicyId(entry.getKey())
                                         .stock(entry.getValue())
                                         .reason(reason)
@@ -29,4 +34,3 @@ public class InventoryDeductionHistories {
         );
     }
 }
-
