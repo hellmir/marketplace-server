@@ -6,4 +6,6 @@ import java.util.Set;
 
 public interface FindInventoryPort {
     Set<Inventory> findByPricePolicyIds(Set<Long> pricePolicyIds);
+
+    Set<Inventory> findByProductIds(Set<Long> productIds);
 }

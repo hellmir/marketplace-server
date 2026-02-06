@@ -51,6 +51,16 @@ public class InventoryPersistenceAdapter implements SaveInventoryPort, FindInven
     }
 
     @Override
+    public Set<Inventory> findByProductIds(Set<Long> productIds) {
+        return inventoryJpaRepository.findByProductIds(productIds)
+                .stream()
+                .map(InventoryJpaEntityToDomainMapper::mapToDomain)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
     public void update(Set<Inventory> inventories) throws InventoryNotFoundException {
         Set<Long> pricePolicyIds = inventories.stream()
                 .map(Inventory::getPricePolicyId)

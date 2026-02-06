@@ -2,11 +2,14 @@ package com.personal.marketnote.commerce.adapter.in.web.inventory.controller;
 
 import com.personal.marketnote.commerce.adapter.in.web.inventory.controller.apidocs.GetInventoriesApiDocs;
 import com.personal.marketnote.commerce.adapter.in.web.inventory.controller.apidocs.RegisterInventoryApiDocs;
+import com.personal.marketnote.commerce.adapter.in.web.inventory.controller.apidocs.SyncFulfillmentVendorInventoryApiDocs;
 import com.personal.marketnote.commerce.adapter.in.web.inventory.mapper.InventoryRequestToCommandMapper;
+import com.personal.marketnote.commerce.adapter.in.web.inventory.request.SyncFulfillmentVendorInventoryRequest;
 import com.personal.marketnote.commerce.adapter.in.web.inventory.response.GetInventoriesResponse;
 import com.personal.marketnote.commerce.port.in.result.inventory.GetInventoriesResult;
 import com.personal.marketnote.commerce.port.in.usecase.inventory.GetInventoryUseCase;
 import com.personal.marketnote.commerce.port.in.usecase.inventory.RegisterInventoryUseCase;
+import com.personal.marketnote.commerce.port.in.usecase.inventory.SyncFulfillmentVendorInventoryUseCase;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.common.adapter.in.request.RegisterInventoryRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +33,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 public class InventoryController {
     private final RegisterInventoryUseCase registerInventoryUseCase;
     private final GetInventoryUseCase getInventoryUseCase;
+    private final SyncFulfillmentVendorInventoryUseCase syncFulfillmentVendorInventoryUseCase;
 
     /**
      * 재고 도메인 등록
@@ -51,7 +55,6 @@ public class InventoryController {
 
         return new ResponseEntity<>(
                 BaseResponse.of(
-                        null,
                         HttpStatus.CREATED,
                         DEFAULT_SUCCESS_CODE,
                         "재고 도메인 등록 성공"
@@ -83,6 +86,35 @@ public class InventoryController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "상품 재고 목록 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 풀필먼트 벤더 재고 동기화
+     *
+     * @param request 풀필먼트 벤더 재고 동기화 요청
+     * @Author 성효빈
+     * @Date 2026-02-07
+     * @Description 풀필먼트 벤더 재고 정보를 동기화합니다.
+     */
+    @PostMapping("/fulfillment/vendors/stocks/sync")
+    @PreAuthorize(ADMIN_POINTCUT)
+    @SyncFulfillmentVendorInventoryApiDocs
+    public ResponseEntity<BaseResponse<Void>> syncFulfillmentVendorInventories(
+            @Valid @RequestBody SyncFulfillmentVendorInventoryRequest request
+    ) {
+        syncFulfillmentVendorInventoryUseCase.syncInventories(
+                InventoryRequestToCommandMapper.mapToCommand(request)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        null,
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "풀필먼트 벤더 재고 동기화 성공"
                 ),
                 HttpStatus.OK
         );

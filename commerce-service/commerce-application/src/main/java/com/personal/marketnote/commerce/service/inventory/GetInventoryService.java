@@ -26,7 +26,7 @@ public class GetInventoryService implements GetInventoryUseCase {
     public Set<Inventory> getInventories(List<Long> pricePolicyIds) {
         Set<Inventory> inventories = findInventoryPort.findByPricePolicyIds(new HashSet<>(pricePolicyIds));
 
-        // FIXME: Kafka 이벤트 Production으로 변경
+        // FIXME: Kafka 이벤트 Production으로 변경 -> productId 추가
         // 존재하지 않는 재고 튜플/Cache Memory 신규 생성
         if (inventories.size() != pricePolicyIds.size()) {
             Set<RegisterInventoryCommand> commands = new HashSet<>();

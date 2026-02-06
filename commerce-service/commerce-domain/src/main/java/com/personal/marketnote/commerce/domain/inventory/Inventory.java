@@ -22,7 +22,6 @@ public class Inventory {
                 .stock(Stock.of(
                         ZERO.toString()
                 ))
-                .version(null)
                 .build();
     }
 
@@ -33,7 +32,6 @@ public class Inventory {
                 .stock(Stock.of(
                         String.valueOf(stock)
                 ))
-                .version(null)
                 .build();
     }
 
