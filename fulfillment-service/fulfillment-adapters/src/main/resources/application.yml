@@ -61,6 +61,9 @@ vendor:
       api-cd: ${FASSTO_API_CD:change-me}
       api-key: ${FASSTO_API_KEY:change-me}
 
+commerce-service:
+  base-url: ${COMMERCE_SERVICE_SERVER_ORIGIN:http://localhost:8082}
+
 logging:
   config: classpath:logback-spring.xml
   level:
