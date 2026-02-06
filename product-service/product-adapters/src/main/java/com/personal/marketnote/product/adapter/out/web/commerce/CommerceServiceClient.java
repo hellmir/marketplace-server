@@ -58,7 +58,7 @@ public class CommerceServiceClient implements RegisterInventoryPort, FindStockPo
     private final ServiceCommunicationPayloadGenerator serviceCommunicationPayloadGenerator;
 
     @Override
-    public void registerInventory(Long pricePolicyId) {
+    public void registerInventory(Long productId, Long pricePolicyId) {
         URI uri = UriComponentsBuilder
                 .fromUriString(commerceServiceBaseUrl)
                 .path("/api/v1/inventories")
@@ -68,7 +68,7 @@ public class CommerceServiceClient implements RegisterInventoryPort, FindStockPo
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(adminAccessToken);
         HttpEntity<RegisterInventoryRequest> httpEntity
-                = new HttpEntity<>(new RegisterInventoryRequest(pricePolicyId), headers);
+                = new HttpEntity<>(new RegisterInventoryRequest(productId, pricePolicyId), headers);
 
         sendRequest(uri, httpEntity, pricePolicyId);
     }
@@ -151,7 +151,7 @@ public class CommerceServiceClient implements RegisterInventoryPort, FindStockPo
         headers.setBearerAuth(adminAccessToken);
 
         try {
-            return sendRequest(uri, headers, pricePolicyIds).inventories();
+            return sendRequest(uri, headers).inventories();
         } catch (CommerceServiceRequestFailedException csrfe) {
             return pricePolicyIds.stream()
                     .map(GetInventoryResult::generateResultWithoutStock)
@@ -159,8 +159,7 @@ public class CommerceServiceClient implements RegisterInventoryPort, FindStockPo
         }
     }
 
-    public GetInventoriesResponse sendRequest(URI uri, HttpHeaders headers, List<Long> pricePolicyIds) {
-        long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
+    public GetInventoriesResponse sendRequest(URI uri, HttpHeaders headers) {
         Exception error = new Exception();
 
         for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {

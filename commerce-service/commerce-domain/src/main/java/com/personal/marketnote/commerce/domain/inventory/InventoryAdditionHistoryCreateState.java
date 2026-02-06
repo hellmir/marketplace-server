@@ -9,10 +9,10 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class InventoryAdditionHistoryCreateState {
+    private final Long productId;
     private final Long pricePolicyId;
     private final Integer stock;
     private final String reason;
     private final Long unitPrice;
     private final String supplier;
 }
-

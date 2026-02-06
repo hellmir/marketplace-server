@@ -10,8 +10,8 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class InventoryDeductionHistorySnapshotState {
     private final Long id;
+    private final Long productId;
     private final Long pricePolicyId;
     private final Integer stock;
     private final String reason;
 }
-

@@ -87,7 +87,7 @@ class RegisterProductUseCaseTest {
         assertThat(pricePolicyCommand.accumulatedPoint()).isEqualTo(command.accumulatedPoint());
         assertThat(pricePolicyCommand.optionIds()).isNull();
 
-        verify(registerInventoryPort).registerInventory(100L);
+        verify(registerInventoryPort).registerInventory(10L, 100L);
 
         ArgumentCaptor<RegisterFulfillmentVendorGoodsCommand> fulfillmentCaptor =
                 ArgumentCaptor.forClass(RegisterFulfillmentVendorGoodsCommand.class);
@@ -162,7 +162,7 @@ class RegisterProductUseCaseTest {
                 eq(command.sellerId()), eq(false), any(RegisterPricePolicyCommand.class)
         )).thenReturn(RegisterPricePolicyResult.of(200L));
         doThrow(new IllegalStateException("inventory fail"))
-                .when(registerInventoryPort).registerInventory(200L);
+                .when(registerInventoryPort).registerInventory(30L, 200L);
 
         assertThatThrownBy(() -> registerProductService.registerProduct(command))
                 .isInstanceOf(IllegalStateException.class);
@@ -188,7 +188,7 @@ class RegisterProductUseCaseTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("godType");
 
-        verify(registerInventoryPort).registerInventory(300L);
+        verify(registerInventoryPort).registerInventory(40L, 300L);
         verify(registerFulfillmentVendorGoodsPort, never()).registerFulfillmentVendorGoods(any());
     }
 
@@ -207,7 +207,7 @@ class RegisterProductUseCaseTest {
                 .isInstanceOf(ProductInfoNoValueException.class)
                 .hasMessageContaining("상품 ID가 존재하지 않습니다.");
 
-        verify(registerInventoryPort).registerInventory(400L);
+        verify(registerInventoryPort).registerInventory(null, 400L);
         verify(registerFulfillmentVendorGoodsPort, never()).registerFulfillmentVendorGoods(any());
     }
 

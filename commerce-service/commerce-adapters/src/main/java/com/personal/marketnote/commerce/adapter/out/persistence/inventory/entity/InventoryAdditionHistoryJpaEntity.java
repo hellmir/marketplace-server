@@ -22,6 +22,9 @@ public class InventoryAdditionHistoryJpaEntity extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(name = "product_id")
+    private Long productId;
+
     @Column(name = "price_policy_id", nullable = false)
     private Long pricePolicyId;
 
@@ -37,4 +40,3 @@ public class InventoryAdditionHistoryJpaEntity extends BaseEntity {
     @Column(name = "supplier")
     private String supplier;
 }
-

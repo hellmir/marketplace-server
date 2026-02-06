@@ -7,7 +7,7 @@ public class InventoryRequestToCommandMapper {
     public static RegisterInventoryCommand mapToCommand(
             RegisterInventoryRequest request
     ) {
-        return RegisterInventoryCommand.of(request.getPricePolicyId());
+        return RegisterInventoryCommand.of(request.getProductId(), request.getPricePolicyId());
     }
 }
 
