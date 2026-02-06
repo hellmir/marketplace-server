@@ -1,8 +1,10 @@
 package com.personal.marketnote.commerce.service.inventory;
 
 import com.personal.marketnote.commerce.domain.inventory.Inventory;
+import com.personal.marketnote.commerce.exception.InventoryAlreadyExistsException;
 import com.personal.marketnote.commerce.port.in.command.inventory.RegisterInventoryCommand;
 import com.personal.marketnote.commerce.port.in.usecase.inventory.RegisterInventoryUseCase;
+import com.personal.marketnote.commerce.port.out.inventory.FindInventoryPort;
 import com.personal.marketnote.commerce.port.out.inventory.SaveCacheStockPort;
 import com.personal.marketnote.commerce.port.out.inventory.SaveInventoryPort;
 import com.personal.marketnote.common.application.UseCase;
@@ -22,9 +24,15 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRES_NE
 public class RegisterInventoryService implements RegisterInventoryUseCase {
     private final SaveInventoryPort saveInventoryPort;
     private final SaveCacheStockPort saveCacheStockPort;
+    private final FindInventoryPort findInventoryPort;
 
     @Override
     public void registerInventory(RegisterInventoryCommand command) {
+        Long pricePolicyId = command.pricePolicyId();
+        if (findInventoryPort.existsByPricePolicyId(pricePolicyId)) {
+            throw new InventoryAlreadyExistsException(pricePolicyId);
+        }
+
         Inventory inventory = Inventory.of(command.productId(), command.pricePolicyId());
         saveInventoryPort.save(inventory);
 

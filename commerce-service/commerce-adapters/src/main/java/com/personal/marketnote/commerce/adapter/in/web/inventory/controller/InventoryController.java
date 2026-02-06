@@ -92,7 +92,7 @@ public class InventoryController {
     }
 
     /**
-     * 풀필먼트 벤더 재고 동기화
+     * (관리자) 풀필먼트 벤더 재고 동기화
      *
      * @param request 풀필먼트 벤더 재고 동기화 요청
      * @Author 성효빈

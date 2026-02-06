@@ -8,4 +8,6 @@ public interface FindInventoryPort {
     Set<Inventory> findByPricePolicyIds(Set<Long> pricePolicyIds);
 
     Set<Inventory> findByProductIds(Set<Long> productIds);
+
+    boolean existsByPricePolicyId(Long pricePolicyId);
 }

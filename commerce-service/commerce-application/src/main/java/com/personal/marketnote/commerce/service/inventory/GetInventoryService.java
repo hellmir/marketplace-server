@@ -42,4 +42,9 @@ public class GetInventoryService implements GetInventoryUseCase {
 
         return inventories;
     }
+
+    @Override
+    public boolean existsInventory(Long pricePolicyId) {
+        return findInventoryPort.existsByPricePolicyId(pricePolicyId);
+    }
 }
