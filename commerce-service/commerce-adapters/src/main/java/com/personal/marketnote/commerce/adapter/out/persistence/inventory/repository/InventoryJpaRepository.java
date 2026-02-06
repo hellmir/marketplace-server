@@ -25,4 +25,10 @@ public interface InventoryJpaRepository extends JpaRepository<InventoryJpaEntity
             ORDER BY i.productId ASC
             """)
     Set<InventoryJpaEntity> findByProductIds(Set<Long> productIds);
+
+    @Query("""
+            SELECT COUNT(i) > 0 FROM InventoryJpaEntity i
+            WHERE i.pricePolicyId = :pricePolicyId
+            """)
+    boolean existsByPricePolicyId(Long pricePolicyId);
 }

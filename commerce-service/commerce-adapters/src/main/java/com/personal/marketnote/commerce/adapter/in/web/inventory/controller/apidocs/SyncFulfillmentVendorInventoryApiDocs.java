@@ -15,7 +15,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "풀필먼트 벤더 재고 동기화",
+        summary = "(관리자) 풀필먼트 벤더 재고 동기화",
         description = """
                 작성일자: 2026-02-07
                 

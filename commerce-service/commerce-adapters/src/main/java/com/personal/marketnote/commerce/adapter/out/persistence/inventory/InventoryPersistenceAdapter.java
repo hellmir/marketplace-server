@@ -61,6 +61,11 @@ public class InventoryPersistenceAdapter implements SaveInventoryPort, FindInven
     }
 
     @Override
+    public boolean existsByPricePolicyId(Long pricePolicyId) {
+        return inventoryJpaRepository.existsByPricePolicyId(pricePolicyId);
+    }
+
+    @Override
     public void update(Set<Inventory> inventories) throws InventoryNotFoundException {
         Set<Long> pricePolicyIds = inventories.stream()
                 .map(Inventory::getPricePolicyId)
