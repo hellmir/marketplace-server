@@ -35,25 +35,15 @@ public class InventoryJpaEntity extends BaseEntity {
     private Long version;
 
     public static InventoryJpaEntity from(Inventory inventory) {
-        Long version = inventory.getVersion();
-        if (FormatValidator.hasNoValue(version)) {
-            version = 0L;
-        }
-
         return new InventoryJpaEntity(
                 inventory.getProductId(),
                 inventory.getPricePolicyId(),
                 inventory.getStockValue(),
-                version
+                inventory.getVersion()
         );
     }
 
     public void updateFrom(Inventory inventory) {
-        if (FormatValidator.hasNoValue(version)) {
-            // 초기 버전 미설정 데이터 보호
-            version = 0L;
-        }
-
         stock = inventory.getStockValue();
     }
 
