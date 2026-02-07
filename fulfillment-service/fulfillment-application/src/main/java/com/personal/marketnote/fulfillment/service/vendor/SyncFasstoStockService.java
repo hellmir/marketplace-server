@@ -4,12 +4,12 @@ import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.fulfillment.domain.FasstoAccessToken;
 import com.personal.marketnote.fulfillment.port.in.command.vendor.GetFasstoStockDetailCommand;
+import com.personal.marketnote.fulfillment.port.in.command.vendor.GetFasstoStocksCommand;
+import com.personal.marketnote.fulfillment.port.in.command.vendor.SyncFasstoAllStockCommand;
 import com.personal.marketnote.fulfillment.port.in.command.vendor.SyncFasstoStockCommand;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.FasstoStockInfoResult;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoStocksResult;
-import com.personal.marketnote.fulfillment.port.in.usecase.vendor.GetFasstoStockDetailUseCase;
-import com.personal.marketnote.fulfillment.port.in.usecase.vendor.RequestFasstoAuthUseCase;
-import com.personal.marketnote.fulfillment.port.in.usecase.vendor.SyncFasstoStockUseCase;
+import com.personal.marketnote.fulfillment.port.in.usecase.vendor.*;
 import com.personal.marketnote.fulfillment.port.out.commerce.UpdateCommerceInventoryCommand;
 import com.personal.marketnote.fulfillment.port.out.commerce.UpdateCommerceInventoryItemCommand;
 import com.personal.marketnote.fulfillment.port.out.commerce.UpdateCommerceInventoryPort;
@@ -17,18 +17,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
 
 @UseCase
 @RequiredArgsConstructor
 @Transactional(isolation = READ_COMMITTED, readOnly = true)
-public class SyncFasstoStockService implements SyncFasstoStockUseCase {
+public class SyncFasstoStockService implements SyncFasstoStockUseCase, SyncFasstoAllStockUseCase {
     private static final String OUT_OF_STOCK_INCLUDED = "Y";
 
     private final RequestFasstoAuthUseCase requestFasstoAuthUseCase;
     private final GetFasstoStockDetailUseCase getFasstoStockDetailUseCase;
+    private final GetFasstoStocksUseCase getFasstoStocksUseCase;
     private final UpdateCommerceInventoryPort updateCommerceInventoryPort;
 
     @Override
@@ -73,6 +76,35 @@ public class SyncFasstoStockService implements SyncFasstoStockUseCase {
         updateCommerceInventoryPort.updateInventories(UpdateCommerceInventoryCommand.of(inventories));
     }
 
+    @Override
+    public void syncAll(SyncFasstoAllStockCommand command) {
+        if (FormatValidator.hasNoValue(command)) {
+            throw new IllegalArgumentException("Sync all Fassto stock command is required.");
+        }
+        if (FormatValidator.hasNoValue(command.customerCode())) {
+            throw new IllegalArgumentException("Customer code is required for Fassto stock sync.");
+        }
+
+        FasstoAccessToken accessToken = requestFasstoAuthUseCase.requestAccessToken();
+        if (FormatValidator.hasNoValue(accessToken) || FormatValidator.hasNoValue(accessToken.getValue())) {
+            throw new IllegalArgumentException("Fassto access token is required for stock sync.");
+        }
+
+        GetFasstoStocksResult stocksResult = getFasstoStocksUseCase.getStocks(
+                GetFasstoStocksCommand.of(
+                        command.customerCode(),
+                        accessToken.getValue(),
+                        resolveOutOfStockYn(command.outOfStockYn())
+                )
+        );
+        List<UpdateCommerceInventoryItemCommand> inventories = resolveInventories(stocksResult);
+        if (FormatValidator.hasNoValue(inventories)) {
+            return;
+        }
+
+        updateCommerceInventoryPort.updateInventories(UpdateCommerceInventoryCommand.of(inventories));
+    }
+
     private int resolveStockQuantity(GetFasstoStocksResult result) {
         if (FormatValidator.hasNoValue(result) || FormatValidator.hasNoValue(result.stocks())) {
             return 0;
@@ -101,5 +133,55 @@ public class SyncFasstoStockService implements SyncFasstoStockUseCase {
             return canStockQty;
         }
         return stockInfo.stockQty();
+    }
+
+    private List<UpdateCommerceInventoryItemCommand> resolveInventories(GetFasstoStocksResult result) {
+        if (FormatValidator.hasNoValue(result) || FormatValidator.hasNoValue(result.stocks())) {
+            return List.of();
+        }
+
+        Map<Long, Integer> stockByProductId = new LinkedHashMap<>();
+        for (FasstoStockInfoResult stockInfo : result.stocks()) {
+            if (FormatValidator.hasNoValue(stockInfo) || FormatValidator.hasNoValue(stockInfo.cstGodCd())) {
+                continue;
+            }
+
+            Long productId = resolveProductId(stockInfo.cstGodCd());
+            if (FormatValidator.hasNoValue(productId)) {
+                continue;
+            }
+
+            Integer quantity = resolveAvailableQuantity(stockInfo);
+            if (FormatValidator.hasNoValue(quantity)) {
+                continue;
+            }
+
+            int updatedStock = stockByProductId.getOrDefault(productId, 0) + Math.max(0, quantity);
+            stockByProductId.put(productId, updatedStock);
+        }
+
+        if (stockByProductId.isEmpty()) {
+            return List.of();
+        }
+
+        return stockByProductId.entrySet().stream()
+                .map(entry -> UpdateCommerceInventoryItemCommand.of(entry.getKey(), entry.getValue()))
+                .toList();
+    }
+
+    private Long resolveProductId(String cstGodCd) {
+        if (FormatValidator.hasNoValue(cstGodCd)) {
+            return null;
+        }
+
+        try {
+            return Long.parseLong(cstGodCd);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private String resolveOutOfStockYn(String outOfStockYn) {
+        return FormatValidator.hasValue(outOfStockYn) ? outOfStockYn : OUT_OF_STOCK_INCLUDED;
     }
 }
