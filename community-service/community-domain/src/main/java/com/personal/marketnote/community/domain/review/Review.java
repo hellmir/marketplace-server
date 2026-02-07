@@ -97,8 +97,8 @@ public class Review {
                 .build();
     }
 
-    public void updateIsUserLiked(Long userId) {
-        isUserLiked = FormatValidator.equals(userId, reviewerId);
+    public void updateIsUserLiked(boolean isUserLiked) {
+        this.isUserLiked = isUserLiked;
     }
 
     public void update(Float rating, String content, Boolean isPhoto) {

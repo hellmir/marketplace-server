@@ -3,6 +3,7 @@ package com.personal.marketnote.community.service.review;
 import com.personal.marketnote.common.application.UseCase;
 import com.personal.marketnote.common.application.file.port.in.result.GetFileResult;
 import com.personal.marketnote.common.utility.FormatValidator;
+import com.personal.marketnote.community.domain.like.LikeTargetType;
 import com.personal.marketnote.community.domain.review.ProductReviewAggregate;
 import com.personal.marketnote.community.domain.review.Review;
 import com.personal.marketnote.community.domain.review.ReviewSortProperty;
@@ -13,6 +14,7 @@ import com.personal.marketnote.community.exception.ReviewAlreadyExistsException;
 import com.personal.marketnote.community.exception.ReviewNotFoundException;
 import com.personal.marketnote.community.port.in.command.review.RegisterReviewCommand;
 import com.personal.marketnote.community.port.in.result.review.*;
+import com.personal.marketnote.community.port.in.usecase.like.GetLikeUseCase;
 import com.personal.marketnote.community.port.in.usecase.review.GetReviewUseCase;
 import com.personal.marketnote.community.port.out.file.FindReviewImagesPort;
 import com.personal.marketnote.community.port.out.product.FindProductByPricePolicyPort;
@@ -41,6 +43,7 @@ public class GetReviewService implements GetReviewUseCase {
     private final FindReviewPort findReviewPort;
     private final FindReviewImagesPort findReviewImagesPort;
     private final FindProductByPricePolicyPort findProductByPricePolicyPort;
+    private final GetLikeUseCase getLikeUseCase;
 
     @Override
     public Review getReview(Long id) {
@@ -97,7 +100,9 @@ public class GetReviewService implements GetReviewUseCase {
 
         if (!isPhoto && FormatValidator.hasValue(userId)) {
             // 로그인 사용자가 각 리뷰에 좋아요를 눌렀는지 여부 업데이트
-            pagedReviews.forEach(review -> review.updateIsUserLiked(userId));
+            pagedReviews.forEach(review -> review.updateIsUserLiked(
+                    getLikeUseCase.existsUserLike(LikeTargetType.REVIEW, review.getId(), userId)
+            ));
         }
 
         return GetReviewsResult.from(hasNext, nextCursor, totalElements, pagedReviews, reviewImagesByReviewId);

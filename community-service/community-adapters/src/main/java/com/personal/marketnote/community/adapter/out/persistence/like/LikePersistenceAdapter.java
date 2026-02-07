@@ -25,7 +25,7 @@ public class LikePersistenceAdapter implements SaveLikePort, FindLikePort, Updat
     }
 
     @Override
-    public boolean existsByTarget(com.personal.marketnote.community.domain.like.LikeTargetType targetType, Long targetId, Long userId) {
+    public boolean existsByTargetAndUser(LikeTargetType targetType, Long targetId, Long userId) {
         return likeJpaRepository.existsByTarget(targetType, targetId, userId);
     }
 
