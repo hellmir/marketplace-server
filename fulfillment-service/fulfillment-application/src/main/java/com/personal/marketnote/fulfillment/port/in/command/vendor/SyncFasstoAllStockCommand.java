@@ -1,13 +1,11 @@
 package com.personal.marketnote.fulfillment.port.in.command.vendor;
 
 public record SyncFasstoAllStockCommand(
-        String customerCode,
-        String outOfStockYn
+        String customerCode
 ) {
     public static SyncFasstoAllStockCommand of(
-            String customerCode,
-            String outOfStockYn
+            String customerCode
     ) {
-        return new SyncFasstoAllStockCommand(customerCode, outOfStockYn);
+        return new SyncFasstoAllStockCommand(customerCode);
     }
 }

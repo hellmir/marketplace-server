@@ -3,11 +3,13 @@ package com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller;
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.GetFasstoStockDetailApiDocs;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.GetFasstoStocksApiDocs;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.SyncFasstoAllStocksApiDocs;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.mapper.FasstoStockRequestToCommandMapper;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.GetFasstoStocksResponse;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoStocksResult;
 import com.personal.marketnote.fulfillment.port.in.usecase.vendor.GetFasstoStockDetailUseCase;
 import com.personal.marketnote.fulfillment.port.in.usecase.vendor.GetFasstoStocksUseCase;
+import com.personal.marketnote.fulfillment.port.in.usecase.vendor.SyncFasstoAllStockUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 public class FasstoStockController {
     private final GetFasstoStocksUseCase getFasstoStocksUseCase;
     private final GetFasstoStockDetailUseCase getFasstoStockDetailUseCase;
+    private final SyncFasstoAllStockUseCase syncFasstoAllStockUseCase;
 
     /**
      * (관리자) 파스토 재고 목록 조회
@@ -89,6 +92,35 @@ public class FasstoStockController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "파스토 단일 상품 재고 정보 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * (관리자) 전체 상품 재고 동기화
+     *
+     * @param customerCode 파스토 고객사 코드
+     * @Author 성효빈
+     * @Date 2026-02-07
+     * @Description 전체 상품 재고와 파스토 재고를 동기화합니다.
+     */
+    @PostMapping("/sync/all/{customerCode}")
+    @PreAuthorize(ADMIN_POINTCUT)
+    @SyncFasstoAllStocksApiDocs
+    public ResponseEntity<BaseResponse<Void>> syncAllStocks(
+            @PathVariable String customerCode
+    ) {
+        syncFasstoAllStockUseCase.syncAll(
+                FasstoStockRequestToCommandMapper.mapToSyncAllCommand(customerCode)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        null,
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "전체 상품 재고 동기화 성공"
                 ),
                 HttpStatus.OK
         );

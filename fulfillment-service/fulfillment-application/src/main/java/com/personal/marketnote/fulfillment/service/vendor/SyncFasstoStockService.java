@@ -27,7 +27,7 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 @RequiredArgsConstructor
 @Transactional(isolation = READ_COMMITTED, readOnly = true)
 public class SyncFasstoStockService implements SyncFasstoStockUseCase, SyncFasstoAllStockUseCase {
-    private static final String OUT_OF_STOCK_INCLUDED = "Y";
+    private static final String DEFAULT_OUT_OF_STOCK_INCLUDED = "Y";
 
     private final RequestFasstoAuthUseCase requestFasstoAuthUseCase;
     private final GetFasstoStockDetailUseCase getFasstoStockDetailUseCase;
@@ -66,7 +66,7 @@ public class SyncFasstoStockService implements SyncFasstoStockUseCase, SyncFasst
                             command.customerCode(),
                             accessToken.getValue(),
                             String.valueOf(productId),
-                            OUT_OF_STOCK_INCLUDED
+                            DEFAULT_OUT_OF_STOCK_INCLUDED
                     )
             );
             int stockQuantity = resolveStockQuantity(stockDetail);
@@ -93,8 +93,7 @@ public class SyncFasstoStockService implements SyncFasstoStockUseCase, SyncFasst
         GetFasstoStocksResult stocksResult = getFasstoStocksUseCase.getStocks(
                 GetFasstoStocksCommand.of(
                         command.customerCode(),
-                        accessToken.getValue(),
-                        resolveOutOfStockYn(command.outOfStockYn())
+                        accessToken.getValue()
                 )
         );
         List<UpdateCommerceInventoryItemCommand> inventories = resolveInventories(stocksResult);
@@ -120,6 +119,7 @@ public class SyncFasstoStockService implements SyncFasstoStockUseCase, SyncFasst
                 totalStock += Math.max(0, quantity);
             }
         }
+
         return totalStock;
     }
 
@@ -132,6 +132,7 @@ public class SyncFasstoStockService implements SyncFasstoStockUseCase, SyncFasst
         if (FormatValidator.hasValue(canStockQty)) {
             return canStockQty;
         }
+
         return stockInfo.stockQty();
     }
 
@@ -179,9 +180,5 @@ public class SyncFasstoStockService implements SyncFasstoStockUseCase, SyncFasst
         } catch (NumberFormatException e) {
             return null;
         }
-    }
-
-    private String resolveOutOfStockYn(String outOfStockYn) {
-        return FormatValidator.hasValue(outOfStockYn) ? outOfStockYn : OUT_OF_STOCK_INCLUDED;
     }
 }
