@@ -63,6 +63,7 @@ public class ReviewJpaEntity extends BaseOrderedGeneralEntity {
                 FROM likes l
                 WHERE l.target_type = 'REVIEW'
                   AND l.target_id = id
+                  AND l.status = 'ACTIVE'
             )
             """)
     private Integer likeCount;

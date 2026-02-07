@@ -39,6 +39,7 @@ public class Like {
     }
 
     public boolean isStatusChanged(boolean isLiked) {
+        boolean isActive = status.isActive();
         return FormatValidator.notEquals(status.isActive(), isLiked);
     }
 

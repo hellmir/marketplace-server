@@ -19,6 +19,11 @@ public class GetLikeService implements GetLikeUseCase {
     private final FindLikePort findLikePort;
 
     @Override
+    public boolean existsUserLike(LikeTargetType targetType, Long targetId, Long userId) {
+        return findLikePort.existsByTargetAndUser(targetType, targetId, userId);
+    }
+
+    @Override
     public Like getLike(LikeTargetType targetType, Long targetId, Long userId) {
         return findLikePort.findByTargetAndUser(targetType, targetId, userId)
                 .orElseThrow(() -> new LikeNotFoundException(targetType, targetId, userId));

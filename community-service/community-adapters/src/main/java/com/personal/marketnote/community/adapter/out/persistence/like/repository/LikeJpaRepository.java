@@ -16,6 +16,7 @@ public interface LikeJpaRepository extends JpaRepository<LikeJpaEntity, LikeId> 
             WHERE l.id.targetType = :targetType
               AND l.id.targetId = :targetId
               AND l.id.userId = :userId
+              AND l.status = 'ACTIVE'
             """)
     boolean existsByTarget(
             @Param("targetType") LikeTargetType targetType,
