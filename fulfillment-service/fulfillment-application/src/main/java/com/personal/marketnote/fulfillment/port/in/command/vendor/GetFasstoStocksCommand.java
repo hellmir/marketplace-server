@@ -7,6 +7,13 @@ public record GetFasstoStocksCommand(
 ) {
     public static GetFasstoStocksCommand of(
             String customerCode,
+            String accessToken
+    ) {
+        return new GetFasstoStocksCommand(customerCode, accessToken, null);
+    }
+
+    public static GetFasstoStocksCommand of(
+            String customerCode,
             String accessToken,
             String outOfStockYn
     ) {
