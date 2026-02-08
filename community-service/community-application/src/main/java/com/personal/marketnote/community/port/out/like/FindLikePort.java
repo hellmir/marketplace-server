@@ -12,7 +12,7 @@ public interface FindLikePort {
      * @param targetId   좋아요 대상 ID
      * @param userId     좋아요 대상 유형
      * @return 좋아요 대상 유형 존재 여부 {@link boolean}
-     * @Date 2026-01-16
+     * @Date 2026-02-08
      * @Author 성효빈
      * @Description 좋아요 대상 유형 존재 여부를 조회합니다.
      */
@@ -23,7 +23,7 @@ public interface FindLikePort {
      * @param targetId   좋아요 대상 ID
      * @param userId     좋아요 대상 유형
      * @return 좋아요 대상 유형 {@link Like}
-     * @Date 2026-01-16
+     * @Date 2026-02-08
      * @Author 성효빈
      * @Description 좋아요 대상 유형을 조회합니다.
      */
