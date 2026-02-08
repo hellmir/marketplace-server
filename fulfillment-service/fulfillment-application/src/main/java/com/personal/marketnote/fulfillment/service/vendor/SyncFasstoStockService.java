@@ -147,7 +147,9 @@ public class SyncFasstoStockService implements SyncFasstoStockUseCase, SyncFasst
                 continue;
             }
 
-            Long productId = resolveProductId(stockInfo.cstGodCd());
+            // QA 서버 스케줄러 작동 테스트 위해 임시로 변경
+            Long productId = 1L;
+            // Long productId = resolveProductId(stockInfo.cstGodCd());
             if (FormatValidator.hasNoValue(productId)) {
                 continue;
             }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "vendor.fassto.auth")
 public class FasstoAuthProperties {
     private String baseUrl;
+    private String customerCode;
     private String apiCd;
     private String apiKey;
     private String connectPath = "/api/v1/auth/connect";

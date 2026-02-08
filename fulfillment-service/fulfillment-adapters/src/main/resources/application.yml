@@ -49,6 +49,7 @@ vendor:
   fassto:
     auth:
       base-url: ${FASSTO_BASE_URL:https://stg-fmsapi.fassto.ai}
+      customer-code: ${FASSTO_CUSTOMER_CODE:change-me}
       connect-path: ${FASSTO_AUTH_CONNECT_PATH:/api/v1/auth/connect}
       disconnect-path: ${FASSTO_AUTH_DISCONNECT_PATH:/api/v1/auth/disconnect}
       shop-path: ${FASSTO_MARKETNOTE_PATH:/api/v1/marketnote/{customerCode}}
