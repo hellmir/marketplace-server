@@ -9,7 +9,8 @@ public enum FulfillmentVendorCommunicationTargetType {
     SUPPLIER("공급사"),
     GOODS("상품"),
     WAREHOUSING("입고"),
-    STOCK("재고");
+    STOCK("재고"),
+    SETTLEMENT("정산");
 
     private final String description;
 }
