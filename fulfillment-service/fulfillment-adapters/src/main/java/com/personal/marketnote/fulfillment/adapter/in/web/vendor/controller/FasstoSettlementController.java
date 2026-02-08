@@ -27,7 +27,7 @@ public class FasstoSettlementController {
      * (관리자) 파스토 물류비 일별 비용 조회
      *
      * @param yearMonth    정산 월(YYYYMM)
-     * @param whCd         창고 코드
+     * @param whCd         파스토 센터 코드
      * @param customerCode 파스토 고객사 코드
      * @param accessToken  파스토 액세스 토큰
      * @Author 성효빈
