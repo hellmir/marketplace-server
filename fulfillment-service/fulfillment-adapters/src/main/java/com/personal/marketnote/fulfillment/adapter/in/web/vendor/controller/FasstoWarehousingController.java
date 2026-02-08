@@ -78,6 +78,9 @@ public class FasstoWarehousingController {
      * @param accessToken  파스토 액세스 토큰
      * @param startDate    조회 시작일(YYYYMMDD)
      * @param endDate      조회 종료일(YYYYMMDD)
+     * @param inWay        입고방법(비어있으면:전체,01:택배,02:차량)
+     * @param ordNo        주문번호
+     * @param wrkStat      작업상태(비어있으면:전체,1:입고요청,2:센터도착,3:입고검수,4:입고확정,5:입고완료)
      * @Author 성효빈
      * @Date 2026-02-03
      * @Description 파스토 상품 입고 목록을 조회합니다.
@@ -89,10 +92,21 @@ public class FasstoWarehousingController {
             @PathVariable String customerCode,
             @PathVariable String startDate,
             @PathVariable String endDate,
-            @RequestHeader("accessToken") String accessToken
+            @RequestHeader("accessToken") String accessToken,
+            @RequestParam(required = false) String inWay,
+            @RequestParam(required = false) String ordNo,
+            @RequestParam(required = false) String wrkStat
     ) {
         GetFasstoWarehousingResult result = getFasstoWarehousingUseCase.getWarehousing(
-                FasstoWarehousingRequestToCommandMapper.mapToWarehousingQuery(customerCode, accessToken, startDate, endDate)
+                FasstoWarehousingRequestToCommandMapper.mapToWarehousingQuery(
+                        customerCode,
+                        accessToken,
+                        startDate,
+                        endDate,
+                        inWay,
+                        ordNo,
+                        wrkStat
+                )
         );
 
         return new ResponseEntity<>(

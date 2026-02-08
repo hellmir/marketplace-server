@@ -164,7 +164,7 @@ class GetReviewUseCaseTest {
     }
 
     @Test
-    @DisplayName("상품 리뷰 목록 조회 시 Cursor가 있으면 총 개수 조회를 생략한다")
+    @DisplayName("상품 리뷰 목록 조회 시 첫 페이지가 아니면(Cursor 값 존재) 총 개수 조회를 생략한다")
     void getProductReviews_withCursor_skipsTotalElements() {
         Long productId = 30L;
         Long cursor = 200L;

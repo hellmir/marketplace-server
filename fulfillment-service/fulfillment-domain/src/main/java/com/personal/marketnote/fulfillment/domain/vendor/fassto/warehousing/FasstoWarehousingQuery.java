@@ -12,6 +12,9 @@ public class FasstoWarehousingQuery {
     private String accessToken;
     private String startDate;
     private String endDate;
+    private String inWay;
+    private String ordNo;
+    private String wrkStat;
 
     public static FasstoWarehousingQuery of(
             String customerCode,
@@ -19,11 +22,26 @@ public class FasstoWarehousingQuery {
             String startDate,
             String endDate
     ) {
+        return FasstoWarehousingQuery.of(customerCode, accessToken, startDate, endDate, null, null, null);
+    }
+
+    public static FasstoWarehousingQuery of(
+            String customerCode,
+            String accessToken,
+            String startDate,
+            String endDate,
+            String inWay,
+            String ordNo,
+            String wrkStat
+    ) {
         FasstoWarehousingQuery query = FasstoWarehousingQuery.builder()
                 .customerCode(customerCode)
                 .accessToken(accessToken)
                 .startDate(startDate)
                 .endDate(endDate)
+                .inWay(inWay)
+                .ordNo(ordNo)
+                .wrkStat(wrkStat)
                 .build();
         query.validate();
         return query;

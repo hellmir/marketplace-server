@@ -37,6 +37,9 @@ import java.lang.annotation.*;
                 | customerCode | path | string | 파스토 고객사 코드 | Y | 94388 |
                 | startDate | path | string | 조회 시작일(YYYYMMDD) | Y | 20260113 |
                 | endDate | path | string | 조회 종료일(YYYYMMDD) | Y | 20260113 |
+                | inWay | query | string | 입고방법(비어있으면:전체,01:택배,02:차량) | N | 01 |
+                | ordNo | query | string | 주문번호 | N | 202601130001 |
+                | wrkStat | query | string | 작업상태(비어있으면:전체,1:입고요청,2:센터도착,3:입고검수,4:입고확정,5:입고완료) | N | 1 |
                 
                 ---
                 
@@ -117,6 +120,27 @@ import java.lang.annotation.*;
                         in = ParameterIn.PATH,
                         required = true,
                         schema = @Schema(type = "string", example = "20260113")
+                ),
+                @Parameter(
+                        name = "inWay",
+                        description = "입고방법(비어있으면:전체,01:택배,02:차량)",
+                        in = ParameterIn.QUERY,
+                        required = false,
+                        schema = @Schema(type = "string", example = "01")
+                ),
+                @Parameter(
+                        name = "ordNo",
+                        description = "주문번호",
+                        in = ParameterIn.QUERY,
+                        required = false,
+                        schema = @Schema(type = "string", example = "202601130001")
+                ),
+                @Parameter(
+                        name = "wrkStat",
+                        description = "작업상태(비어있으면:전체,1:입고요청,2:센터도착,3:입고검수,4:입고확정,5:입고완료)",
+                        in = ParameterIn.QUERY,
+                        required = false,
+                        schema = @Schema(type = "string", example = "1")
                 )
         },
         responses = {

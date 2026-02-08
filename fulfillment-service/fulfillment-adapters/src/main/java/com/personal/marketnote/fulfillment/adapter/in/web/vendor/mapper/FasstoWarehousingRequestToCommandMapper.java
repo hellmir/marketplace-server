@@ -25,9 +25,12 @@ public class FasstoWarehousingRequestToCommandMapper {
             String customerCode,
             String accessToken,
             String startDate,
-            String endDate
+            String endDate,
+            String inWay,
+            String ordNo,
+            String wrkStat
     ) {
-        return GetFasstoWarehousingCommand.of(customerCode, accessToken, startDate, endDate);
+        return GetFasstoWarehousingCommand.of(customerCode, accessToken, startDate, endDate, inWay, ordNo, wrkStat);
     }
 
     public static UpdateFasstoWarehousingCommand mapToUpdateCommand(
