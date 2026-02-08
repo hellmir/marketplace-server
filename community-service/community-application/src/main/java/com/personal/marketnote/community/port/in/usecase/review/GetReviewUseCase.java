@@ -22,6 +22,16 @@ public interface GetReviewUseCase {
     Review getReview(Long id);
 
     /**
+     * @param id     리뷰 ID
+     * @param userId 회원 ID
+     * @return 리뷰 {@link Review}
+     * @Date 2026-02-08
+     * @Author 성효빈
+     * @Description 리뷰와 회원 좋아요 여부를 조회합니다.
+     */
+    Review getReview(Long id, Long userId);
+
+    /**
      * @param command 리뷰 등록 커맨드
      * @Date 2026-01-09
      * @Author 성효빈

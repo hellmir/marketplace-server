@@ -35,7 +35,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- | --- | --- |
                 | accessToken | header | string | 파스토 액세스 토큰 | Y | ad8c0accf2a011f0be620ab49498ff55 |
                 | yearMonth | path | string | 정산 월(YYYYMM) | Y | 202601 |
-                | whCd | path | string | 파스토 센터 코드 | Y | TEST |
+                | whCd | path | string | 창고 코드 | Y | TEST |
                 | customerCode | path | string | 파스토 고객사 코드 | Y | 94388 |
                 
                 ---
@@ -66,7 +66,7 @@ import java.lang.annotation.*;
                 | **키** | **타입** | **설명** | **예시** |
                 | --- | --- | --- | --- |
                 | cloDt | string | 마감일자 | "2026-02-08" |
-                | whCd | string | 파스토 센터 코드 | "YI21" |
+                | whCd | string | 창고 코드 | "YI21" |
                 | cstCd | string | 고객사 코드 | "94EVA" |
                 | inpAmt | string | 입고 비용 | "0" |
                 | outAmt | string | 출고 비용 | "46650" |
@@ -97,7 +97,7 @@ import java.lang.annotation.*;
                 ),
                 @Parameter(
                         name = "whCd",
-                        description = "파스토 센터 코드",
+                        description = "창고 코드",
                         in = ParameterIn.PATH,
                         required = true,
                         schema = @Schema(type = "string", example = "TEST")

@@ -364,7 +364,7 @@ class GetProductUseCaseTest {
     }
 
     @Test
-    @DisplayName("첫 페이지가 아니면(Cursor 값 존재) 총 개수 조회를 생략한다")
+    @DisplayName("카테고리 Filter와 Cursor가 있으면 총 개수 조회를 생략한다")
     void getProducts_withCategoryAndCursor_skipsTotalElements() {
         stubProductImageExecutor();
         Product product = buildProduct(40L, false);

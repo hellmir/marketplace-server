@@ -176,9 +176,12 @@ public class ReviewController {
     @GetMapping("/reviews/{id}")
     @GetReviewApiDocs
     public ResponseEntity<BaseResponse<ReviewItemResponse>> getReview(
-            @PathVariable("id") Long id
+            @PathVariable("id") Long id,
+            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
     ) {
-        ReviewItemResult result = ReviewItemResult.from(getReviewUseCase.getReview(id));
+        ReviewItemResult result = ReviewItemResult.from(
+                getReviewUseCase.getReview(id, ElementExtractor.extractUserId(principal))
+        );
 
         return new ResponseEntity<>(
                 BaseResponse.of(
