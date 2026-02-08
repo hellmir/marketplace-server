@@ -296,7 +296,7 @@ class GetProductUseCaseTest {
     }
 
     @Test
-    @DisplayName("첫 페이지 상품 목록 조회 시 전체 개수와 다음 커서를 포함한다")
+    @DisplayName("첫 페이지 상품 목록 조회 시 전체 개수와 Next Cursor를 포함한다")
     void getProducts_firstPage_includesTotalElementsAndNextCursor() {
         stubProductImageExecutor();
         Product product1 = buildProduct(10L, false);
