@@ -13,6 +13,6 @@ public enum LikeTargetType {
 
     LikeTargetType(String description) {
         this.description = description;
-        this.camelCaseValue = FormatConverter.snakeToCamel(this.name());
+        this.camelCaseValue = FormatConverter.snakeToCamel(name());
     }
 }
