@@ -26,7 +26,10 @@ public class FasstoWarehousingCommandToRequestMapper {
                 command.customerCode(),
                 command.accessToken(),
                 command.startDate(),
-                command.endDate()
+                command.endDate(),
+                command.inWay(),
+                command.ordNo(),
+                command.wrkStat()
         );
     }
 

@@ -81,7 +81,14 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
             throw new IllegalArgumentException("Fassto warehousing query is required.");
         }
 
-        URI uri = buildWarehousingListUri(query.getCustomerCode(), query.getStartDate(), query.getEndDate());
+        URI uri = buildWarehousingListUri(
+                query.getCustomerCode(),
+                query.getStartDate(),
+                query.getEndDate(),
+                query.getInWay(),
+                query.getOrdNo(),
+                query.getWrkStat()
+        );
         HttpEntity<Void> httpEntity = new HttpEntity<>(buildHeaders(query.getAccessToken(), false));
 
         Exception error = new Exception();
@@ -340,10 +347,27 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
                 .toUri();
     }
 
-    private URI buildWarehousingListUri(String customerCode, String startDate, String endDate) {
+    private URI buildWarehousingListUri(
+            String customerCode,
+            String startDate,
+            String endDate,
+            String inWay,
+            String ordNo,
+            String wrkStat
+    ) {
         validateWarehousingListProperties();
-        return UriComponentsBuilder.fromUriString(properties.getBaseUrl())
-                .path(properties.getWarehousingListPath())
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(properties.getBaseUrl())
+                .path(properties.getWarehousingListPath());
+        if (FormatValidator.hasValue(inWay)) {
+            builder.queryParam("inWay", inWay);
+        }
+        if (FormatValidator.hasValue(ordNo)) {
+            builder.queryParam("ordNo", ordNo);
+        }
+        if (FormatValidator.hasValue(wrkStat)) {
+            builder.queryParam("wrkStat", wrkStat);
+        }
+        return builder
                 .buildAndExpand(customerCode, startDate, endDate)
                 .toUri();
     }
@@ -491,6 +515,15 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
         payload.put("customerCode", query.getCustomerCode());
         payload.put("startDate", query.getStartDate());
         payload.put("endDate", query.getEndDate());
+        if (FormatValidator.hasValue(query.getInWay())) {
+            payload.put("inWay", query.getInWay());
+        }
+        if (FormatValidator.hasValue(query.getOrdNo())) {
+            payload.put("ordNo", query.getOrdNo());
+        }
+        if (FormatValidator.hasValue(query.getWrkStat())) {
+            payload.put("wrkStat", query.getWrkStat());
+        }
         payload.put(ACCESS_TOKEN_HEADER, maskValue(query.getAccessToken()));
         payload.put("attempt", attempt);
         return vendorCommunicationPayloadGenerator.buildPayloadJson(payload);
