@@ -52,6 +52,17 @@ public class GetReviewService implements GetReviewUseCase {
     }
 
     @Override
+    public Review getReview(Long id, Long userId) {
+        Review review = findReviewPort.findById(id)
+                .orElseThrow(() -> new ReviewNotFoundException(id));
+        review.updateIsUserLiked(
+                getLikeUseCase.existsUserLike(LikeTargetType.REVIEW, review.getId(), userId)
+        );
+
+        return review;
+    }
+
+    @Override
     public void validateDuplicateReview(RegisterReviewCommand command) {
         Long orderId = command.orderId();
         Long pricePolicyId = command.pricePolicyId();
