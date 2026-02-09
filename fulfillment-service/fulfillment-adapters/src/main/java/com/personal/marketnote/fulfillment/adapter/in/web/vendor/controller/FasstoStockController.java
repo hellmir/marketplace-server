@@ -99,7 +99,7 @@ public class FasstoStockController {
         );
     }
 
-     /**
+    /**
      * (관리자) 전체 상품 재고 동기화
      *
      * @param customerCode 파스토 고객사 코드

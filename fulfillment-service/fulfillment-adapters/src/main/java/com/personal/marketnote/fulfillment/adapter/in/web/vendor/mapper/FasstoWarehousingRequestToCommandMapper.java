@@ -50,20 +50,20 @@ public class FasstoWarehousingRequestToCommandMapper {
                 .map(FasstoWarehousingRequestToCommandMapper::mapGoods)
                 .toList();
 
-        return RegisterFasstoWarehousingItemCommand.of(
-                item.getOrdDt(),
-                item.getOrdNo(),
-                item.getInWay(),
-                item.getSlipNo(),
-                item.getParcelComp(),
-                item.getParcelInvoiceNo(),
-                item.getRemark(),
-                item.getCstSupCd(),
-                item.getDistTermDt(),
-                item.getMakeDt(),
-                item.getPreArv(),
-                goods
-        );
+        return RegisterFasstoWarehousingItemCommand.builder()
+                .ordDt(item.getOrdDt())
+                .ordNo(item.getOrdNo())
+                .inWay(item.getInWay())
+                .slipNo(item.getSlipNo())
+                .parcelComp(item.getParcelComp())
+                .parcelInvoiceNo(item.getParcelInvoiceNo())
+                .remark(item.getRemark())
+                .cstSupCd(item.getCstSupCd())
+                .distTermDt(item.getDistTermDt())
+                .makeDt(item.getMakeDt())
+                .preArv(item.getPreArv())
+                .godCds(goods)
+                .build();
     }
 
     private static UpdateFasstoWarehousingItemCommand mapUpdateItem(UpdateFasstoWarehousingRequest item) {
