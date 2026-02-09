@@ -37,7 +37,7 @@ public class ChangeOrderStatusService implements ChangeOrderStatusUseCase {
         Order order = getOrderUseCase.getOrder(command.id());
         OrderStatus status = command.orderStatus();
 
-        if (status.isMe(order.getOrderStatus())) {
+        if (status.isMe(order.getOrderStatus()) && status.isNotPartialChanged()) {
             throw new OrderStatusAlreadyChangedException(status);
         }
 
