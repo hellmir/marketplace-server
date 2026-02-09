@@ -58,7 +58,7 @@ public class PointController {
      * @Date 2026-01-17
      * @Description 회원 포인트 정보를 생성합니다.
      */
-    @PostMapping("/{userId}/point")
+    @PostMapping("/{userId}/points")
     @PreAuthorize(ADMIN_POINTCUT)
     @RegisterUserPointApiDocs
     public ResponseEntity<BaseResponse<Void>> registerUserPoint(
@@ -88,7 +88,7 @@ public class PointController {
      * @Date 2026-01-18
      * @Description 나의 포인트 정보를 조회합니다.
      */
-    @GetMapping("/me/point")
+    @GetMapping("/me/points")
     @GetMyPointApiDocs
     public ResponseEntity<BaseResponse<GetMyPointReponse>> getMyPoint(
             @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal
@@ -116,7 +116,7 @@ public class PointController {
      * @param filter    포인트 내역 조회 필터 (ALL/ACCRUAL/DEDUCTION)
      * @return 회원 포인트 내역 조회 응답 {@link GetUserPointHistoryResponse}
      */
-    @GetMapping("/{userId}/point/histories")
+    @GetMapping("/{userId}/points/histories")
     @GetUserPointHistoriesApiDocs
     public ResponseEntity<BaseResponse<GetUserPointHistoryResponse>> getUserPointHistories(
             @PathVariable("userId") Long userId,
@@ -159,7 +159,7 @@ public class PointController {
     /**
      * (관리자) 회원 포인트 적립/차감
      */
-    @PatchMapping("/{userId}/point")
+    @PatchMapping("/{userId}/points")
     @PreAuthorize(ADMIN_POINTCUT)
     @ModifyUserPointApiDocs
     public ResponseEntity<BaseResponse<UpdateUserPointResponse>> modifyUserPoint(
