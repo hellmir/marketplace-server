@@ -36,6 +36,7 @@ import java.lang.annotation.*;
                 | accessToken | header | string | 파스토 액세스 토큰 | Y | 3169eb15ef7a11f0be620ab49498ff55 |
                 | customerCode | path | string | 파스토 고객사 코드 | Y | 94388 |
                 | outOfStockYn | query | string | 품절 상품 조회 여부(Y/N) | N | Y |
+                | whCd | query | string | 창고 코드 | N | TEST |
                 
                 ---
                 
@@ -102,6 +103,13 @@ import java.lang.annotation.*;
                         in = ParameterIn.QUERY,
                         required = false,
                         schema = @Schema(type = "string", example = "Y")
+                ),
+                @Parameter(
+                        name = "whCd",
+                        description = "창고 코드",
+                        in = ParameterIn.QUERY,
+                        required = false,
+                        schema = @Schema(type = "string", example = "TEST")
                 )
         },
         responses = {

@@ -60,12 +60,13 @@ public class FasstoStockClient implements GetFasstoStocksPort, GetFasstoStockDet
             throw new IllegalArgumentException("Fassto stock query is required.");
         }
 
-        URI uri = buildStockListUri(query.getCustomerCode(), query.getOutOfStockYn());
+        URI uri = buildStockListUri(query.getCustomerCode(), query.getOutOfStockYn(), query.getWhCd());
         return executeStockList(
                 uri,
                 query.getCustomerCode(),
                 query.getAccessToken(),
                 query.getOutOfStockYn(),
+                query.getWhCd(),
                 null,
                 false
         );
@@ -83,6 +84,7 @@ public class FasstoStockClient implements GetFasstoStocksPort, GetFasstoStockDet
                 query.getCustomerCode(),
                 query.getAccessToken(),
                 query.getOutOfStockYn(),
+                null,
                 query.getCstGodCd(),
                 true
         );
@@ -93,6 +95,7 @@ public class FasstoStockClient implements GetFasstoStocksPort, GetFasstoStockDet
             String customerCode,
             String accessToken,
             String outOfStockYn,
+            String whCd,
             String cstGodCd,
             boolean isDetail
     ) {
@@ -107,7 +110,15 @@ public class FasstoStockClient implements GetFasstoStocksPort, GetFasstoStockDet
 
         for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
             int attempt = i + 1;
-            JsonNode requestPayloadJson = buildListRequestPayloadJson(customerCode, accessToken, outOfStockYn, cstGodCd, uri, attempt);
+            JsonNode requestPayloadJson = buildListRequestPayloadJson(
+                    customerCode,
+                    accessToken,
+                    outOfStockYn,
+                    whCd,
+                    cstGodCd,
+                    uri,
+                    attempt
+            );
             String requestPayload = requestPayloadJson.toString();
 
             ResponseEntity<String> response;
@@ -212,12 +223,15 @@ public class FasstoStockClient implements GetFasstoStocksPort, GetFasstoStockDet
         throw new GetFasstoStocksFailedException(failureMessage, new IOException(error));
     }
 
-    private URI buildStockListUri(String customerCode, String outOfStockYn) {
+    private URI buildStockListUri(String customerCode, String outOfStockYn, String whCd) {
         validateStockListProperties();
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(properties.getBaseUrl())
                 .path(properties.getStockListPath());
         if (FormatValidator.hasValue(outOfStockYn)) {
             builder.queryParam("outOfStockYn", outOfStockYn);
+        }
+        if (FormatValidator.hasValue(whCd)) {
+            builder.queryParam("whCd", whCd);
         }
         return builder
                 .buildAndExpand(customerCode)
@@ -311,6 +325,7 @@ public class FasstoStockClient implements GetFasstoStocksPort, GetFasstoStockDet
                 query.getCustomerCode(),
                 query.getAccessToken(),
                 query.getOutOfStockYn(),
+                query.getWhCd(),
                 null,
                 uri,
                 attempt
@@ -321,6 +336,7 @@ public class FasstoStockClient implements GetFasstoStocksPort, GetFasstoStockDet
             String customerCode,
             String accessToken,
             String outOfStockYn,
+            String whCd,
             String cstGodCd,
             URI uri,
             int attempt
@@ -334,6 +350,9 @@ public class FasstoStockClient implements GetFasstoStocksPort, GetFasstoStockDet
         }
         if (FormatValidator.hasValue(outOfStockYn)) {
             payload.put("outOfStockYn", outOfStockYn);
+        }
+        if (FormatValidator.hasValue(whCd)) {
+            payload.put("whCd", whCd);
         }
         payload.put(ACCESS_TOKEN_HEADER, maskValue(accessToken));
         payload.put("attempt", attempt);
