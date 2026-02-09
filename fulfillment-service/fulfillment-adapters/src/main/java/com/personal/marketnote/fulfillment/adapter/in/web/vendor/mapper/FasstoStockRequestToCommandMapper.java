@@ -24,8 +24,9 @@ public class FasstoStockRequestToCommandMapper {
     }
 
     public static SyncFasstoAllStockCommand mapToSyncAllCommand(
-            String customerCode
+            String customerCode,
+            String whCd
     ) {
-        return SyncFasstoAllStockCommand.of(customerCode);
+        return SyncFasstoAllStockCommand.of(customerCode, whCd);
     }
 }

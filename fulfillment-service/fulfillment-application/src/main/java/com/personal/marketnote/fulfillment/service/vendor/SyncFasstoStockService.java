@@ -93,7 +93,9 @@ public class SyncFasstoStockService implements SyncFasstoStockUseCase, SyncFasst
         GetFasstoStocksResult stocksResult = getFasstoStocksUseCase.getStocks(
                 GetFasstoStocksCommand.of(
                         command.customerCode(),
-                        accessToken.getValue()
+                        accessToken.getValue(),
+                        null,
+                        command.whCd()
                 )
         );
         List<UpdateCommerceInventoryItemCommand> inventories = resolveInventories(stocksResult);

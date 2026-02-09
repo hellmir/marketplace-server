@@ -99,10 +99,11 @@ public class FasstoStockController {
         );
     }
 
-    /**
+     /**
      * (관리자) 전체 상품 재고 동기화
      *
      * @param customerCode 파스토 고객사 코드
+     * @param whCd         창고 코드
      * @Author 성효빈
      * @Date 2026-02-07
      * @Description 전체 상품 재고와 파스토 재고를 동기화합니다.
@@ -111,10 +112,11 @@ public class FasstoStockController {
     @PreAuthorize(ADMIN_POINTCUT)
     @SyncFasstoAllStocksApiDocs
     public ResponseEntity<BaseResponse<Void>> syncAllStocks(
-            @PathVariable String customerCode
+            @PathVariable String customerCode,
+            @RequestParam(required = false) String whCd
     ) {
         syncFasstoAllStockUseCase.syncAll(
-                FasstoStockRequestToCommandMapper.mapToSyncAllCommand(customerCode)
+                FasstoStockRequestToCommandMapper.mapToSyncAllCommand(customerCode, whCd)
         );
 
         return new ResponseEntity<>(
