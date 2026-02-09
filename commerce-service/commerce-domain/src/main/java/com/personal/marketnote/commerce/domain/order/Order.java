@@ -77,8 +77,21 @@ public class Order {
                 .filter(orderProduct -> pricePolicyIds.contains(orderProduct.getPricePolicyId()))
                 .forEach(orderProduct -> orderProduct.changeOrderStatus(orderStatus));
 
-        if (orderStatus.isRefunded()) {
+        if (
+                orderStatus.isRefunded()
+                        && orderProducts.stream()
+                        .anyMatch(orderProduct -> !orderProduct.getOrderStatus().isRefunded())
+        ) {
             this.orderStatus = OrderStatus.getPartiallyRefunded();
+            return;
+        }
+
+        if (
+                orderStatus.isConfirmed()
+                        && orderProducts.stream()
+                        .anyMatch(orderProduct -> !orderProduct.getOrderStatus().isConfirmed())
+        ) {
+            this.orderStatus = OrderStatus.getPartiallyConfirmed();
             return;
         }
 

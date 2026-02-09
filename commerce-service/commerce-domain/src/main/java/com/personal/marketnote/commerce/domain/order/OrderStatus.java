@@ -15,6 +15,7 @@ public enum OrderStatus {
     CANCELLED("주문 취소"),
     SHIPPING("배송중"),
     DELIVERED("배송 완료"),
+    PARTIALLY_CONFIRMED("부분 구매 확정"),
     CONFIRMED("구매 확정"),
     EXCHANGE_REQUESTED("교환 요청됨"),
     EXCHANGE_RECALLING("교환 회수 중"),
@@ -32,6 +33,10 @@ public enum OrderStatus {
         return this == REFUNDED;
     }
 
+    public static OrderStatus getPartiallyConfirmed() {
+        return PARTIALLY_CONFIRMED;
+    }
+
     public static OrderStatus getPartiallyRefunded() {
         return PARTIALLY_REFUNDED;
     }
@@ -46,5 +51,13 @@ public enum OrderStatus {
 
     public boolean isPending() {
         return this == PAYMENT_PENDING;
+    }
+
+    public boolean isConfirmed() {
+        return this == CONFIRMED;
+    }
+
+    public boolean isNotPartialChanged() {
+        return this != PARTIALLY_CONFIRMED && this != PARTIALLY_REFUNDED;
     }
 }
