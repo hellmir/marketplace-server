@@ -8,9 +8,10 @@ public class FasstoStockRequestToCommandMapper {
     public static GetFasstoStocksCommand mapToStocksCommand(
             String customerCode,
             String accessToken,
-            String outOfStockYn
+            String outOfStockYn,
+            String whCd
     ) {
-        return GetFasstoStocksCommand.of(customerCode, accessToken, outOfStockYn);
+        return GetFasstoStocksCommand.of(customerCode, accessToken, outOfStockYn, whCd);
     }
 
     public static GetFasstoStockDetailCommand mapToStockDetailCommand(

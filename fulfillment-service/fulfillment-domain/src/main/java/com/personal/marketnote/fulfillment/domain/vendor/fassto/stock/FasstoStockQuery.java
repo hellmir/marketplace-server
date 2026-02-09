@@ -11,16 +11,27 @@ public class FasstoStockQuery {
     private String customerCode;
     private String accessToken;
     private String outOfStockYn;
+    private String whCd;
 
     public static FasstoStockQuery of(
             String customerCode,
             String accessToken,
             String outOfStockYn
     ) {
+        return FasstoStockQuery.of(customerCode, accessToken, outOfStockYn, null);
+    }
+
+    public static FasstoStockQuery of(
+            String customerCode,
+            String accessToken,
+            String outOfStockYn,
+            String whCd
+    ) {
         FasstoStockQuery query = FasstoStockQuery.builder()
                 .customerCode(customerCode)
                 .accessToken(accessToken)
                 .outOfStockYn(outOfStockYn)
+                .whCd(whCd)
                 .build();
         query.validate();
         return query;

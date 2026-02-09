@@ -10,7 +10,8 @@ public class FasstoStockCommandToRequestMapper {
         return FasstoStockQuery.of(
                 command.customerCode(),
                 command.accessToken(),
-                command.outOfStockYn()
+                command.outOfStockYn(),
+                command.whCd()
         );
     }
 
