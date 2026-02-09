@@ -35,6 +35,7 @@ public class FasstoStockController {
      * @param customerCode 파스토 고객사 코드
      * @param accessToken  파스토 액세스 토큰
      * @param outOfStockYn 품절 상품 조회 여부(Y/N)
+     * @param whCd         창고 코드
      * @Author 성효빈
      * @Date 2026-02-05
      * @Description 파스토 재고 목록을 조회합니다.
@@ -45,10 +46,11 @@ public class FasstoStockController {
     public ResponseEntity<BaseResponse<GetFasstoStocksResponse>> getStocks(
             @PathVariable String customerCode,
             @RequestHeader("accessToken") String accessToken,
-            @RequestParam(required = false) String outOfStockYn
+            @RequestParam(required = false) String outOfStockYn,
+            @RequestParam(required = false) String whCd
     ) {
         GetFasstoStocksResult result = getFasstoStocksUseCase.getStocks(
-                FasstoStockRequestToCommandMapper.mapToStocksCommand(customerCode, accessToken, outOfStockYn)
+                FasstoStockRequestToCommandMapper.mapToStocksCommand(customerCode, accessToken, outOfStockYn, whCd)
         );
 
         return new ResponseEntity<>(
