@@ -3,12 +3,15 @@ package com.personal.marketnote.fulfillment.port.in.result.vendor;
 import java.util.List;
 
 public record FasstoDeliveryInfoResult(
+        String outDt,
         String ordDt,
         String whCd,
         String whNm,
         String slipNo,
         String cstCd,
         String cstNm,
+        String shopCd,
+        String mapSlipNo,
         String shopNm,
         Integer sku,
         Integer ordQty,
@@ -28,7 +31,6 @@ public record FasstoDeliveryInfoResult(
         String invoiceNo,
         String parcelNm,
         String parcelCd,
-        String updTime,
         String custNm,
         List<Object> goodsSerialNo,
         String custAddr,
@@ -38,15 +40,19 @@ public record FasstoDeliveryInfoResult(
         String remark,
         String sendNm,
         String sendTelNo,
-        String updUserNm
+        String updUserNm,
+        String updTime
 ) {
     public static FasstoDeliveryInfoResult of(
+            String outDt,
             String ordDt,
             String whCd,
             String whNm,
             String slipNo,
             String cstCd,
             String cstNm,
+            String shopCd,
+            String mapSlipNo,
             String shopNm,
             Integer sku,
             Integer ordQty,
@@ -66,7 +72,6 @@ public record FasstoDeliveryInfoResult(
             String invoiceNo,
             String parcelNm,
             String parcelCd,
-            String updTime,
             String custNm,
             List<Object> goodsSerialNo,
             String custAddr,
@@ -76,15 +81,19 @@ public record FasstoDeliveryInfoResult(
             String remark,
             String sendNm,
             String sendTelNo,
-            String updUserNm
+            String updUserNm,
+            String updTime
     ) {
         return new FasstoDeliveryInfoResult(
+                outDt,
                 ordDt,
                 whCd,
                 whNm,
                 slipNo,
                 cstCd,
                 cstNm,
+                shopCd,
+                mapSlipNo,
                 shopNm,
                 sku,
                 ordQty,
@@ -104,7 +113,6 @@ public record FasstoDeliveryInfoResult(
                 invoiceNo,
                 parcelNm,
                 parcelCd,
-                updTime,
                 custNm,
                 goodsSerialNo,
                 custAddr,
@@ -114,7 +122,8 @@ public record FasstoDeliveryInfoResult(
                 remark,
                 sendNm,
                 sendTelNo,
-                updUserNm
+                updUserNm,
+                updTime
         );
     }
 }
