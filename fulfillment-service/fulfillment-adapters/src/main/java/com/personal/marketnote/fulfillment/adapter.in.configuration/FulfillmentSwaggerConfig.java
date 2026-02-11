@@ -34,6 +34,7 @@ public class FulfillmentSwaggerConfig {
             "파스토 인증 API",
             "파스토 공급사 API",
             "파스토 상품 입고 API",
+            "파스토 출고 API",
             "파스토 상품 API",
             "파스토 재고 API",
             "파스토 출고처 API",
