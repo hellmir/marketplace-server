@@ -90,6 +90,18 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | dataCount | number | 등록 건수 | 0 |
                 | deliveries | array | 출고 등록 결과 | [ ... ] |
+                
+                ---
+                
+                ### Response > content > deliveries
+                
+                | **키** | **타입** | **설명** | **예시** |
+                | --- | --- | --- | --- |
+                | fmsSlipNo | string | 전표번호 | "TESTOO260121000042" |
+                | orderNo | string | 주문번호 | "asdf" |
+                | msg | string | 처리 메시지 | "출고요청 등록 성공" |
+                | code | string | 처리 코드 | "200" |
+                | outOfStockGoodsDetail | object | 품절 상품 상세 | null |
                 """,
         security = {@SecurityRequirement(name = "bearer")},
         parameters = {
@@ -152,8 +164,16 @@ import java.lang.annotation.*;
                                           "code": "SUC01",
                                           "timestamp": "2026-02-11T12:12:30.013",
                                           "content": {
-                                            "dataCount": 0,
-                                            "deliveries": []
+                                            "dataCount": 1,
+                                            "deliveries": [
+                                              {
+                                                "fmsSlipNo": "TESTOO260121000042",
+                                                "orderNo": "asdf",
+                                                "msg": "출고요청 등록 성공",
+                                                "code": "200",
+                                                "outOfStockGoodsDetail": null
+                                              }
+                                            ]
                                           },
                                           "message": "파스토 출고 등록 성공"
                                         }

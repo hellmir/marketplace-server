@@ -6,12 +6,15 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record FasstoDeliveryItemResponse(
+        String outDt,
         String ordDt,
         String whCd,
         String whNm,
         String slipNo,
         String cstCd,
         String cstNm,
+        String shopCd,
+        String mapSlipNo,
         String shopNm,
         Integer sku,
         Integer ordQty,

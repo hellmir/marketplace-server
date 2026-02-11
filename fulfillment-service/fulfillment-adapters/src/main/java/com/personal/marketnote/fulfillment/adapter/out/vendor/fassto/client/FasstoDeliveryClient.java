@@ -5,11 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.personal.marketnote.common.adapter.out.VendorAdapter;
 import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.common.utility.http.client.CommunicationFailureHandler;
-import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoDeliveryItemResponse;
-import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoDeliveryListResponse;
-import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.FasstoErrorResponse;
-import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.RegisterFasstoDeliveryItemResponse;
-import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.RegisterFasstoDeliveryResponse;
+import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.*;
 import com.personal.marketnote.fulfillment.configuration.FasstoAuthProperties;
 import com.personal.marketnote.fulfillment.domain.vendor.fassto.delivery.FasstoDeliveryMapper;
 import com.personal.marketnote.fulfillment.domain.vendor.fassto.delivery.FasstoDeliveryQuery;
@@ -556,10 +552,11 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
 
     private RegisterFasstoDeliveryItemResult mapDeliveryItem(RegisterFasstoDeliveryItemResponse item) {
         return RegisterFasstoDeliveryItemResult.of(
+                item.fmsSlipNo(),
+                item.orderNo(),
                 item.msg(),
                 item.code(),
-                item.slipNo(),
-                item.ordNo()
+                item.outOfStockGoodsDetail()
         );
     }
 
@@ -569,12 +566,15 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
                 : List.of();
 
         return FasstoDeliveryInfoResult.of(
+                item.outDt(),
                 item.ordDt(),
                 item.whCd(),
                 item.whNm(),
                 item.slipNo(),
                 item.cstCd(),
                 item.cstNm(),
+                item.shopCd(),
+                item.mapSlipNo(),
                 item.shopNm(),
                 item.sku(),
                 item.ordQty(),
@@ -594,7 +594,6 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
                 item.invoiceNo(),
                 item.parcelNm(),
                 item.parcelCd(),
-                item.updTime(),
                 item.custNm(),
                 goodsSerialNo,
                 item.custAddr(),
@@ -604,7 +603,8 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
                 item.remark(),
                 item.sendNm(),
                 item.sendTelNo(),
-                item.updUserNm()
+                item.updUserNm(),
+                item.updTime()
         );
     }
 
