@@ -2,6 +2,7 @@ package com.personal.marketnote.fulfillment.adapter.in.web.vendor.mapper;
 
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.RegisterFasstoDeliveryGoodsRequest;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.RegisterFasstoDeliveryRequest;
+import com.personal.marketnote.fulfillment.port.in.command.vendor.GetFasstoDeliveriesCommand;
 import com.personal.marketnote.fulfillment.port.in.command.vendor.RegisterFasstoDeliveryCommand;
 import com.personal.marketnote.fulfillment.port.in.command.vendor.RegisterFasstoDeliveryGoodsCommand;
 import com.personal.marketnote.fulfillment.port.in.command.vendor.RegisterFasstoDeliveryItemCommand;
@@ -19,6 +20,26 @@ public class FasstoDeliveryRequestToCommandMapper {
                 .toList();
 
         return RegisterFasstoDeliveryCommand.of(customerCode, accessToken, deliveryRequests);
+    }
+
+    public static GetFasstoDeliveriesCommand mapToDeliveriesCommand(
+            String customerCode,
+            String accessToken,
+            String startDate,
+            String endDate,
+            String status,
+            String outDiv,
+            String ordNo
+    ) {
+        return GetFasstoDeliveriesCommand.of(
+                customerCode,
+                accessToken,
+                startDate,
+                endDate,
+                status,
+                outDiv,
+                ordNo
+        );
     }
 
     private static RegisterFasstoDeliveryItemCommand mapItem(RegisterFasstoDeliveryRequest item) {

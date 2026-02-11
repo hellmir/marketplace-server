@@ -19,7 +19,7 @@ import java.lang.annotation.*;
 @Operation(
         summary = "(관리자) 파스토 출고 등록 요청",
         description = """
-                작성일자: 2026-02-10
+                작성일자: 2026-02-11
                 
                 작성자: 성효빈
                 
@@ -78,7 +78,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 500: 그 외 |
                 | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "INTERNAL_SERVER_ERROR" |
-                | timestamp | string(datetime) | 응답 일시 | "2026-02-10T12:12:30.013" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-02-11T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
                 | message | string | 처리 결과 | "파스토 출고 등록 성공" |
                 
@@ -150,7 +150,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 201,
                                           "code": "SUC01",
-                                          "timestamp": "2026-02-10T12:12:30.013",
+                                          "timestamp": "2026-02-11T12:12:30.013",
                                           "content": {
                                             "dataCount": 0,
                                             "deliveries": []
@@ -168,7 +168,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 401,
                                           "code": "UNAUTHORIZED",
-                                          "timestamp": "2026-02-10T12:12:30.013",
+                                          "timestamp": "2026-02-11T12:12:30.013",
                                           "content": null,
                                           "message": "Invalid token"
                                         }
@@ -183,7 +183,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 403,
                                           "code": "FORBIDDEN",
-                                          "timestamp": "2026-02-10T12:12:30.013",
+                                          "timestamp": "2026-02-11T12:12:30.013",
                                           "content": null,
                                           "message": "Access Denied"
                                         }

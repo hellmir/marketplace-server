@@ -1,6 +1,7 @@
 package com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.personal.marketnote.common.utility.FormatValidator;
 
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record RegisterFasstoDeliveryResponse(
         FasstoResponseHeader header,
+        @JsonDeserialize(using = RegisterFasstoDeliveryDataDeserializer.class)
         List<RegisterFasstoDeliveryItemResponse> data,
         FasstoErrorInfo errorInfo
 ) implements FasstoApiResponse {
