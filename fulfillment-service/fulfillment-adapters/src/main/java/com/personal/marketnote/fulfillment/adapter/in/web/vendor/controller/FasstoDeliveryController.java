@@ -2,14 +2,18 @@ package com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.GetFasstoDeliveriesApiDocs;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.GetFasstoDeliveryDetailApiDocs;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.RegisterFasstoDeliveryApiDocs;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.mapper.FasstoDeliveryRequestToCommandMapper;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.RegisterFasstoDeliveryRequest;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.GetFasstoDeliveriesResponse;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.GetFasstoDeliveryDetailResponse;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.RegisterFasstoDeliveryResponse;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoDeliveriesResult;
+import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoDeliveryDetailResult;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.RegisterFasstoDeliveryResult;
 import com.personal.marketnote.fulfillment.port.in.usecase.vendor.GetFasstoDeliveriesUseCase;
+import com.personal.marketnote.fulfillment.port.in.usecase.vendor.GetFasstoDeliveryDetailUseCase;
 import com.personal.marketnote.fulfillment.port.in.usecase.vendor.RegisterFasstoDeliveryUseCase;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,6 +35,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.ADMIN_POINTCUT;
 public class FasstoDeliveryController {
     private final RegisterFasstoDeliveryUseCase registerFasstoDeliveryUseCase;
     private final GetFasstoDeliveriesUseCase getFasstoDeliveriesUseCase;
+    private final GetFasstoDeliveryDetailUseCase getFasstoDeliveryDetailUseCase;
 
     /**
      * (관리자) 파스토 출고 등록 요청
@@ -110,6 +115,41 @@ public class FasstoDeliveryController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "파스토 출고 목록 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * (관리자) 파스토 출고 상세 조회
+     *
+     * @param customerCode 파스토 고객사 코드
+     * @param slipNo       파스토 출고요청번호
+     * @param accessToken  파스토 액세스 토큰
+     * @param ordNo        주문번호
+     * @Author 성효빈
+     * @Date 2026-02-12
+     * @Description 파스토 출고 상세 정보를 조회합니다.
+     */
+    @GetMapping("/detail/{customerCode}/{slipNo}")
+    @PreAuthorize(ADMIN_POINTCUT)
+    @GetFasstoDeliveryDetailApiDocs
+    public ResponseEntity<BaseResponse<GetFasstoDeliveryDetailResponse>> getDeliveryDetail(
+            @PathVariable String customerCode,
+            @PathVariable String slipNo,
+            @RequestHeader("accessToken") String accessToken,
+            @RequestParam(required = false) String ordNo
+    ) {
+        GetFasstoDeliveryDetailResult result = getFasstoDeliveryDetailUseCase.getDeliveryDetail(
+                FasstoDeliveryRequestToCommandMapper.mapToDeliveryDetailCommand(customerCode, accessToken, slipNo, ordNo)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        GetFasstoDeliveryDetailResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "파스토 출고 상세 조회 성공"
                 ),
                 HttpStatus.OK
         );

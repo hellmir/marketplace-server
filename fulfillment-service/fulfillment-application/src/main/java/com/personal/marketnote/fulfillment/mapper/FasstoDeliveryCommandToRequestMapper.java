@@ -1,13 +1,7 @@
 package com.personal.marketnote.fulfillment.mapper;
 
-import com.personal.marketnote.fulfillment.domain.vendor.fassto.delivery.FasstoDeliveryGoodsMapper;
-import com.personal.marketnote.fulfillment.domain.vendor.fassto.delivery.FasstoDeliveryItemMapper;
-import com.personal.marketnote.fulfillment.domain.vendor.fassto.delivery.FasstoDeliveryMapper;
-import com.personal.marketnote.fulfillment.domain.vendor.fassto.delivery.FasstoDeliveryQuery;
-import com.personal.marketnote.fulfillment.port.in.command.vendor.GetFasstoDeliveriesCommand;
-import com.personal.marketnote.fulfillment.port.in.command.vendor.RegisterFasstoDeliveryCommand;
-import com.personal.marketnote.fulfillment.port.in.command.vendor.RegisterFasstoDeliveryGoodsCommand;
-import com.personal.marketnote.fulfillment.port.in.command.vendor.RegisterFasstoDeliveryItemCommand;
+import com.personal.marketnote.fulfillment.domain.vendor.fassto.delivery.*;
+import com.personal.marketnote.fulfillment.port.in.command.vendor.*;
 
 import java.util.List;
 
@@ -20,6 +14,15 @@ public class FasstoDeliveryCommandToRequestMapper {
                 command.endDate(),
                 command.status(),
                 command.outDiv(),
+                command.ordNo()
+        );
+    }
+
+    public static FasstoDeliveryDetailQuery mapToDetailQuery(GetFasstoDeliveryDetailCommand command) {
+        return FasstoDeliveryDetailQuery.of(
+                command.customerCode(),
+                command.accessToken(),
+                command.slipNo(),
                 command.ordNo()
         );
     }
