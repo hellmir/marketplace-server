@@ -17,7 +17,7 @@ import java.lang.annotation.*;
 @Operation(
         summary = "(관리자) 파스토 출고 목록 조회",
         description = """
-                작성일자: 2026-02-12
+                작성일자: 2026-02-11
                 
                 작성자: 성효빈
                 
