@@ -1,17 +1,22 @@
 package com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.CancelFasstoDeliveryApiDocs;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.GetFasstoDeliveriesApiDocs;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.GetFasstoDeliveryDetailApiDocs;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.RegisterFasstoDeliveryApiDocs;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.mapper.FasstoDeliveryRequestToCommandMapper;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.CancelFasstoDeliveryRequest;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.RegisterFasstoDeliveryRequest;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.CancelFasstoDeliveryResponse;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.GetFasstoDeliveriesResponse;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.GetFasstoDeliveryDetailResponse;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.RegisterFasstoDeliveryResponse;
+import com.personal.marketnote.fulfillment.port.in.result.vendor.CancelFasstoDeliveryResult;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoDeliveriesResult;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoDeliveryDetailResult;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.RegisterFasstoDeliveryResult;
+import com.personal.marketnote.fulfillment.port.in.usecase.vendor.CancelFasstoDeliveryUseCase;
 import com.personal.marketnote.fulfillment.port.in.usecase.vendor.GetFasstoDeliveriesUseCase;
 import com.personal.marketnote.fulfillment.port.in.usecase.vendor.GetFasstoDeliveryDetailUseCase;
 import com.personal.marketnote.fulfillment.port.in.usecase.vendor.RegisterFasstoDeliveryUseCase;
@@ -36,6 +41,7 @@ public class FasstoDeliveryController {
     private final RegisterFasstoDeliveryUseCase registerFasstoDeliveryUseCase;
     private final GetFasstoDeliveriesUseCase getFasstoDeliveriesUseCase;
     private final GetFasstoDeliveryDetailUseCase getFasstoDeliveryDetailUseCase;
+    private final CancelFasstoDeliveryUseCase cancelFasstoDeliveryUseCase;
 
     /**
      * (관리자) 파스토 출고 등록 요청
@@ -67,6 +73,39 @@ public class FasstoDeliveryController {
                         "파스토 출고 등록 성공"
                 ),
                 HttpStatus.CREATED
+        );
+    }
+
+    /**
+     * (관리자) 파스토 출고 취소 요청
+     *
+     * @param customerCode 파스토 고객사 코드
+     * @param accessToken  파스토 액세스 토큰
+     * @param request      출고 취소 요청 정보
+     * @Author 성효빈
+     * @Date 2026-02-12
+     * @Description 파스토 출고 요청을 취소합니다.
+     */
+    @PatchMapping("/cancel/{customerCode}")
+    @PreAuthorize(ADMIN_POINTCUT)
+    @CancelFasstoDeliveryApiDocs
+    public ResponseEntity<BaseResponse<CancelFasstoDeliveryResponse>> cancelDelivery(
+            @PathVariable String customerCode,
+            @RequestHeader("accessToken") String accessToken,
+            @Valid @RequestBody List<CancelFasstoDeliveryRequest> request
+    ) {
+        CancelFasstoDeliveryResult result = cancelFasstoDeliveryUseCase.cancelDelivery(
+                FasstoDeliveryRequestToCommandMapper.mapToCancelCommand(customerCode, accessToken, request)
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        CancelFasstoDeliveryResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "파스토 출고 취소 성공"
+                ),
+                HttpStatus.OK
         );
     }
 

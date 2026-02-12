@@ -1,5 +1,6 @@
 package com.personal.marketnote.fulfillment.adapter.in.web.vendor.mapper;
 
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.CancelFasstoDeliveryRequest;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.RegisterFasstoDeliveryGoodsRequest;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.RegisterFasstoDeliveryRequest;
 import com.personal.marketnote.fulfillment.port.in.command.vendor.*;
@@ -46,6 +47,18 @@ public class FasstoDeliveryRequestToCommandMapper {
             String ordNo
     ) {
         return GetFasstoDeliveryDetailCommand.of(customerCode, accessToken, slipNo, ordNo);
+    }
+
+    public static CancelFasstoDeliveryCommand mapToCancelCommand(
+            String customerCode,
+            String accessToken,
+            List<CancelFasstoDeliveryRequest> request
+    ) {
+        List<CancelFasstoDeliveryItemCommand> cancelRequests = request.stream()
+                .map(item -> CancelFasstoDeliveryItemCommand.of(item.getSlipNo(), item.getOrdNo()))
+                .toList();
+
+        return CancelFasstoDeliveryCommand.of(customerCode, accessToken, cancelRequests);
     }
 
     private static RegisterFasstoDeliveryItemCommand mapItem(RegisterFasstoDeliveryRequest item) {

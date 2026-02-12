@@ -27,6 +27,18 @@ public class FasstoDeliveryCommandToRequestMapper {
         );
     }
 
+    public static FasstoDeliveryCancelMapper mapToCancelRequest(CancelFasstoDeliveryCommand command) {
+        List<FasstoDeliveryCancelItemMapper> cancelRequests = command.deliveries().stream()
+                .map(FasstoDeliveryCommandToRequestMapper::mapCancelItem)
+                .toList();
+
+        return FasstoDeliveryCancelMapper.of(
+                command.customerCode(),
+                command.accessToken(),
+                cancelRequests
+        );
+    }
+
     public static FasstoDeliveryMapper mapToRegisterRequest(RegisterFasstoDeliveryCommand command) {
         List<FasstoDeliveryItemMapper> deliveryRequests = command.deliveryRequests().stream()
                 .map(FasstoDeliveryCommandToRequestMapper::mapItem)
@@ -68,6 +80,13 @@ public class FasstoDeliveryCommandToRequestMapper {
                 item.cstGodCd(),
                 item.distTermDt(),
                 item.ordQty()
+        );
+    }
+
+    private static FasstoDeliveryCancelItemMapper mapCancelItem(CancelFasstoDeliveryItemCommand item) {
+        return FasstoDeliveryCancelItemMapper.of(
+                item.slipNo(),
+                item.ordNo()
         );
     }
 }
