@@ -117,7 +117,7 @@ class GetMyOrderingProductsUseCaseTest {
     }
 
     @Test
-    @DisplayName("주문 대기 상품 목록 조회 시 재고 정보가 없으면 재고는 null이다")
+    @DisplayName("주문 대기 상품 목록 조회 시 재고 정보가 없으면 재고 정보에 null을 반환한다")
     void getMyOrderingProducts_missingStock_returnsNullStock() {
         Product product = buildProduct(1L);
         PricePolicy policy = buildPricePolicy(10L, product);
