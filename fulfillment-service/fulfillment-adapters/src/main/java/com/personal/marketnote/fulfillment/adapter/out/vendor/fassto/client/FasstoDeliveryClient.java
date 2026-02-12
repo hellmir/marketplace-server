@@ -7,6 +7,7 @@ import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.common.utility.http.client.CommunicationFailureHandler;
 import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.*;
 import com.personal.marketnote.fulfillment.configuration.FasstoAuthProperties;
+import com.personal.marketnote.fulfillment.domain.vendor.fassto.delivery.FasstoDeliveryCancelMapper;
 import com.personal.marketnote.fulfillment.domain.vendor.fassto.delivery.FasstoDeliveryDetailQuery;
 import com.personal.marketnote.fulfillment.domain.vendor.fassto.delivery.FasstoDeliveryMapper;
 import com.personal.marketnote.fulfillment.domain.vendor.fassto.delivery.FasstoDeliveryQuery;
@@ -14,10 +15,12 @@ import com.personal.marketnote.fulfillment.domain.vendorcommunication.Fulfillmen
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationTargetType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorName;
+import com.personal.marketnote.fulfillment.exception.CancelFasstoDeliveryFailedException;
 import com.personal.marketnote.fulfillment.exception.GetFasstoDeliveriesFailedException;
 import com.personal.marketnote.fulfillment.exception.GetFasstoDeliveryDetailFailedException;
 import com.personal.marketnote.fulfillment.exception.RegisterFasstoDeliveryFailedException;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.*;
+import com.personal.marketnote.fulfillment.port.out.vendor.CancelFasstoDeliveryPort;
 import com.personal.marketnote.fulfillment.port.out.vendor.GetFasstoDeliveriesPort;
 import com.personal.marketnote.fulfillment.port.out.vendor.GetFasstoDeliveryDetailPort;
 import com.personal.marketnote.fulfillment.port.out.vendor.RegisterFasstoDeliveryPort;
@@ -43,7 +46,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.*;
 @VendorAdapter
 @RequiredArgsConstructor
 @Slf4j
-public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFasstoDeliveriesPort, GetFasstoDeliveryDetailPort {
+public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFasstoDeliveriesPort, GetFasstoDeliveryDetailPort, CancelFasstoDeliveryPort {
     private static final String ACCESS_TOKEN_HEADER = "accessToken";
     private static final String CUSTOMER_CODE_PLACEHOLDER = "{customerCode}";
 
@@ -58,6 +61,12 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
     public RegisterFasstoDeliveryResult registerDelivery(FasstoDeliveryMapper request) {
         RegisterFasstoDeliveryResponse response = executeDeliveryRegistration(request, "REGISTER");
         return mapDeliveryResult(response);
+    }
+
+    @Override
+    public CancelFasstoDeliveryResult cancelDelivery(FasstoDeliveryCancelMapper request) {
+        RegisterFasstoDeliveryResponse response = executeDeliveryCancellation(request, "CANCEL");
+        return mapCancelDeliveryResult(response);
     }
 
     @Override
@@ -431,6 +440,138 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
         throw new RegisterFasstoDeliveryFailedException(failureMessage, new IOException(error));
     }
 
+    private RegisterFasstoDeliveryResponse executeDeliveryCancellation(
+            FasstoDeliveryCancelMapper request,
+            String action
+    ) {
+        if (FormatValidator.hasNoValue(request)) {
+            throw new IllegalArgumentException("Fassto delivery cancel request is required.");
+        }
+
+        URI uri = buildDeliveryCancelUri(request.getCustomerCode());
+        HttpEntity<List<Map<String, Object>>> httpEntity = new HttpEntity<>(
+                request.toPayload(),
+                buildHeaders(request.getAccessToken())
+        );
+
+        Exception error = new Exception();
+        String failureMessage = null;
+        long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
+        FulfillmentVendorCommunicationTargetType targetType = FulfillmentVendorCommunicationTargetType.DELIVERY;
+        FulfillmentVendorName vendorName = FulfillmentVendorName.FASSTO;
+
+        for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            int attempt = i + 1;
+            JsonNode requestPayloadJson = buildCancelRequestPayloadJson(request, uri, attempt, action);
+            String requestPayload = requestPayloadJson.toString();
+
+            ResponseEntity<String> response;
+            try {
+                response = restTemplate.exchange(
+                        uri,
+                        HttpMethod.PATCH,
+                        httpEntity,
+                        String.class
+                );
+            } catch (Exception e) {
+                Map<String, Object> errorPayload = new LinkedHashMap<>();
+                errorPayload.put("error", e.getClass().getSimpleName());
+                errorPayload.put("message", e.getMessage());
+                errorPayload.put("attempt", attempt);
+
+                vendorCommunicationFailureHandler.handleFailure(
+                        targetType,
+                        vendorName,
+                        requestPayload,
+                        requestPayloadJson,
+                        errorPayload,
+                        e
+                );
+
+                String vendorMessage = resolveVendorMessageFromException(e);
+                if (FormatValidator.hasValue(vendorMessage)) {
+                    failureMessage = vendorMessage;
+                    error = new Exception(vendorMessage);
+                }
+
+                log.warn("Failed to {} Fassto delivery: attempt={}, message={}",
+                        action.toLowerCase(),
+                        attempt,
+                        e.getMessage(),
+                        e
+                );
+                if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
+                    error = e;
+                }
+
+                sleep(sleepMillis);
+                sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
+                continue;
+            }
+
+            JsonNode responsePayloadJson = buildResponsePayloadJson(response, attempt);
+            String responsePayload = responsePayloadJson.toString();
+
+            RegisterFasstoDeliveryResponse parsedResponse = parseResponseBody(response);
+            boolean isSuccess = isSuccessResponse(response, parsedResponse);
+            String exception = isSuccess
+                    ? null
+                    : resolveResponseException(response, parsedResponse);
+
+            vendorCommunicationRecorder.record(
+                    targetType,
+                    FulfillmentVendorCommunicationType.REQUEST,
+                    FulfillmentVendorCommunicationSenderType.SERVER,
+                    vendorName,
+                    requestPayload,
+                    requestPayloadJson,
+                    exception
+            );
+            vendorCommunicationRecorder.record(
+                    targetType,
+                    FulfillmentVendorCommunicationType.RESPONSE,
+                    FulfillmentVendorCommunicationSenderType.VENDOR,
+                    vendorName,
+                    responsePayload,
+                    responsePayloadJson,
+                    exception
+            );
+
+            if (isSuccess) {
+                return parsedResponse;
+            }
+
+            String vendorMessage = resolveVendorMessage(parsedResponse, FormatValidator.hasValue(response) ? response.getBody() : null);
+            if (FormatValidator.hasValue(vendorMessage)) {
+                failureMessage = vendorMessage;
+                error = new Exception(vendorMessage);
+            }
+
+            log.warn("Fassto delivery {} failed: attempt={}, status={}, exception={}",
+                    action.toLowerCase(),
+                    attempt,
+                    FormatValidator.hasValue(response) ? response.getStatusCode() : null,
+                    exception
+            );
+
+            if (CommunicationFailureHandler.isCertainFailure(response)) {
+                break;
+            }
+
+            sleep(sleepMillis);
+            sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
+        }
+
+        log.error("Failed to {} Fassto delivery request: {} with error: {}",
+                action.toLowerCase(),
+                uri,
+                error.getMessage(),
+                error
+        );
+
+        throw new CancelFasstoDeliveryFailedException(failureMessage, new IOException(error));
+    }
+
     private URI buildDeliveryUri(String customerCode) {
         validateDeliveryProperties();
         return UriComponentsBuilder.fromUriString(properties.getBaseUrl())
@@ -471,6 +612,14 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
         }
         return builder
                 .buildAndExpand(customerCode, slipNo)
+                .toUri();
+    }
+
+    private URI buildDeliveryCancelUri(String customerCode) {
+        validateDeliveryCancelProperties();
+        return UriComponentsBuilder.fromUriString(properties.getBaseUrl())
+                .path(properties.getDeliveryCancelPath())
+                .buildAndExpand(customerCode)
                 .toUri();
     }
 
@@ -537,6 +686,18 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
         }
         if (!properties.getDeliveryDetailPath().contains("{slipNo}")) {
             throw new IllegalStateException("Fassto delivery detail path must include {slipNo}.");
+        }
+    }
+
+    private void validateDeliveryCancelProperties() {
+        if (FormatValidator.hasNoValue(properties.getBaseUrl())) {
+            throw new IllegalStateException("Fassto base URL is required.");
+        }
+        if (FormatValidator.hasNoValue(properties.getDeliveryCancelPath())) {
+            throw new IllegalStateException("Fassto delivery cancel path is required.");
+        }
+        if (!properties.getDeliveryCancelPath().contains(CUSTOMER_CODE_PLACEHOLDER)) {
+            throw new IllegalStateException("Fassto delivery cancel path must include {customerCode}.");
         }
     }
 
@@ -686,6 +847,23 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
         return vendorCommunicationPayloadGenerator.buildPayloadJson(payload);
     }
 
+    private JsonNode buildCancelRequestPayloadJson(
+            FasstoDeliveryCancelMapper request,
+            URI uri,
+            int attempt,
+            String action
+    ) {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("method", HttpMethod.PATCH.name());
+        payload.put("url", uri.toString());
+        payload.put("customerCode", request.getCustomerCode());
+        payload.put(ACCESS_TOKEN_HEADER, maskValue(request.getAccessToken()));
+        payload.put("body", request.toPayload());
+        payload.put("action", action);
+        payload.put("attempt", attempt);
+        return vendorCommunicationPayloadGenerator.buildPayloadJson(payload);
+    }
+
     private JsonNode buildListRequestPayloadJson(FasstoDeliveryQuery query, URI uri, int attempt) {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("method", HttpMethod.GET.name());
@@ -748,6 +926,14 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
         return RegisterFasstoDeliveryResult.of(dataCount, deliveries);
     }
 
+    private CancelFasstoDeliveryResult mapCancelDeliveryResult(RegisterFasstoDeliveryResponse response) {
+        List<CancelFasstoDeliveryItemResult> deliveries = FormatValidator.hasValue(response.data())
+                ? response.data().stream().map(this::mapCancelDeliveryItem).toList()
+                : List.of();
+        Integer dataCount = FormatValidator.hasValue(response.header()) ? response.header().dataCount() : null;
+        return CancelFasstoDeliveryResult.of(dataCount, deliveries);
+    }
+
     private GetFasstoDeliveriesResult mapDeliveryListResult(FasstoDeliveryListResponse response) {
         List<FasstoDeliveryInfoResult> deliveries = response.data().stream()
                 .map(this::mapDeliveryInfo)
@@ -766,6 +952,16 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
 
     private RegisterFasstoDeliveryItemResult mapDeliveryItem(RegisterFasstoDeliveryItemResponse item) {
         return RegisterFasstoDeliveryItemResult.of(
+                item.fmsSlipNo(),
+                item.orderNo(),
+                item.msg(),
+                item.code(),
+                item.outOfStockGoodsDetail()
+        );
+    }
+
+    private CancelFasstoDeliveryItemResult mapCancelDeliveryItem(RegisterFasstoDeliveryItemResponse item) {
+        return CancelFasstoDeliveryItemResult.of(
                 item.fmsSlipNo(),
                 item.orderNo(),
                 item.msg(),
