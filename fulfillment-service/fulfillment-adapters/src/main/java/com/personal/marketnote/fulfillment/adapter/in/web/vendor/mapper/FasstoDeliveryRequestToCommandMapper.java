@@ -61,6 +61,14 @@ public class FasstoDeliveryRequestToCommandMapper {
         return CancelFasstoDeliveryCommand.of(customerCode, accessToken, cancelRequests);
     }
 
+    public static GetFasstoDeliveryOutOrdGoodsDetailCommand mapToOutOrdGoodsDetailCommand(
+            String customerCode,
+            String accessToken,
+            String outOrdSlipNo
+    ) {
+        return GetFasstoDeliveryOutOrdGoodsDetailCommand.of(customerCode, accessToken, outOrdSlipNo);
+    }
+
     private static RegisterFasstoDeliveryItemCommand mapItem(RegisterFasstoDeliveryRequest item) {
         List<RegisterFasstoDeliveryGoodsCommand> goods = item.getGodCds().stream()
                 .map(FasstoDeliveryRequestToCommandMapper::mapGoods)
