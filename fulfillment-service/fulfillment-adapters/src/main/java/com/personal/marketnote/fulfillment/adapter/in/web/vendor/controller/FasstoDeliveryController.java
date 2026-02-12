@@ -1,25 +1,13 @@
 package com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.CancelFasstoDeliveryApiDocs;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.GetFasstoDeliveriesApiDocs;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.GetFasstoDeliveryDetailApiDocs;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.RegisterFasstoDeliveryApiDocs;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.*;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.mapper.FasstoDeliveryRequestToCommandMapper;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.CancelFasstoDeliveryRequest;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.RegisterFasstoDeliveryRequest;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.CancelFasstoDeliveryResponse;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.GetFasstoDeliveriesResponse;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.GetFasstoDeliveryDetailResponse;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.RegisterFasstoDeliveryResponse;
-import com.personal.marketnote.fulfillment.port.in.result.vendor.CancelFasstoDeliveryResult;
-import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoDeliveriesResult;
-import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoDeliveryDetailResult;
-import com.personal.marketnote.fulfillment.port.in.result.vendor.RegisterFasstoDeliveryResult;
-import com.personal.marketnote.fulfillment.port.in.usecase.vendor.CancelFasstoDeliveryUseCase;
-import com.personal.marketnote.fulfillment.port.in.usecase.vendor.GetFasstoDeliveriesUseCase;
-import com.personal.marketnote.fulfillment.port.in.usecase.vendor.GetFasstoDeliveryDetailUseCase;
-import com.personal.marketnote.fulfillment.port.in.usecase.vendor.RegisterFasstoDeliveryUseCase;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.*;
+import com.personal.marketnote.fulfillment.port.in.result.vendor.*;
+import com.personal.marketnote.fulfillment.port.in.usecase.vendor.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +29,7 @@ public class FasstoDeliveryController {
     private final RegisterFasstoDeliveryUseCase registerFasstoDeliveryUseCase;
     private final GetFasstoDeliveriesUseCase getFasstoDeliveriesUseCase;
     private final GetFasstoDeliveryDetailUseCase getFasstoDeliveryDetailUseCase;
+    private final GetFasstoDeliveryOutOrdGoodsDetailUseCase getFasstoDeliveryOutOrdGoodsDetailUseCase;
     private final CancelFasstoDeliveryUseCase cancelFasstoDeliveryUseCase;
 
     /**
@@ -189,6 +178,43 @@ public class FasstoDeliveryController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "파스토 출고 상세 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * (관리자) 파스토 출고중 상품 송장별 조회
+     *
+     * @param customerCode 파스토 고객사 코드
+     * @param accessToken  파스토 액세스 토큰
+     * @param outOrdSlipNo 파스토 출고요청번호
+     * @Author 성효빈
+     * @Date 2026-02-12
+     * @Description 파스토 출고중 상품의 송장별 상품 정보를 조회합니다.
+     */
+    @GetMapping("/out-ord/goods-detail/{customerCode}")
+    @PreAuthorize(ADMIN_POINTCUT)
+    @GetFasstoDeliveryOutOrdGoodsDetailApiDocs
+    public ResponseEntity<BaseResponse<GetFasstoDeliveryOutOrdGoodsDetailResponse>> getOutOrdGoodsDetail(
+            @PathVariable String customerCode,
+            @RequestHeader("accessToken") String accessToken,
+            @RequestParam("outOrdSlipNo") String outOrdSlipNo
+    ) {
+        GetFasstoDeliveryOutOrdGoodsDetailResult result = getFasstoDeliveryOutOrdGoodsDetailUseCase.getOutOrdGoodsDetail(
+                FasstoDeliveryRequestToCommandMapper.mapToOutOrdGoodsDetailCommand(
+                        customerCode,
+                        accessToken,
+                        outOrdSlipNo
+                )
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        GetFasstoDeliveryOutOrdGoodsDetailResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "파스토 출고중 상품 송장별 조회 성공"
                 ),
                 HttpStatus.OK
         );

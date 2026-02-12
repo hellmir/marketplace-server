@@ -27,6 +27,16 @@ public class FasstoDeliveryCommandToRequestMapper {
         );
     }
 
+    public static FasstoDeliveryOutOrdGoodsDetailQuery mapToOutOrdGoodsDetailQuery(
+            GetFasstoDeliveryOutOrdGoodsDetailCommand command
+    ) {
+        return FasstoDeliveryOutOrdGoodsDetailQuery.of(
+                command.customerCode(),
+                command.accessToken(),
+                command.outOrdSlipNo()
+        );
+    }
+
     public static FasstoDeliveryCancelMapper mapToCancelRequest(CancelFasstoDeliveryCommand command) {
         List<FasstoDeliveryCancelItemMapper> cancelRequests = command.deliveries().stream()
                 .map(FasstoDeliveryCommandToRequestMapper::mapCancelItem)
