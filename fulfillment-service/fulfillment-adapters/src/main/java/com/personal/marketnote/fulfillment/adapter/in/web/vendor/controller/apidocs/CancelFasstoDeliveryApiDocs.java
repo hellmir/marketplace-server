@@ -33,6 +33,8 @@ import java.lang.annotation.*;
                 
                 ## Request
                 
+                ### Request Parameters
+                
                 | **키** | **위치** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- | --- |
                 | accessToken | header | string | 파스토 액세스 토큰 | Y | 039a797bf66d11f0be620ab49498ff55 |
@@ -40,7 +42,7 @@ import java.lang.annotation.*;
                 
                 ---
                 
-                ## Request Body (Array)
+                ### Request Body (Array)
                 
                 | **키** | **타입** | **설명** | **필수 여부** | **예시** |
                 | --- | --- | --- | --- | --- |
