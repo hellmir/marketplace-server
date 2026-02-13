@@ -37,7 +37,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.*;
 @VendorAdapter
 @RequiredArgsConstructor
 @Slf4j
-public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFasstoDeliveriesPort, GetFasstoDeliveryDetailPort, GetFasstoDeliveryOutOrdGoodsDetailPort, CancelFasstoDeliveryPort {
+public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFasstoDeliveriesPort, GetFasstoDeliveryStatusesPort, GetFasstoDeliveryDetailPort, GetFasstoDeliveryOutOrdGoodsDetailPort, CancelFasstoDeliveryPort {
     private static final String ACCESS_TOKEN_HEADER = "accessToken";
     private static final String CUSTOMER_CODE_PLACEHOLDER = "{customerCode}";
 
@@ -178,6 +178,124 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
 
         log.error("Failed to get Fassto delivery list: {} with error: {}", uri, error.getMessage(), error);
         throw new GetFasstoDeliveriesFailedException(failureMessage, new IOException(error));
+    }
+
+    @Override
+    public GetFasstoDeliveryStatusesResult getDeliveryStatuses(FasstoDeliveryStatusQuery query) {
+        if (FormatValidator.hasNoValue(query)) {
+            throw new IllegalArgumentException("Fassto delivery status query is required.");
+        }
+
+        URI uri = buildDeliveryStatusUri(
+                query.getCustomerCode(),
+                query.getStartDate(),
+                query.getEndDate(),
+                query.getOutDiv()
+        );
+        HttpEntity<Void> httpEntity = new HttpEntity<>(buildHeaders(query.getAccessToken(), false));
+
+        Exception error = new Exception();
+        String failureMessage = null;
+        long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
+        FulfillmentVendorCommunicationTargetType targetType = FulfillmentVendorCommunicationTargetType.DELIVERY;
+        FulfillmentVendorName vendorName = FulfillmentVendorName.FASSTO;
+
+        for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            int attempt = i + 1;
+            JsonNode requestPayloadJson = buildDeliveryStatusRequestPayloadJson(query, uri, attempt);
+            String requestPayload = requestPayloadJson.toString();
+
+            ResponseEntity<String> response;
+            try {
+                response = restTemplate.exchange(
+                        uri,
+                        HttpMethod.GET,
+                        httpEntity,
+                        String.class
+                );
+            } catch (Exception e) {
+                Map<String, Object> errorPayload = new LinkedHashMap<>();
+                errorPayload.put("error", e.getClass().getSimpleName());
+                errorPayload.put("message", e.getMessage());
+                errorPayload.put("attempt", attempt);
+
+                vendorCommunicationFailureHandler.handleFailure(
+                        targetType,
+                        vendorName,
+                        requestPayload,
+                        requestPayloadJson,
+                        errorPayload,
+                        e
+                );
+
+                String vendorMessage = resolveVendorMessageFromException(e);
+                if (FormatValidator.hasValue(vendorMessage)) {
+                    failureMessage = vendorMessage;
+                    error = new Exception(vendorMessage);
+                }
+
+                log.warn("Failed to get Fassto delivery status: attempt={}, message={}", attempt, e.getMessage(), e);
+                if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
+                    error = e;
+                }
+
+                sleep(sleepMillis);
+                sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
+                continue;
+            }
+
+            JsonNode responsePayloadJson = buildResponsePayloadJson(response, attempt);
+            String responsePayload = responsePayloadJson.toString();
+
+            FasstoDeliveryStatusListResponse parsedResponse = parseDeliveryStatusResponse(response);
+            boolean isSuccess = isDeliveryStatusSuccess(response, parsedResponse);
+            String exception = isSuccess ? null : resolveDeliveryStatusException(response, parsedResponse);
+
+            vendorCommunicationRecorder.record(
+                    targetType,
+                    FulfillmentVendorCommunicationType.REQUEST,
+                    FulfillmentVendorCommunicationSenderType.SERVER,
+                    vendorName,
+                    requestPayload,
+                    requestPayloadJson,
+                    exception
+            );
+            vendorCommunicationRecorder.record(
+                    targetType,
+                    FulfillmentVendorCommunicationType.RESPONSE,
+                    FulfillmentVendorCommunicationSenderType.VENDOR,
+                    vendorName,
+                    responsePayload,
+                    responsePayloadJson,
+                    exception
+            );
+
+            if (isSuccess) {
+                return mapDeliveryStatusResult(parsedResponse);
+            }
+
+            String vendorMessage = resolveVendorMessage(parsedResponse, FormatValidator.hasValue(response) ? response.getBody() : null);
+            if (FormatValidator.hasValue(vendorMessage)) {
+                failureMessage = vendorMessage;
+                error = new Exception(vendorMessage);
+            }
+
+            log.warn("Fassto delivery status request failed: attempt={}, status={}, exception={}",
+                    attempt,
+                    FormatValidator.hasValue(response) ? response.getStatusCode() : null,
+                    exception
+            );
+
+            if (CommunicationFailureHandler.isCertainFailure(response)) {
+                break;
+            }
+
+            sleep(sleepMillis);
+            sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
+        }
+
+        log.error("Failed to get Fassto delivery status: {} with error: {}", uri, error.getMessage(), error);
+        throw new GetFasstoDeliveryStatusesFailedException(failureMessage, new IOException(error));
     }
 
     @Override
@@ -703,6 +821,19 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
                 .toUri();
     }
 
+    private URI buildDeliveryStatusUri(
+            String customerCode,
+            String startDate,
+            String endDate,
+            String outDiv
+    ) {
+        validateDeliveryStatusProperties();
+        return UriComponentsBuilder.fromUriString(properties.getBaseUrl())
+                .path(properties.getDeliveryStatusPath())
+                .buildAndExpand(customerCode, startDate, endDate, outDiv)
+                .toUri();
+    }
+
     private URI buildDeliveryDetailUri(
             String customerCode,
             String slipNo,
@@ -787,6 +918,27 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
         }
     }
 
+    private void validateDeliveryStatusProperties() {
+        if (FormatValidator.hasNoValue(properties.getBaseUrl())) {
+            throw new IllegalStateException("Fassto base URL is required.");
+        }
+        if (FormatValidator.hasNoValue(properties.getDeliveryStatusPath())) {
+            throw new IllegalStateException("Fassto delivery status path is required.");
+        }
+        if (!properties.getDeliveryStatusPath().contains(CUSTOMER_CODE_PLACEHOLDER)) {
+            throw new IllegalStateException("Fassto delivery status path must include {customerCode}.");
+        }
+        if (!properties.getDeliveryStatusPath().contains("{startDate}")) {
+            throw new IllegalStateException("Fassto delivery status path must include {startDate}.");
+        }
+        if (!properties.getDeliveryStatusPath().contains("{endDate}")) {
+            throw new IllegalStateException("Fassto delivery status path must include {endDate}.");
+        }
+        if (!properties.getDeliveryStatusPath().contains("{outDiv}")) {
+            throw new IllegalStateException("Fassto delivery status path must include {outDiv}.");
+        }
+    }
+
     private void validateDeliveryDetailProperties() {
         if (FormatValidator.hasNoValue(properties.getBaseUrl())) {
             throw new IllegalStateException("Fassto base URL is required.");
@@ -862,6 +1014,24 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
         }
     }
 
+    private FasstoDeliveryStatusListResponse parseDeliveryStatusResponse(ResponseEntity<String> response) {
+        if (FormatValidator.hasNoValue(response)) {
+            return null;
+        }
+
+        String body = response.getBody();
+        if (FormatValidator.hasNoValue(body)) {
+            return null;
+        }
+
+        try {
+            return objectMapper.readValue(body, FasstoDeliveryStatusListResponse.class);
+        } catch (Exception e) {
+            log.warn("Failed to parse Fassto delivery status response: {}", e.getMessage(), e);
+            return null;
+        }
+    }
+
     private FasstoDeliveryDetailListResponse parseDeliveryDetailResponse(ResponseEntity<String> response) {
         if (FormatValidator.hasNoValue(response)) {
             return null;
@@ -912,6 +1082,13 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
                 && parsedResponse.isSuccess();
     }
 
+    private boolean isDeliveryStatusSuccess(ResponseEntity<String> response, FasstoDeliveryStatusListResponse parsedResponse) {
+        return FormatValidator.hasValue(response)
+                && response.getStatusCode().value() == 200
+                && FormatValidator.hasValue(parsedResponse)
+                && parsedResponse.isSuccess();
+    }
+
     private boolean isDeliveryDetailSuccess(ResponseEntity<String> response, FasstoDeliveryDetailListResponse parsedResponse) {
         return FormatValidator.hasValue(response)
                 && response.getStatusCode().value() == 200
@@ -943,6 +1120,25 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
     }
 
     private String resolveDeliveryListException(ResponseEntity<String> response, FasstoDeliveryListResponse parsedResponse) {
+        if (FormatValidator.hasNoValue(response)) {
+            return "NO_RESPONSE";
+        }
+        if (response.getStatusCode().value() != 200) {
+            return "HTTP_" + response.getStatusCode().value();
+        }
+        if (FormatValidator.hasNoValue(parsedResponse)) {
+            return "INVALID_RESPONSE";
+        }
+        if (FormatValidator.hasNoValue(parsedResponse.header()) || !parsedResponse.header().isSuccess()) {
+            return "HEADER_FAILURE";
+        }
+        if (FormatValidator.hasNoValue(parsedResponse.data())) {
+            return "DATA_MISSING";
+        }
+        return "UNKNOWN_FAILURE";
+    }
+
+    private String resolveDeliveryStatusException(ResponseEntity<String> response, FasstoDeliveryStatusListResponse parsedResponse) {
         if (FormatValidator.hasNoValue(response)) {
             return "NO_RESPONSE";
         }
@@ -1053,6 +1249,19 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
         return vendorCommunicationPayloadGenerator.buildPayloadJson(payload);
     }
 
+    private JsonNode buildDeliveryStatusRequestPayloadJson(FasstoDeliveryStatusQuery query, URI uri, int attempt) {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("method", HttpMethod.GET.name());
+        payload.put("url", uri.toString());
+        payload.put("customerCode", query.getCustomerCode());
+        payload.put("startDate", query.getStartDate());
+        payload.put("endDate", query.getEndDate());
+        payload.put("outDiv", query.getOutDiv());
+        payload.put(ACCESS_TOKEN_HEADER, maskValue(query.getAccessToken()));
+        payload.put("attempt", attempt);
+        return vendorCommunicationPayloadGenerator.buildPayloadJson(payload);
+    }
+
     private JsonNode buildDetailRequestPayloadJson(FasstoDeliveryDetailQuery query, URI uri, int attempt) {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("method", HttpMethod.GET.name());
@@ -1127,6 +1336,14 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
                 .toList();
         Integer dataCount = FormatValidator.hasValue(response.header()) ? response.header().dataCount() : null;
         return GetFasstoDeliveriesResult.of(dataCount, deliveries);
+    }
+
+    private GetFasstoDeliveryStatusesResult mapDeliveryStatusResult(FasstoDeliveryStatusListResponse response) {
+        List<FasstoDeliveryStatusInfoResult> statuses = response.data().stream()
+                .map(this::mapDeliveryStatusInfo)
+                .toList();
+        Integer dataCount = FormatValidator.hasValue(response.header()) ? response.header().dataCount() : null;
+        return GetFasstoDeliveryStatusesResult.of(dataCount, statuses);
     }
 
     private GetFasstoDeliveryDetailResult mapDeliveryDetailResult(FasstoDeliveryDetailListResponse response) {
@@ -1210,6 +1427,61 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
                 item.sendTelNo(),
                 item.updUserNm(),
                 item.updTime()
+        );
+    }
+
+    private FasstoDeliveryStatusInfoResult mapDeliveryStatusInfo(FasstoDeliveryStatusItemResponse item) {
+        List<Object> goodsSerialNo = FormatValidator.hasValue(item.goodsSerialNo())
+                ? item.goodsSerialNo()
+                : List.of();
+
+        return FasstoDeliveryStatusInfoResult.of(
+                item.boxDiv(),
+                item.boxDivNm(),
+                item.boxNm(),
+                item.boxNo(),
+                item.boxTp(),
+                item.crgSt(),
+                item.crgStNm(),
+                item.cstCd(),
+                item.cstNm(),
+                item.custAddr(),
+                item.custNm(),
+                item.custTelNo(),
+                item.dlvMisYn(),
+                item.godCd(),
+                item.godNm(),
+                item.invoiceNo(),
+                item.ordNo(),
+                item.ordSeq(),
+                item.outDiv(),
+                item.outDivNm(),
+                item.outOrdSlipNo(),
+                item.packDt(),
+                item.packQty(),
+                item.packSeq(),
+                item.parcelCd(),
+                item.parcelLinkYn(),
+                item.parcelNm(),
+                item.pickSeq(),
+                item.postYn(),
+                item.printCnt(),
+                item.rtnAddr1(),
+                item.rtnAddr2(),
+                item.rtnCheck(),
+                item.rtnEmpNm(),
+                item.rtnOrdDt(),
+                item.rtnTelNo(),
+                item.rtnZipCd(),
+                item.salChanel(),
+                item.shipReqTerm(),
+                item.shopCd(),
+                item.shopNm(),
+                item.sku(),
+                item.whCd(),
+                goodsSerialNo,
+                item.supCd(),
+                item.supNm()
         );
     }
 
@@ -1336,6 +1608,16 @@ public class FasstoDeliveryClient implements RegisterFasstoDeliveryPort, GetFass
     }
 
     private String resolveVendorMessage(FasstoDeliveryListResponse response, String rawBody) {
+        if (FormatValidator.hasValue(response)) {
+            String message = response.resolveErrorMessage();
+            if (FormatValidator.hasValue(message)) {
+                return message;
+            }
+        }
+        return resolveVendorMessage(rawBody);
+    }
+
+    private String resolveVendorMessage(FasstoDeliveryStatusListResponse response, String rawBody) {
         if (FormatValidator.hasValue(response)) {
             String message = response.resolveErrorMessage();
             if (FormatValidator.hasValue(message)) {
