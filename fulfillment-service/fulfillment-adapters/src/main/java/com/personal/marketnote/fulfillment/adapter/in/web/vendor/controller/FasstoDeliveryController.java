@@ -41,7 +41,7 @@ public class FasstoDeliveryController {
      * @param request      출고 등록 요청 정보
      * @Author 성효빈
      * @Date 2026-02-11
-     * @Description 파스토 출고(택배) 등록을 요청합니다.
+     * @Description 파스토 출고 등록(택배)을 요청합니다.
      */
     @PostMapping("/{customerCode}")
     @PreAuthorize(ADMIN_POINTCUT)
@@ -234,7 +234,7 @@ public class FasstoDeliveryController {
      * @param accessToken  파스토 액세스 토큰
      * @param outOrdSlipNo 파스토 출고요청번호
      * @Author 성효빈
-     * @Date 2026-02-12
+     * @Date 2026-02-13
      * @Description 파스토 출고중 상품의 송장별 상품 정보를 조회합니다.
      */
     @GetMapping("/out-ord/goods-detail/{customerCode}")

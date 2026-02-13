@@ -17,7 +17,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Operation(
-        summary = "(관리자) 파스토 출고 등록 요청",
+        summary = "(관리자) 파스토 출고 등록(택배) 요청",
         description = """
                 작성일자: 2026-02-11
                 
@@ -27,7 +27,7 @@ import java.lang.annotation.*;
                 
                 ## Description
                 
-                파스토 출고(택배) 등록을 요청합니다.
+                파스토 출고 등록(택배)을 요청합니다.
                 
                 ---
                 
