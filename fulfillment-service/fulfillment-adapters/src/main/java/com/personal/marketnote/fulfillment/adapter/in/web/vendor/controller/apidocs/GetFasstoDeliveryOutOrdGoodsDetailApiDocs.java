@@ -17,7 +17,7 @@ import java.lang.annotation.*;
 @Operation(
         summary = "(관리자) 파스토 출고중 상품 송장별 상품 조회",
         description = """
-                작성일자: 2026-02-12
+                작성일자: 2026-02-13
                 
                 작성자: 성효빈
                 
@@ -45,7 +45,7 @@ import java.lang.annotation.*;
                 | --- | --- | --- | --- |
                 | statusCode | number | 상태 코드 | 200: 성공 / 400: 클라이언트 요청 오류 / 401: 인증 실패 / 403: 인가 실패 / 500: 그 외 |
                 | code | string | 응답 코드 | "SUC01" / "BAD_REQUEST" / "UNAUTHORIZED" / "FORBIDDEN" / "INTERNAL_SERVER_ERROR" |
-                | timestamp | string(datetime) | 응답 일시 | "2026-02-12T12:12:30.013" |
+                | timestamp | string(datetime) | 응답 일시 | "2026-02-13T12:12:30.013" |
                 | content | object | 응답 본문 | { ... } |
                 | message | string | 처리 결과 | "파스토 출고중 상품 송장별 조회 성공" |
                 
@@ -110,7 +110,7 @@ import java.lang.annotation.*;
                                         {
                                           "statusCode": 200,
                                           "code": "SUC01",
-                                          "timestamp": "2026-02-12T12:12:30.013",
+                                          "timestamp": "2026-02-13T12:12:30.013",
                                           "content": {
                                             "dataCount": 1,
                                             "goodsByInvoice": [
