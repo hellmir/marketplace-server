@@ -60,6 +60,7 @@ vendor:
       warehousing-list-path: ${FASSTO_WAREHOUSING_LIST_PATH:/api/v1/warehousing/{customerCode}/{startDate}/{endDate}}
       delivery-path: ${FASSTO_DELIVERY_PATH:/api/v1/delivery/parcel/{customerCode}}
       delivery-list-path: ${FASSTO_DELIVERY_LIST_PATH:/api/v1/delivery/{customerCode}/{startDate}/{endDate}/{status}/{outDiv}}
+      delivery-status-path: ${FASSTO_DELIVERY_STATUS_PATH:/api/v1/delivery/parcel/{customerCode}/{startDate}/{endDate}/{outDiv}}
       delivery-detail-path: ${FASSTO_DELIVERY_DETAIL_PATH:/api/v1/delivery/detail/{customerCode}/{slipNo}}
       delivery-cancel-path: ${FASSTO_DELIVERY_CANCEL_PATH:/api/v1/delivery/cancel/{customerCode}}
       delivery-out-ord-goods-detail-path: ${FASSTO_DELIVERY_OUT_ORD_GOODS_DETAIL_PATH:/api/v1/delivery/outOrd/goodsDetail/{customerCode}}

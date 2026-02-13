@@ -49,6 +49,16 @@ public class FasstoDeliveryRequestToCommandMapper {
         return GetFasstoDeliveryDetailCommand.of(customerCode, accessToken, slipNo, ordNo);
     }
 
+    public static GetFasstoDeliveryStatusesCommand mapToDeliveryStatusesCommand(
+            String customerCode,
+            String accessToken,
+            String startDate,
+            String endDate,
+            String outDiv
+    ) {
+        return GetFasstoDeliveryStatusesCommand.of(customerCode, accessToken, startDate, endDate, outDiv);
+    }
+
     public static CancelFasstoDeliveryCommand mapToCancelCommand(
             String customerCode,
             String accessToken,

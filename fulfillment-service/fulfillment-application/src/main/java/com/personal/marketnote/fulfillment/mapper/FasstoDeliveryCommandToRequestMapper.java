@@ -27,6 +27,16 @@ public class FasstoDeliveryCommandToRequestMapper {
         );
     }
 
+    public static FasstoDeliveryStatusQuery mapToDeliveryStatusQuery(GetFasstoDeliveryStatusesCommand command) {
+        return FasstoDeliveryStatusQuery.of(
+                command.customerCode(),
+                command.accessToken(),
+                command.startDate(),
+                command.endDate(),
+                command.outDiv()
+        );
+    }
+
     public static FasstoDeliveryOutOrdGoodsDetailQuery mapToOutOrdGoodsDetailQuery(
             GetFasstoDeliveryOutOrdGoodsDetailCommand command
     ) {
