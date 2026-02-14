@@ -5,7 +5,7 @@ import com.personal.marketnote.product.port.in.result.pricepolicy.RegisterPriceP
 
 public interface RegisterPricePolicyUseCase {
     /**
-     * @param userId 사용자 ID
+     * @param userId  사용자 ID
      * @param isAdmin 관리자 여부
      * @param command 가격 정책 등록 커맨드
      * @return 가격 정책 등록 결과 {@link RegisterPricePolicyResult}
