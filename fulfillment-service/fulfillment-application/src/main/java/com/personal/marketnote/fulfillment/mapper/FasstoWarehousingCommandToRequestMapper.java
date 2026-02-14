@@ -39,6 +39,15 @@ public class FasstoWarehousingCommandToRequestMapper {
         );
     }
 
+    public static FasstoWarehousingAbnormalQuery mapToAbnormalQuery(GetFasstoWarehousingAbnormalCommand command) {
+        return FasstoWarehousingAbnormalQuery.of(
+                command.customerCode(),
+                command.accessToken(),
+                command.whCd(),
+                command.slipNo()
+        );
+    }
+
     public static FasstoWarehousingMapper mapToUpdateRequest(UpdateFasstoWarehousingCommand command) {
         List<FasstoWarehousingItemMapper> requests = command.warehousingRequests().stream()
                 .map(FasstoWarehousingCommandToRequestMapper::mapUpdateItem)

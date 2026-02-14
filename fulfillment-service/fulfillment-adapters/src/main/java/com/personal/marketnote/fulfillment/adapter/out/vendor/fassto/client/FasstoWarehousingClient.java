@@ -7,6 +7,7 @@ import com.personal.marketnote.common.utility.FormatValidator;
 import com.personal.marketnote.common.utility.http.client.CommunicationFailureHandler;
 import com.personal.marketnote.fulfillment.adapter.out.vendor.fassto.response.*;
 import com.personal.marketnote.fulfillment.configuration.FasstoAuthProperties;
+import com.personal.marketnote.fulfillment.domain.vendor.fassto.warehousing.FasstoWarehousingAbnormalQuery;
 import com.personal.marketnote.fulfillment.domain.vendor.fassto.warehousing.FasstoWarehousingDetailQuery;
 import com.personal.marketnote.fulfillment.domain.vendor.fassto.warehousing.FasstoWarehousingMapper;
 import com.personal.marketnote.fulfillment.domain.vendor.fassto.warehousing.FasstoWarehousingQuery;
@@ -14,15 +15,9 @@ import com.personal.marketnote.fulfillment.domain.vendorcommunication.Fulfillmen
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationTargetType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorCommunicationType;
 import com.personal.marketnote.fulfillment.domain.vendorcommunication.FulfillmentVendorName;
-import com.personal.marketnote.fulfillment.exception.GetFasstoWarehousingDetailFailedException;
-import com.personal.marketnote.fulfillment.exception.GetFasstoWarehousingFailedException;
-import com.personal.marketnote.fulfillment.exception.RegisterFasstoWarehousingFailedException;
-import com.personal.marketnote.fulfillment.exception.UpdateFasstoWarehousingFailedException;
+import com.personal.marketnote.fulfillment.exception.*;
 import com.personal.marketnote.fulfillment.port.in.result.vendor.*;
-import com.personal.marketnote.fulfillment.port.out.vendor.GetFasstoWarehousingDetailPort;
-import com.personal.marketnote.fulfillment.port.out.vendor.GetFasstoWarehousingPort;
-import com.personal.marketnote.fulfillment.port.out.vendor.RegisterFasstoWarehousingPort;
-import com.personal.marketnote.fulfillment.port.out.vendor.UpdateFasstoWarehousingPort;
+import com.personal.marketnote.fulfillment.port.out.vendor.*;
 import com.personal.marketnote.fulfillment.utility.VendorCommunicationFailureHandler;
 import com.personal.marketnote.fulfillment.utility.VendorCommunicationPayloadGenerator;
 import com.personal.marketnote.fulfillment.utility.VendorCommunicationRecorder;
@@ -45,7 +40,7 @@ import static com.personal.marketnote.common.utility.ApiConstant.*;
 @VendorAdapter
 @RequiredArgsConstructor
 @Slf4j
-public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, GetFasstoWarehousingPort, GetFasstoWarehousingDetailPort, UpdateFasstoWarehousingPort {
+public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, GetFasstoWarehousingPort, GetFasstoWarehousingDetailPort, GetFasstoWarehousingAbnormalPort, UpdateFasstoWarehousingPort {
     private static final String ACCESS_TOKEN_HEADER = "accessToken";
     private static final String CUSTOMER_CODE_PLACEHOLDER = "{customerCode}";
 
@@ -321,6 +316,119 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
         throw new GetFasstoWarehousingDetailFailedException(failureMessage, new IOException(error));
     }
 
+    @Override
+    public GetFasstoWarehousingAbnormalResult getWarehousingAbnormal(FasstoWarehousingAbnormalQuery query) {
+        if (FormatValidator.hasNoValue(query)) {
+            throw new IllegalArgumentException("Fassto warehousing abnormal query is required.");
+        }
+
+        URI uri = buildWarehousingAbnormalUri(query.getCustomerCode(), query.getWhCd(), query.getSlipNo());
+        HttpEntity<Void> httpEntity = new HttpEntity<>(buildHeaders(query.getAccessToken(), false));
+
+        Exception error = new Exception();
+        String failureMessage = null;
+        long sleepMillis = INTER_SERVER_DEFAULT_RETRIAL_PENDING_MILLI_SECOND;
+        FulfillmentVendorCommunicationTargetType targetType = FulfillmentVendorCommunicationTargetType.WAREHOUSING;
+        FulfillmentVendorName vendorName = FulfillmentVendorName.FASSTO;
+
+        for (int i = 0; i < INTER_SERVER_MAX_REQUEST_COUNT; i++) {
+            int attempt = i + 1;
+            JsonNode requestPayloadJson = buildAbnormalRequestPayloadJson(query, uri, attempt);
+            String requestPayload = requestPayloadJson.toString();
+
+            ResponseEntity<String> response;
+            try {
+                response = restTemplate.exchange(
+                        uri,
+                        HttpMethod.GET,
+                        httpEntity,
+                        String.class
+                );
+            } catch (Exception e) {
+                Map<String, Object> errorPayload = new LinkedHashMap<>();
+                errorPayload.put("error", e.getClass().getSimpleName());
+                errorPayload.put("message", e.getMessage());
+                errorPayload.put("attempt", attempt);
+
+                vendorCommunicationFailureHandler.handleFailure(
+                        targetType,
+                        vendorName,
+                        requestPayload,
+                        requestPayloadJson,
+                        errorPayload,
+                        e
+                );
+
+                String vendorMessage = resolveVendorMessageFromException(e);
+                if (FormatValidator.hasValue(vendorMessage)) {
+                    failureMessage = vendorMessage;
+                    error = new Exception(vendorMessage);
+                }
+
+                log.warn("Failed to get Fassto warehousing abnormal: attempt={}, message={}", attempt, e.getMessage(), e);
+                if (i == INTER_SERVER_MAX_REQUEST_COUNT - 1) {
+                    error = e;
+                }
+
+                sleep(sleepMillis);
+                sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
+                continue;
+            }
+
+            JsonNode responsePayloadJson = buildResponsePayloadJson(response, attempt);
+            String responsePayload = responsePayloadJson.toString();
+
+            FasstoWarehousingAbnormalListResponse parsedResponse = parseWarehousingAbnormalResponse(response);
+            boolean isSuccess = isWarehousingAbnormalSuccess(response, parsedResponse);
+            String exception = isSuccess ? null : resolveWarehousingAbnormalException(response, parsedResponse);
+
+            vendorCommunicationRecorder.record(
+                    targetType,
+                    FulfillmentVendorCommunicationType.REQUEST,
+                    FulfillmentVendorCommunicationSenderType.SERVER,
+                    vendorName,
+                    requestPayload,
+                    requestPayloadJson,
+                    exception
+            );
+            vendorCommunicationRecorder.record(
+                    targetType,
+                    FulfillmentVendorCommunicationType.RESPONSE,
+                    FulfillmentVendorCommunicationSenderType.VENDOR,
+                    vendorName,
+                    responsePayload,
+                    responsePayloadJson,
+                    exception
+            );
+
+            if (isSuccess) {
+                return mapWarehousingAbnormalResult(parsedResponse);
+            }
+
+            String vendorMessage = resolveVendorMessage(parsedResponse, FormatValidator.hasValue(response) ? response.getBody() : null);
+            if (FormatValidator.hasValue(vendorMessage)) {
+                failureMessage = vendorMessage;
+                error = new Exception(vendorMessage);
+            }
+
+            log.warn("Fassto warehousing abnormal request failed: attempt={}, status={}, exception={}",
+                    attempt,
+                    FormatValidator.hasValue(response) ? response.getStatusCode() : null,
+                    exception
+            );
+
+            if (CommunicationFailureHandler.isCertainFailure(response)) {
+                break;
+            }
+
+            sleep(sleepMillis);
+            sleepMillis = sleepMillis * INTER_SERVER_DEFAULT_EXPONENTIAL_BACKOFF_VALUE;
+        }
+
+        log.error("Failed to get Fassto warehousing abnormal: {} with error: {}", uri, error.getMessage(), error);
+        throw new GetFasstoWarehousingAbnormalFailedException(failureMessage, new IOException(error));
+    }
+
     private RegisterFasstoWarehousingResponse executeWarehousingMutation(
             FasstoWarehousingMapper request,
             String action,
@@ -509,6 +617,18 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
                 .toUri();
     }
 
+    private URI buildWarehousingAbnormalUri(
+            String customerCode,
+            String whCd,
+            String slipNo
+    ) {
+        validateWarehousingAbnormalProperties();
+        return UriComponentsBuilder.fromUriString(properties.getBaseUrl())
+                .path(properties.getWarehousingAbnormalPath())
+                .buildAndExpand(customerCode, whCd, slipNo)
+                .toUri();
+    }
+
     private HttpHeaders buildHeaders(String accessToken) {
         return buildHeaders(accessToken, true);
     }
@@ -568,6 +688,24 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
         }
     }
 
+    private void validateWarehousingAbnormalProperties() {
+        if (FormatValidator.hasNoValue(properties.getBaseUrl())) {
+            throw new IllegalStateException("Fassto base URL is required.");
+        }
+        if (FormatValidator.hasNoValue(properties.getWarehousingAbnormalPath())) {
+            throw new IllegalStateException("Fassto warehousing abnormal path is required.");
+        }
+        if (!properties.getWarehousingAbnormalPath().contains(CUSTOMER_CODE_PLACEHOLDER)) {
+            throw new IllegalStateException("Fassto warehousing abnormal path must include {customerCode}.");
+        }
+        if (!properties.getWarehousingAbnormalPath().contains("{whCd}")) {
+            throw new IllegalStateException("Fassto warehousing abnormal path must include {whCd}.");
+        }
+        if (!properties.getWarehousingAbnormalPath().contains("{slipNo}")) {
+            throw new IllegalStateException("Fassto warehousing abnormal path must include {slipNo}.");
+        }
+    }
+
     private RegisterFasstoWarehousingResponse parseResponseBody(ResponseEntity<String> response) {
         if (FormatValidator.hasNoValue(response)) {
             return null;
@@ -622,6 +760,24 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
         }
     }
 
+    private FasstoWarehousingAbnormalListResponse parseWarehousingAbnormalResponse(ResponseEntity<String> response) {
+        if (FormatValidator.hasNoValue(response)) {
+            return null;
+        }
+
+        String body = response.getBody();
+        if (FormatValidator.hasNoValue(body)) {
+            return null;
+        }
+
+        try {
+            return objectMapper.readValue(body, FasstoWarehousingAbnormalListResponse.class);
+        } catch (Exception e) {
+            log.warn("Failed to parse Fassto warehousing abnormal response: {}", e.getMessage(), e);
+            return null;
+        }
+    }
+
     private boolean isSuccessResponse(ResponseEntity<String> response, RegisterFasstoWarehousingResponse parsedResponse) {
         return FormatValidator.hasValue(response)
                 && response.getStatusCode().value() == 200
@@ -638,6 +794,13 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
     }
 
     private boolean isWarehousingDetailSuccess(ResponseEntity<String> response, FasstoWarehousingDetailListResponse parsedResponse) {
+        return FormatValidator.hasValue(response)
+                && response.getStatusCode().value() == 200
+                && FormatValidator.hasValue(parsedResponse)
+                && parsedResponse.isSuccess();
+    }
+
+    private boolean isWarehousingAbnormalSuccess(ResponseEntity<String> response, FasstoWarehousingAbnormalListResponse parsedResponse) {
         return FormatValidator.hasValue(response)
                 && response.getStatusCode().value() == 200
                 && FormatValidator.hasValue(parsedResponse)
@@ -707,6 +870,28 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
         return "UNKNOWN_FAILURE";
     }
 
+    private String resolveWarehousingAbnormalException(
+            ResponseEntity<String> response,
+            FasstoWarehousingAbnormalListResponse parsedResponse
+    ) {
+        if (FormatValidator.hasNoValue(response)) {
+            return "NO_RESPONSE";
+        }
+        if (response.getStatusCode().value() != 200) {
+            return "HTTP_" + response.getStatusCode().value();
+        }
+        if (FormatValidator.hasNoValue(parsedResponse)) {
+            return "INVALID_RESPONSE";
+        }
+        if (FormatValidator.hasNoValue(parsedResponse.header()) || !parsedResponse.header().isSuccess()) {
+            return "HEADER_FAILURE";
+        }
+        if (FormatValidator.hasNoValue(parsedResponse.data())) {
+            return "DATA_MISSING";
+        }
+        return "UNKNOWN_FAILURE";
+    }
+
     private JsonNode buildListRequestPayloadJson(FasstoWarehousingQuery query, URI uri, int attempt) {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("method", HttpMethod.GET.name());
@@ -737,6 +922,18 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
         if (FormatValidator.hasValue(query.getOrdNo())) {
             payload.put("ordNo", query.getOrdNo());
         }
+        payload.put(ACCESS_TOKEN_HEADER, maskValue(query.getAccessToken()));
+        payload.put("attempt", attempt);
+        return vendorCommunicationPayloadGenerator.buildPayloadJson(payload);
+    }
+
+    private JsonNode buildAbnormalRequestPayloadJson(FasstoWarehousingAbnormalQuery query, URI uri, int attempt) {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("method", HttpMethod.GET.name());
+        payload.put("url", uri.toString());
+        payload.put("customerCode", query.getCustomerCode());
+        payload.put("whCd", query.getWhCd());
+        payload.put("slipNo", query.getSlipNo());
         payload.put(ACCESS_TOKEN_HEADER, maskValue(query.getAccessToken()));
         payload.put("attempt", attempt);
         return vendorCommunicationPayloadGenerator.buildPayloadJson(payload);
@@ -813,6 +1010,14 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
                 .toList();
         Integer dataCount = FormatValidator.hasValue(response.header()) ? response.header().dataCount() : null;
         return GetFasstoWarehousingDetailResult.of(dataCount, details);
+    }
+
+    private GetFasstoWarehousingAbnormalResult mapWarehousingAbnormalResult(FasstoWarehousingAbnormalListResponse response) {
+        List<FasstoWarehousingAbnormalInfoResult> abnormals = response.data().stream()
+                .map(this::mapWarehousingAbnormalInfo)
+                .toList();
+        Integer dataCount = FormatValidator.hasValue(response.header()) ? response.header().dataCount() : null;
+        return GetFasstoWarehousingAbnormalResult.of(dataCount, abnormals);
     }
 
     private RegisterFasstoWarehousingItemResult mapWarehousingItem(RegisterFasstoWarehousingItemResponse item) {
@@ -921,6 +1126,32 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
         );
     }
 
+    private FasstoWarehousingAbnormalInfoResult mapWarehousingAbnormalInfo(FasstoWarehousingAbnormalItemResponse item) {
+        List<Object> imageUrl = FormatValidator.hasValue(item.imageUrl())
+                ? item.imageUrl()
+                : List.of();
+
+        return FasstoWarehousingAbnormalInfoResult.of(
+                item.slipNo(),
+                item.goodsSerialNo(),
+                item.goodsSerialStatus(),
+                item.whCd(),
+                item.cstCd(),
+                item.cstNm(),
+                item.godCd(),
+                item.description(),
+                item.remark(),
+                item.fileSeq(),
+                item.lastFileSeqNo(),
+                item.regDate(),
+                item.regNM(),
+                item.updDate(),
+                item.updNm(),
+                item.fileNo(),
+                imageUrl
+        );
+    }
+
     private String maskValue(String value) {
         if (FormatValidator.hasNoValue(value)) {
             return value;
@@ -967,6 +1198,16 @@ public class FasstoWarehousingClient implements RegisterFasstoWarehousingPort, G
     }
 
     private String resolveVendorMessage(FasstoWarehousingDetailListResponse response, String rawBody) {
+        if (FormatValidator.hasValue(response)) {
+            String message = response.resolveErrorMessage();
+            if (FormatValidator.hasValue(message)) {
+                return message;
+            }
+        }
+        return resolveVendorMessage(rawBody);
+    }
+
+    private String resolveVendorMessage(FasstoWarehousingAbnormalListResponse response, String rawBody) {
         if (FormatValidator.hasValue(response)) {
             String message = response.resolveErrorMessage();
             if (FormatValidator.hasValue(message)) {
