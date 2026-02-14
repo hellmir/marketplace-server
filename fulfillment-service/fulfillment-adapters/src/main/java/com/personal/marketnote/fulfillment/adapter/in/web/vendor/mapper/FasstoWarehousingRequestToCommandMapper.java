@@ -42,6 +42,15 @@ public class FasstoWarehousingRequestToCommandMapper {
         return GetFasstoWarehousingDetailCommand.of(customerCode, accessToken, slipNo, ordNo);
     }
 
+    public static GetFasstoWarehousingAbnormalCommand mapToWarehousingAbnormalCommand(
+            String customerCode,
+            String accessToken,
+            String whCd,
+            String slipNo
+    ) {
+        return GetFasstoWarehousingAbnormalCommand.of(customerCode, accessToken, whCd, slipNo);
+    }
+
     public static UpdateFasstoWarehousingCommand mapToUpdateCommand(
             String customerCode,
             String accessToken,

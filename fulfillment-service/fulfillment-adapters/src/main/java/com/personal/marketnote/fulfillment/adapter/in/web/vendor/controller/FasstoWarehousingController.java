@@ -1,25 +1,13 @@
 package com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller;
 
 import com.personal.marketnote.common.adapter.in.api.format.BaseResponse;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.GetFasstoWarehousingApiDocs;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.GetFasstoWarehousingDetailApiDocs;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.RegisterFasstoWarehousingApiDocs;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.UpdateFasstoWarehousingApiDocs;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.controller.apidocs.*;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.mapper.FasstoWarehousingRequestToCommandMapper;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.RegisterFasstoWarehousingRequest;
 import com.personal.marketnote.fulfillment.adapter.in.web.vendor.request.UpdateFasstoWarehousingRequest;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.GetFasstoWarehousingDetailResponse;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.GetFasstoWarehousingResponse;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.RegisterFasstoWarehousingResponse;
-import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.UpdateFasstoWarehousingResponse;
-import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoWarehousingDetailResult;
-import com.personal.marketnote.fulfillment.port.in.result.vendor.GetFasstoWarehousingResult;
-import com.personal.marketnote.fulfillment.port.in.result.vendor.RegisterFasstoWarehousingResult;
-import com.personal.marketnote.fulfillment.port.in.result.vendor.UpdateFasstoWarehousingResult;
-import com.personal.marketnote.fulfillment.port.in.usecase.vendor.GetFasstoWarehousingDetailUseCase;
-import com.personal.marketnote.fulfillment.port.in.usecase.vendor.GetFasstoWarehousingUseCase;
-import com.personal.marketnote.fulfillment.port.in.usecase.vendor.RegisterFasstoWarehousingUseCase;
-import com.personal.marketnote.fulfillment.port.in.usecase.vendor.UpdateFasstoWarehousingUseCase;
+import com.personal.marketnote.fulfillment.adapter.in.web.vendor.response.*;
+import com.personal.marketnote.fulfillment.port.in.result.vendor.*;
+import com.personal.marketnote.fulfillment.port.in.usecase.vendor.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +29,7 @@ public class FasstoWarehousingController {
     private final RegisterFasstoWarehousingUseCase registerFasstoWarehousingUseCase;
     private final GetFasstoWarehousingUseCase getFasstoWarehousingUseCase;
     private final GetFasstoWarehousingDetailUseCase getFasstoWarehousingDetailUseCase;
+    private final GetFasstoWarehousingAbnormalUseCase getFasstoWarehousingAbnormalUseCase;
     private final UpdateFasstoWarehousingUseCase updateFasstoWarehousingUseCase;
 
     /**
@@ -160,6 +149,46 @@ public class FasstoWarehousingController {
                         HttpStatus.OK,
                         DEFAULT_SUCCESS_CODE,
                         "파스토 상품 입고 상세 조회 성공"
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * (관리자) 파스토 비정상 입고 상품 정보 조회
+     *
+     * @param customerCode 파스토 고객사 코드
+     * @param whCd         센터
+     * @param slipNo       파스토 입고요청번호
+     * @param accessToken  파스토 액세스 토큰
+     * @Author 성효빈
+     * @Date 2026-02-14
+     * @Description 파스토 비정상 입고 상품 정보를 조회합니다.
+     */
+    @GetMapping("/abnormal/{customerCode}/{whCd}/{slipNo}")
+    @PreAuthorize(ADMIN_POINTCUT)
+    @GetFasstoWarehousingAbnormalApiDocs
+    public ResponseEntity<BaseResponse<GetFasstoWarehousingAbnormalResponse>> getWarehousingAbnormal(
+            @PathVariable String customerCode,
+            @PathVariable String whCd,
+            @PathVariable String slipNo,
+            @RequestHeader("accessToken") String accessToken
+    ) {
+        GetFasstoWarehousingAbnormalResult result = getFasstoWarehousingAbnormalUseCase.getWarehousingAbnormal(
+                FasstoWarehousingRequestToCommandMapper.mapToWarehousingAbnormalCommand(
+                        customerCode,
+                        accessToken,
+                        whCd,
+                        slipNo
+                )
+        );
+
+        return new ResponseEntity<>(
+                BaseResponse.of(
+                        GetFasstoWarehousingAbnormalResponse.from(result),
+                        HttpStatus.OK,
+                        DEFAULT_SUCCESS_CODE,
+                        "파스토 비정상 입고 상품 조회 성공"
                 ),
                 HttpStatus.OK
         );
