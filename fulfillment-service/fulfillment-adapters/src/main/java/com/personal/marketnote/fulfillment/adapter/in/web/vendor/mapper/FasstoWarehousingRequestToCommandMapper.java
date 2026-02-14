@@ -33,6 +33,15 @@ public class FasstoWarehousingRequestToCommandMapper {
         return GetFasstoWarehousingCommand.of(customerCode, accessToken, startDate, endDate, inWay, ordNo, wrkStat);
     }
 
+    public static GetFasstoWarehousingDetailCommand mapToWarehousingDetailCommand(
+            String customerCode,
+            String accessToken,
+            String slipNo,
+            String ordNo
+    ) {
+        return GetFasstoWarehousingDetailCommand.of(customerCode, accessToken, slipNo, ordNo);
+    }
+
     public static UpdateFasstoWarehousingCommand mapToUpdateCommand(
             String customerCode,
             String accessToken,
